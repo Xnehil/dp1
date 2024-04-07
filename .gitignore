@@ -44,6 +44,9 @@ node_modules
 /.next/
 /out/
 
+# .next folder 
+.next
+
 # production
 /build
 
