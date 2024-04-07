@@ -1,6 +1,8 @@
 //       America del Sur.			                     GMT  CAPACIDAD
 //01   SKBO   Bogota              Colombia        bogo         -5     430  
 
+import java.util.TimeZone;
+
 public class Aeropuerto{
     private int idAeropuerto;
     private String codigoOACI;
@@ -10,15 +12,33 @@ public class Aeropuerto{
     private String continente;
     private int gmt;
     private int capacidad;
+    private TimeZone zonaHoraria;
 
-    public Aeropuerto(String codigoOACI, String ciudad, String pais, String paisCorto, int gmt, int capacidad, String continente) {
+    public TimeZone getZonaHoraria() {
+        return this.zonaHoraria;
+    }
+
+    public void setZonaHoraria(TimeZone zonaHoraria) {
+        this.zonaHoraria = zonaHoraria;
+    }
+
+    public Aeropuerto(int idAeropuerto, String codigoOACI, String ciudad, String pais, String paisCorto, int gmt, int capacidad) {
         this.codigoOACI = codigoOACI;
         this.ciudad = ciudad;
         this.pais = pais;
         this.paisCorto = paisCorto;
         this.gmt = gmt;
         this.capacidad = capacidad;
-        this.continente = continente;
+        this.idAeropuerto = idAeropuerto;
+
+        //set timezone from GMT
+        String[] ids = TimeZone.getAvailableIDs(gmt * 3600000);
+        if (ids.length == 0) {
+            System.out.println("No se encontró la zona horaria para GMT " + gmt);
+        } else {
+            this.zonaHoraria = TimeZone.getTimeZone(ids[0]);
+        }
+        
     }
 
     public Aeropuerto() {

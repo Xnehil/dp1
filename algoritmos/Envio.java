@@ -8,13 +8,12 @@ public class Envio {
     private ZonedDateTime fechaHoraSalida;
     private ZonedDateTime fechaHoraLlegada;
     private int cantidadPaquetes;
-    private ArrayList<Integer> paquetes;
+    private ArrayList<Paquete> paquetes;
 
-    public Envio(String origen, String destino, ZonedDateTime fechaHoraSalida, ZonedDateTime fechaHoraLlegada, int cantidadPaquetes, ArrayList<Integer> paquetes) {
+    public Envio(String origen, String destino, ZonedDateTime fechaHoraSalida, int cantidadPaquetes, ArrayList<Paquete> paquetes) {
         this.origen = origen;
         this.destino = destino;
         this.fechaHoraSalida = fechaHoraSalida;
-        this.fechaHoraLlegada = fechaHoraLlegada;
         this.cantidadPaquetes = cantidadPaquetes;
         this.paquetes = paquetes;
     }
@@ -77,11 +76,11 @@ public class Envio {
         this.cantidadPaquetes = cantidadPaquetes;
     }
 
-    public ArrayList<Integer> getPaquetes() {
+    public ArrayList<Paquete> getPaquetes() {
         return this.paquetes;
     }
 
-    public void setPaquetes(ArrayList<Integer> paquetes) {
+    public void setPaquetes(ArrayList<Paquete> paquetes) {
         this.paquetes = paquetes;
     }
 
