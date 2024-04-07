@@ -107,8 +107,11 @@ public class FuncionesLectura {
                 String ciudadDestino = destinoParts[0];
                 int cantidadPaquetes = Integer.parseInt(destinoParts[1]);
 
-                TimeZone zonaOrigen = aeropuertos.get(ciudadOrigenEnvio).getZonaHoraria();
-                TimeZone zonaDestino = aeropuertos.get(ciudadDestino).getZonaHoraria();
+                Aeropuerto origen = aeropuertos.getOrDefault(ciudadOrigenEnvio, aeropuertos.get("EKCH"));
+                Aeropuerto destino = aeropuertos.getOrDefault(ciudadDestino, aeropuertos.get("EKCH"));
+
+                TimeZone zonaOrigen = origen.getZonaHoraria();
+                TimeZone zonaDestino = destino.getZonaHoraria();
                 LocalTime origenLocalTime = LocalTime.parse(horaOrigen);
 
                 ZonedDateTime horaOrigenZoned = ZonedDateTime.of(fechaOrigen, origenLocalTime, zonaOrigen.toZoneId());
@@ -117,7 +120,7 @@ public class FuncionesLectura {
 
                 Duration tiempoEnvio = Duration.ofHours(0);
                 //El tiempo para enviar será de dos días si es continente distsinto y de un día si es el mismo continente
-                if (aeropuertos.get(ciudadOrigenEnvio).getContinente() != aeropuertos.get(ciudadDestino).getContinente()) {
+                if (origen.getContinente() != destino.getContinente()){
                     fechaDestino = fechaOrigen.plusDays(2);   
                 } else {
                     fechaDestino = fechaOrigen.plusDays(1); 
@@ -136,7 +139,10 @@ public class FuncionesLectura {
 
                 envios.put(envioId, new Envio(ciudadOrigenEnvio, ciudadDestino, horaOrigenZoned, cantidadPaquetes, paquetes));
             }
+        } catch (IOException e) {
+            System.err.println("Error reading file: " + e);
         }
+        return envios;
     }
     
 }
