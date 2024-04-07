@@ -1,0 +1,11 @@
+spring:
+    datasource:
+        url: jdbc:mysql://lp2.chya6iycyd21.us-east-1.rds.amazonaws.com:3306/nysobecas?useSSL=false
+        username: admin
+        password: L24NFji44EAd7AC
+        driver-class-name: com.mysql.cj.jdbc.Driver
+
+#JPA 
+    jpa:
+        hibernate:
+            ddl-auto: create        
