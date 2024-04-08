@@ -34,12 +34,15 @@ public class BackendApplication {
 
 		ArrayList<Paquete> paquetes = new ArrayList<Paquete>();
 		for(Envio e : envios.values()){
+            // System.out.println("Envio: " + e.getPaquetes().size());
 			paquetes.addAll(e.getPaquetes());
 		}
 
-		int[] owo=MPA.run(aeropuertos, vuelos, envios, paquetes, 20, 10);
-        for (int i = 0; i < owo.length; i++) {
-            System.out.print(owo[i] + " ");
-        }
+        System.out.println("Paquetes: " + paquetes.size());
+
+		// int[] owo=MPA.run(aeropuertos, vuelos, envios, paquetes, 20, 10);
+        // for (int i = 0; i < owo.length; i++) {
+        //     System.out.print(owo[i] + " ");
+        // }
 	}
 }

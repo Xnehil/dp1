@@ -142,9 +142,9 @@ public class FuncionesLectura {
                     paquete.setIdEnvío(envioId);
                     paquete.setIdPaquete(id);
                     paquete.setTiempoRestante(tiempoEnvio);
+                    paquetes.add(paquete);
                     id++;
                 }
-
                 envios.put(envioId, new Envio(ciudadOrigenEnvio, ciudadDestino, horaOrigenZoned, cantidadPaquetes, paquetes));
             }
         } catch (IOException e) {
