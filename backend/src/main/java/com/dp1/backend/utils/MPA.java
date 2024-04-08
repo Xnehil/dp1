@@ -23,6 +23,11 @@ public class MPA {
         //Generar población inicial
         int [][] Presa = new int[popSize][dim];
         int [][] Elite = new int[popSize][dim];
+        double[] fitness = new double[popSize];
+
+        //Para memoria 
+        double[] fitnessOld = new double[popSize];
+        int[][] PresaOld = new int[popSize][dim];
         
         double topPredatorFitness = 0;
 
@@ -33,15 +38,15 @@ public class MPA {
         int masApta;
         double FADs =0.2;
 
-
         for (int i = 0; i < maxIter; i++) {
             //Evaluar población
-            masApta =solucionMasApta(Presa, aeropuertos, vuelos, envios, paquetes, topPredatorFitness, minVuelo, maxVuelo);
+            masApta =solucionMasApta(Presa, aeropuertos, vuelos, envios, paquetes, topPredatorFitness, fitness, minVuelo, maxVuelo);
 
             //Actualizar memoria
-
+            memorySaving(Presa, fitness, PresaOld, fitnessOld, i);
 
             /*Inicialización de parámetros */
+
             //Elite copia de la mejor solución
             for (int w = 0; w < popSize; w++) {
                 Elite[i] = Arrays.copyOf(Presa[masApta], Presa[masApta].length);
@@ -89,12 +94,14 @@ public class MPA {
             /*Fin de las fases */
 
             //Evaluar población
-            masApta=solucionMasApta(Presa, aeropuertos, vuelos, envios, paquetes, topPredatorFitness, minVuelo, maxVuelo);
+            masApta=solucionMasApta(Presa, aeropuertos, vuelos, envios, paquetes, topPredatorFitness, fitness, minVuelo, maxVuelo);
 
 
             //Actualizar memoria
+            memorySaving(Presa, fitness, PresaOld, fitnessOld, i);
 
             //Aplicar FAD 
+            fadEffect(PresaOld, FADs, popSize, minVuelo, maxVuelo, CF, rand);
         }
 
         return new int[1][1];
@@ -115,7 +122,7 @@ public class MPA {
      */
 
     public static int solucionMasApta(int[][] poblacion, HashMap<String, Aeropuerto> aeropuertos, HashMap<Integer, Vuelo> vuelos, HashMap<Integer, Envio> envios,
-                                        ArrayList<Paquete> paquetes, double topPredatorFitness, int minVuelo, int maxVuelo){
+                                        ArrayList<Paquete> paquetes, double topPredatorFitness, double[] fitness,int minVuelo, int maxVuelo){
         //Cada fila de población es una solución
         //Cada solución tiene las rutas de todos los paquetes
         //Cada n elementos de la solución corresponden a la ruta de un paquete
@@ -129,11 +136,54 @@ public class MPA {
                 aptitudMax=aptitud;
                 masApta=i;
             }
+            fitness[i]=aptitud;
         }
         if(aptitudMax>topPredatorFitness){
             topPredatorFitness=aptitudMax;
         }
         return masApta;
+    }
+
+    public static void memorySaving(int[][] Presa, double[] fitness, int[][] PresaOld, double[] fitnessOld, int currIter){
+        if(currIter==0){
+            for (int i = 0; i < Presa.length; i++) {
+                PresaOld[i]=Arrays.copyOf(Presa[i], Presa[i].length);
+                fitnessOld[i]=fitness[i];
+            }
+        }
+
+        for (int i = 0; i < Presa.length; i++) {
+            if(fitnessOld[i]>fitness[i]){
+                Presa[i]=Arrays.copyOf(PresaOld[i], PresaOld[i].length);
+                fitness[i]=fitnessOld[i];
+            } else {
+                PresaOld[i]=Arrays.copyOf(Presa[i], Presa[i].length);
+                fitnessOld[i]=fitness[i];
+            }
+        }
+    }
+
+    public static void fadEffect(int[][] Presa, double FADs, int SearchAgents_no, int Xmin, int Xmax, double CF, Random rand) {
+        if (rand.nextDouble() < FADs) {
+            for (int i = 0; i < SearchAgents_no; i++) {
+                for (int j = 0; j < Presa[i].length; j++) {
+                    if (rand.nextDouble() > FADs) { //Esto es el U. Si el random es mayor a 0.2, se actualiza. Si no, no
+                        Presa[i][j] += CF * ((Xmin + rand.nextDouble() * (Xmax- Xmin)));
+                    }
+                }
+            }
+        } else {
+            double r = rand.nextDouble();
+            int Rs = Presa.length;
+            int[] perm1 = rand.ints(0, Rs).distinct().limit(Rs).toArray();
+            int[] perm2 = rand.ints(0, Rs).distinct().limit(Rs).toArray();
+            for (int i = 0; i < Rs; i++) {
+                for (int j = 0; j < Presa[i].length; j++) {
+                    double stepsize = (FADs * (1 - r) + r) * (Presa[perm1[i]][j] - Presa[perm2[i]][j]);
+                    Presa[i][j] += stepsize;
+                }
+            }
+        }
     }
 
 
