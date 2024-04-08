@@ -14,7 +14,7 @@ import com.dp1.backend.models.Vuelo;
 
 public class MPA {
     //Marine predator algorithm
-    public static int[][] run(HashMap<String, Aeropuerto> aeropuertos, HashMap<Integer, Vuelo> vuelos, HashMap<Integer, Envio> envios,
+    public static int[] run(HashMap<String, Aeropuerto> aeropuertos, HashMap<Integer, Vuelo> vuelos, HashMap<Integer, Envio> envios,
                                 ArrayList<Paquete> paquetes, int maxIter, int popSize){
         //La dimensión de la solución
         int dim = paquetes.size()*aeropuertos.size();
@@ -32,15 +32,26 @@ public class MPA {
         double topPredatorFitness = 0;
 
         for (int i = 0; i < popSize; i++) {
-            Presa[i] = inicializar(aeropuertos.size(), paquetes.size(), vuelos.size());
+            Presa[i] = inicializar(aeropuertos.size(), paquetes.size(), vuelos.size());        
         }
 
-        int masApta;
+        //Show sizes
+        System.out.println("Presa: " + Presa.length + " " + Presa[0].length);
+        System.out.println("Elite: " + Elite.length + " " + Elite[0].length);
+        System.out.println("Aeropuertos: " + aeropuertos.size());
+        System.out.println("Vuelos: " + vuelos.size());
+        System.out.println("Envios: " + envios.size());
+
+
+        int masApta=0;
         double FADs =0.2;
 
         for (int i = 0; i < maxIter; i++) {
+            System.out.println("Iteración: " + i);
             //Evaluar población
             masApta =solucionMasApta(Presa, aeropuertos, vuelos, envios, paquetes, topPredatorFitness, fitness, minVuelo, maxVuelo);
+
+            System.out.println("Fitness más apta previo: " + fitness[masApta]+ " iteración: " + i);
 
             //Actualizar memoria
             memorySaving(Presa, fitness, PresaOld, fitnessOld, i);
@@ -49,7 +60,7 @@ public class MPA {
 
             //Elite copia de la mejor solución
             for (int w = 0; w < popSize; w++) {
-                Elite[i] = Arrays.copyOf(Presa[masApta], Presa[masApta].length);
+                Elite[w] = Arrays.copyOf(Presa[masApta], Presa[masApta].length);
             }
             //Vector Levy
             double[] levy= Auxiliares.levy(dim, 1.5); 
@@ -96,6 +107,7 @@ public class MPA {
             //Evaluar población
             masApta=solucionMasApta(Presa, aeropuertos, vuelos, envios, paquetes, topPredatorFitness, fitness, minVuelo, maxVuelo);
 
+            System.out.println("Fitness más apta luego: " + fitness[masApta]+ " iteración: " + i);
 
             //Actualizar memoria
             memorySaving(Presa, fitness, PresaOld, fitnessOld, i);
@@ -104,7 +116,7 @@ public class MPA {
             fadEffect(PresaOld, FADs, popSize, minVuelo, maxVuelo, CF, rand);
         }
 
-        return new int[1][1];
+        return Presa[masApta];
     }
 
     public static int[] inicializar(int numAeropuertos, int paquetes, int numVuelos){

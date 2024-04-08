@@ -37,6 +37,9 @@ public class BackendApplication {
 			paquetes.addAll(e.getPaquetes());
 		}
 
-		// int[][] owo=MPA.run(aeropuertos, vuelos, envios, paquetes, 5, 10);
+		int[] owo=MPA.run(aeropuertos, vuelos, envios, paquetes, 20, 10);
+        for (int i = 0; i < owo.length; i++) {
+            System.out.print(owo[i] + " ");
+        }
 	}
 }

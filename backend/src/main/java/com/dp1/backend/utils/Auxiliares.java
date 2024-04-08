@@ -74,9 +74,9 @@ public class Auxiliares {
 
             //Fátima André
 
-            fitness+=1;
+            fitness+=solucion[i];
         }
-        return 0;
+        return fitness;
     }
 
     public static double fitnessUnPaqueteFatima(int[] solucion, HashMap<String, Aeropuerto> aeropuertos,
