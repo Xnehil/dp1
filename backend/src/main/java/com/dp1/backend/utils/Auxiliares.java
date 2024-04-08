@@ -74,7 +74,7 @@ public class Auxiliares {
 
             //Fátima André
 
-            fitness+=solucion[i];
+            fitness+=solucion[i]*0.000001;
         }
         return fitness;
     }

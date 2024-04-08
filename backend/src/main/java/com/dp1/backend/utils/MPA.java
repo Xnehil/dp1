@@ -34,13 +34,11 @@ public class MPA {
         for (int i = 0; i < popSize; i++) {
             Presa[i] = inicializar(aeropuertos.size(), paquetes.size(), vuelos.size());        
         }
-
-        //Show sizes
-        System.out.println("Presa: " + Presa.length + " " + Presa[0].length);
-        System.out.println("Elite: " + Elite.length + " " + Elite[0].length);
-        System.out.println("Aeropuertos: " + aeropuertos.size());
-        System.out.println("Vuelos: " + vuelos.size());
-        System.out.println("Envios: " + envios.size());
+        
+        //Show first solution
+        for (int i = 0; i < aeropuertos.size(); i++) {
+            System.out.print(Presa[0][i] + " ");
+        }
 
 
         int masApta=0;
