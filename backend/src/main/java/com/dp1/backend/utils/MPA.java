@@ -76,7 +76,9 @@ public class MPA {
                 }
 
             }
-            //Actualizar elite
+            //Actualizar elite y chequear bounds de la solución
+
+
 
             //Actualizar memoria
 
@@ -87,6 +89,7 @@ public class MPA {
     }
 
     public static int[] inicializar(int numAeropuertos, int paquetes, int numVuelos){
+        //Una solución inicial es un arreglo de n*numPaquetes elementos, donde n es el número de aeropuertos
         int max=numVuelos;
         int min=1;
         int[] inicial= new int[paquetes*numAeropuertos];
@@ -95,6 +98,9 @@ public class MPA {
         }
         return inicial;
     }
+    /*
+      1 2 4      2 5 1      3 2 1
+     */
 
     public static int solucionMasApta(int[][] poblacion, HashMap<String, Aeropuerto> aeropuertos, HashMap<Integer, Vuelo> vuelos, HashMap<Integer, Envio> envios,
                                         ArrayList<Paquete> paquetes){

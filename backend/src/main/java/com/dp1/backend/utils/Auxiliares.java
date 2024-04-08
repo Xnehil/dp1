@@ -65,8 +65,48 @@ public class Auxiliares {
             //Añadir bonificación si el paquete llega a su destino
             //Añadir penalización grave si el paquete no llega a su destino
 
+            //Fátima André
+
             fitness+=1;
         }
         return 0;
     }
+
+    public static double fitnessUnPaqueteFatima(int[] solucion, HashMap<String, Aeropuerto> aeropuertos,
+            HashMap<Integer, Vuelo> vuelos, HashMap<Integer, Envio> envios, ArrayList<Paquete> paquetes, int start, int end) {
+        // Aquí tengo la solución de un solo paquete
+        double fitness=0;
+        for (int i = start; i < end; i++) {
+            //Añadir al fitness la distancia entre los aeropuertos de la solución
+            //Añadir bonificación si el paquete llega a tiempo
+            //Añadir penalización grave si el paquete no llega a tiempo
+            //Añadir bonificación si el paquete llega a su destino
+            //Añadir penalización grave si el paquete no llega a su destino
+
+            //Fátima André
+
+            fitness+=1;
+        }
+        return 0;
+    }
+
+    public static double fitnessUnPaqueteAndre(int[] solucion, HashMap<String, Aeropuerto> aeropuertos,
+            HashMap<Integer, Vuelo> vuelos, HashMap<Integer, Envio> envios, ArrayList<Paquete> paquetes, int start, int end) {
+        // Aquí tengo la solución de un solo paquete
+        double fitness=0;
+        for (int i = start; i < end; i++) {
+            //Añadir al fitness la distancia entre los aeropuertos de la solución
+            //Añadir bonificación si el paquete llega a tiempo
+            //Añadir penalización grave si el paquete no llega a tiempo
+            //Añadir bonificación si el paquete llega a su destino
+            //Añadir penalización grave si el paquete no llega a su destino
+
+            //Fátima André
+
+            fitness+=1;
+        }
+        return 0;
+    }
+
+    //Función de validar solución - Mauricio
 }

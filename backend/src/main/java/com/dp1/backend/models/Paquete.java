@@ -41,6 +41,8 @@ public class Paquete {
     public void setTiempoRestante(Duration tiempoRestante) {
         this.tiempoRestante = tiempoRestante;
     }
+
+    
     private ArrayList<Integer> ruta;
 
     //Tiempo restante para que el paquete llegue a su destino
