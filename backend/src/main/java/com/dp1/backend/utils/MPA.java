@@ -1,6 +1,7 @@
 package com.dp1.backend.utils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Random;
 
@@ -17,29 +18,34 @@ public class MPA {
                                 ArrayList<Paquete> paquetes, int maxIter, int popSize){
         //La dimensión de la solución
         int dim = paquetes.size()*aeropuertos.size();
+        int minVuelo = vuelos.keySet().stream().min(Integer::compare).get();
+        int maxVuelo = vuelos.keySet().stream().max(Integer::compare).get();
         //Generar población inicial
         int [][] Presa = new int[popSize][dim];
         int [][] Elite = new int[popSize][dim];
+        
+        double topPredatorFitness = 0;
 
         for (int i = 0; i < popSize; i++) {
             Presa[i] = inicializar(aeropuertos.size(), paquetes.size(), vuelos.size());
         }
 
-        int masApta=solucionMasApta(Presa, aeropuertos, vuelos, envios, paquetes);
-
-        for (int i = 0; i < popSize; i++) {
-            Elite[i]=Presa[masApta];
-        }
-
+        int masApta;
         double FADs =0.2;
 
 
         for (int i = 0; i < maxIter; i++) {
             //Evaluar población
-            //Seleccionar mejor individuo
+            masApta =solucionMasApta(Presa, aeropuertos, vuelos, envios, paquetes, topPredatorFitness, minVuelo, maxVuelo);
 
             //Actualizar memoria
 
+
+            /*Inicialización de parámetros */
+            //Elite copia de la mejor solución
+            for (int w = 0; w < popSize; w++) {
+                Elite[i] = Arrays.copyOf(Presa[masApta], Presa[masApta].length);
+            }
             //Vector Levy
             double[] levy= Auxiliares.levy(dim, 1.5); 
             //Vector brown (normal distribution)
@@ -47,8 +53,12 @@ public class MPA {
             Random rand = new Random();
             double P = 0.5;
             double CF = Math.pow((1 - (double)i/maxIter), (2 * (double)i/maxIter));
-
             double[][] stepsize = new double[popSize][dim];
+
+            /*Fin de inicialización de parámetros */
+
+            /*Las fases */
+
             for (int j = 0; j < popSize; j++) {
                 for (int k = 0; k < Presa[j].length; k++) {
                     double R = rand.nextDouble();
@@ -76,8 +86,10 @@ public class MPA {
                 }
 
             }
-            //Actualizar elite y chequear bounds de la solución
+            /*Fin de las fases */
 
+            //Evaluar población
+            masApta=solucionMasApta(Presa, aeropuertos, vuelos, envios, paquetes, topPredatorFitness, minVuelo, maxVuelo);
 
 
             //Actualizar memoria
@@ -103,7 +115,7 @@ public class MPA {
      */
 
     public static int solucionMasApta(int[][] poblacion, HashMap<String, Aeropuerto> aeropuertos, HashMap<Integer, Vuelo> vuelos, HashMap<Integer, Envio> envios,
-                                        ArrayList<Paquete> paquetes){
+                                        ArrayList<Paquete> paquetes, double topPredatorFitness, int minVuelo, int maxVuelo){
         //Cada fila de población es una solución
         //Cada solución tiene las rutas de todos los paquetes
         //Cada n elementos de la solución corresponden a la ruta de un paquete
@@ -112,11 +124,14 @@ public class MPA {
         double aptitudMax=0;
         double aptitud;
         for (int i = 0; i < poblacion.length; i++) {
-            aptitud=Auxiliares.fitnessTotal(poblacion[i], aeropuertos, vuelos, envios, paquetes);
+            aptitud=Auxiliares.fitnessTotal(poblacion[i], aeropuertos, vuelos, envios, paquetes, minVuelo, maxVuelo);
             if (aptitud>aptitudMax) {
                 aptitudMax=aptitud;
                 masApta=i;
             }
+        }
+        if(aptitudMax>topPredatorFitness){
+            topPredatorFitness=aptitudMax;
         }
         return masApta;
     }

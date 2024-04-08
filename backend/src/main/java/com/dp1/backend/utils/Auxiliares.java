@@ -39,7 +39,7 @@ public class Auxiliares {
     }
 
     public static double fitnessTotal(int[] solucion, HashMap<String, Aeropuerto> aeropuertos,
-            HashMap<Integer, Vuelo> vuelos, HashMap<Integer, Envio> envios, ArrayList<Paquete> paquetes) {
+            HashMap<Integer, Vuelo> vuelos, HashMap<Integer, Envio> envios, ArrayList<Paquete> paquetes, int minVuelo, int maxVuelo) {
         // Aquí tengo la solución de todos los paquetes, cada n elementos es un paquete
         int n = aeropuertos.size();
         double fitnessTotal = 0;
@@ -48,17 +48,24 @@ public class Auxiliares {
             // Enviar a fitnessUnPaquete la solución de un paquete. Es decir, los n elementos de la solución
             int start = i;
             int end = i + n;
-            fitness = fitnessUnPaquete(solucion, aeropuertos, vuelos, envios, paquetes, start, end);
+            fitness = fitnessUnPaquete(solucion, aeropuertos, vuelos, envios, paquetes, start, end, minVuelo, maxVuelo);
             fitnessTotal += fitness;
         }
         return fitnessTotal;
     }
 
     public static double fitnessUnPaquete(int[] solucion, HashMap<String, Aeropuerto> aeropuertos,
-            HashMap<Integer, Vuelo> vuelos, HashMap<Integer, Envio> envios, ArrayList<Paquete> paquetes, int start, int end) {
+            HashMap<Integer, Vuelo> vuelos, HashMap<Integer, Envio> envios, ArrayList<Paquete> paquetes, int start, int end, int minVuelo, int maxVuelo) {
         // Aquí tengo la solución de un solo paquete
         double fitness=0;
         for (int i = start; i < end; i++) {
+            //Evitar out of bounds en el arreglo de solución
+            if(solucion[i] < minVuelo){
+                solucion[i] = minVuelo;
+            }
+            if(solucion[i] > maxVuelo){
+                solucion[i] = maxVuelo;
+            }
             //Añadir al fitness la distancia entre los aeropuertos de la solución
             //Añadir bonificación si el paquete llega a tiempo
             //Añadir penalización grave si el paquete no llega a tiempo
