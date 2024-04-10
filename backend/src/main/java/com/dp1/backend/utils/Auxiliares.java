@@ -48,16 +48,26 @@ public class Auxiliares {
             // Enviar a fitnessUnPaquete la solución de un paquete. Es decir, los n elementos de la solución
             int start = i;
             int end = i + n;
-            fitness = fitnessUnPaquete(solucion, aeropuertos, vuelos, envios, paquetes, start, end, minVuelo, maxVuelo);
+            fitness = fitnessUnPaquete(solucion, aeropuertos, vuelos, envios, paquetes.get(i/n), start, end, minVuelo, maxVuelo);
             fitnessTotal += fitness;
         }
         return fitnessTotal;
     }
 
     public static double fitnessUnPaquete(int[] solucion, HashMap<String, Aeropuerto> aeropuertos,
-            HashMap<Integer, Vuelo> vuelos, HashMap<Integer, Envio> envios, ArrayList<Paquete> paquetes, int start, int end, int minVuelo, int maxVuelo) {
+            HashMap<Integer, Vuelo> vuelos, HashMap<Integer, Envio> envios, Paquete paquete, int start, int end, int minVuelo, int maxVuelo) {
         // Aquí tengo la solución de un solo paquete
         double fitness=0;
+        String ciudadActual=envios.get(paquete.getIdEnvío()).getOrigen();
+        String ciudadDestino=envios.get(paquete.getIdEnvío()).getDestino();
+        Boolean rutaValida=true;
+        Aeropuerto destino=aeropuertos.get(ciudadDestino);
+        Aeropuerto actual=aeropuertos.get(ciudadActual);
+
+        System.out.println("Paquete: " + paquete.getIdEnvío());
+        System.out.println("Origen: " + ciudadActual);
+        System.out.println("Destino: " + ciudadDestino);
+
         for (int i = start; i < end; i++) {
             //Evitar out of bounds en el arreglo de solución
             if(solucion[i] < minVuelo){
@@ -66,6 +76,45 @@ public class Auxiliares {
             if(solucion[i] > maxVuelo){
                 solucion[i] = maxVuelo;
             }
+            if (rutaValida==false){
+                continue;
+            }
+            Vuelo vuelo = vuelos.get(solucion[i]);
+
+            if (vuelo.getOrigen().equals(ciudadActual)) {
+                ciudadActual = vuelo.getDestino();
+                fitness += 1;
+            } else {
+                // Penalización por no ser una ruta válida
+                fitness -= 0.05;
+                rutaValida=false;
+            }
+
+            //Bonficaciones en ruta válida
+            if(rutaValida){
+                //Por llegar
+                if (ciudadActual.equals(ciudadDestino)) {
+                    fitness += 5;
+                    break;
+                }
+                //Por distancia
+                // Before the flight
+                double oldDistance = Math.sqrt(Math.pow(actual.getLatitud() - destino.getLatitud(), 2) + Math.pow(actual.getLongitud() - destino.getLongitud(), 2));
+
+                // After the flight
+                ciudadActual = vuelo.getDestino();
+                actual = aeropuertos.get(ciudadActual);
+                double newDistance = Math.sqrt(Math.pow(actual.getLatitud() - destino.getLatitud(), 2) + Math.pow(actual.getLongitud() - destino.getLongitud(), 2));
+
+                // If the distance to the destination decreased, add a reward to the fitness
+                if (newDistance < oldDistance) {
+                    fitness += (oldDistance - newDistance);
+                }
+            }
+
+
+
+
             //Añadir al fitness la distancia entre los aeropuertos de la solución
             //Añadir bonificación si el paquete llega a tiempo
             //Añadir penalización grave si el paquete no llega a tiempo
@@ -73,8 +122,6 @@ public class Auxiliares {
             //Añadir penalización grave si el paquete no llega a su destino
 
             //Fátima André
-
-            fitness+=solucion[i]*0.000001;
         }
         return fitness;
     }

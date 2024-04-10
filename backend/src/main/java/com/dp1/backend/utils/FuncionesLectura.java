@@ -46,9 +46,14 @@ public class FuncionesLectura {
                 String shortName = parts[4];
                 int gmt = Integer.parseInt(parts[5]);
                 int capacity = Integer.parseInt(parts[6]);
+                double longitud = Double.parseDouble(parts[7]);
+                double latitud = Double.parseDouble(parts[8]);
 
                 // System.out.println("Aeropuerto: " + number + " " + oaciCode + " " + city + " " + country + " " + shortName + " " + gmt + " " + capacity);
-                aeropuertos.put(oaciCode, new Aeropuerto(number, oaciCode, city, country, shortName, gmt, capacity));
+                Aeropuerto aeropuerto = new Aeropuerto(number, oaciCode, city, country, shortName, gmt, capacity);
+                aeropuerto.setLongitud(longitud);
+                aeropuerto.setLatitud(latitud);
+                aeropuertos.put(oaciCode, aeropuerto);
             }
         } catch (IOException e) {
             System.err.println("Error reading file: " + e);

@@ -30,18 +30,26 @@ public class BackendApplication {
         }
 
         HashMap<Integer, Vuelo> vuelos = FuncionesLectura.leerVuelos("algoritmos/data/Planes.vuelo.v1.incompleto.txt", aeropuertos);
-        HashMap<Integer, Envio> envios = FuncionesLectura.leerEnvios("algoritmos/data/pack_enviado/pack_enviado_EBCI.txt", aeropuertos);
+        HashMap<Integer, Envio> envios = FuncionesLectura.leerEnvios("algoritmos/data/pack_enviado/pack_enviado_SEQM.txt", aeropuertos);
 
 		ArrayList<Paquete> paquetes = new ArrayList<Paquete>();
 		for(Envio e : envios.values()){
 			paquetes.addAll(e.getPaquetes());
 		}
 
-		int[] owo=MPA.run(aeropuertos, vuelos, envios, paquetes, 20, 25);
+		int[] owo=MPA.run(aeropuertos, vuelos, envios, paquetes, 40, 20);
 
         //Una solución
         for (int i = 0; i < aeropuertos.size(); i++) {
-            System.out.print(owo[i] + " ");
+            System.out.print(owo[i] + ": ");
+            System.out.print(vuelos.get(owo[i]).getOrigen()+"  - " + vuelos.get(owo[i]).getDestino() + " \n");
         }
+
+        //Se quería llegar de 
+        System.out.println("Se quería llegar de " + envios.get(1).getOrigen() + " a " + envios.get(1).getDestino());
+
+
+
+
 	}
 }

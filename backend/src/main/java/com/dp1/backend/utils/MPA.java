@@ -32,7 +32,7 @@ public class MPA {
         double topPredatorFitness = 0;
 
         for (int i = 0; i < popSize; i++) {
-            Presa[i] = inicializar(aeropuertos.size(), paquetes.size(), vuelos.size());        
+            Presa[i] = inicializar(aeropuertos.size(), paquetes.size(), vuelos.size(), paquetes, vuelos, envios, aeropuertos);        
         }
         
         //Show first solution
@@ -113,17 +113,23 @@ public class MPA {
             //Aplicar FAD 
             fadEffect(PresaOld, FADs, popSize, minVuelo, maxVuelo, CF, rand);
         }
-
+        masApta=solucionMasApta(Presa, aeropuertos, vuelos, envios, paquetes, topPredatorFitness, fitness, minVuelo, maxVuelo);
         return Presa[masApta];
     }
 
-    public static int[] inicializar(int numAeropuertos, int paquetes, int numVuelos){
+    public static int[] inicializar(int numAeropuertos, int paquetes, int numVuelos, ArrayList<Paquete> paquetesList, HashMap<Integer, Vuelo> vuelos, HashMap<Integer, Envio> envios, HashMap<String, Aeropuerto> aeropuertos){
         //Una solución inicial es un arreglo de n*numPaquetes elementos, donde n es el número de aeropuertos
         int max=numVuelos;
         int min=1;
         int[] inicial= new int[paquetes*numAeropuertos];
         for (int i = 0; i < inicial.length; i++) {
-            inicial[i]=(int)(Math.random()*(max-min+1)+min);
+            //Cada numAeropuertos elementos corresponden a la ruta de un paquete. El primer elemento de dicha ruta será un vuelo que salga de su ciudad
+            //WIP
+            if(i%numAeropuertos==0){
+                inicial[i]=Vuelo.getVueloRandomDesde(vuelos, envios.get(paquetesList.get(i/numAeropuertos).getIdEnvío()).getOrigen());
+            } else {
+                inicial[i]=(int)(Math.random()*(max-min+1)+min);
+            }
         }
         return inicial;
     }

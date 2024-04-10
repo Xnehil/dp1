@@ -1,6 +1,7 @@
 package com.dp1.backend.models;
 
 import java.time.ZonedDateTime;
+import java.util.HashMap;
 
 public class Vuelo {
     private int idVuelo;
@@ -73,6 +74,18 @@ public class Vuelo {
 
     public void setCapacidad(int capacidad) {
         this.capacidad = capacidad;
+    }
+
+    public static int getVueloRandomDesde(HashMap<Integer, Vuelo> vuelos, String origen) {
+        //Devuelve un vuelo aleatorio desde el aeropuerto origen
+        int idVuelo = 0;
+        for (Vuelo vuelo : vuelos.values()) {
+            if (vuelo.getOrigen().equals(origen)) {
+                idVuelo = vuelo.getIdVuelo();
+                break;
+            }
+        }
+        return idVuelo;
     }
 
 }

@@ -3,24 +3,24 @@ Lista de aeropuertos. Según código de OACI
 Lista Preliminar
 		
        America del Sur.			                     GMT  CAPACIDAD
-01   SKBO   Bogota              Colombia        bogo         -5     430   
-02   SEQM   Quito               Ecuador         quit         -5     410
-03   SVMI   Caracas             Venezuela       cara         -4     400
-04   SBBR   Brasilia            Brasil          bras         -3     480 
-05   SPIM   Lima                Perú            lima         -5     440
-06   SLLP   La Paz              Bolivia         lapa         -4     420
-07   SCEL   Santiago de Chile   Chile           sant         -3     460
-08   SABE   Buenos Aires        Argentina       buen         -3     460
-09   SGAS   Asunción            Paraguay        asun         -4     400
-10   SUAA   Motenvideo          Uruguay         mont         -3     400
+01   SKBO   Bogota              Colombia        bogo         -5     430      -74.14694     4.70139   
+02   SEQM   Quito               Ecuador         quit         -5     410      -78.3586      -0.1133
+03   SVMI   Caracas             Venezuela       cara         -4     400      -66.99056     10.60306
+04   SBBR   Brasilia            Brasil          bras         -3     480      -47.91250     -15.86250
+05   SPIM   Lima                Perú            lima         -5     440      -77.11417     -12.02167
+06   SLLP   La Paz              Bolivia         lapa         -4     420      -68.1925      -16.5133
+07   SCEL   Santiago de Chile   Chile           sant         -3     460      -70.7944      -33.3897
+08   SABE   Buenos Aires        Argentina       buen         -3     460      -58.5358      -34.6122
+09   SGAS   Asunción            Paraguay        asun         -4     400      -57.5192      -25.2637
+10   SUAA   Montevideo          Uruguay         mont         -3     400      -56.26444     -34.78917
 
        Europa			
-11   LATI   Tirana              Albania         tira         +2     410
-12   EDDI   Berlin              Alemania        berl         +2     480
-13   LOWW   Viena               Austria         vien         +2     430
-14   EBCI   Bruselas            Belgica         brus         +2     440
-15   UMMS   Minsk               Bielorrusia     mins         +3     400
-16   LBSF   Sofia               Bulgaria        sofi         +3     400
-17   LKPR   Praga               Checa           prag         +2     400
-18   LDZA   Zagreb              Croacia         zagr         +2     420
-19   EKCH   Copenhague          Dinamarca       cope         +2     480
+11   LATI   Tirana              Albania         tira         +2     410      19.7206      41.4147
+12   EDDI   Berlin              Alemania        berl         +2     480      13.2904      52.5200
+13   LOWW   Viena               Austria         vien         +2     430      16.3721      48.2082
+14   EBCI   Bruselas            Belgica         brus         +2     440      4.3517       50.8503
+15   UMMS   Minsk               Bielorrusia     mins         +3     400      27.5616      53.9045
+16   LBSF   Sofia               Bulgaria        sofi         +3     400      23.3219      42.6977
+17   LKPR   Praga               Checa           prag         +2     400      14.4378      50.0755
+18   LDZA   Zagreb              Croacia         zagr         +2     420      15.9819      45.8150
+19   EKCH   Copenhague          Dinamarca       cope         +2     480      12.5683      55.6761
