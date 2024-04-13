@@ -11,8 +11,9 @@ public class Aeropuerto{
     private String continente;
     private int gmt;
     private int capacidad;
+    private int capacidadActual;
     private TimeZone zonaHoraria;
-
+    
     public TimeZone getZonaHoraria() {
         return this.zonaHoraria;
     }
