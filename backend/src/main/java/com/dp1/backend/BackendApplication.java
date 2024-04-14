@@ -51,29 +51,31 @@ public class BackendApplication {
 			paquetes.addAll(e.getPaquetes());
 		}
 
-        int tamanioSolucion=5;
-		int[] owo=MPAv2.run(aeropuertos, vuelos, envios, paquetes, 70, 40, tamanioSolucion);
-
-        //Una solución
-        int verPaquete=1;
-        Envio envioDelPaquete=envios.get(paquetes.get(verPaquete).getIdEnvío());
-
-        //Se qiiere llegar de 
-        System.out.println("Se quería llegar de " + envioDelPaquete.getOrigen() + " a " + envioDelPaquete.getDestino());
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
-        String formattedDateTime = envioDelPaquete.getFechaHoraSalida().format(formatter);
-        System.out.println("El paquete se dejó el " + formattedDateTime);
-        String destino=envioDelPaquete.getDestino();
-
-        for (int i = (verPaquete-1)*tamanioSolucion; i < tamanioSolucion*(verPaquete); i++) {
-            System.out.print(owo[i] + ": ");
-            System.out.print(vuelos.get(owo[i]).getOrigen() + " (Departure: " + vuelos.get(owo[i]).getFechaHoraSalida().format(formatter) + ") - ");
-            System.out.print(vuelos.get(owo[i]).getDestino() + " (Arrival: " + vuelos.get(owo[i]).getFechaHoraLlegada().format(formatter) + ")\n");
-            if(vuelos.get(owo[i]).getDestino().equals(destino)){
-                System.out.println("Llegó al destino");
-                break;
+        // for (int j = 0; j < 20; j++) {
+            int tamanioSolucion=5;
+            int[] owo=MPAv2.run(aeropuertos, vuelos, envios, paquetes, 80, 50, tamanioSolucion);
+        
+            //Una solución
+            int verPaquete=10;
+            Envio envioDelPaquete=envios.get(paquetes.get(verPaquete).getIdEnvío());
+        
+            //Se qiiere llegar de 
+            System.out.println("Se quería llegar de " + envioDelPaquete.getOrigen() + " a " + envioDelPaquete.getDestino());
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+            String formattedDateTime = envioDelPaquete.getFechaHoraSalida().format(formatter);
+            System.out.println("El paquete se dejó el " + formattedDateTime);
+            String destino=envioDelPaquete.getDestino();
+        
+            for (int i = (verPaquete-1)*tamanioSolucion; i < tamanioSolucion*(verPaquete); i++) {
+                System.out.print(owo[i] + ": ");
+                System.out.print(vuelos.get(owo[i]).getOrigen() + " (Departure: " + vuelos.get(owo[i]).getFechaHoraSalida().format(formatter) + ") - ");
+                System.out.print(vuelos.get(owo[i]).getDestino() + " (Arrival: " + vuelos.get(owo[i]).getFechaHoraLlegada().format(formatter) + ")\n");
+                if(vuelos.get(owo[i]).getDestino().equals(destino)){
+                    System.out.println("Llegó al destino");
+                    break;
+                }
             }
-        }
+        // }
 
         
 

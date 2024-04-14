@@ -46,7 +46,7 @@ public class MPAv2 {
         double FADs =0.2;
 
         for (int i = 0; i < maxIter; i++) {
-            System.out.println("Iteración: " + i);
+            // System.out.println("Iteración: " + i);
             //Evaluar población
             masApta =solucionMasApta(Presa, aeropuertos, vuelos, envios, paquetes, topPredatorFitness, fitness, minVuelo, maxVuelo);
 
