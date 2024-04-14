@@ -10,6 +10,19 @@ public class Vuelo {
     private ZonedDateTime fechaHoraSalida;
     private ZonedDateTime fechaHoraLlegada;
     private int capacidad;
+    private Boolean cambioDeDia;
+
+    public Boolean isCambioDeDia() {
+        return this.cambioDeDia;
+    }
+
+    public Boolean getCambioDeDia() {
+        return this.cambioDeDia;
+    }
+
+    public void setCambioDeDia(Boolean cambioDeDia) {
+        this.cambioDeDia = cambioDeDia;
+    }
 
     public Vuelo(String origen, String destino, ZonedDateTime fechaHoraSalida, ZonedDateTime fechaHoraLlegada, int capacidad) {
         this.origen = origen;
@@ -17,6 +30,16 @@ public class Vuelo {
         this.fechaHoraSalida = fechaHoraSalida;
         this.fechaHoraLlegada = fechaHoraLlegada;
         this.capacidad = capacidad;
+
+        ZonedDateTime auxInicio = fechaHoraSalida;
+        ZonedDateTime auxFin = fechaHoraLlegada;
+        auxInicio=auxInicio.withZoneSameInstant(auxFin.getZone());
+
+        if (auxFin.isBefore(auxInicio)) {
+            this.cambioDeDia = true;
+        } else {
+            this.cambioDeDia = false;
+        }
     }
 
     public Vuelo() {

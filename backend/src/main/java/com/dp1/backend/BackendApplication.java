@@ -1,5 +1,6 @@
 package com.dp1.backend;
 
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -50,18 +51,24 @@ public class BackendApplication {
 			paquetes.addAll(e.getPaquetes());
 		}
 
-		int[] owo=MPAv2.run(aeropuertos, vuelos, envios, paquetes, 50, 80);
+        int tamanioSolucion=5;
+		int[] owo=MPAv2.run(aeropuertos, vuelos, envios, paquetes, 70, 40, tamanioSolucion);
 
         //Una solución
-        int verPaquete=15;
+        int verPaquete=1;
+        Envio envioDelPaquete=envios.get(paquetes.get(verPaquete).getIdEnvío());
 
         //Se qiiere llegar de 
-        System.out.println("Se quería llegar de " + envios.get(verPaquete).getOrigen() + " a " + envios.get(verPaquete).getDestino());
-        String destino=envios.get(verPaquete).getDestino();
+        System.out.println("Se quería llegar de " + envioDelPaquete.getOrigen() + " a " + envioDelPaquete.getDestino());
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+        String formattedDateTime = envioDelPaquete.getFechaHoraSalida().format(formatter);
+        System.out.println("El paquete se dejó el " + formattedDateTime);
+        String destino=envioDelPaquete.getDestino();
 
-        for (int i = verPaquete*aeropuertos.size(); i < aeropuertos.size()*(verPaquete+1); i++) {
+        for (int i = (verPaquete-1)*tamanioSolucion; i < tamanioSolucion*(verPaquete); i++) {
             System.out.print(owo[i] + ": ");
-            System.out.print(vuelos.get(owo[i]).getOrigen()+"  - " + vuelos.get(owo[i]).getDestino() + " \n");
+            System.out.print(vuelos.get(owo[i]).getOrigen() + " (Departure: " + vuelos.get(owo[i]).getFechaHoraSalida().format(formatter) + ") - ");
+            System.out.print(vuelos.get(owo[i]).getDestino() + " (Arrival: " + vuelos.get(owo[i]).getFechaHoraLlegada().format(formatter) + ")\n");
             if(vuelos.get(owo[i]).getDestino().equals(destino)){
                 System.out.println("Llegó al destino");
                 break;

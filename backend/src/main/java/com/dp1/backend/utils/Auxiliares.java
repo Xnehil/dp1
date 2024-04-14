@@ -3,6 +3,7 @@ package com.dp1.backend.utils;
 import org.apache.commons.math3.distribution.NormalDistribution;
 import org.apache.commons.math3.special.Gamma;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -57,7 +58,7 @@ public class Auxiliares {
     public static double fitnessTotalv2(int[] solucion, HashMap<String, Aeropuerto> aeropuertos,
             HashMap<Integer, Vuelo> vuelos, HashMap<Integer, Envio> envios, ArrayList<Paquete> paquetes, int minVuelo, int maxVuelo, double[][] fitnessMatrix, int individuo) {
         // Aquí tengo la solución de todos los paquetes, cada n elementos es un paquete
-        int n = aeropuertos.size();
+        int n = solucion.length / paquetes.size();
         double fitnessTotal = 0;
         double fitness;
         for (int i = 0; i < solucion.length; i += n) {
@@ -75,11 +76,17 @@ public class Auxiliares {
             HashMap<Integer, Vuelo> vuelos, HashMap<Integer, Envio> envios, Paquete paquete, int start, int end, int minVuelo, int maxVuelo) {
         // Aquí tengo la solución de un solo paquete
         double fitness=0;
-        String ciudadActual=envios.get(paquete.getIdEnvío()).getOrigen();
-        String ciudadDestino=envios.get(paquete.getIdEnvío()).getDestino();
+        Envio envio=envios.get(paquete.getIdEnvío());
+        String ciudadActual=envio.getOrigen();
+        String ciudadDestino=envio.getDestino();
         Boolean rutaValida=true;
         Aeropuerto destino=aeropuertos.get(ciudadDestino);
         Aeropuerto actual=aeropuertos.get(ciudadActual);
+
+        ZonedDateTime fechaHoraActual=envio.getFechaHoraSalida();
+        ZonedDateTime fechaHoraSiguiente;
+        int dias = actual.getContinente().equals(destino.getContinente()) ? 1 : 2;
+        ZonedDateTime fechaHoraLimite = envio.getFechaHoraSalida().plusDays(dias).withZoneSameLocal(destino.getZonaHoraria().toZoneId());
 
 
         for (int i = start; i < end; i++) {
@@ -91,22 +98,30 @@ public class Auxiliares {
                 solucion[i] = maxVuelo;
             }
             if (rutaValida==false){
-                
-
                 continue;
             }
             Vuelo vuelo = vuelos.get(solucion[i]);
 
-            if (vuelo.getOrigen().equals(ciudadActual)) {      
-                fitness += 2;
+            fechaHoraSiguiente=vuelo.getFechaHoraSalida();
+            //Se cambia solo la fecha, no las horas. Esto porque los vuelos no tienen fechas, se realizan todos los días.
+            fechaHoraSiguiente = fechaHoraSiguiente.with(fechaHoraActual.toLocalDate());
+
+
+
+            Boolean ubicacionValida = vuelo.getOrigen().equals(ciudadActual);
+            Boolean tiempoValido = fechaHoraActual.isBefore(fechaHoraSiguiente);
+
+            if (vuelo.getOrigen().equals(ciudadActual) && tiempoValido) {      
+                fitness += 4;
+                ciudadActual = vuelo.getDestino();
+                Boolean cambioDeDia= vuelo.getCambioDeDia();                
+                fechaHoraActual=vuelo.getFechaHoraLlegada().with(fechaHoraActual.toLocalDate());
+                fechaHoraActual = cambioDeDia ? fechaHoraActual.plusDays(1) : fechaHoraActual;
+                fechaHoraActual.plusMinutes(5);
             } else {
                 // Penalización por no ser una ruta válida
-                fitness -= 5;
+                fitness -= (!ubicacionValida ? 6 : 0) + (!tiempoValido ? 2 : 0);
                 rutaValida=false;
-                //Premio por qué tan cerca está ese el origen del vuelo de la ciudad actual
-                Aeropuerto vueloOrigen = aeropuertos.get(vuelo.getOrigen());
-                double distance = Math.sqrt(Math.pow(actual.getLatitud() - vueloOrigen.getLatitud(), 2) + Math.pow(actual.getLongitud() - vueloOrigen.getLongitud(), 2));
-                fitness += 1/distance;
 
             }
 
@@ -114,34 +129,33 @@ public class Auxiliares {
             if(rutaValida){
                 //Por llegar
                 if (ciudadActual.equals(ciudadDestino)) {
-                    fitness += 5;
+                    fitness += 100;
+                    if(fechaHoraActual.isBefore(fechaHoraLimite)){
+                        fitness += 100;
+                    } else {
+                        fitness -= 50;
+                    }
                     break;
                 }
                 //Por distancia
                 // Before the flight
-                double oldDistance = Math.sqrt(Math.pow(actual.getLatitud() - destino.getLatitud(), 2) + Math.pow(actual.getLongitud() - destino.getLongitud(), 2));
+                double oldDistance = Math.pow(actual.getLatitud() - destino.getLatitud(), 2) + Math.pow(actual.getLongitud() - destino.getLongitud(), 2);
 
                 // After the flight
-                ciudadActual = vuelo.getDestino();
                 actual = aeropuertos.get(ciudadActual);
-                double newDistance = Math.sqrt(Math.pow(actual.getLatitud() - destino.getLatitud(), 2) + Math.pow(actual.getLongitud() - destino.getLongitud(), 2));
+                double newDistance = Math.pow(actual.getLatitud() - destino.getLatitud(), 2) + Math.pow(actual.getLongitud() - destino.getLongitud(), 2);
 
-                // If the distance to the destination decreased, add a reward to the fitness
-                if (newDistance < oldDistance) {
-                    fitness += (oldDistance - newDistance);
-                }
+                // Normalize the fitness change to be between -3 and 3
+                fitness += ((oldDistance - newDistance) / 162000) * 6 - 3;
             }
 
 
             //Fitness un poquito negativo dependiendo de la capacidad del avión/aeropuerto
 
-            //Añadir al fitness la distancia entre los aeropuertos de la solución
             //Añadir bonificación si el paquete llega a tiempo
             //Añadir penalización grave si el paquete no llega a tiempo
             //Añadir bonificación si el paquete llega a su destino
             //Añadir penalización grave si el paquete no llega a su destino
-
-            //Fátima André
         }
         return fitness;
     }
