@@ -64,9 +64,6 @@ public class Auxiliares {
         Aeropuerto destino=aeropuertos.get(ciudadDestino);
         Aeropuerto actual=aeropuertos.get(ciudadActual);
 
-        System.out.println("Paquete: " + paquete.getIdEnvío());
-        System.out.println("Origen: " + ciudadActual);
-        System.out.println("Destino: " + ciudadDestino);
 
         for (int i = start; i < end; i++) {
             //Evitar out of bounds en el arreglo de solución
@@ -77,17 +74,23 @@ public class Auxiliares {
                 solucion[i] = maxVuelo;
             }
             if (rutaValida==false){
+                
+
                 continue;
             }
             Vuelo vuelo = vuelos.get(solucion[i]);
 
-            if (vuelo.getOrigen().equals(ciudadActual)) {
-                ciudadActual = vuelo.getDestino();
-                fitness += 1;
+            if (vuelo.getOrigen().equals(ciudadActual)) {      
+                fitness += 2;
             } else {
                 // Penalización por no ser una ruta válida
-                fitness -= 0.05;
+                fitness -= 0.1;
                 rutaValida=false;
+                //Premio por qué tan cerca está ese el origen del vuelo de la ciudad actual
+                Aeropuerto vueloOrigen = aeropuertos.get(vuelo.getOrigen());
+                double distance = Math.sqrt(Math.pow(actual.getLatitud() - vueloOrigen.getLatitud(), 2) + Math.pow(actual.getLongitud() - vueloOrigen.getLongitud(), 2));
+                fitness += 1/distance;
+
             }
 
             //Bonficaciones en ruta válida
@@ -113,7 +116,7 @@ public class Auxiliares {
             }
 
 
-
+            //Fitness un poquito negativo dependiendo de la capacidad del avión/aeropuerto
 
             //Añadir al fitness la distancia entre los aeropuertos de la solución
             //Añadir bonificación si el paquete llega a tiempo

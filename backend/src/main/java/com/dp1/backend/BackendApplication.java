@@ -32,12 +32,24 @@ public class BackendApplication {
         HashMap<Integer, Vuelo> vuelos = FuncionesLectura.leerVuelos("algoritmos/data/Planes.vuelo.v1.incompleto.txt", aeropuertos);
         HashMap<Integer, Envio> envios = FuncionesLectura.leerEnvios("algoritmos/data/pack_enviado/pack_enviado_SEQM.txt", aeropuertos);
 
+        //Drop envios whose origen or destino is not in aeropuertos
+        ArrayList<Integer> toRemove = new ArrayList<Integer>();
+        for (int i : envios.keySet()) {
+            if (!aeropuertos.containsKey(envios.get(i).getOrigen()) || !aeropuertos.containsKey(envios.get(i).getDestino())) {
+                toRemove.add(i);
+            }
+        }
+        for (int i : toRemove) {
+            envios.remove(i);
+        }
+
+
 		ArrayList<Paquete> paquetes = new ArrayList<Paquete>();
 		for(Envio e : envios.values()){
 			paquetes.addAll(e.getPaquetes());
 		}
 
-		int[] owo=MPA.run(aeropuertos, vuelos, envios, paquetes, 40, 20);
+		int[] owo=MPA.run(aeropuertos, vuelos, envios, paquetes, 60, 80);
 
         //Una solución
         for (int i = 0; i < aeropuertos.size(); i++) {
@@ -48,8 +60,7 @@ public class BackendApplication {
         //Se quería llegar de 
         System.out.println("Se quería llegar de " + envios.get(1).getOrigen() + " a " + envios.get(1).getDestino());
 
-
-
+        
 
 	}
 }
