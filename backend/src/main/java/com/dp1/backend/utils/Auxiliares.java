@@ -54,6 +54,23 @@ public class Auxiliares {
         return fitnessTotal;
     }
 
+    public static double fitnessTotalv2(int[] solucion, HashMap<String, Aeropuerto> aeropuertos,
+            HashMap<Integer, Vuelo> vuelos, HashMap<Integer, Envio> envios, ArrayList<Paquete> paquetes, int minVuelo, int maxVuelo, double[][] fitnessMatrix, int individuo) {
+        // Aquí tengo la solución de todos los paquetes, cada n elementos es un paquete
+        int n = aeropuertos.size();
+        double fitnessTotal = 0;
+        double fitness;
+        for (int i = 0; i < solucion.length; i += n) {
+            // Enviar a fitnessUnPaquete la solución de un paquete. Es decir, los n elementos de la solución
+            int start = i;
+            int end = i + n;
+            fitness = fitnessUnPaquete(solucion, aeropuertos, vuelos, envios, paquetes.get(i/n), start, end, minVuelo, maxVuelo);
+            fitnessTotal += fitness;
+            fitnessMatrix[individuo][i/n]=fitness;
+        }
+        return fitnessTotal;
+    }
+
     public static double fitnessUnPaquete(int[] solucion, HashMap<String, Aeropuerto> aeropuertos,
             HashMap<Integer, Vuelo> vuelos, HashMap<Integer, Envio> envios, Paquete paquete, int start, int end, int minVuelo, int maxVuelo) {
         // Aquí tengo la solución de un solo paquete
@@ -84,7 +101,7 @@ public class Auxiliares {
                 fitness += 2;
             } else {
                 // Penalización por no ser una ruta válida
-                fitness -= 0.1;
+                fitness -= 5;
                 rutaValida=false;
                 //Premio por qué tan cerca está ese el origen del vuelo de la ciudad actual
                 Aeropuerto vueloOrigen = aeropuertos.get(vuelo.getOrigen());

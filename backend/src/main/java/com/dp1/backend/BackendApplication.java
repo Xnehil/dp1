@@ -13,6 +13,7 @@ import com.dp1.backend.models.Vuelo;
 import com.dp1.backend.utils.Auxiliares;
 import com.dp1.backend.utils.FuncionesLectura;
 import com.dp1.backend.utils.MPA;
+import com.dp1.backend.utils.MPAv2;
 
 @SpringBootApplication
 public class BackendApplication {
@@ -49,16 +50,25 @@ public class BackendApplication {
 			paquetes.addAll(e.getPaquetes());
 		}
 
-		int[] owo=MPA.run(aeropuertos, vuelos, envios, paquetes, 60, 80);
+		int[] owo=MPAv2.run(aeropuertos, vuelos, envios, paquetes, 50, 80);
 
         //Una solución
-        for (int i = 0; i < aeropuertos.size(); i++) {
+        int verPaquete=15;
+
+        //Se qiiere llegar de 
+        System.out.println("Se quería llegar de " + envios.get(verPaquete).getOrigen() + " a " + envios.get(verPaquete).getDestino());
+        String destino=envios.get(verPaquete).getDestino();
+
+        for (int i = verPaquete*aeropuertos.size(); i < aeropuertos.size()*(verPaquete+1); i++) {
             System.out.print(owo[i] + ": ");
             System.out.print(vuelos.get(owo[i]).getOrigen()+"  - " + vuelos.get(owo[i]).getDestino() + " \n");
+            if(vuelos.get(owo[i]).getDestino().equals(destino)){
+                System.out.println("Llegó al destino");
+                break;
+            }
         }
 
-        //Se quería llegar de 
-        System.out.println("Se quería llegar de " + envios.get(1).getOrigen() + " a " + envios.get(1).getDestino());
+        
 
         
 
