@@ -32,7 +32,7 @@ public class BackendApplication {
         }
 
         HashMap<Integer, Vuelo> vuelos = FuncionesLectura.leerVuelos("algoritmos/data/Planes.vuelo.v1.incompleto.txt", aeropuertos);
-        HashMap<Integer, Envio> envios = FuncionesLectura.leerEnvios("algoritmos/data/pack_enviado/pack_enviado_SEQM.txt", aeropuertos);
+        HashMap<Integer, Envio> envios = FuncionesLectura.leerEnvios("algoritmos/data/pack_enviado/pack_enviado_SGAS.txt", aeropuertos);
 
         //Drop envios whose origen or destino is not in aeropuertos
         ArrayList<Integer> toRemove = new ArrayList<Integer>();
@@ -52,11 +52,12 @@ public class BackendApplication {
 		}
 
         // for (int j = 0; j < 20; j++) {
+            //Parámetros con los que experimentar: maxIter, popSize, tamanioSolucion
             int tamanioSolucion=5;
             int[] owo=MPAv2.run(aeropuertos, vuelos, envios, paquetes, 80, 50, tamanioSolucion);
         
             //Una solución
-            int verPaquete=10;
+            int verPaquete=190;
             Envio envioDelPaquete=envios.get(paquetes.get(verPaquete).getIdEnvío());
         
             //Se qiiere llegar de 

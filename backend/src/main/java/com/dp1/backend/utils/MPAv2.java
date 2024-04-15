@@ -24,7 +24,9 @@ public class MPAv2 {
         int [][] Presa = new int[popSize][dim];
         int [][] Elite = new int[popSize][dim];
         double[][] fitness = new double[popSize][paquetes.size()];
-        
+        // Paq1     Paq2
+        // 3 4 2    5 1 2 
+        // 1 2 4    2 5 1
 
         //Para memoria 
         double[][] fitnessOld = new double[popSize][paquetes.size()];
@@ -34,11 +36,6 @@ public class MPAv2 {
 
         for (int i = 0; i < popSize; i++) {
             Presa[i] = inicializar(tamanioUnaSolucion, paquetes.size(), vuelos.size(), paquetes, vuelos, envios, aeropuertos);        
-        }
-        
-        //Show first solution
-        for (int i = 0; i < tamanioUnaSolucion; i++) {
-            System.out.print(Presa[0][i] + " ");
         }
 
 

@@ -110,8 +110,9 @@ public class Auxiliares {
 
             Boolean ubicacionValida = vuelo.getOrigen().equals(ciudadActual);
             Boolean tiempoValido = fechaHoraActual.isBefore(fechaHoraSiguiente);
+            Boolean espacioValido;
 
-            if (vuelo.getOrigen().equals(ciudadActual) && tiempoValido) {      
+            if (ubicacionValida && tiempoValido) {      
                 fitness += 4;
                 ciudadActual = vuelo.getDestino();
                 Boolean cambioDeDia= vuelo.getCambioDeDia();                
@@ -196,5 +197,10 @@ public class Auxiliares {
         return 0;
     }
 
-    //Función de validar solución - Mauricio
+    public Boolean solucionValida(int[] solucion, HashMap<String, Aeropuerto> aeropuertos, HashMap<Integer, Vuelo> vuelos, HashMap<Integer, Envio> envios, ArrayList<Paquete> paquetes){
+        //Función de validar solución -> Incluye secuencia de ubicaciones, secuencia de tiempo y respetar el plazo. Basado en función fitness
+        //Secuencia de ubicaciones -> Partir siempre de la ubicación en la que estoy
+        return true;
+    }
+
 }
