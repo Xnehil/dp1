@@ -1,5 +1,6 @@
 package com.dp1.backend.models;
 
+import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.util.HashMap;
 
@@ -87,5 +88,11 @@ public class Vuelo {
         }
         return idVuelo;
     }
+    public double calcularMinutosDeVuelo() {
+        // Calcular la diferencia de tiempo entre la fecha y hora de salida y la fecha y hora de llegada
+        Duration duracionVuelo = Duration.between(fechaHoraSalida, fechaHoraLlegada);
 
+        // Convertir la duración del vuelo a horas y retornarla como un valor decimal
+        return (double)duracionVuelo.toMinutes();
+    }
 }
