@@ -61,6 +61,13 @@ public class Auxiliares {
         int n = solucion.length / paquetes.size();
         double fitnessTotal = 0;
         double fitness;
+        for (int i : vuelos.keySet()) {
+            vuelos.get(i).setCargaAuxiliarParaFitness(0);
+        }
+        for (String i : aeropuertos.keySet()) {
+            aeropuertos.get(i).setCargaAuxiliarParaFitness(0);
+        }
+
         for (int i = 0; i < solucion.length; i += n) {
             // Enviar a fitnessUnPaquete la solución de un paquete. Es decir, los n elementos de la solución
             int start = i;
@@ -110,20 +117,22 @@ public class Auxiliares {
 
             Boolean ubicacionValida = vuelo.getOrigen().equals(ciudadActual);
             Boolean tiempoValido = fechaHoraActual.isBefore(fechaHoraSiguiente);
-            Boolean espacioValido;
+            Boolean espacioValido = (vuelo.getCapacidad() > vuelo.getCargaActual() + vuelo.getCargaAuxiliarParaFitness() + 1) && (destino.getCapacidadMaxima() > destino.getCargaActual() + destino.getCargaAuxiliarParaFitness() + 1);
 
-            if (ubicacionValida && tiempoValido) {      
+            if (ubicacionValida && tiempoValido && espacioValido) {      
                 fitness += 4;
                 ciudadActual = vuelo.getDestino();
                 Boolean cambioDeDia= vuelo.getCambioDeDia();                
                 fechaHoraActual=vuelo.getFechaHoraLlegada().with(fechaHoraActual.toLocalDate());
                 fechaHoraActual = cambioDeDia ? fechaHoraActual.plusDays(1) : fechaHoraActual;
                 fechaHoraActual.plusMinutes(5);
+                vuelo.setCargaAuxiliarParaFitness(vuelo.getCargaAuxiliarParaFitness() + 1);
+                destino.setCargaAuxiliarParaFitness(destino.getCargaAuxiliarParaFitness() + 1);
             } else {
                 // Penalización por no ser una ruta válida
                 fitness -= (!ubicacionValida ? 6 : 0) + (!tiempoValido ? 2 : 0);
+                fitness -= !espacioValido ? 6 : 0;
                 rutaValida=false;
-
             }
 
             //Bonficaciones en ruta válida
@@ -173,7 +182,7 @@ public class Auxiliares {
             //Añadir penalización grave si el paquete no llega a su destino
 
             //Fátima André
-
+0
             fitness+=1;
         }
         return 0;

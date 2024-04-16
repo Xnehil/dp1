@@ -51,10 +51,17 @@ public class BackendApplication {
 			paquetes.addAll(e.getPaquetes());
 		}
 
-        // for (int j = 0; j < 20; j++) {
+        for (int j = 0; j < 10; j++) {
+            //Medir tiempo de ejecución
+            long startTime = System.currentTimeMillis();
+
             //Parámetros con los que experimentar: maxIter, popSize, tamanioSolucion
             int tamanioSolucion=5;
-            int[] owo=MPAv2.run(aeropuertos, vuelos, envios, paquetes, 80, 50, tamanioSolucion);
+            int[] owo=MPAv2.run(aeropuertos, vuelos, envios, paquetes, 70, 15, tamanioSolucion);
+
+            long endTime = System.currentTimeMillis();
+
+            System.out.println("Tiempo de ejecución: " + (endTime - startTime) + " milisegundos");
         
             //Una solución
             int verPaquete=190;
@@ -76,7 +83,7 @@ public class BackendApplication {
                     break;
                 }
             }
-        // }
+        }
 
         
 

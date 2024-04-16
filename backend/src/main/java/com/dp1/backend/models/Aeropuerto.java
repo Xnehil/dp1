@@ -10,10 +10,31 @@ public class Aeropuerto{
     private String paisCorto;
     private String continente;
     private int gmt;
-    private int capacidad;
+    private int capacidadMaxima;
     private TimeZone zonaHoraria;
     private double latitud;
     private double longitud;
+
+    private int cargaActual;
+    private int cargaAuxiliarParaFitness;
+
+
+    public int getCargaActual() {
+        return this.cargaActual;
+    }
+
+    public void setCargaActual(int cargaActual) {
+        this.cargaActual = cargaActual;
+    }
+
+    public int getCargaAuxiliarParaFitness() {
+        return this.cargaAuxiliarParaFitness;
+    }
+
+    public void setCargaAuxiliarParaFitness(int cargaAuxiliarParaFitness) {
+        this.cargaAuxiliarParaFitness = cargaAuxiliarParaFitness;
+    }
+
 
     public double getLatitud() {
         return this.latitud;
@@ -45,7 +66,7 @@ public class Aeropuerto{
         this.pais = pais;
         this.paisCorto = paisCorto;
         this.gmt = gmt;
-        this.capacidad = capacidad;
+        this.capacidadMaxima = capacidad;
         this.idAeropuerto = idAeropuerto;
 
         //set timezone from GMT
@@ -55,7 +76,9 @@ public class Aeropuerto{
         } else {
             this.zonaHoraria = TimeZone.getTimeZone(ids[0]);
         }
-        
+
+        this.cargaActual = 0;
+        this.cargaAuxiliarParaFitness = 0;        
     }
 
     public Aeropuerto() {
@@ -64,7 +87,7 @@ public class Aeropuerto{
         this.pais = "";
         this.paisCorto = "";
         this.gmt = 0;
-        this.capacidad = 0;
+        this.capacidadMaxima = 0;
         this.continente = "";
     }
 
@@ -125,12 +148,12 @@ public class Aeropuerto{
         this.gmt = gmt;
     }
 
-    public int getCapacidad() {
-        return this.capacidad;
+    public int getCapacidadMaxima() {
+        return this.capacidadMaxima;
     }
 
-    public void setCapacidad(int capacidad) {
-        this.capacidad = capacidad;
+    public void setCapacidadMaxima(int capacidad) {
+        this.capacidadMaxima = capacidad;
     }
 
 

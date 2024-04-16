@@ -10,6 +10,24 @@ public class Vuelo {
     private ZonedDateTime fechaHoraSalida;
     private ZonedDateTime fechaHoraLlegada;
     private int capacidad;
+    private int cargaActual;
+    private int cargaAuxiliarParaFitness;
+
+    public int getCargaActual() {
+        return this.cargaActual;
+    }
+
+    public void setCargaActual(int cargaActual) {
+        this.cargaActual = cargaActual;
+    }
+
+    public int getCargaAuxiliarParaFitness() {
+        return this.cargaAuxiliarParaFitness;
+    }
+
+    public void setCargaAuxiliarParaFitness(int cargaAuxiliarParaFitness) {
+        this.cargaAuxiliarParaFitness = cargaAuxiliarParaFitness;
+    }
     private Boolean cambioDeDia;
 
     public Boolean isCambioDeDia() {
@@ -30,6 +48,8 @@ public class Vuelo {
         this.fechaHoraSalida = fechaHoraSalida;
         this.fechaHoraLlegada = fechaHoraLlegada;
         this.capacidad = capacidad;
+        this.cargaActual = 0;
+        this.cargaAuxiliarParaFitness = 0;
 
         ZonedDateTime auxInicio = fechaHoraSalida;
         ZonedDateTime auxFin = fechaHoraLlegada;
