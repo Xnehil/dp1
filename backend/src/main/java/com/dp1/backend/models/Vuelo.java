@@ -1,5 +1,6 @@
 package com.dp1.backend.models;
 
+import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.util.HashMap;
 
@@ -130,5 +131,12 @@ public class Vuelo {
         }
         return idVuelo;
     }
-
+    public double calcularMinutosDeVuelo() {
+        //Calcular la diferencia de tiempo entre la fecha y hora de salida y la fecha y hora de llegada
+        //No se consideran segundos
+        double duracionVuelo = Duration.between(fechaHoraSalida, fechaHoraLlegada).toMinutes();
+        //Si te devuelve negativo, es porque está calculado de un dia para otro. Te devuelve -(1440 - minutosQueQuiero)
+        if(duracionVuelo < 0) duracionVuelo = 1440 - (duracionVuelo*-1);
+        return duracionVuelo;
+    }
 }
