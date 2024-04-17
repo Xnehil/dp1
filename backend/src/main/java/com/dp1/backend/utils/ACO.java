@@ -11,7 +11,7 @@ import com.dp1.backend.models.*;
 public class ACO {
     public static void run(HashMap<String, Aeropuerto> aeropuertos, HashMap<Integer, Vuelo> vuelos,
             HashMap<Integer, Envio> envios,
-            ArrayList<Paquete> paquetes) {
+            ArrayList<Paquete> paquetes, int numeroIteraciones) {
         // Definir una matriz que defina Vuelo, Costo, Visibilidad() y Fermonas
         // El costo será dinámico para algunas variables: tiempo de vuelo (entre mismas
         // ciudades varia el t de vuelo), capacidades,
@@ -23,7 +23,40 @@ public class ACO {
             double costo = costo(vuelos.get(id));
             tabla.put(id, new Double[]{costo, 1/costo, 0.1});
         }
-        generarArchivoTabla(tabla, "salida");
+        //Iteraremos muchas veces para todos los paquetes. Es decir, para cada iteración se tomarán en cuenta todos los paquettes
+        int iteracionAux = 1;
+        while(iteracionAux <= numeroIteraciones){
+            
+            for(Paquete paq: paquetes){
+
+                while(true){
+                    //FIltrar y llenar una tabla con todos los vuelos que salen del origen del paquete para ver posibles salidas
+                        //O su ultima ubicación
+                        //validar que no vuelva a una ciudad ya visitada
+    
+                    //Registrar el vuelo elegido por el paquete
+                    
+
+                    //Si ya llegamos al destino, salimos del while
+
+
+                    //Si no llegamos al destino por quedarnos sin tiempo (2dias o 1 dia), salimos
+                }
+
+                
+            }
+
+            //Actualizar mi tabla (feromonas). Aumentar si ha llegado al destino. Restar o no hacer nada si no ha llegado
+
+
+            //Limpiar los vuelos tomados por el paquete
+            iteracionAux++;
+        }
+
+
+
+
+        //generarArchivoTabla(tabla, "salida");
 
 
         // for (Paquete p : paquetes) {
