@@ -89,10 +89,11 @@ public class Vuelo {
         return idVuelo;
     }
     public double calcularMinutosDeVuelo() {
-        // Calcular la diferencia de tiempo entre la fecha y hora de salida y la fecha y hora de llegada
-        Duration duracionVuelo = Duration.between(fechaHoraSalida, fechaHoraLlegada);
-
-        // Convertir la duración del vuelo a horas y retornarla como un valor decimal
-        return (double)duracionVuelo.toMinutes();
+        //Calcular la diferencia de tiempo entre la fecha y hora de salida y la fecha y hora de llegada
+        //No se consideran segundos
+        double duracionVuelo = Duration.between(fechaHoraSalida, fechaHoraLlegada).toMinutes();
+        //Si te devuelve negativo, es porque está calculado de un dia para otro. Te devuelve -(1440 - minutosQueQuiero)
+        if(duracionVuelo < 0) duracionVuelo = 1440 - (duracionVuelo*-1);
+        return duracionVuelo;
     }
 }

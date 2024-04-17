@@ -7,7 +7,6 @@ import java.util.ArrayList;
 public class Paquete {
     private int idPaquete;
     private int idEnvío;
-
     //Se almacena la lista de ids de los vuelos a seguir
 
     public int getIdPaquete() {

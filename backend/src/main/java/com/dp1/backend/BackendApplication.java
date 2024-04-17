@@ -14,6 +14,7 @@ import com.dp1.backend.models.Aeropuerto;
 import com.dp1.backend.models.Envio;
 import com.dp1.backend.models.Paquete;
 import com.dp1.backend.models.Vuelo;
+import com.dp1.backend.utils.ACO;
 import com.dp1.backend.utils.Auxiliares;
 import com.dp1.backend.utils.FuncionesLectura;
 import com.dp1.backend.utils.MPA;
@@ -57,15 +58,22 @@ public class BackendApplication {
         // }
         HashMap<Integer, Vuelo> vuelos = FuncionesLectura.leerVuelos("algoritmos/data/Planes.vuelo.v1.incompleto.txt", aeropuertos);
         HashMap<Integer, Envio> envios = FuncionesLectura.leerEnvios("algoritmos/data/pack_enviado/pack_enviado_SEQM.txt", aeropuertos);
-        System.out.println(vuelos.get(50).getFechaHoraSalida());
-        System.out.println(vuelos.get(50).getFechaHoraLlegada());
-        System.out.println(vuelos.get(50).calcularMinutosDeVuelo());
         
-        /*
+        
 		ArrayList<Paquete> paquetes = new ArrayList<Paquete>();
 		for(Envio e : envios.values()){
 			paquetes.addAll(e.getPaquetes());
 		}
+        //internamente cada paquete retornará con una ruta
+        ACO.run(aeropuertos, vuelos, envios, paquetes);
+
+
+
+
+        // for(Paquete p:paquetes){
+        //     System.out.println(p.getIdEnvío() + "  "+ p.getIdPaquete());
+        // }
+        /*
 
 		int[] owo=MPA.run(aeropuertos, vuelos, envios, paquetes, 40, 20);
 
