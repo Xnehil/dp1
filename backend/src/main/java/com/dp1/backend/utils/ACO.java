@@ -29,16 +29,33 @@ public class ACO {
             
             for(Paquete paq: paquetes){
 
+                String ciudadActualPaquete;
                 while(true){
+                    HashMap<Integer, Double[]> tablaOpcionesVuelos = new HashMap<>();
                     //FIltrar y llenar una tabla con todos los vuelos que salen del origen del paquete para ver posibles salidas
                         //O su ultima ubicación
                         //validar que no vuelva a una ciudad ya visitada
-    
+                    if(paq.getRuta().isEmpty()){
+                        //de acuerdo a su aeropuerto de origen
+                        ciudadActualPaquete = envios.get(paq.getIdEnvío()).getOrigen();
+                    }else{
+                        //de acuerdo al aeropuerto destino de su último vuelo
+                        ArrayList<Integer> rutaPaquete= paq.getRuta();
+                        int idUltimoVuelo = rutaPaquete.get(rutaPaquete.size()-1);
+                        ciudadActualPaquete = vuelos.get(idUltimoVuelo).getDestino();
+                    }
+                    //A partir de la ciudad actual, llenaremos la tabla de los vuelos que puede tomar
+                    for(int id: vuelos.keySet()){
+                        String ciudadOrigenVuelo = vuelos.get(id).getOrigen();
+                        if(ciudadActualPaquete.equals(ciudadOrigenVuelo)){
+                            tablaOpcionesVuelos.put(id, new Double[2]);
+                        }
+                    }
+
                     //Registrar el vuelo elegido por el paquete
                     
 
                     //Si ya llegamos al destino, salimos del while
-
 
                     //Si no llegamos al destino por quedarnos sin tiempo (2dias o 1 dia), salimos
                 }
