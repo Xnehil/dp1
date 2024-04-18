@@ -61,6 +61,10 @@ public class BackendApplication {
         HashMap<Integer, Envio> envios = FuncionesLectura.leerEnvios("algoritmos/data/pack_enviado/pack_enviado_SGAS.txt", aeropuertos);
 
         //Drop envios whose origen or destino is not in aeropuertos
+        
+
+
+        envios = FuncionesLectura.leerEnvios("algoritmos/data/pack_enviado/pack_enviado_SEQM.txt", aeropuertos);
         ArrayList<Integer> toRemove = new ArrayList<Integer>();
         for (int i : envios.keySet()) {
             if (!aeropuertos.containsKey(envios.get(i).getOrigen()) || !aeropuertos.containsKey(envios.get(i).getDestino())) {
@@ -70,40 +74,36 @@ public class BackendApplication {
         for (int i : toRemove) {
             envios.remove(i);
         }
-
-
-        envios = FuncionesLectura.leerEnvios("algoritmos/data/pack_enviado/pack_enviado_SEQM.txt", aeropuertos);
-        
         
 		ArrayList<Paquete> paquetes = new ArrayList<Paquete>();
 		for(Envio e : envios.values()){
 			paquetes.addAll(e.getPaquetes());
 		}
         //internamente cada paquete retornará con una ruta
-        ACO.run(aeropuertos, vuelos, envios, paquetes,100);
-
+        // ACO.run(aeropuertos, vuelos, envios, paquetes,100);
+        
 
 
 
         // for(Paquete p:paquetes){
         //     System.out.println(p.getIdEnvío() + "  "+ p.getIdPaquete());
         // }
-        /*
+        
 
-        for (int j = 0; j < 10; j++) {
+        // for (int j = 0; j < 10; j++) {
             //Medir tiempo de ejecución
             long startTime = System.currentTimeMillis();
 
             //Parámetros con los que experimentar: maxIter, popSize, tamanioSolucion
             int tamanioSolucion=5;
-            int[] owo=MPAv2.run(aeropuertos, vuelos, envios, paquetes, 70, 15, tamanioSolucion);
+            int[] owo=MPAv2.run(aeropuertos, vuelos, envios, paquetes, 70, 25, tamanioSolucion);
 
             long endTime = System.currentTimeMillis();
 
             System.out.println("Tiempo de ejecución: " + (endTime - startTime) + " milisegundos");
         
             //Una solución
-            int verPaquete=190;
+            int verPaquete=40;
             Envio envioDelPaquete=envios.get(paquetes.get(verPaquete).getIdEnvío());
         
             //Se qiiere llegar de 
@@ -122,10 +122,9 @@ public class BackendApplication {
                     break;
                 }
             }
-        }
-        //Se quería llegar de 
-        System.out.println("Se quería llegar de " + envios.get(1).getOrigen() + " a " + envios.get(1).getDestino());
- */
+        // }
+
+
 
     
         // ZonedDateTime nowGMT = ZonedDateTime.now(ZoneId.of("GMT-5"));
