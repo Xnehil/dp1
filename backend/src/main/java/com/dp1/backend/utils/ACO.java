@@ -23,6 +23,9 @@ public class ACO {
             double costo = costo(vuelos.get(id));
             tabla.put(id, new Double[]{costo, 1/costo, 0.1});
         }
+        System.out.println("Numero de paquetes: " + paquetes.size());
+
+        generarArchivoTabla(tabla, "salida");
         //Iteraremos muchas veces para todos los paquetes. Es decir, para cada iteración se tomarán en cuenta todos los paquettes
         int iteracionAux = 1;
         while(iteracionAux <= numeroIteraciones){
@@ -51,7 +54,12 @@ public class ACO {
                             tablaOpcionesVuelos.put(id, new Double[2]);
                         }
                     }
+                    // System.out.println("Vuelos disponibles para paquete " + paq.getIdPaquete() + " " + envios.get(paq.getIdEnvío()).getOrigen() + " " + envios.get(paq.getIdEnvío()).getDestino());
+                    // for(int idVuelo: tablaOpcionesVuelos.keySet()){
+                    //     System.out.println("idVuelo " + idVuelo + " origen: " + vuelos.get(idVuelo).getOrigen() + " destino: " +  vuelos.get(idVuelo).getDestino());
+                    // }
 
+                    break;
                     //Registrar el vuelo elegido por el paquete
                     
 
@@ -60,11 +68,10 @@ public class ACO {
                     //Si no llegamos al destino por quedarnos sin tiempo (2dias o 1 dia), salimos
                 }
 
-                
+                //if(paq.getIdPaquete()==10) break;
             }
 
             //Actualizar mi tabla (feromonas). Aumentar si ha llegado al destino. Restar o no hacer nada si no ha llegado
-
 
             //Limpiar los vuelos tomados por el paquete
             iteracionAux++;
@@ -123,6 +130,10 @@ public class ACO {
         }
     }
     public static double costo(Vuelo vuelo) {
+        //Inicialmente será el tiempo que le toma en ir a una próxima ciudad + la distancia que le queda para llegar a la ciudad destino
+        //Dado que son 2 magnitudes diferentes, debemos normalizar ambas variables. 
+        //Para ello debemos calcular el valor minimo y máximo que pueden tomar ambas variables en su dominio
+        //t_vuelo    ->    valorMinimo = 
         return vuelo.calcularMinutosDeVuelo();
     }
 }

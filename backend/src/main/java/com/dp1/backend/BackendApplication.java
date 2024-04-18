@@ -64,9 +64,9 @@ public class BackendApplication {
 		for(Envio e : envios.values()){
 			paquetes.addAll(e.getPaquetes());
 		}
-        //internamente cada paquete retornará con una ruta
-        ACO.run(aeropuertos, vuelos, envios, paquetes,100);
 
+        //internamente cada paquete retornará con una ruta
+        ACO.run(aeropuertos, vuelos, envios, paquetes,10);
 
 
 
