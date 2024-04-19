@@ -18,6 +18,7 @@ import com.dp1.backend.utils.ACO;
 import com.dp1.backend.utils.Auxiliares;
 import com.dp1.backend.utils.FuncionesLectura;
 import com.dp1.backend.utils.MPA;
+import com.dp1.backend.utils.Normalizacion;
 
 @SpringBootApplication
 public class BackendApplication {
@@ -66,8 +67,10 @@ public class BackendApplication {
 		}
 
         //internamente cada paquete retornará con una ruta
-        ACO.run(aeropuertos, vuelos, envios, paquetes,10);
+        ACO.run(aeropuertos, vuelos, envios, paquetes,1);
 
+        // System.out.println("Distancia: " + Normalizacion.obtenerDistanciaEntreAeropuertos(aeropuertos, "UMMS", "SCEL"));
+        
 
 
         // for(Paquete p:paquetes){

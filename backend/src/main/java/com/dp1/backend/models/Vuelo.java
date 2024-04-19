@@ -11,6 +11,7 @@ public class Vuelo {
     private ZonedDateTime fechaHoraSalida;
     private ZonedDateTime fechaHoraLlegada;
     private int capacidad;
+    private int capacidadActual;
 
     public Vuelo(String origen, String destino, ZonedDateTime fechaHoraSalida, ZonedDateTime fechaHoraLlegada, int capacidad) {
         this.origen = origen;
@@ -18,6 +19,7 @@ public class Vuelo {
         this.fechaHoraSalida = fechaHoraSalida;
         this.fechaHoraLlegada = fechaHoraLlegada;
         this.capacidad = capacidad;
+        this.capacidadActual = capacidad; //se inicializa también
     }
 
     public Vuelo() {
@@ -35,7 +37,13 @@ public class Vuelo {
     public void setIdVuelo(int idVuelo) {
         this.idVuelo = idVuelo;
     }
+    public int getCapacidadActual() {
+        return this.capacidadActual;
+    }
 
+    public void setCapacidadActual(int capacidadActual) { //no es correcto, pero luego lo cambiaremos. Si se quiere actualizar la capacidad, será de 1 en 1
+        this.capacidadActual = capacidadActual;
+    }
 
     public String getOrigen() {
         return this.origen;

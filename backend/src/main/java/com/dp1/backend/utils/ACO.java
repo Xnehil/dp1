@@ -9,6 +9,9 @@ import java.util.Map;
 import com.dp1.backend.models.*;
 
 public class ACO {
+    public static double[] minYMaxTiempoVuelo;
+    public static double[] minYMaxDistanciaAeropuertos;
+
     public static void run(HashMap<String, Aeropuerto> aeropuertos, HashMap<Integer, Vuelo> vuelos,
             HashMap<Integer, Envio> envios,
             ArrayList<Paquete> paquetes, int numeroIteraciones) {
@@ -18,10 +21,17 @@ public class ACO {
         // plazos de entrega,
         
         HashMap<Integer, Double[]> tabla = new HashMap<>(); // 4 columnas: Costo, Visibilidad, Feromonas
+                //Dado que el costo (y por tanto la visibilidad) se definirá en la iteración, entonces esta tabla maestra solo guardará las feromonas. (Duda)
+        minYMaxTiempoVuelo = Normalizacion.obtenerMinMaxTiempoVuelo(vuelos);
+        minYMaxDistanciaAeropuertos = Normalizacion.obtenerDistanciaExtrema(aeropuertos);
+        // System.out.println("Min tiempo de vuelo: " + minYMaxTiempoVuelo[0]); //129 min
+        // System.out.println("Max tiempo de vuelo: " + minYMaxTiempoVuelo[1]); //890 min
+        // System.out.println("Min distancia entre aeropuertos: " + minYMaxDistanciaAeropuertos[0]); //208 km
+        // System.out.println("Max distancia entre aeropuertos: " + minYMaxDistanciaAeropuertos[1]); //13463 km
         
         for(int id: vuelos.keySet()){
-            double costo = costo(vuelos.get(id));
-            tabla.put(id, new Double[]{costo, 1/costo, 0.1});
+            //double costo = costo(vuelos.get(id), );
+            tabla.put(id, new Double[]{0.0, 0.0, 0.1}); //inicializar matrices. Los costos serán dinámicos, por eso será definido en las iteraciones
         }
         System.out.println("Numero de paquetes: " + paquetes.size());
 
@@ -50,7 +60,7 @@ public class ACO {
                     //A partir de la ciudad actual, llenaremos la tabla de los vuelos que puede tomar
                     for(int id: vuelos.keySet()){
                         String ciudadOrigenVuelo = vuelos.get(id).getOrigen();
-                        if(ciudadActualPaquete.equals(ciudadOrigenVuelo)){
+                        if(ciudadActualPaquete.equals(ciudadOrigenVuelo) && vuelos.get(id).getCapacidadActual()>0){
                             tablaOpcionesVuelos.put(id, new Double[2]);
                         }
                     }
@@ -68,7 +78,7 @@ public class ACO {
                     //Si no llegamos al destino por quedarnos sin tiempo (2dias o 1 dia), salimos
                 }
 
-                //if(paq.getIdPaquete()==10) break;
+                if(paq.getIdPaquete()==10) break;
             }
 
             //Actualizar mi tabla (feromonas). Aumentar si ha llegado al destino. Restar o no hacer nada si no ha llegado
@@ -129,11 +139,22 @@ public class ACO {
             System.err.println("Error al generar el archivo: " + e.getMessage());
         }
     }
-    public static double costo(Vuelo vuelo) {
+    public static double costo(Vuelo vuelo, Paquete paquete, HashMap<Integer, Envio> envios, HashMap<String, Aeropuerto> aeropuertos) {
         //Inicialmente será el tiempo que le toma en ir a una próxima ciudad + la distancia que le queda para llegar a la ciudad destino
         //Dado que son 2 magnitudes diferentes, debemos normalizar ambas variables. 
         //Para ello debemos calcular el valor minimo y máximo que pueden tomar ambas variables en su dominio
-        //t_vuelo    ->    valorMinimo = 
-        return vuelo.calcularMinutosDeVuelo();
+
+        double tiempoVuelo =  vuelo.calcularMinutosDeVuelo();
+        Normalizacion.normalizarTiempoVuelo(tiempoVuelo, minYMaxTiempoVuelo[0], minYMaxTiempoVuelo[1]);
+        //hallar la distancia del destino del vuelo al destino del paquete
+        String destinoVueloTomado = vuelo.getDestino();
+        String destinoFinalPaquete = envios.get(paquete.getIdEnvío()).getDestino();
+        //hallaremos la distancia entre estos aeropuertos
+        double distanciaAlDestinoFinal = Normalizacion.obtenerDistanciaEntreAeropuertos(aeropuertos, destinoVueloTomado, destinoFinalPaquete);
+        
+        double tiempoVueloNormalizado = Normalizacion.normalizarTiempoVuelo(tiempoVuelo, minYMaxTiempoVuelo[0], minYMaxTiempoVuelo[1]);
+        double distanciaDestinoFinalNormalizado = Normalizacion.normalizarDistancia(distanciaAlDestinoFinal, minYMaxDistanciaAeropuertos[0], minYMaxDistanciaAeropuertos[1]);
+
+        return 100*(tiempoVueloNormalizado + distanciaDestinoFinalNormalizado);
     }
 }
