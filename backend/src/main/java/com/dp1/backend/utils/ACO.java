@@ -23,7 +23,8 @@ public class ACO {
         HashMap<Integer, Double[]> tabla = new HashMap<>(); // 4 columnas: Costo, Visibilidad, Feromonas
                 //Dado que el costo (y por tanto la visibilidad) se definirá en la iteración, entonces esta tabla maestra solo guardará las feromonas. (Duda)
         minYMaxTiempoVuelo = Normalizacion.obtenerMinMaxTiempoVuelo(vuelos);
-        minYMaxDistanciaAeropuertos = Normalizacion.obtenerDistanciaExtrema(aeropuertos);
+        minYMaxDistanciaAeropuertos = Normalizacion.obtenerDistanciaExtrema(aeropuertos); //el mínimo no tiene sentido. Es 0
+        minYMaxDistanciaAeropuertos[0] = 0;
         // System.out.println("Min tiempo de vuelo: " + minYMaxTiempoVuelo[0]); //129 min
         // System.out.println("Max tiempo de vuelo: " + minYMaxTiempoVuelo[1]); //890 min
         // System.out.println("Min distancia entre aeropuertos: " + minYMaxDistanciaAeropuertos[0]); //208 km
@@ -98,8 +99,8 @@ public class ACO {
                     }  
                     System.out.println("Suma de probabilidades: " + sumaProb);
                     System.out.println("                IMPRIMIENDO TABLA DE OPCIONES PARA EL PAQUETE " + paq.getIdPaquete() + " " + envios.get(paq.getIdEnvío()).getOrigen() + " " + envios.get(paq.getIdEnvío()).getDestino());
+                    // generarArchivoTabla(tablaOpcionesVuelos, "salida");
                     imprimirTabla(tablaOpcionesVuelos, vuelos);
-
                     break;
                     //Registrar el vuelo elegido por el paquete
                         //quitar un slot al vuelo
@@ -110,7 +111,7 @@ public class ACO {
                     //Si no llegamos al destino por quedarnos sin tiempo (2dias o 1 dia), salimos
                 }
 
-                if(paq.getIdPaquete()==10) break;
+                if(paq.getIdPaquete()==5) break;
             }
 
             //Actualizar mi tabla (feromonas). Aumentar si ha llegado al destino. Restar o no hacer nada si no ha llegado
@@ -159,7 +160,7 @@ public class ACO {
                 Double[] datos = entry.getValue();
 
                 // Escribir datos del vuelo con formato de 4 decimales en el archivo
-                writer.write(id + "\t");
+                writer.write(id + "\t\t\t");
                 for (Double dato : datos) {
                     writer.write(String.format("%.4f\t\t", dato));
                 }
@@ -177,7 +178,6 @@ public class ACO {
         //Para ello debemos calcular el valor minimo y máximo que pueden tomar ambas variables en su dominio
 
         double tiempoVuelo =  vuelo.calcularMinutosDeVuelo();
-        Normalizacion.normalizarTiempoVuelo(tiempoVuelo, minYMaxTiempoVuelo[0], minYMaxTiempoVuelo[1]);
         //hallar la distancia del destino del vuelo al destino del paquete
         String destinoVueloTomado = vuelo.getDestino();
         String destinoFinalPaquete = envios.get(paquete.getIdEnvío()).getDestino();
@@ -186,7 +186,7 @@ public class ACO {
         
         double tiempoVueloNormalizado = Normalizacion.normalizarTiempoVuelo(tiempoVuelo, minYMaxTiempoVuelo[0], minYMaxTiempoVuelo[1]);
         double distanciaDestinoFinalNormalizado = Normalizacion.normalizarDistancia(distanciaAlDestinoFinal, minYMaxDistanciaAeropuertos[0], minYMaxDistanciaAeropuertos[1]);
-
+        System.out.println("VERIFICANDO: " + tiempoVueloNormalizado + " " +distanciaDestinoFinalNormalizado);
         return 100*(tiempoVueloNormalizado + distanciaDestinoFinalNormalizado);
     }
 }
