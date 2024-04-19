@@ -1,11 +1,13 @@
 package com.dp1.backend;
 
+import java.text.DecimalFormat;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Random;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -66,8 +68,18 @@ public class BackendApplication {
 			paquetes.addAll(e.getPaquetes());
 		}
 
+        Random random = new Random();
+        // Generar un número aleatorio entre 0 y 1
+        double randomNumber = random.nextDouble();
+
+        DecimalFormat df = new DecimalFormat("#.#####");
+        String formattedNumber = df.format(randomNumber);
+
+        // Imprimir el número aleatorio con 5 decimales
+        System.out.println("Número aleatorio con 5 decimales: " + formattedNumber);
+        
         //internamente cada paquete retornará con una ruta
-        ACO.run(aeropuertos, vuelos, envios, paquetes,1);
+        //ACO.run(aeropuertos, vuelos, envios, paquetes,1);
 
         // System.out.println("Distancia: " + Normalizacion.obtenerDistanciaEntreAeropuertos(aeropuertos, "UMMS", "SCEL"));
         
