@@ -116,7 +116,8 @@ public class ACO {
 
                     int posVueloEscogido = aco_auxiliares.determinarVueloEscogido(probabilidades);
                     int vueloEscogido = vuelosAux[posVueloEscogido];
-                        //si es posicion, entonces estamos tratando la tablaOpcionesVuelos como entries
+                    
+
                     // System.out.println("Vuelos disponibles para paquete " + paq.getIdPaquete() +
                     // " " + envios.get(paq.getIdEnvío()).getOrigen() + " " +
                     // envios.get(paq.getIdEnvío()).getDestino());
