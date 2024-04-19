@@ -31,7 +31,8 @@ public class ACO {
         
         for(int id: vuelos.keySet()){
             //double costo = costo(vuelos.get(id), );
-            tabla.put(id, new Double[]{0.0, 0.0, 0.1}); //inicializar matrices. Los costos serán dinámicos, por eso será definido en las iteraciones
+            tabla.put(id, new Double[]{(double)vuelos.get(id).getCapacidad(), 0.0, 0.1}); //inicializar matrices. Los costos serán dinámicos, por eso será definido en las iteraciones
+            
         }
         System.out.println("Numero de paquetes: " + paquetes.size());
 
@@ -40,6 +41,11 @@ public class ACO {
         int iteracionAux = 1;
         while(iteracionAux <= numeroIteraciones){
             
+            for(int id: vuelos.keySet()){ //Esto es para inicializar las capacidades de los vuelos en cada iteración
+                //double costo = costo(vuelos.get(id), );
+                tabla.get(id)[1] =  tabla.get(id)[0];//en la 2da columna de mi tabla guardaré la capacidad dinámica, mientra q en la 1ra guardaré la capacidad máxima del vuelo
+            }
+
             for(Paquete paq: paquetes){
 
                 String ciudadActualPaquete;
@@ -58,19 +64,45 @@ public class ACO {
                         ciudadActualPaquete = vuelos.get(idUltimoVuelo).getDestino();
                     }
                     //A partir de la ciudad actual, llenaremos la tabla de los vuelos que puede tomar
-                    for(int id: vuelos.keySet()){
+                    for(int id: tabla.keySet()){
                         String ciudadOrigenVuelo = vuelos.get(id).getOrigen();
-                        if(ciudadActualPaquete.equals(ciudadOrigenVuelo) && vuelos.get(id).getCapacidadActual()>0){
-                            tablaOpcionesVuelos.put(id, new Double[2]);
+                        if(ciudadActualPaquete.equals(ciudadOrigenVuelo) && tabla.get(id)[1]>0){ //la 2da condición es que aún quede
+                            tablaOpcionesVuelos.put(id, new Double[4]); //guardaremos costo, visibilidad, visibilidad*fermonoas, probabilidad
                         }
                     }
+                    //Definir costo de cada vuelo, visibilidad
+                    for(int id: tablaOpcionesVuelos.keySet()){
+                        tablaOpcionesVuelos.get(id)[0] = costo(vuelos.get(id), paq, envios, aeropuertos);
+                        tablaOpcionesVuelos.get(id)[1] = 1/tablaOpcionesVuelos.get(id)[0];
+                        tablaOpcionesVuelos.get(id)[2] = tablaOpcionesVuelos.get(id)[1] * tabla.get(id)[2];
+                    }
+                    //Definir la probabilidad
+                    double sumaDeProductoVisiXFeromonas = 0.0;
+                    for(int id: tablaOpcionesVuelos.keySet()){
+                        sumaDeProductoVisiXFeromonas += tablaOpcionesVuelos.get(id)[2];
+                    }  
+                    for(int id: tablaOpcionesVuelos.keySet()){
+                        tablaOpcionesVuelos.get(id)[3] = tablaOpcionesVuelos.get(id)[2] / sumaDeProductoVisiXFeromonas;
+                    }
+
+                    //Escoger un vuelo al azar
+                    
+
                     // System.out.println("Vuelos disponibles para paquete " + paq.getIdPaquete() + " " + envios.get(paq.getIdEnvío()).getOrigen() + " " + envios.get(paq.getIdEnvío()).getDestino());
                     // for(int idVuelo: tablaOpcionesVuelos.keySet()){
                     //     System.out.println("idVuelo " + idVuelo + " origen: " + vuelos.get(idVuelo).getOrigen() + " destino: " +  vuelos.get(idVuelo).getDestino());
                     // }
+                    double sumaProb = 0.0;
+                    for(int id: tablaOpcionesVuelos.keySet()){
+                        sumaProb += tablaOpcionesVuelos.get(id)[3];
+                    }  
+                    System.out.println("Suma de probabilidades: " + sumaProb);
+                    System.out.println("                IMPRIMIENDO TABLA DE OPCIONES PARA EL PAQUETE " + paq.getIdPaquete() + " " + envios.get(paq.getIdEnvío()).getOrigen() + " " + envios.get(paq.getIdEnvío()).getDestino());
+                    imprimirTabla(tablaOpcionesVuelos, vuelos);
 
                     break;
                     //Registrar el vuelo elegido por el paquete
+                        //quitar un slot al vuelo
                     
 
                     //Si ya llegamos al destino, salimos del while
@@ -100,16 +132,16 @@ public class ACO {
 
     }
 
-    public static void imprimirTabla(HashMap<Integer, Double[]> tabla) {
+    public static void imprimirTabla(HashMap<Integer, Double[]> tabla, HashMap<Integer, Vuelo> vuelos) {
         System.out.println("ID\tCosto\tVisibilidad\tFeromonas");
-
+        
         // Iterar sobre cada vuelo en la tabla
         for (Map.Entry<Integer, Double[]> entry : tabla.entrySet()) {
             Integer id = entry.getKey();
             Double[] datos = entry.getValue();
 
             // Imprimir datos del vuelo con formato de 4 decimales
-            System.out.print(id + "\t");
+            System.out.print(id + "\t" + vuelos.get(id).getOrigen() + "\t" + vuelos.get(id).getDestino() + "\t" );
             for (Double dato : datos) {
                 System.out.printf("%.4f\t\t", dato);
             }

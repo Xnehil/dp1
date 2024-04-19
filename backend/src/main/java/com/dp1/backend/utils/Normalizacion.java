@@ -100,6 +100,8 @@ public class Normalizacion {
         Aeropuerto aeropuerto1 = null;
         Aeropuerto aeropuerto2 = null;
 
+        if(codigoOACI1.equals(codigoOACI2)) return 0.0;
+
         // Buscar el primer aeropuerto con el código OACI1
         for (Aeropuerto aeropuerto : aeropuertos.values()) {
             if (aeropuerto.getCodigoOACI().equals(codigoOACI1)) {
@@ -122,7 +124,7 @@ public class Normalizacion {
                     aeropuerto2.getLatitud(), aeropuerto2.getLongitud());
         } else {
             // Manejo de errores si no se encuentran los aeropuertos
-            System.out.println("Error: No se encontraron los aeropuertos con los códigos OACI proporcionados.");
+            System.out.println("Error: No se encontraron los aeropuertos con los códigos OACI proporcionados." + "-"+codigoOACI1+"-"+codigoOACI2);
             return -1; // Valor de distancia inválido
         }
     }
