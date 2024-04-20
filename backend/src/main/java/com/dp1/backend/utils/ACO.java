@@ -116,26 +116,30 @@ public class ACO {
 
                     int posVueloEscogido = aco_auxiliares.determinarVueloEscogido(probabilidades);
                     int vueloEscogido = vuelosAux[posVueloEscogido];
-                    
 
+                    //
                     // System.out.println("Vuelos disponibles para paquete " + paq.getIdPaquete() +
-                    // " " + envios.get(paq.getIdEnvío()).getOrigen() + " " +
-                    // envios.get(paq.getIdEnvío()).getDestino());
-                    // for(int idVuelo: tablaOpcionesVuelos.keySet()){
-                    // System.out.println("idVuelo " + idVuelo + " origen: " +
-                    // vuelos.get(idVuelo).getOrigen() + " destino: " +
-                    // vuelos.get(idVuelo).getDestino());
+                    //         " " + envios.get(paq.getIdEnvío()).getOrigen() + " " +
+                    //         envios.get(paq.getIdEnvío()).getDestino());
+                    // for (int idVuelo : tablaOpcionesVuelos.keySet()) {
+                    //     System.out.println("idVuelo " + idVuelo + " origen: " +
+                    //             vuelos.get(idVuelo).getOrigen() + " destino: " +
+                    //             vuelos.get(idVuelo).getDestino());
                     // }
+                    //
+
                     double sumaProb = 0.0;
                     for (int id : tablaOpcionesVuelos.keySet()) {
                         sumaProb += tablaOpcionesVuelos.get(id)[3];
                     }
                     System.out.println("Suma de probabilidades: " + sumaProb);
                     System.out.println("                IMPRIMIENDO TABLA DE OPCIONES PARA EL PAQUETE "
-                            + paq.getIdPaquete() + " " + envios.get(paq.getIdEnvío()).getOrigen() + " "
-                            + envios.get(paq.getIdEnvío()).getDestino());
+                    + paq.getIdPaquete() + " " + envios.get(paq.getIdEnvío()).getOrigen() + " "
+                    + envios.get(paq.getIdEnvío()).getDestino());
+                    
                     // generarArchivoTabla(tablaOpcionesVuelos, "salida");
                     imprimirTabla(tablaOpcionesVuelos, vuelos);
+                    System.out.println("VUELO ESCOGIDO PAQUETE " + paq.getIdPaquete() + ": " + vueloEscogido);
                     break;
                     // Registrar el vuelo elegido por el paquete
                     // quitar un slot al vuelo
