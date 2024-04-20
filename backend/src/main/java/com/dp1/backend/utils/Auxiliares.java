@@ -182,7 +182,7 @@ public class Auxiliares {
             //Añadir penalización grave si el paquete no llega a su destino
 
             //Fátima André
-0
+
             fitness+=1;
         }
         return 0;
@@ -206,10 +206,15 @@ public class Auxiliares {
         return 0;
     }
 
-    public Boolean solucionValida(int[] solucion, HashMap<String, Aeropuerto> aeropuertos, HashMap<Integer, Vuelo> vuelos, HashMap<Integer, Envio> envios, ArrayList<Paquete> paquetes){
+    public Boolean solucionValida(int[] solucion, HashMap<String, Aeropuerto> aeropuertos, HashMap<Integer, Vuelo> vuelos, HashMap<Integer, Envio> envios, Paquete paquetes){
         //Función de validar solución -> Incluye secuencia de ubicaciones, secuencia de tiempo y respetar el plazo. Basado en función fitness
+        // caa nro del arreglo representa un codVuelo, analoga al fitness validarlo... si primer vuelo coincide con al ciudad origen del apquete
+        // que al final llegue a mi destino, que llegue a tiempo, que los vuelos tengans sentido cronologico, CAPACIDAD SUFICIENTE
         //Secuencia de ubicaciones -> Partir siempre de la ubicación en la que estoy
         return true;
     }
+
+
+    
 
 }
