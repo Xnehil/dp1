@@ -32,7 +32,7 @@ public class ACO {
         // System.out.println("Max tiempo de vuelo: " + minYMaxTiempoVuelo[1]); //890
         // min
         // System.out.println("Min distancia entre aeropuertos: " +
-        // minYMaxDistanciaAeropuertos[0]); //208 km
+        // minYMaxDistanciaAeropuertos[0]); //0km
         // System.out.println("Max distancia entre aeropuertos: " +
         // minYMaxDistanciaAeropuertos[1]); //13463 km
 
@@ -113,7 +113,6 @@ public class ACO {
                         probabilidades[index] = entry.getValue()[3];
                         index++;
                     }
-
                     int posVueloEscogido = aco_auxiliares.determinarVueloEscogido(probabilidades);
                     int vueloEscogido = vuelosAux[posVueloEscogido];
 
@@ -225,7 +224,7 @@ public class ACO {
         // hallaremos la distancia entre estos aeropuertos
         double distanciaAlDestinoFinal = Normalizacion.obtenerDistanciaEntreAeropuertos(aeropuertos, destinoVueloTomado,
                 destinoFinalPaquete);
-
+        
         double tiempoVueloNormalizado = Normalizacion.normalizarTiempoVuelo(tiempoVuelo, minYMaxTiempoVuelo[0],
                 minYMaxTiempoVuelo[1]);
         double distanciaDestinoFinalNormalizado = Normalizacion.normalizarDistancia(distanciaAlDestinoFinal,
