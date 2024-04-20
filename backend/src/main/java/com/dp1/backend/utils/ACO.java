@@ -62,7 +62,7 @@ public class ACO {
             }
 
             for (Paquete paq : paquetes) {
-
+                int i=0;
                 String ciudadActualPaquete;
                 while (true) {
                     HashMap<Integer, Double[]> tablaOpcionesVuelos = new HashMap<>();
@@ -115,6 +115,39 @@ public class ACO {
                     }
                     int posVueloEscogido = aco_auxiliares.determinarVueloEscogido(probabilidades);
                     int vueloEscogido = vuelosAux[posVueloEscogido];
+                    // Registrar el vuelo elegido por el paquete
+                    paq.getRuta().add(vueloEscogido);
+                    
+                    // quitar un slot al vuelo
+                    tabla.get(vueloEscogido)[0]--; // ¿Qué pasaría si ya no hay vuelos por tomar? Creo que eso no va a pasar
+                    
+
+
+                    
+                    System.out.println("                IMPRIMIENDO TABLA DE OPCIONES PARA EL PAQUETE "
+                    + paq.getIdPaquete() + " " + envios.get(paq.getIdEnvío()).getOrigen() + " "
+                    + envios.get(paq.getIdEnvío()).getDestino());
+                    
+                    // generarArchivoTabla(tablaOpcionesVuelos, "salida");
+                    imprimirTabla(tablaOpcionesVuelos, vuelos);
+                    System.out.println("VUELO ESCOGIDO PAQUETE " + paq.getIdPaquete() + ": " + vueloEscogido);
+
+
+
+                    
+                    
+                    // Si ya llegamos al destino, salimos del while || si ya nos quedamos sin tiempo para seguir buscando (creo que en Costo no hay manera de incluir este param)
+                        //Comparar el destino del ultimo vuelo tomado con el destino de su envio
+                    String destinoVueloElegido = vuelos.get(vueloEscogido).getDestino();
+                    String destinoFinalPaquete = envios.get(paq.getIdEnvío()).getDestino();
+                    if(destinoVueloElegido.equals(destinoFinalPaquete)){
+                        //Estos tiempo se deben calcular para así tener el t que toma todo su viaje
+                        //Si no llegamos al destino por quedarnos sin tiempo (2dias o 1 dia), salimos
+                        System.out.println("El paquete " + paq.getIdPaquete() + " llegó al destino");
+                        break;
+                    }else{
+                        System.out.println("El paquete " + paq.getIdPaquete() + " aun no llega al destino");
+                    }
 
                     //
                     // System.out.println("Vuelos disponibles para paquete " + paq.getIdPaquete() +
@@ -126,26 +159,13 @@ public class ACO {
                     //             vuelos.get(idVuelo).getDestino());
                     // }
                     //
-
-                    double sumaProb = 0.0;
-                    for (int id : tablaOpcionesVuelos.keySet()) {
-                        sumaProb += tablaOpcionesVuelos.get(id)[3];
-                    }
-                    System.out.println("Suma de probabilidades: " + sumaProb);
-                    System.out.println("                IMPRIMIENDO TABLA DE OPCIONES PARA EL PAQUETE "
-                    + paq.getIdPaquete() + " " + envios.get(paq.getIdEnvío()).getOrigen() + " "
-                    + envios.get(paq.getIdEnvío()).getDestino());
                     
-                    // generarArchivoTabla(tablaOpcionesVuelos, "salida");
-                    imprimirTabla(tablaOpcionesVuelos, vuelos);
-                    System.out.println("VUELO ESCOGIDO PAQUETE " + paq.getIdPaquete() + ": " + vueloEscogido);
-                    break;
-                    // Registrar el vuelo elegido por el paquete
-                    // quitar un slot al vuelo
 
-                    // Si ya llegamos al destino, salimos del while
+                    
+                    
 
-                    // Si no llegamos al destino por quedarnos sin tiempo (2dias o 1 dia), salimos
+                    if(i==10) break;
+                    i++;
                 }
 
                 if (paq.getIdPaquete() == 5)
@@ -217,6 +237,9 @@ public class ACO {
         // Para ello debemos calcular el valor minimo y máximo que pueden tomar ambas
         // variables en su dominio
 
+        //IMPORTANTE: ademá del tiempo de vuelo, creo que deberiamos añadirle el tiempo en que el avión recién estará listo para partir, el tiempo que estará esperando en el aero-
+        //puerto (creo que esto es insignificante, no se debería tomar en cuenta)
+
         double tiempoVuelo = vuelo.calcularMinutosDeVuelo();
         // hallar la distancia del destino del vuelo al destino del paquete
         String destinoVueloTomado = vuelo.getDestino();
@@ -229,7 +252,7 @@ public class ACO {
                 minYMaxTiempoVuelo[1]);
         double distanciaDestinoFinalNormalizado = Normalizacion.normalizarDistancia(distanciaAlDestinoFinal,
                 minYMaxDistanciaAeropuertos[0], minYMaxDistanciaAeropuertos[1]);
-        System.out.println("VERIFICANDO: " + tiempoVueloNormalizado + " " + distanciaDestinoFinalNormalizado);
+        //System.out.println("VERIFICANDO: " + tiempoVueloNormalizado + " " + distanciaDestinoFinalNormalizado);
         return 100 * (tiempoVueloNormalizado + distanciaDestinoFinalNormalizado);
     }
 }
