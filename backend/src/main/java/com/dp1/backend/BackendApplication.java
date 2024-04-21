@@ -103,28 +103,46 @@ public class BackendApplication {
             System.out.println("Tiempo de ejecución: " + (endTime - startTime) + " milisegundos");
         
             //Una solución
-            int verPaquete=40;
+            int verPaquete=1;
             Envio envioDelPaquete=envios.get(paquetes.get(verPaquete).getIdEnvío());
-        
+
+            
+            //System.out.println("L solucion es valida: " + esSolucionValida);
+
+
             //Se qiiere llegar de 
             System.out.println("Se quería llegar de " + envioDelPaquete.getOrigen() + " a " + envioDelPaquete.getDestino());
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
             String formattedDateTime = envioDelPaquete.getFechaHoraSalida().format(formatter);
             System.out.println("El paquete se dejó el " + formattedDateTime);
             String destino=envioDelPaquete.getDestino();
-        
-            ArrayList<Integer> unaSolucion= new ArrayList<Integer>();
+            
+            ArrayList<Integer> validaciones = new ArrayList<Integer>();
+
             for (int i = (verPaquete-1)*tamanioSolucion; i < tamanioSolucion*(verPaquete); i++) {
                 System.out.print(owo[i] + ": ");
                 System.out.print(vuelos.get(owo[i]).getOrigen() + " (Departure: " + vuelos.get(owo[i]).getFechaHoraSalida().format(formatter) + ") - ");
                 System.out.print(vuelos.get(owo[i]).getDestino() + " (Arrival: " + vuelos.get(owo[i]).getFechaHoraLlegada().format(formatter) + ")\n");
-                    
-
+                
+                
                 if(vuelos.get(owo[i]).getDestino().equals(destino)){
                     System.out.println("Llegó al destino");
+                    System.out.println("----------------------");
+                    //System.out.println("Owo es: ");
+                    //for(int k=0; k<owo.length; k++)  System.out.print(owo[k]+ " ");
                     break;
                 }
+
+                validaciones.add(owo[i]);
             }
+            System.out.println("Funcion validacion:  ");
+            Paquete auxPaquete = envioDelPaquete.getPaquetes().get(verPaquete);
+            auxPaquete.setRuta(validaciones);
+            Boolean esSolucionValida = Auxiliares.solucionValidav2(owo, aeropuertos, vuelos, envios, auxPaquete);
+            System.out.println("La solución es valida: " + esSolucionValida);
+        }
+
+
         // }
 
 
@@ -140,4 +158,5 @@ public class BackendApplication {
         // }
         
 	}
-}
+
+

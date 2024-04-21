@@ -203,15 +203,130 @@ public class Auxiliares {
         return 0;
     }
 
-    public Boolean solucionValida(int[] solucion, HashMap<String, Aeropuerto> aeropuertos, HashMap<Integer, Vuelo> vuelos, HashMap<Integer, Envio> envios, Paquete paquetes){
+    public static Boolean solucionValida(int[] solucion, HashMap<String, Aeropuerto> aeropuertos, HashMap<Integer, Vuelo> vuelos, HashMap<Integer, Envio> envios, Paquete paquete){
         //Función de validar solución -> Incluye secuencia de ubicaciones, secuencia de tiempo y respetar el plazo. Basado en función fitness
-        // caa nro del arreglo representa un codVuelo, analoga al fitness validarlo... si primer vuelo coincide con al ciudad origen del apquete
-        // que al final llegue a mi destino, que llegue a tiempo, que los vuelos tengans sentido cronologico, CAPACIDAD SUFICIENTE
         //Secuencia de ubicaciones -> Partir siempre de la ubicación en la que estoy
+        //for (Paquete paquete : paquetes) {
+            Envio envio = envios.get(paquete.getIdEnvío());
+            String ciudadActual = envio.getOrigen();
+            String ciudadDestino = envio.getDestino();
+            ZonedDateTime fechaHoraActual = envio.getFechaHoraSalida();
+            ZonedDateTime fechaHoraLimite = fechaHoraActual.plusDays(aeropuertos.get(ciudadActual).getContinente().equals(aeropuertos.get(ciudadDestino).getContinente()) ? 1 : 2);
+    
+            boolean rutaValida = true;
+    
+            for (int codVuelo : paquete.getRuta()) {
+                Vuelo vuelo = vuelos.get(codVuelo);
+                if (vuelo == null || !vuelo.getOrigen().equals(ciudadActual)) {
+                    rutaValida = false;
+                    break;
+                }
+    
+                ZonedDateTime fechaHoraVuelo = vuelo.getFechaHoraSalida().withZoneSameInstant(aeropuertos.get(ciudadActual).getZonaHoraria().toZoneId());
+                if (!fechaHoraActual.isBefore(fechaHoraVuelo) || vuelo.getCapacidad() <= vuelo.getCargaActual()) {
+                    rutaValida = false;
+                    break;
+                }
+    
+                // Actualizar ciudad y fecha/hora actual
+                ciudadActual = vuelo.getDestino();
+                fechaHoraActual = vuelo.getFechaHoraLlegada().withZoneSameInstant(aeropuertos.get(ciudadActual).getZonaHoraria().toZoneId());
+                if (vuelo.getCambioDeDia()) {
+                    fechaHoraActual = fechaHoraActual.plusDays(1);
+                }
+    
+                // Verificar llegada a destino
+                if (ciudadActual.equals(ciudadDestino)) {
+                    if (fechaHoraActual.isAfter(fechaHoraLimite)) {
+                        rutaValida = false;
+                    }
+                    break;
+                }
+            }
+    
+            if (!rutaValida || !ciudadActual.equals(ciudadDestino)) {
+                return false;
+            }
+        //}
         return true;
     }
 
+    public static Boolean solucionValidav2(int[] solucion, HashMap<String, Aeropuerto> aeropuertos, HashMap<Integer, Vuelo> vuelos, HashMap<Integer, Envio> envios, Paquete paquete){
+        Envio envio = envios.get(paquete.getIdEnvío());
+        String ciudadActual = envio.getOrigen();
+        String ciudadDestino = envio.getDestino();
+        ZonedDateTime fechaHoraActual = envio.getFechaHoraSalida();
+        ZonedDateTime fechaHoraLimite = fechaHoraActual.plusDays(aeropuertos.get(ciudadActual).getContinente().equals(aeropuertos.get(ciudadDestino).getContinente()) ? 1 : 2);
+    
+        boolean rutaValida = true;
+    
+        for (int codVuelo : paquete.getRuta()) {
+            Vuelo vuelo = vuelos.get(codVuelo);
+            if (vuelo == null) {
+                System.out.println("El vuelo con código " + codVuelo + " no existe.");
+                rutaValida = false;
+                break;
+            }
+            if (!vuelo.getOrigen().equals(ciudadActual)) {
+                System.out.println("El vuelo " + codVuelo + " no parte de " + ciudadActual + ".");
+                rutaValida = false;
+                break;
+            }
+    
+            ZonedDateTime fechaHoraVuelo = vuelo.getFechaHoraSalida().withZoneSameInstant(aeropuertos.get(ciudadActual).getZonaHoraria().toZoneId());
+            if (!fechaHoraActual.isBefore(fechaHoraVuelo)) {
+                System.out.println("El vuelo " + codVuelo + " tiene una hora de salida que no es cronológicamente lógica.");
+                rutaValida = false;
+                break;
+            }
+            if (vuelo.getCapacidad() <= vuelo.getCargaActual()) {
+                System.out.println("El vuelo " + codVuelo + " no tiene capacidad suficiente.");
+                rutaValida = false;
+                break;
+            }
+    
+            // Actualizar ciudad y fecha/hora actual
+            ciudadActual = vuelo.getDestino();
+            fechaHoraActual = vuelo.getFechaHoraLlegada().withZoneSameInstant(aeropuertos.get(ciudadActual).getZonaHoraria().toZoneId());
+            if (vuelo.getCambioDeDia()) {
+                fechaHoraActual = fechaHoraActual.plusDays(1);
+            }
+    
+            // Verificar llegada a destino
+            if (ciudadActual.equals(ciudadDestino)) {
+                if (fechaHoraActual.isAfter(fechaHoraLimite)) {
+                    System.out.println("El paquete llega después del tiempo límite a " + ciudadDestino + ".");
+                    rutaValida = false;
+                } else {
+                    System.out.println("El paquete llega a tiempo a " + ciudadDestino + ".");
+                }
+                
+            }
+        }
+        
+        if (!rutaValida) {
+            System.out.println("La ruta no es válida en términos de secuencia de vuelos o capacidad.");
+            return false;
+        }
 
+        if (!ciudadActual.equals(ciudadDestino)) {
+            System.out.println("La ruta no termina en el destino correcto. Se esperaba terminar en " + ciudadDestino + ", pero el último destino de la ruta es " + ciudadActual);
+            System.out.println("Número de vuelos en la ruta: " + paquete.getRuta().size());
+            System.out.println("Ciudades de la ruta:");
+            for (int codVuelo : paquete.getRuta()) {
+                if (!vuelos.containsKey(codVuelo)) {
+                    System.out.println("El vuelo con código " + codVuelo + " no se encuentra en la lista de vuelos disponibles.");
+                    continue;
+                }
+                Vuelo vuelo = vuelos.get(codVuelo);
+                System.out.println("  " + vuelo.getOrigen() + " -> " + vuelo.getDestino());
+            }
+            return false;
+        }
+        
+        System.out.println("Todas las validaciones pasaron.");
+        return true;
+    }
     
 
 }
