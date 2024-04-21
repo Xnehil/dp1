@@ -64,7 +64,7 @@ public class BackendApplication {
         
 
 
-        envios = FuncionesLectura.leerEnvios("algoritmos/data/pack_enviado/pack_enviado_SEQM.txt", aeropuertos);
+        // envios = FuncionesLectura.leerEnvios("algoritmos/data/pack_enviado/pack_enviado_SEQM.txt", aeropuertos);
         ArrayList<Integer> toRemove = new ArrayList<Integer>();
         for (int i : envios.keySet()) {
             if (!aeropuertos.containsKey(envios.get(i).getOrigen()) || !aeropuertos.containsKey(envios.get(i).getDestino())) {
@@ -113,10 +113,13 @@ public class BackendApplication {
             System.out.println("El paquete se dejó el " + formattedDateTime);
             String destino=envioDelPaquete.getDestino();
         
+            ArrayList<Integer> unaSolucion= new ArrayList<Integer>();
             for (int i = (verPaquete-1)*tamanioSolucion; i < tamanioSolucion*(verPaquete); i++) {
                 System.out.print(owo[i] + ": ");
                 System.out.print(vuelos.get(owo[i]).getOrigen() + " (Departure: " + vuelos.get(owo[i]).getFechaHoraSalida().format(formatter) + ") - ");
                 System.out.print(vuelos.get(owo[i]).getDestino() + " (Arrival: " + vuelos.get(owo[i]).getFechaHoraLlegada().format(formatter) + ")\n");
+                    
+
                 if(vuelos.get(owo[i]).getDestino().equals(destino)){
                     System.out.println("Llegó al destino");
                     break;

@@ -150,22 +150,19 @@ public class Auxiliares {
                 //Por distancia
                 // Before the flight
                 double oldDistance = Math.pow(actual.getLatitud() - destino.getLatitud(), 2) + Math.pow(actual.getLongitud() - destino.getLongitud(), 2);
-
                 // After the flight
                 actual = aeropuertos.get(ciudadActual);
                 double newDistance = Math.pow(actual.getLatitud() - destino.getLatitud(), 2) + Math.pow(actual.getLongitud() - destino.getLongitud(), 2);
-
                 // Normalize the fitness change to be between -3 and 3
                 fitness += ((oldDistance - newDistance) / 162000) * 6 - 3;
+
+                // Get the ratio of the current load to the maximum load
+                double penalization = (actual.getCargaActual() + actual.getCargaAuxiliarParaFitness()) / actual.getCapacidadMaxima();
+                penalization += (vuelo.getCargaActual() + vuelo.getCargaAuxiliarParaFitness()) / vuelo.getCapacidad();
+
+                // Subtract the penalization from the fitness
+                fitness -= penalization;
             }
-
-
-            //Fitness un poquito negativo dependiendo de la capacidad del avión/aeropuerto
-
-            //Añadir bonificación si el paquete llega a tiempo
-            //Añadir penalización grave si el paquete no llega a tiempo
-            //Añadir bonificación si el paquete llega a su destino
-            //Añadir penalización grave si el paquete no llega a su destino
         }
         return fitness;
     }
