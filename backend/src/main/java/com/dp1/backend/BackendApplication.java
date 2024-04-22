@@ -36,7 +36,7 @@ public class BackendApplication {
         }
         HashMap<Integer, Vuelo> vuelos = FuncionesLectura.leerVuelos("algoritmos/data/Planes.vuelo.v1.incompleto.txt", aeropuertos);
         HashMap<Integer, Envio> envios = FuncionesLectura.leerEnvios("algoritmos/data/pack_enviado/pack_enviado_SGAS.txt", aeropuertos);
-        envios = FuncionesLectura.leerEnvios("algoritmos/data/pack_enviado/pack_enviado_SEQM.txt", aeropuertos);
+        // envios = FuncionesLectura.leerEnvios("algoritmos/data/pack_enviado/pack_enviado_SEQM.txt", aeropuertos);
         ArrayList<Integer> toRemove = new ArrayList<Integer>();
         for (int i : envios.keySet()) {
             if (!aeropuertos.containsKey(envios.get(i).getOrigen()) || !aeropuertos.containsKey(envios.get(i).getDestino())) {
@@ -54,15 +54,15 @@ public class BackendApplication {
 
 
         try {
-            FileWriter writer = new FileWriter("results_"+LocalDate.now()+".txt");
+            FileWriter writer = new FileWriter("results_big_"+LocalDate.now()+".txt");
         
             writer.write("Iteración\tTiempo de ejecución (ms)\tPaquetes entregados\tPorcentaje de paquetes entregados\n");
             double promedio=0;
             int iteraciones=20;
-            int tamanioSolucion=3;
+            int tamanioSolucion=4;
             for (int i = 0; i < iteraciones; i++) {
                 Long startTime = System.currentTimeMillis();
-                int[] owo=MPAv2.run(aeropuertos, vuelos, envios, paquetes, 60, 40, tamanioSolucion);
+                int[] owo=MPAv2.run(aeropuertos, vuelos, envios, paquetes, 80, 50, tamanioSolucion);
                 long endTime = System.currentTimeMillis();
                 long executionTime = endTime - startTime;
                 int paquetesEntregados=Auxiliares.verificacionTotal(owo, aeropuertos, vuelos, envios, paquetes, tamanioSolucion);

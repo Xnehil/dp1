@@ -167,7 +167,7 @@ public class Auxiliares {
                 penalization += (vuelo.getCargaActual() + vuelo.getCargaAuxiliarParaFitness()) / vuelo.getCapacidad();
 
                 // Subtract the penalization from the fitness
-                fitness -= penalization*0.05;
+                fitness -= penalization;
             }
         }
         return fitness;
