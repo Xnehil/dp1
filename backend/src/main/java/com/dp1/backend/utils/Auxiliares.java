@@ -116,21 +116,27 @@ public class Auxiliares {
 
 
             Boolean ubicacionValida = vuelo.getOrigen().equals(ciudadActual);
-            Boolean tiempoValido = fechaHoraActual.isBefore(fechaHoraSiguiente);
+            // Boolean tiempoValido = fechaHoraActual.isBefore(fechaHoraSiguiente);
+            //Modificación, tiempoValido no es necesario. Si la hora de salida es menor a la hora de llegada, se considera que el vuelo sale al día siguiente
+            if (fechaHoraActual.isAfter(fechaHoraSiguiente)){
+                fechaHoraSiguiente=fechaHoraSiguiente.plusDays(1);
+            }
+
+
             Boolean espacioValido = (vuelo.getCapacidad() > vuelo.getCargaActual() + vuelo.getCargaAuxiliarParaFitness() + 1) && (destino.getCapacidadMaxima() > destino.getCargaActual() + destino.getCargaAuxiliarParaFitness() + 1);
 
-            if (ubicacionValida && tiempoValido && espacioValido) {      
+            if (ubicacionValida &&  espacioValido) {      
                 fitness += 4;
                 ciudadActual = vuelo.getDestino();
                 Boolean cambioDeDia= vuelo.getCambioDeDia();                
-                fechaHoraActual=vuelo.getFechaHoraLlegada().with(fechaHoraActual.toLocalDate());
+                fechaHoraActual=vuelo.getFechaHoraLlegada().with(fechaHoraSiguiente.toLocalDate());
                 fechaHoraActual = cambioDeDia ? fechaHoraActual.plusDays(1) : fechaHoraActual;
                 fechaHoraActual.plusMinutes(5);
                 vuelo.setCargaAuxiliarParaFitness(vuelo.getCargaAuxiliarParaFitness() + 1);
                 destino.setCargaAuxiliarParaFitness(destino.getCargaAuxiliarParaFitness() + 1);
             } else {
                 // Penalización por no ser una ruta válida
-                fitness -= (!ubicacionValida ? 6 : 0) + (!tiempoValido ? 2 : 0);
+                fitness -= (!ubicacionValida ? 6 : 0);
                 fitness -= !espacioValido ? 6 : 0;
                 rutaValida=false;
             }
@@ -161,46 +167,10 @@ public class Auxiliares {
                 penalization += (vuelo.getCargaActual() + vuelo.getCargaAuxiliarParaFitness()) / vuelo.getCapacidad();
 
                 // Subtract the penalization from the fitness
-                fitness -= penalization;
+                fitness -= penalization*0.05;
             }
         }
         return fitness;
-    }
-
-    public static double fitnessUnPaqueteFatima(int[] solucion, HashMap<String, Aeropuerto> aeropuertos,
-            HashMap<Integer, Vuelo> vuelos, HashMap<Integer, Envio> envios, ArrayList<Paquete> paquetes, int start, int end) {
-        // Aquí tengo la solución de un solo paquete
-        double fitness=0;
-        for (int i = start; i < end; i++) {
-            //Añadir al fitness la distancia entre los aeropuertos de la solución
-            //Añadir bonificación si el paquete llega a tiempo
-            //Añadir penalización grave si el paquete no llega a tiempo
-            //Añadir bonificación si el paquete llega a su destino
-            //Añadir penalización grave si el paquete no llega a su destino
-
-            //Fátima André
-
-            fitness+=1;
-        }
-        return 0;
-    }
-
-    public static double fitnessUnPaqueteAndre(int[] solucion, HashMap<String, Aeropuerto> aeropuertos,
-            HashMap<Integer, Vuelo> vuelos, HashMap<Integer, Envio> envios, ArrayList<Paquete> paquetes, int start, int end) {
-        // Aquí tengo la solución de un solo paquete
-        double fitness=0;
-        for (int i = start; i < end; i++) {
-            //Añadir al fitness la distancia entre los aeropuertos de la solución
-            //Añadir bonificación si el paquete llega a tiempo
-            //Añadir penalización grave si el paquete no llega a tiempo
-            //Añadir bonificación si el paquete llega a su destino
-            //Añadir penalización grave si el paquete no llega a su destino
-
-            //Fátima André
-
-            fitness+=1;
-        }
-        return 0;
     }
 
     public static Boolean solucionValida(int[] solucion, HashMap<String, Aeropuerto> aeropuertos, HashMap<Integer, Vuelo> vuelos, HashMap<Integer, Envio> envios, Paquete paquete){
@@ -251,7 +221,7 @@ public class Auxiliares {
         return true;
     }
 
-    public static Boolean solucionValidav2(int[] solucion, HashMap<String, Aeropuerto> aeropuertos, HashMap<Integer, Vuelo> vuelos, HashMap<Integer, Envio> envios, Paquete paquete){
+    public static Boolean solucionValidav2(HashMap<String, Aeropuerto> aeropuertos, HashMap<Integer, Vuelo> vuelos, HashMap<Integer, Envio> envios, Paquete paquete, Boolean verbose){
         Envio envio = envios.get(paquete.getIdEnvío());
         String ciudadActual = envio.getOrigen();
         String ciudadDestino = envio.getDestino();
@@ -259,35 +229,38 @@ public class Auxiliares {
         ZonedDateTime fechaHoraLimite = fechaHoraActual.plusDays(aeropuertos.get(ciudadActual).getContinente().equals(aeropuertos.get(ciudadDestino).getContinente()) ? 1 : 2);
     
         boolean rutaValida = true;
-    
+        
+        if(verbose) System.out.println("\nPaquete saliente de " + ciudadActual + " con destino a " + ciudadDestino + " a las " + fechaHoraActual.toLocalTime());
         for (int codVuelo : paquete.getRuta()) {
             Vuelo vuelo = vuelos.get(codVuelo);
             if (vuelo == null) {
-                System.out.println("El vuelo con código " + codVuelo + " no existe.");
+                if(verbose) System.out.println("El vuelo con código " + codVuelo + " no existe.");
                 rutaValida = false;
                 break;
             }
+            if(verbose) System.out.println("Vuelo " + codVuelo + " de " + vuelo.getOrigen() + " a " + vuelo.getDestino() + " a las " + vuelo.getFechaHoraSalida().toLocalTime() + " y llega a las " + vuelo.getFechaHoraLlegada().toLocalTime());
             if (!vuelo.getOrigen().equals(ciudadActual)) {
-                System.out.println("El vuelo " + codVuelo + " no parte de " + ciudadActual + ".");
+                if(verbose) System.out.println("El vuelo " + codVuelo + " no parte de " + ciudadActual + ".");
                 rutaValida = false;
                 break;
             }
     
-            ZonedDateTime fechaHoraVuelo = vuelo.getFechaHoraSalida().withZoneSameInstant(aeropuertos.get(ciudadActual).getZonaHoraria().toZoneId());
+            // ZonedDateTime fechaHoraVuelo = vuelo.getFechaHoraSalida().withZoneSameInstant(aeropuertos.get(ciudadActual).getZonaHoraria().toZoneId());
+            ZonedDateTime fechaHoraVuelo = vuelo.getFechaHoraSalida().with(fechaHoraActual.toLocalDate());
             if (!fechaHoraActual.isBefore(fechaHoraVuelo)) {
-                System.out.println("El vuelo " + codVuelo + " tiene una hora de salida que no es cronológicamente lógica.");
-                rutaValida = false;
-                break;
+                if(verbose) System.out.println("El vuelo " + codVuelo + " tiene una hora de salida que no es cronológicamente lógica. Se considera que sale el siguiente día");
+                fechaHoraVuelo = fechaHoraVuelo.plusDays(1);
             }
-            if (vuelo.getCapacidad() <= vuelo.getCargaActual()) {
-                System.out.println("El vuelo " + codVuelo + " no tiene capacidad suficiente.");
+            if (vuelo.getCapacidad() <= vuelo.getCargaActual()+1) {
+                if (verbose) System.out.println("El vuelo " + codVuelo + " no tiene capacidad suficiente.");
                 rutaValida = false;
                 break;
             }
     
             // Actualizar ciudad y fecha/hora actual
             ciudadActual = vuelo.getDestino();
-            fechaHoraActual = vuelo.getFechaHoraLlegada().withZoneSameInstant(aeropuertos.get(ciudadActual).getZonaHoraria().toZoneId());
+            // fechaHoraActual = vuelo.getFechaHoraLlegada().withZoneSameInstant(aeropuertos.get(ciudadActual).getZonaHoraria().toZoneId());
+            fechaHoraActual = vuelo.getFechaHoraLlegada().with(fechaHoraVuelo.toLocalDate());
             if (vuelo.getCambioDeDia()) {
                 fechaHoraActual = fechaHoraActual.plusDays(1);
             }
@@ -295,38 +268,65 @@ public class Auxiliares {
             // Verificar llegada a destino
             if (ciudadActual.equals(ciudadDestino)) {
                 if (fechaHoraActual.isAfter(fechaHoraLimite)) {
-                    System.out.println("El paquete llega después del tiempo límite a " + ciudadDestino + ".");
+                    if(verbose) System.out.println("El paquete llega después del tiempo límite a " + ciudadDestino + ".");
                     rutaValida = false;
                 } else {
-                    System.out.println("El paquete llega a tiempo a " + ciudadDestino + ".");
+                    if(verbose) System.out.println("El paquete llega a tiempo a " + ciudadDestino + ".");
+                    break;
                 }
                 
             }
         }
         
         if (!rutaValida) {
-            System.out.println("La ruta no es válida en términos de secuencia de vuelos o capacidad.");
+            if(verbose) System.out.println("La ruta no es válida en términos de secuencia de vuelos o capacidad.");
             return false;
         }
 
         if (!ciudadActual.equals(ciudadDestino)) {
-            System.out.println("La ruta no termina en el destino correcto. Se esperaba terminar en " + ciudadDestino + ", pero el último destino de la ruta es " + ciudadActual);
-            System.out.println("Número de vuelos en la ruta: " + paquete.getRuta().size());
-            System.out.println("Ciudades de la ruta:");
+            if(verbose){
+                System.out.println("La ruta no termina en el destino correcto. Se esperaba terminar en " + ciudadDestino + ", pero el último destino de la ruta es " + ciudadActual);
+                System.out.println("Número de vuelos en la ruta: " + paquete.getRuta().size());
+                System.out.println("Ciudades de la ruta:");
+            }
             for (int codVuelo : paquete.getRuta()) {
                 if (!vuelos.containsKey(codVuelo)) {
-                    System.out.println("El vuelo con código " + codVuelo + " no se encuentra en la lista de vuelos disponibles.");
+                    if(verbose) System.out.println("El vuelo con código " + codVuelo + " no se encuentra en la lista de vuelos disponibles.");
                     continue;
                 }
                 Vuelo vuelo = vuelos.get(codVuelo);
-                System.out.println("  " + vuelo.getOrigen() + " -> " + vuelo.getDestino());
+                if(verbose) System.out.println("  " + vuelo.getOrigen() + " -> " + vuelo.getDestino());
             }
             return false;
         }
         
-        System.out.println("Todas las validaciones pasaron.");
+        if(verbose) System.out.println("Todas las validaciones pasaron.");
         return true;
     }
+
+    public static int verificacionTotal(int[] solucion, HashMap<String, Aeropuerto> aeropuertos, HashMap<Integer, Vuelo> vuelos, HashMap<Integer, Envio> envios, ArrayList<Paquete> paquetes, int solutionSize){
+        int n=paquetes.size();
+        Boolean esSolucionValida;
+        int paquetesEntregados=0;
+        //Verifico todos los paquetes
+        for(int j=0; j<n; j++){
+            ArrayList<Integer> solucionPaquete = new ArrayList<Integer>();
+            //Recoger solución para un paquete
+            for (int k = 0; k < solutionSize; k++) {
+                solucionPaquete.add(solucion[j*solutionSize+k]);
+            }
+            //Asignar solución a paquete
+            Paquete paquete = paquetes.get(j);
+            paquete.setRuta(solucionPaquete);
+            esSolucionValida = solucionValidav2(aeropuertos, vuelos, envios, paquete, false);
+            if(esSolucionValida){
+                paquetesEntregados++;
+            }
+        }      
+        return paquetesEntregados;
+    }
+        
+    
     
 
 }
