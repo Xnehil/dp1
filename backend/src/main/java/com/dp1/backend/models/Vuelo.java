@@ -1,6 +1,7 @@
 package com.dp1.backend.models;
 
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.HashMap;
 
@@ -11,24 +12,17 @@ public class Vuelo {
     private ZonedDateTime fechaHoraSalida;
     private ZonedDateTime fechaHoraLlegada;
     private int capacidad;
-    private int cargaActual;
-    private int cargaAuxiliarParaFitness;
+    private HashMap<LocalDate, Integer> cargaPorDia;
 
-    public int getCargaActual() {
-        return this.cargaActual;
+    public HashMap<LocalDate,Integer> getCargaPorDia() {
+        return this.cargaPorDia;
     }
 
-    public void setCargaActual(int cargaActual) {
-        this.cargaActual = cargaActual;
+    public void setCargaPorDia(HashMap<LocalDate,Integer> cargaPorDia) {
+        this.cargaPorDia = cargaPorDia;
     }
 
-    public int getCargaAuxiliarParaFitness() {
-        return this.cargaAuxiliarParaFitness;
-    }
 
-    public void setCargaAuxiliarParaFitness(int cargaAuxiliarParaFitness) {
-        this.cargaAuxiliarParaFitness = cargaAuxiliarParaFitness;
-    }
     private Boolean cambioDeDia;
 
     public Boolean isCambioDeDia() {
@@ -49,8 +43,7 @@ public class Vuelo {
         this.fechaHoraSalida = fechaHoraSalida;
         this.fechaHoraLlegada = fechaHoraLlegada;
         this.capacidad = capacidad;
-        this.cargaActual = 0;
-        this.cargaAuxiliarParaFitness = 0;
+        this.cargaPorDia = new HashMap<LocalDate, Integer>();
 
         ZonedDateTime auxInicio = fechaHoraSalida;
         ZonedDateTime auxFin = fechaHoraLlegada;

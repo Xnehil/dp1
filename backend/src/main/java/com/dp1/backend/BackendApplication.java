@@ -35,7 +35,7 @@ public class BackendApplication {
             }
         }
         HashMap<Integer, Vuelo> vuelos = FuncionesLectura.leerVuelos("algoritmos/data/Planes.vuelo.v1.incompleto.txt", aeropuertos);
-        HashMap<Integer, Envio> envios = FuncionesLectura.leerEnvios("algoritmos/data/pack_enviado/pack_enviado_SGAS.txt", aeropuertos);
+        HashMap<Integer, Envio> envios = FuncionesLectura.leerEnvios("algoritmos/data/pack_enviado/pack_enviado_SKBO.txt", aeropuertos);
         // envios = FuncionesLectura.leerEnvios("algoritmos/data/pack_enviado/pack_enviado_SEQM.txt", aeropuertos);
         ArrayList<Integer> toRemove = new ArrayList<Integer>();
         for (int i : envios.keySet()) {
@@ -58,7 +58,7 @@ public class BackendApplication {
         
             writer.write("Iteración\tTiempo de ejecución (ms)\tPaquetes entregados\tPorcentaje de paquetes entregados\n");
             double promedio=0;
-            int iteraciones=20;
+            int iteraciones=1;
             int tamanioSolucion=4;
             for (int i = 0; i < iteraciones; i++) {
                 Long startTime = System.currentTimeMillis();
