@@ -1,6 +1,9 @@
 package com.dp1.backend.models;
 
+import java.time.LocalDateTime;
 import java.util.TimeZone;
+import java.util.TreeMap;
+
 
 public class Aeropuerto{
     private int idAeropuerto;
@@ -14,27 +17,32 @@ public class Aeropuerto{
     private TimeZone zonaHoraria;
     private double latitud;
     private double longitud;
+    //Estos tienen la zona horaria del aeropuerto
+    private TreeMap<LocalDateTime, Integer> entradas;
+    private TreeMap<LocalDateTime, Integer> salidas;
 
-    private int cargaActual;
-    private int cargaAuxiliarParaFitness;
 
-
-    public int getCargaActual() {
-        return this.cargaActual;
+    public TreeMap<LocalDateTime,Integer> getEntradas() {
+        return this.entradas;
     }
 
-    public void setCargaActual(int cargaActual) {
-        this.cargaActual = cargaActual;
+    public void setEntradas(TreeMap<LocalDateTime,Integer> entradas) {
+        this.entradas = entradas;
     }
 
-    public int getCargaAuxiliarParaFitness() {
-        return this.cargaAuxiliarParaFitness;
+    public TreeMap<LocalDateTime,Integer> getSalidas() {
+        return this.salidas;
     }
 
-    public void setCargaAuxiliarParaFitness(int cargaAuxiliarParaFitness) {
-        this.cargaAuxiliarParaFitness = cargaAuxiliarParaFitness;
+    public void setSalidas(TreeMap<LocalDateTime,Integer> salidas) {
+        this.salidas = salidas;
     }
 
+    public int cargaAEstaHora(LocalDateTime hora) {
+        int salidasHastaAhora = this.salidas.headMap(hora).values().stream().mapToInt(Integer::intValue).sum();
+        int entradasHastaAhora = this.entradas.headMap(hora).values().stream().mapToInt(Integer::intValue).sum();
+        return entradasHastaAhora - salidasHastaAhora;
+    }
 
     public double getLatitud() {
         return this.latitud;
@@ -68,6 +76,8 @@ public class Aeropuerto{
         this.gmt = gmt;
         this.capacidadMaxima = capacidad;
         this.idAeropuerto = idAeropuerto;
+        this.entradas = new TreeMap<LocalDateTime, Integer>();
+        this.salidas = new TreeMap<LocalDateTime, Integer>();
 
         //set timezone from GMT
         String[] ids = TimeZone.getAvailableIDs(gmt * 3600000);
@@ -75,10 +85,7 @@ public class Aeropuerto{
             System.out.println("No se encontró la zona horaria para GMT " + gmt);
         } else {
             this.zonaHoraria = TimeZone.getTimeZone(ids[0]);
-        }
-
-        this.cargaActual = 0;
-        this.cargaAuxiliarParaFitness = 0;        
+        }  
     }
 
     public Aeropuerto() {
