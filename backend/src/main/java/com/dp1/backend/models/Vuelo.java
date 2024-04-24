@@ -73,7 +73,6 @@ public class Vuelo {
         this.idVuelo = idVuelo;
     }
 
-
     public String getOrigen() {
         return this.origen;
     }
