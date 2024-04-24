@@ -38,18 +38,18 @@ public class BackendApplication {
 			paquetes.addAll(e.getPaquetes());
 		}
 
-        int tamanioSolucion=5;
+        int tamanioSolucion=4;
         //Initialize the owo
         int[] owo = new int[tamanioSolucion*paquetes.size()];
         try {
-            FileWriter writer = new FileWriter("output/results_euclidean_"+LocalDate.now()+".txt");
+            FileWriter writer = new FileWriter("output/results_"+LocalDate.now()+".txt");
         
             writer.write("Iteración\tTiempo de ejecución (ms)\tPaquetes entregados\tPorcentaje de paquetes entregados\n");
             double promedio=0;
             int iteraciones=1;
             for (int i = 0; i < iteraciones; i++) {
                 Long startTime = System.currentTimeMillis();
-                owo=MPAv2.run(aeropuertos, vuelos, envios, paquetes, 100, 70, tamanioSolucion);
+                owo=MPAv2.run(aeropuertos, vuelos, envios, paquetes, 200, 70, tamanioSolucion);
                 long endTime = System.currentTimeMillis();
                 long executionTime = endTime - startTime;
                 int paquetesEntregados=Auxiliares.verificacionTotal(owo, aeropuertos, vuelos, envios, paquetes, tamanioSolucion);
@@ -77,7 +77,7 @@ public class BackendApplication {
         
 
         //Una solución
-        int verPaquete=380;        
+        int verPaquete=480;        
         //System.out.println("L solucion es valida: " + esSolucionValida);
         System.out.println("Funcion validacion:  ");
         Paquete auxPaquete = paquetes.get(verPaquete);

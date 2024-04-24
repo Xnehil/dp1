@@ -3,6 +3,7 @@ package com.dp1.backend.utils;
 import org.apache.commons.math3.distribution.NormalDistribution;
 import org.apache.commons.math3.special.Gamma;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -104,9 +105,7 @@ public class Auxiliares {
         ZonedDateTime fechaHoraActual = envio.getFechaHoraSalida();
         ZonedDateTime fechaHoraSiguienteSalida;
         ZonedDateTime fechaHoraSiguienteLlegada;
-        int dias = actual.getContinente().equals(destino.getContinente()) ? 1 : 2;
-        ZonedDateTime fechaHoraLimite = envio.getFechaHoraSalida().plusDays(dias)
-                .withZoneSameLocal(destino.getZonaHoraria().toZoneId());
+        ZonedDateTime fechaHoraLimite = envio.getFechaHoraLlegadaPrevista();
 
         for (int i = start; i < end; i++) {
             // Evitar out of bounds en el arreglo de solución
@@ -125,7 +124,7 @@ public class Auxiliares {
 
             //Penalización por visitar un aeropuerto ya visitado
             if (yaVisitados.contains(vuelo.getDestino())) {
-                fitness -= 4;
+                fitness -= 6;
             }
 
             fechaHoraSiguienteSalida = vuelo.getFechaHoraSalida();
@@ -133,6 +132,8 @@ public class Auxiliares {
             // fechas, se realizan todos los días.
             fechaHoraSiguienteSalida = fechaHoraSiguienteSalida.with(fechaHoraActual.toLocalDate());
             Boolean ubicacionValida = vuelo.getOrigen().equals(ciudadActual);
+
+
 
             // Modificación, tiempoValido no es necesario. Si la hora de salida es menor a
             // la hora de llegada, se considera que el vuelo sale al día siguiente
@@ -143,6 +144,7 @@ public class Auxiliares {
             fechaHoraSiguienteLlegada = vuelo.getFechaHoraLlegada().with(fechaAuxiliar);
             fechaHoraSiguienteLlegada = vuelo.getCambioDeDia() ? fechaHoraSiguienteLlegada.plusDays(1)
                     : fechaHoraSiguienteLlegada;
+
 
             // Se verifica que haya espacio en el vuelo en tal día. Esto es nuevo
             int cargaAuxiliarVuelo;
@@ -182,7 +184,7 @@ public class Auxiliares {
                 // + 1);
             } else {
                 // Penalización por no ser una ruta válida
-                fitness -= (!ubicacionValida ? 6 : 0);
+                fitness -= (!ubicacionValida ? 10 : 0);
                 fitness -= !espacioEnVuelo ? 4 : 0;
                 // fitness -= !espacioEnAlmacen ? 4 : 0;
                 rutaValida = false;
@@ -200,6 +202,7 @@ public class Auxiliares {
                     }
                     break;
                 }
+
                 // Por distancia
                 // Before the flight
                 double oldDistance = calculateEuclideanDistance(actual, destino);
@@ -207,7 +210,10 @@ public class Auxiliares {
                 actual = aeropuertos.get(ciudadActual);
                 double newDistance = calculateEuclideanDistance(actual, destino);
                 // Normalize the fitness change to be between -1 and 1
-                fitness += ((oldDistance - newDistance) / 162000) *2 - 1;
+                // fitness += ((oldDistance - newDistance) / 403074761) *2 - 1;
+                fitness += ((oldDistance - newDistance) / 162000) *4 - 2;
+
+
                 // fitness += ((oldDistance - newDistance) / 20015) * 2 - 1;
 
                 // Get the ratio of the current load to the maximum load
@@ -243,7 +249,7 @@ public class Auxiliares {
         double lon2 = Math.toRadians(b.getLongitud());
         double x = (lon2 - lon1) * Math.cos((lat1 + lat2) / 2);
         double y = lat2 - lat1;
-        return Math.sqrt(x * x + y * y) * R;
+        return (x * x + y * y) * R;
     }
 
     private static double calculateEuclideanDistance(Aeropuerto a, Aeropuerto b) {
@@ -267,21 +273,23 @@ public class Auxiliares {
             vuelos.get(i).setCargaPorDia(new HashMap<>());
         }
 
-        if (verbose)
+        if (verbose){
             System.out.println("\nPaquete saliente de " + ciudadActual + " con destino a " + ciudadDestino + " a las "
-                    + fechaHoraActual.toLocalTime());
+                    + fechaHoraActual.toLocalTime() + " del día " + fechaHoraActual.toLocalDate());
+            System.out.println("Fecha límite de entrega: " + fechaHoraLimite.toLocalDate() + " a las "
+                    + fechaHoraLimite.toLocalTime());
+        }
         for (int codVuelo : paquete.getRuta()) {
             Vuelo vuelo = vuelos.get(codVuelo);
+            
+            
             if (vuelo == null) {
                 if (verbose)
                     System.out.println("El vuelo con código " + codVuelo + " no existe.");
                 rutaValida = false;
                 break;
             }
-            if (verbose)
-                System.out.println("Vuelo " + codVuelo + " de " + vuelo.getOrigen() + " a " + vuelo.getDestino()
-                        + " a las " + vuelo.getFechaHoraSalida().toLocalTime() + " y llega a las "
-                        + vuelo.getFechaHoraLlegada().toLocalTime());
+            
             if (!vuelo.getOrigen().equals(ciudadActual)) {
                 if (verbose)
                     System.out.println("El vuelo " + codVuelo + " no parte de " + ciudadActual + ".");
@@ -292,11 +300,24 @@ public class Auxiliares {
             // ZonedDateTime fechaHoraVuelo =
             // vuelo.getFechaHoraSalida().withZoneSameInstant(aeropuertos.get(ciudadActual).getZonaHoraria().toZoneId());
             ZonedDateTime fechaHoraVuelo = vuelo.getFechaHoraSalida().with(fechaHoraActual.toLocalDate());
+            ZonedDateTime fechaHoraLlegada = vuelo.getFechaHoraLlegada().with(fechaHoraActual.toLocalDate());
+            fechaHoraLlegada = vuelo.getCambioDeDia() ? fechaHoraLlegada.plusDays(1) : fechaHoraLlegada;
+            if (verbose){
+                System.out.println("Vuelo " + codVuelo + " de " + vuelo.getOrigen() + " a " + vuelo.getDestino()
+                        + " a las " + fechaHoraVuelo.toLocalTime() + " del día " + fechaHoraVuelo.toLocalDate()+
+                        " y llega a las "+ fechaHoraLlegada.toLocalTime() + " del día " + fechaHoraLlegada.toLocalDate());
+            }
             if (!fechaHoraActual.isBefore(fechaHoraVuelo)) {
-                if (verbose)
+                
+                fechaHoraVuelo = fechaHoraVuelo.plusDays(1);
+                fechaHoraLlegada = fechaHoraLlegada.plusDays(1);
+                if (verbose){
                     System.out.println("El vuelo " + codVuelo
                             + " tiene una hora de salida que no es cronológicamente lógica. Se considera que sale el siguiente día");
-                fechaHoraVuelo = fechaHoraVuelo.plusDays(1);
+                    System.out.println("Vuelo " + codVuelo + " de " + vuelo.getOrigen() + " a " + vuelo.getDestino()
+                            + " a las " + fechaHoraVuelo.toLocalTime() + " del día " + fechaHoraVuelo.toLocalDate()
+                            + " y llega a las " + fechaHoraLlegada.toLocalTime() + " del día " + fechaHoraLlegada.toLocalDate());
+                }
             }
 
             // Esto es nuevo, es para controlar la carga por día
@@ -330,21 +351,24 @@ public class Auxiliares {
             // Verificar llegada a destino
             if (ciudadActual.equals(ciudadDestino)) {
                 if (fechaHoraActual.isAfter(fechaHoraLimite)) {
-                    if (verbose)
+                    if (verbose){
                         System.out.println("El paquete llega después del tiempo límite a " + ciudadDestino + ".");
+                    }
                     rutaValida = false;
                 } else {
-                    if (verbose)
+                    if (verbose){
                         System.out.println("El paquete llega a tiempo a " + ciudadDestino + ".");
-                    break;
+                    }
                 }
+                break;
 
             }
         }
 
         if (!rutaValida) {
-            if (verbose)
+            if (verbose){
                 System.out.println("La ruta no es válida en términos de secuencia de vuelos o capacidad.");
+            }
             return false;
         }
 
@@ -357,14 +381,16 @@ public class Auxiliares {
             }
             for (int codVuelo : paquete.getRuta()) {
                 if (!vuelos.containsKey(codVuelo)) {
-                    if (verbose)
+                    if (verbose){
                         System.out.println("El vuelo con código " + codVuelo
                                 + " no se encuentra en la lista de vuelos disponibles.");
+                    }
                     continue;
                 }
                 Vuelo vuelo = vuelos.get(codVuelo);
-                if (verbose)
+                if (verbose){
                     System.out.println("  " + vuelo.getOrigen() + " -> " + vuelo.getDestino());
+                }
             }
             return false;
         }
