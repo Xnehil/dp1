@@ -8,9 +8,20 @@ public class Envio {
     private String origen;
     private String destino;
     private ZonedDateTime fechaHoraSalida;
-    private ZonedDateTime fechaHoraLlegada;
+    private ZonedDateTime fechaHoraLlegadaPrevista;
+    private ZonedDateTime fechaHoraLlegadaReal;
     private int cantidadPaquetes;
     private ArrayList<Paquete> paquetes;
+
+
+    public ZonedDateTime getFechaHoraLlegadaReal() {
+        return this.fechaHoraLlegadaReal;
+    }
+
+    public void setFechaHoraLlegadaReal(ZonedDateTime fechaHoraLlegadaReal) {
+        this.fechaHoraLlegadaReal = fechaHoraLlegadaReal;
+    }
+
 
     public Envio(String origen, String destino, ZonedDateTime fechaHoraSalida, int cantidadPaquetes, ArrayList<Paquete> paquetes) {
         this.origen = origen;
@@ -24,7 +35,7 @@ public class Envio {
         this.origen = "";
         this.destino = "";
         this.fechaHoraSalida = ZonedDateTime.now();
-        this.fechaHoraLlegada = ZonedDateTime.now();
+        this.fechaHoraLlegadaPrevista = ZonedDateTime.now();
         this.cantidadPaquetes = 0;
         this.paquetes = new ArrayList<Paquete>();
     }
@@ -62,12 +73,12 @@ public class Envio {
         this.fechaHoraSalida = fechaHoraSalida;
     }
 
-    public ZonedDateTime getFechaHoraLlegada() {
-        return this.fechaHoraLlegada;
+    public ZonedDateTime getFechaHoraLlegadaPrevista() {
+        return this.fechaHoraLlegadaPrevista;
     }
 
-    public void setFechaHoraLlegada(ZonedDateTime fechaHoraLlegada) {
-        this.fechaHoraLlegada = fechaHoraLlegada;
+    public void setFechaHoraLlegadaPrevista(ZonedDateTime fechaHoraLlegada) {
+        this.fechaHoraLlegadaPrevista = fechaHoraLlegada;
     }
 
     public int getCantidadPaquetes() {
