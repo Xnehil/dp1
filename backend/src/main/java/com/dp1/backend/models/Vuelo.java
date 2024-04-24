@@ -49,6 +49,7 @@ public class Vuelo {
         ZonedDateTime auxFin = fechaHoraLlegada;
 
         // Cambio de día sucece si la hora de llegada es antes de la hora de salida. Ya se consideran las zonas horarias
+        auxInicio = auxInicio.withZoneSameInstant(auxFin.getZone());
         if (auxFin.isBefore(auxInicio)) {
             this.cambioDeDia = true;
         } else {
