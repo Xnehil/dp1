@@ -71,3 +71,7 @@ next-env.d.ts
 
 # entorno Intellik
 *.idea/
+
+#data files
+*.txt
+*.csv

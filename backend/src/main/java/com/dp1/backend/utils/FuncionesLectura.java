@@ -26,16 +26,21 @@ public class FuncionesLectura {
     public static HashMap<String, Aeropuerto> leerAeropuertos(String archivo) {
         System.out.println("Leyendo aeropuertos desde " + archivo);
         HashMap<String, Aeropuerto> aeropuertos = new HashMap<>();
+        String currentContinent = "";
         try (BufferedReader br = Files.newBufferedReader(Paths.get(archivo), Charset.forName("UTF-8"))) {
             String line;
             int lineCount = 0;
             while ((line = br.readLine()) != null) {
                 lineCount++;
-                if (line.trim().isEmpty() || line.contains("GMT") || lineCount <= 4 || line.contains("Europa")) {
+                if (line.trim().isEmpty() ||lineCount <= 7 ) {
                     continue; // Skip empty lines and headers
                 }
+                if (line.contains("America del Sur") || line.contains("Europa") || line.contains("ASIA")) {
+                    currentContinent = line.trim();
+                    continue; // Skip continent lines
+                }
                 String[] parts = line.split("\\s{2,}"); // Split on two or more spaces
-                //Elminar espacios en blanco
+                // Eliminar espacios en blanco
                 for (int i = 0; i < parts.length; i++) {
                     parts[i] = parts[i].trim();
                 }
@@ -44,12 +49,11 @@ public class FuncionesLectura {
                 String city = parts[2];
                 String country = parts[3];
                 String shortName = parts[4];
-                int gmt = Integer.parseInt(parts[5]);
+                int gmt = Integer.parseInt(parts[5].replace("+", "").replace("-", ""));
                 int capacity = Integer.parseInt(parts[6]);
-                double longitud = Double.parseDouble(parts[7]);
-                double latitud = Double.parseDouble(parts[8]);
+                double longitud = convertToDecimalDegrees(parts[8]);
+                double latitud = convertToDecimalDegrees(parts[7]);
 
-                // System.out.println("Aeropuerto: " + number + " " + oaciCode + " " + city + " " + country + " " + shortName + " " + gmt + " " + capacity);
                 Aeropuerto aeropuerto = new Aeropuerto(number, oaciCode, city, country, shortName, gmt, capacity);
                 aeropuerto.setLongitud(longitud);
                 aeropuerto.setLatitud(latitud);
@@ -99,6 +103,18 @@ public class FuncionesLectura {
             System.err.println("Error reading file: " + e);
         }
         return vuelos;
+    }
+
+    private static double convertToDecimalDegrees(String dms) {
+        String[] parts = dms.split("°|'|\"");
+        double degrees = Double.parseDouble(parts[0]);
+        double minutes = Double.parseDouble(parts[1]) / 60;
+        double seconds = Double.parseDouble(parts[2]) / 3600;
+        double decimalDegrees = degrees + minutes + seconds;
+        if (parts[3].equals("S") || parts[3].equals("W")) {
+            decimalDegrees = -decimalDegrees; // Invert the sign for south and west coordinates
+        }
+        return decimalDegrees;
     }
 
     public static HashMap<Integer, Envio> leerEnvios(String archivo, HashMap<String, Aeropuerto> aeropuertos) {

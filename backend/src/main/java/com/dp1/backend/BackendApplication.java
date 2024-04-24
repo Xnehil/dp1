@@ -25,15 +25,7 @@ public class BackendApplication {
 
 	public static void main(String[] args) {
 		// SpringApplication.run(BackendApplication.class, args);
-		HashMap<String, Aeropuerto> aeropuertos = FuncionesLectura.leerAeropuertos("algoritmos/data/Aeropuerto.husos.v1.incompleto.txt");
-        for (Aeropuerto a : aeropuertos.values()) {
-            if (a.getGmt() <0 ){
-                a.setContinente("América del Sur");
-            }
-            else{
-                a.setContinente("Europa");
-            }
-        }
+		HashMap<String, Aeropuerto> aeropuertos = FuncionesLectura.leerAeropuertos("data/Aeropuerto.husos.v2.txt");
         HashMap<Integer, Vuelo> vuelos = FuncionesLectura.leerVuelos("algoritmos/data/Planes.vuelo.v1.incompleto.txt", aeropuertos);
         HashMap<Integer, Envio> envios = FuncionesLectura.leerEnvios("algoritmos/data/pack_enviado/pack_enviado_SKBO.txt", aeropuertos);
         // envios = FuncionesLectura.leerEnvios("algoritmos/data/pack_enviado/pack_enviado_SEQM.txt", aeropuertos);
