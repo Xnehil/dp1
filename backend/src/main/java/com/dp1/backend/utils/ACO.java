@@ -89,8 +89,11 @@ public class ACO {
                                                                         // visibilidad*fermonoas, probabilidad
                         }
                     }
-                    // Definir costo de cada vuelo, visibilidad
-                    for (int id : tablaOpcionesVuelos.keySet()) {
+
+                   
+
+                     // Definir costo de cada vuelo, visibilidad
+                     for (int id : tablaOpcionesVuelos.keySet()) {
                         tablaOpcionesVuelos.get(id)[0] = costo(vuelos.get(id), paq, envios, aeropuertos);
                         tablaOpcionesVuelos.get(id)[1] = 1 / tablaOpcionesVuelos.get(id)[0];
                         tablaOpcionesVuelos.get(id)[2] = tablaOpcionesVuelos.get(id)[1] * tabla.get(id)[2];
