@@ -42,14 +42,14 @@ public class BackendApplication {
         //Initialize the owo
         int[] owo = new int[tamanioSolucion*paquetes.size()];
         try {
-            FileWriter writer = new FileWriter("results_big_"+LocalDate.now()+".txt");
+            FileWriter writer = new FileWriter("output/results_euclidean_"+LocalDate.now()+".txt");
         
             writer.write("Iteración\tTiempo de ejecución (ms)\tPaquetes entregados\tPorcentaje de paquetes entregados\n");
             double promedio=0;
             int iteraciones=1;
             for (int i = 0; i < iteraciones; i++) {
                 Long startTime = System.currentTimeMillis();
-                owo=MPAv2.run(aeropuertos, vuelos, envios, paquetes, 80, 50, tamanioSolucion);
+                owo=MPAv2.run(aeropuertos, vuelos, envios, paquetes, 100, 70, tamanioSolucion);
                 long endTime = System.currentTimeMillis();
                 long executionTime = endTime - startTime;
                 int paquetesEntregados=Auxiliares.verificacionTotal(owo, aeropuertos, vuelos, envios, paquetes, tamanioSolucion);
@@ -66,42 +66,21 @@ public class BackendApplication {
             e.printStackTrace();
         }
     
+        //Asignar rutas a los paquetes
+        for (int i = 0; i < paquetes.size(); i++) {
+            ArrayList<Integer> ruta = new ArrayList<Integer>();
+            for (int j = i*tamanioSolucion; j < tamanioSolucion*(i+1); j++) {
+                ruta.add(owo[j]);
+            }
+            paquetes.get(i).setRuta(ruta);
+        }
         
 
         //Una solución
-        int verPaquete=3;
-        Envio envioDelPaquete=envios.get(paquetes.get(verPaquete).getIdEnvío());
-
-        
+        int verPaquete=380;        
         //System.out.println("L solucion es valida: " + esSolucionValida);
-
-
-        //Se qiiere llegar de 
-        System.out.println("Se quería llegar de " + envioDelPaquete.getOrigen() + " a " + envioDelPaquete.getDestino());
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
-        String formattedDateTime = envioDelPaquete.getFechaHoraSalida().format(formatter);
-        System.out.println("El paquete se dejó el " + formattedDateTime);
-        String destino=envioDelPaquete.getDestino();
-        
-        ArrayList<Integer> validaciones = new ArrayList<Integer>();
-
-        for (int i = (verPaquete-1)*tamanioSolucion; i < tamanioSolucion*(verPaquete); i++) {
-            System.out.print(owo[i] + ": ");
-            System.out.print(vuelos.get(owo[i]).getOrigen() + " (Departure: " + vuelos.get(owo[i]).getFechaHoraSalida().format(formatter) + ") - ");
-            System.out.print(vuelos.get(owo[i]).getDestino() + " (Arrival: " + vuelos.get(owo[i]).getFechaHoraLlegada().format(formatter) + ")\n");
-            
-            validaciones.add(owo[i]);
-            if(vuelos.get(owo[i]).getDestino().equals(destino)){
-                System.out.println("Llegó al destino");
-                System.out.println("----------------------");
-                break;
-            }
-
-            
-        }
         System.out.println("Funcion validacion:  ");
         Paquete auxPaquete = paquetes.get(verPaquete);
-        auxPaquete.setRuta(validaciones);
         Boolean esSolucionValida = Auxiliares.solucionValidav2(aeropuertos, vuelos, envios, auxPaquete, true);
         System.out.println("La solución es valida: " + esSolucionValida);
         

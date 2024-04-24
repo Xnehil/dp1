@@ -99,6 +99,7 @@ public class Auxiliares {
         Boolean rutaValida = true;
         Aeropuerto destino = aeropuertos.get(ciudadDestino);
         Aeropuerto actual = aeropuertos.get(ciudadActual);
+        ArrayList<String> yaVisitados = new ArrayList<>();
 
         ZonedDateTime fechaHoraActual = envio.getFechaHoraSalida();
         ZonedDateTime fechaHoraSiguienteSalida;
@@ -118,15 +119,21 @@ public class Auxiliares {
             if (rutaValida == false) {
                 continue;
             }
+            yaVisitados.add(ciudadActual);
             Vuelo vuelo = vuelos.get(solucion[i]);
             Aeropuerto destinoDeEsteVuelo = aeropuertos.get(vuelo.getDestino());
+
+            //Penalización por visitar un aeropuerto ya visitado
+            if (yaVisitados.contains(vuelo.getDestino())) {
+                fitness -= 4;
+            }
 
             fechaHoraSiguienteSalida = vuelo.getFechaHoraSalida();
             // Se cambia solo la fecha, no las horas. Esto porque los vuelos no tienen
             // fechas, se realizan todos los días.
             fechaHoraSiguienteSalida = fechaHoraSiguienteSalida.with(fechaHoraActual.toLocalDate());
             Boolean ubicacionValida = vuelo.getOrigen().equals(ciudadActual);
-            // Boolean tiempoValido = fechaHoraActual.isBefore(fechaHoraSiguiente);
+
             // Modificación, tiempoValido no es necesario. Si la hora de salida es menor a
             // la hora de llegada, se considera que el vuelo sale al día siguiente
             if (fechaHoraActual.isAfter(fechaHoraSiguienteSalida)) {
@@ -147,12 +154,14 @@ public class Auxiliares {
             }
 
             // Verificamos que haya espacio en el almacén a esa hora
-            // int cargaAuxiliarAeropuerto = destinoDeEsteVuelo.cargaAEstaHora(fechaHoraSiguienteSalida.toLocalDateTime());
+            // int cargaAuxiliarAeropuerto =
+            // destinoDeEsteVuelo.cargaAEstaHora(fechaHoraSiguienteSalida.toLocalDateTime());
 
             Boolean espacioEnVuelo = (vuelo.getCapacidad() > cargaAuxiliarVuelo + 1);
-            // Boolean espacioEnAlmacen = (destinoDeEsteVuelo.getCapacidadMaxima() > cargaAuxiliarAeropuerto + 1);
+            // Boolean espacioEnAlmacen = (destinoDeEsteVuelo.getCapacidadMaxima() >
+            // cargaAuxiliarAeropuerto + 1);
 
-            if (ubicacionValida && espacioEnVuelo ) {
+            if (ubicacionValida && espacioEnVuelo) {
                 fitness += 4;
                 // Cambio de ciudad
                 ciudadActual = vuelo.getDestino();
@@ -166,9 +175,11 @@ public class Auxiliares {
 
                 // Actualizar carga auxiliar del aeropuerto
                 // actual.getSalidas().put(fechaHoraSiguienteSalida.toLocalDateTime(),
-                //         actual.getSalidas().getOrDefault(fechaHoraSiguienteSalida.toLocalDateTime(), 0) + 1);
+                // actual.getSalidas().getOrDefault(fechaHoraSiguienteSalida.toLocalDateTime(),
+                // 0) + 1);
                 // destinoDeEsteVuelo.getEntradas().put(fechaHoraSiguienteLlegada.toLocalDateTime(),
-                //         destinoDeEsteVuelo.getEntradas().getOrDefault(fechaHoraSiguienteLlegada.toLocalDateTime(),0) + 1);
+                // destinoDeEsteVuelo.getEntradas().getOrDefault(fechaHoraSiguienteLlegada.toLocalDateTime(),0)
+                // + 1);
             } else {
                 // Penalización por no ser una ruta válida
                 fitness -= (!ubicacionValida ? 6 : 0);
@@ -191,14 +202,13 @@ public class Auxiliares {
                 }
                 // Por distancia
                 // Before the flight
-                double oldDistance = Math.pow(actual.getLatitud() - destino.getLatitud(), 2)
-                        + Math.pow(actual.getLongitud() - destino.getLongitud(), 2);
+                double oldDistance = calculateEuclideanDistance(actual, destino);
                 // After the flight
                 actual = aeropuertos.get(ciudadActual);
-                double newDistance = Math.pow(actual.getLatitud() - destino.getLatitud(), 2)
-                        + Math.pow(actual.getLongitud() - destino.getLongitud(), 2);
-                // Normalize the fitness change to be between -3 and 3
-                fitness += ((oldDistance - newDistance) / 162000) * 2 - 1;
+                double newDistance = calculateEuclideanDistance(actual, destino);
+                // Normalize the fitness change to be between -1 and 1
+                fitness += ((oldDistance - newDistance) / 162000) *2 - 1;
+                // fitness += ((oldDistance - newDistance) / 20015) * 2 - 1;
 
                 // Get the ratio of the current load to the maximum load
                 // double penalization = (actual.getCargaActual() +
@@ -208,9 +218,38 @@ public class Auxiliares {
 
                 // Subtract the penalization from the fitness
                 // fitness -= penalization;
+                
             }
         }
         return fitness;
+    }
+
+    private static double calculateHaversineDistance(Aeropuerto a, Aeropuerto b) {
+        final int R = 6371; // Radius of the earth in km
+        double latDistance = Math.toRadians(b.getLatitud() - a.getLatitud());
+        double lonDistance = Math.toRadians(b.getLongitud() - a.getLongitud());
+        double aVal = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
+                + Math.cos(Math.toRadians(a.getLatitud())) * Math.cos(Math.toRadians(b.getLatitud()))
+                        * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
+        double c = 2 * Math.atan2(Math.sqrt(aVal), Math.sqrt(1 - aVal));
+        return R * c;
+    }
+
+    private static double calculateEquirectangularApproximation(Aeropuerto a, Aeropuerto b) {
+        final int R = 6371; // Radius of the earth in km
+        double lat1 = Math.toRadians(a.getLatitud());
+        double lat2 = Math.toRadians(b.getLatitud());
+        double lon1 = Math.toRadians(a.getLongitud());
+        double lon2 = Math.toRadians(b.getLongitud());
+        double x = (lon2 - lon1) * Math.cos((lat1 + lat2) / 2);
+        double y = lat2 - lat1;
+        return Math.sqrt(x * x + y * y) * R;
+    }
+
+    private static double calculateEuclideanDistance(Aeropuerto a, Aeropuerto b) {
+        double x = a.getLatitud() - b.getLatitud();
+        double y = a.getLongitud() - b.getLongitud();
+        return x * x + y * y;
     }
 
     public static Boolean solucionValidav2(HashMap<String, Aeropuerto> aeropuertos, HashMap<Integer, Vuelo> vuelos,
@@ -219,9 +258,7 @@ public class Auxiliares {
         String ciudadActual = envio.getOrigen();
         String ciudadDestino = envio.getDestino();
         ZonedDateTime fechaHoraActual = envio.getFechaHoraSalida();
-        ZonedDateTime fechaHoraLimite = fechaHoraActual.plusDays(
-                aeropuertos.get(ciudadActual).getContinente().equals(aeropuertos.get(ciudadDestino).getContinente()) ? 1
-                        : 2);
+        ZonedDateTime fechaHoraLimite = envio.getFechaHoraLlegadaPrevista();
 
         boolean rutaValida = true;
 

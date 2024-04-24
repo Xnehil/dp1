@@ -79,13 +79,14 @@ public class Aeropuerto{
         this.entradas = new TreeMap<LocalDateTime, Integer>();
         this.salidas = new TreeMap<LocalDateTime, Integer>();
 
-        //set timezone from GMT
-        String[] ids = TimeZone.getAvailableIDs(gmt * 3600000);
-        if (ids.length == 0) {
-            System.out.println("No se encontró la zona horaria para GMT " + gmt);
+        //set timezone from GMT like "Etc/GMT{gmt}"
+        String timeZone = "Etc/GMT";
+        if (gmt >= 0) {
+            timeZone += "+" + gmt;
         } else {
-            this.zonaHoraria = TimeZone.getTimeZone(ids[0]);
-        }  
+            timeZone += gmt;
+        }
+        this.zonaHoraria = TimeZone.getTimeZone(timeZone);
     }
 
     public Aeropuerto() {
