@@ -40,7 +40,7 @@ public class MPAv2 {
 
 
         int masApta=0;
-        double FADs =0.2;
+        double FADs =0.1;
 
         for (int i = 0; i < maxIter; i++) {
             // System.out.println("Iteración: " + i);
@@ -123,12 +123,12 @@ public class MPAv2 {
         for (int i = 0; i < inicial.length; i++) {
             //Cada numAeropuertos elementos corresponden a la ruta de un paquete. El primer elemento de dicha ruta será un vuelo que salga de su ciudad
             //WIP
-            // if(i%tamanioUnaSolucion==0){
-            //     inicial[i]=Vuelo.getVueloRandomDesde(vuelos, envios.get(paquetesList.get(i/tamanioUnaSolucion).getIdEnvío()).getOrigen());
-            // } else {
-            //     inicial[i]=(int)(Math.random()*(max-min+1)+min);
-            // }
-            inicial[i]=(int)(Math.random()*(max-min+1)+min);
+            if(i%tamanioUnaSolucion==0){
+                inicial[i]=Vuelo.getVueloRandomDesde(vuelos, envios.get(paquetesList.get(i/tamanioUnaSolucion).getIdEnvío()));
+            } else {
+                inicial[i]=(int)(Math.random()*(max-min+1)+min);
+            }
+            // inicial[i]=(int)(Math.random()*(max-min+1)+min);
         }
         return inicial;
     }

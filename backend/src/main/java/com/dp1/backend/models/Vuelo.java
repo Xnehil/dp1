@@ -3,7 +3,9 @@ package com.dp1.backend.models;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Random;
 
 public class Vuelo {
     private int idVuelo;
@@ -47,9 +49,8 @@ public class Vuelo {
 
         ZonedDateTime auxInicio = fechaHoraSalida;
         ZonedDateTime auxFin = fechaHoraLlegada;
-
         // Cambio de día sucece si la hora de llegada es antes de la hora de salida. Ya se consideran las zonas horarias
-        auxInicio = auxInicio.withZoneSameInstant(auxFin.getZone());
+        // auxInicio = auxInicio.withZoneSameInstant(auxFin.getZone());
         if (auxFin.isBefore(auxInicio)) {
             this.cambioDeDia = true;
         } else {
@@ -113,16 +114,29 @@ public class Vuelo {
         this.capacidad = capacidad;
     }
 
-    public static int getVueloRandomDesde(HashMap<Integer, Vuelo> vuelos, String origen) {
+    public static int getVueloRandomDesde(HashMap<Integer, Vuelo> vuelos, Envio envio) {
         //Devuelve un vuelo aleatorio desde el aeropuerto origen
-        int idVuelo = 0;
+        Random rand = new Random();
+        Vuelo closestFlight = null;
+        Duration smallestDifference = null;
+
         for (Vuelo vuelo : vuelos.values()) {
-            if (vuelo.getOrigen().equals(origen)) {
-                idVuelo = vuelo.getIdVuelo();
-                break;
+            if(vuelo.getOrigen().equals(envio.getOrigen()) && vuelo.getDestino().equals(envio.getDestino())){
+                if (vuelo.getFechaHoraSalida().with(envio.getFechaHoraSalida().toLocalDate()).isAfter(envio.getFechaHoraSalida())) {
+                    Duration difference = Duration.between(envio.getFechaHoraSalida(), vuelo.getFechaHoraSalida());
+                    if (smallestDifference == null || difference.compareTo(smallestDifference) < 0) {
+                        smallestDifference = difference;
+                        closestFlight = vuelo;
+                    }
+                }
             }
         }
-        return idVuelo;
+        int max = vuelos.size();
+        int min = 1;
+        if (closestFlight == null) {
+            return (int)(Math.random()*(max-min+1)+min);
+        }
+        return closestFlight.getIdVuelo();
     }
     public double calcularMinutosDeVuelo() {
         //Calcular la diferencia de tiempo entre la fecha y hora de salida y la fecha y hora de llegada

@@ -28,8 +28,13 @@ public class BackendApplication {
 	public static void main(String[] args) {
 		// SpringApplication.run(BackendApplication.class, args);
 		HashMap<String, Aeropuerto> aeropuertos = FuncionesLectura.leerAeropuertos("data/Aeropuerto.husos.v2.txt");
-        HashMap<Integer, Vuelo> vuelos = FuncionesLectura.leerVuelos("data/planes.vuelo.v2.txt", aeropuertos);
-        HashMap<Integer, Envio> envios = FuncionesLectura.leerEnvios("data/pack_enviado/pack_enviado_SKBO.txt", aeropuertos, 200);
+        HashMap<Integer, Vuelo> vuelos = FuncionesLectura.leerVuelos("data/planes_vuelo.v3.txt", aeropuertos);
+        String rutaArchivos="data/pack_enviado_";
+        String[] ciudades = {"SKBO", "SEQM", "SUAA", "SCEL", "SABE", "EBCI", "EHAM", "WMKK", "VIDP", "ZBAA"};
+        HashMap<Integer, Envio> envios = new HashMap<Integer, Envio>();
+        for (int i = 0; i < ciudades.length; i++) {
+            envios.putAll(FuncionesLectura.leerEnvios(rutaArchivos+ciudades[i]+".txt", aeropuertos, 20));
+        }
         // envios = FuncionesLectura.leerEnvios("algoritmos/data/pack_enviado/pack_enviado_SEQM.txt", aeropuertos);
 
         
@@ -38,7 +43,7 @@ public class BackendApplication {
 			paquetes.addAll(e.getPaquetes());
 		}
 
-        int tamanioSolucion=4;
+        int tamanioSolucion=5;
         //Initialize the owo
         int[] owo = new int[tamanioSolucion*paquetes.size()];
         try {
@@ -49,7 +54,7 @@ public class BackendApplication {
             int iteraciones=1;
             for (int i = 0; i < iteraciones; i++) {
                 Long startTime = System.currentTimeMillis();
-                owo=MPAv2.run(aeropuertos, vuelos, envios, paquetes, 200, 70, tamanioSolucion);
+                owo=MPAv2.run(aeropuertos, vuelos, envios, paquetes, 500, 100, tamanioSolucion);
                 long endTime = System.currentTimeMillis();
                 long executionTime = endTime - startTime;
                 int paquetesEntregados=Auxiliares.verificacionTotal(owo, aeropuertos, vuelos, envios, paquetes, tamanioSolucion);
@@ -74,13 +79,21 @@ public class BackendApplication {
             }
             paquetes.get(i).setRuta(ruta);
         }
+
+        ArrayList<Paquete> noEntregados = new ArrayList<Paquete>();
+        for (Paquete p : paquetes) {
+            if(Auxiliares.solucionValidav2( aeropuertos, vuelos, envios, p, false)==false){
+                noEntregados.add(p);
+                Auxiliares.solucionValidav2( aeropuertos, vuelos, envios, p, true);
+            }
+        }
         
 
         //Una solución
-        int verPaquete=480;        
+        int verPaquete=0;        
         //System.out.println("L solucion es valida: " + esSolucionValida);
         System.out.println("Funcion validacion:  ");
-        Paquete auxPaquete = paquetes.get(verPaquete);
+        Paquete auxPaquete = noEntregados.get(verPaquete);
         Boolean esSolucionValida = Auxiliares.solucionValidav2(aeropuertos, vuelos, envios, auxPaquete, true);
         System.out.println("La solución es valida: " + esSolucionValida);
         

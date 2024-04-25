@@ -131,10 +131,12 @@ public class Auxiliares {
             // Se cambia solo la fecha, no las horas. Esto porque los vuelos no tienen
             // fechas, se realizan todos los días.
             fechaHoraSiguienteSalida = fechaHoraSiguienteSalida.with(fechaHoraActual.toLocalDate());
+
+            //Penalización por tiempo de espera
+            Duration espera = Duration.between(fechaHoraActual, fechaHoraSiguienteSalida);
+            fitness -= espera.toMinutes() / 20;
+
             Boolean ubicacionValida = vuelo.getOrigen().equals(ciudadActual);
-
-
-
             // Modificación, tiempoValido no es necesario. Si la hora de salida es menor a
             // la hora de llegada, se considera que el vuelo sale al día siguiente
             if (fechaHoraActual.isAfter(fechaHoraSiguienteSalida)) {
@@ -164,7 +166,7 @@ public class Auxiliares {
             // cargaAuxiliarAeropuerto + 1);
 
             if (ubicacionValida && espacioEnVuelo) {
-                fitness += 4;
+                fitness += 5;
                 // Cambio de ciudad
                 ciudadActual = vuelo.getDestino();
 
