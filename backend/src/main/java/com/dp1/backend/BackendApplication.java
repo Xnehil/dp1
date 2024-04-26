@@ -29,7 +29,8 @@ public class BackendApplication {
         HashMap<String, Aeropuerto> aeropuertos = FuncionesLectura.leerAeropuertos("data/Aeropuerto.husos.v2.txt");
         HashMap<Integer, Vuelo> vuelos = FuncionesLectura.leerVuelos("data/planes_vuelo.v3.txt", aeropuertos);
         String rutaArchivos = "data/pack_enviado_";
-        String[] ciudades = { "SKBO", "SEQM", "SUAA", "SCEL", "SABE", "EBCI", "EHAM", "WMKK", "VIDP", "ZBAA" };
+        String[] ciudades = {"SKBO", "SEQM", "SVMI", "SBBR", "SPIM", "SLLP", "SCEL", "SABE", "SGAS", "SUAA", "LATI", "EDDI", "LOWW", "EBCI", "UMMS", "LBSF", "LKPR", "LDZA", "EKCH", "EHAM", "VIDP", "RKSI", "VTBS", "OMDB", "ZBAA", "RJTT", "WMKK", "WSSS", "WIII", "RPLL"};
+
         HashMap<Integer, Envio> envios = new HashMap<Integer, Envio>();
         for (int i = 0; i < ciudades.length; i++) {
             envios.putAll(FuncionesLectura.leerEnvios(rutaArchivos + ciudades[i] + ".txt", aeropuertos, 20));
@@ -39,7 +40,11 @@ public class BackendApplication {
             paquetes.addAll(e.getPaquetes());
         }
 
+        for(Paquete paq : paquetes){
+            System.out.println(paq.getIdPaquete());
 
+        }
+        //ACO.run(aeropuertos, vuelos, envios, paquetes, 100);
 
 
         /*
