@@ -126,7 +126,7 @@ public class ACO {
                     
 
 
-                    
+
                     System.out.println("                IMPRIMIENDO TABLA DE OPCIONES PARA EL PAQUETE "
                     + paq.getIdPaquete() + " " + envios.get(paq.getIdEnvío()).getOrigen() + " "
                     + envios.get(paq.getIdEnvío()).getDestino());
@@ -134,7 +134,7 @@ public class ACO {
                     // generarArchivoTabla(tablaOpcionesVuelos, "salida");
                     imprimirTabla(tablaOpcionesVuelos, vuelos);
                     System.out.println("VUELO ESCOGIDO PAQUETE " + paq.getIdPaquete() + ": " + vueloEscogido);
-
+                    System.out.println("CIUDAD ACTUAL PAQUETE " + vuelos.get(vueloEscogido).getDestino());
 
 
                     

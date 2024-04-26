@@ -1,6 +1,5 @@
 package com.dp1.backend;
 
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -25,27 +24,28 @@ import java.time.format.DateTimeFormatter;
 @SpringBootApplication
 public class BackendApplication {
 
-	public static void main(String[] args) {
-		// SpringApplication.run(BackendApplication.class, args);
-		HashMap<String, Aeropuerto> aeropuertos = FuncionesLectura.leerAeropuertos("data/Aeropuerto.husos.v2.txt");
+    public static void main(String[] args) {
+        // SpringApplication.run(BackendApplication.class, args);
+        HashMap<String, Aeropuerto> aeropuertos = FuncionesLectura.leerAeropuertos("data/Aeropuerto.husos.v2.txt");
         HashMap<Integer, Vuelo> vuelos = FuncionesLectura.leerVuelos("data/planes_vuelo.v3.txt", aeropuertos);
-        String rutaArchivos="data/pack_enviado_";
-        String[] ciudades = {"SKBO", "SEQM", "SUAA", "SCEL", "SABE", "EBCI", "EHAM", "WMKK", "VIDP", "ZBAA"};
+        String rutaArchivos = "data/pack_enviado_";
+        String[] ciudades = { "SKBO", "SEQM", "SUAA", "SCEL", "SABE", "EBCI", "EHAM", "WMKK", "VIDP", "ZBAA" };
         HashMap<Integer, Envio> envios = new HashMap<Integer, Envio>();
         for (int i = 0; i < ciudades.length; i++) {
-            envios.putAll(FuncionesLectura.leerEnvios(rutaArchivos+ciudades[i]+".txt", aeropuertos, 20));
+            envios.putAll(FuncionesLectura.leerEnvios(rutaArchivos + ciudades[i] + ".txt", aeropuertos, 20));
         }
-        // envios = FuncionesLectura.leerEnvios("algoritmos/data/pack_enviado/pack_enviado_SEQM.txt", aeropuertos);
+        ArrayList<Paquete> paquetes = new ArrayList<Paquete>();
+        for (Envio e : envios.values()) {
+            paquetes.addAll(e.getPaquetes());
+        }
 
-        
-		ArrayList<Paquete> paquetes = new ArrayList<Paquete>();
-		for(Envio e : envios.values()){
-			paquetes.addAll(e.getPaquetes());
-		}
 
-        int tamanioSolucion=5;
-        //Initialize the owo
-        int[] owo = new int[tamanioSolucion*paquetes.size()];
+
+
+        /*
+        int tamanioSolucion = 5;
+        // Initialize the owo
+        int[] owo = new int[tamanioSolucion * paquetes.size()];
         try {
             FileWriter writer = new FileWriter("output/results_chiquito_"+LocalDate.now()+".txt");
         
@@ -57,24 +57,26 @@ public class BackendApplication {
                 owo=MPAv2.run(aeropuertos, vuelos, envios, paquetes, 500, 120, tamanioSolucion);
                 long endTime = System.currentTimeMillis();
                 long executionTime = endTime - startTime;
-                int paquetesEntregados=Auxiliares.verificacionTotal(owo, aeropuertos, vuelos, envios, paquetes, tamanioSolucion);
-                double porcentajeEntregados = (double)(paquetesEntregados*100)/paquetes.size();
-                promedio+=porcentajeEntregados;
-                String resultLine = String.format("%d\t%d\t%d\t%.2f%%\n", i, executionTime, paquetesEntregados, porcentajeEntregados);
+                int paquetesEntregados = Auxiliares.verificacionTotal(owo, aeropuertos, vuelos, envios, paquetes,
+                        tamanioSolucion);
+                double porcentajeEntregados = (double) (paquetesEntregados * 100) / paquetes.size();
+                promedio += porcentajeEntregados;
+                String resultLine = String.format("%d\t%d\t%d\t%.2f%%\n", i, executionTime, paquetesEntregados,
+                        porcentajeEntregados);
                 writer.write(resultLine);
             }
-            promedio/=iteraciones;
-            writer.write("\nPromedio\t\t\t"+promedio+"%\n");
-        
+            promedio /= iteraciones;
+            writer.write("\nPromedio\t\t\t" + promedio + "%\n");
+
             writer.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
-    
-        //Asignar rutas a los paquetes
+
+        // Asignar rutas a los paquetes
         for (int i = 0; i < paquetes.size(); i++) {
             ArrayList<Integer> ruta = new ArrayList<Integer>();
-            for (int j = i*tamanioSolucion; j < tamanioSolucion*(i+1); j++) {
+            for (int j = i * tamanioSolucion; j < tamanioSolucion * (i + 1); j++) {
                 ruta.add(owo[j]);
             }
             paquetes.get(i).setRuta(ruta);
@@ -82,12 +84,11 @@ public class BackendApplication {
 
         ArrayList<Paquete> noEntregados = new ArrayList<Paquete>();
         for (Paquete p : paquetes) {
-            if(Auxiliares.solucionValidav2( aeropuertos, vuelos, envios, p, false)==false){
+            if (Auxiliares.solucionValidav2(aeropuertos, vuelos, envios, p, false) == false) {
                 noEntregados.add(p);
-                Auxiliares.solucionValidav2( aeropuertos, vuelos, envios, p, true);
+                Auxiliares.solucionValidav2(aeropuertos, vuelos, envios, p, true);
             }
         }
-        
 
         //Una solución
         int verPaquete=0;        
@@ -96,12 +97,7 @@ public class BackendApplication {
         Paquete auxPaquete = noEntregados.get(verPaquete);
         Boolean esSolucionValida = Auxiliares.solucionValidav2(aeropuertos, vuelos, envios, auxPaquete, true);
         System.out.println("La solución es valida: " + esSolucionValida);
-        
+         */
     }
 
-
-
-        
-	}
-
-
+}
