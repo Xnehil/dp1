@@ -184,8 +184,8 @@ public class Auxiliares {
             } else {
                 // Penalización por no ser una ruta válida
                 fitness -= (!ubicacionValida ? 10 : 0);
-                fitness -= !espacioEnVuelo ? 4 : 0;
-                // fitness -= !espacioEnAlmacen ? 4 : 0;
+                fitness -= !espacioEnVuelo ? 10 : 0;
+                fitness -= !espacioEnAlmacen ? 20 : 0;
                 rutaValida = false;
             }
 
