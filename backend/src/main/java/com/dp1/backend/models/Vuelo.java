@@ -1,8 +1,11 @@
 package com.dp1.backend.models;
 
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Random;
 
 public class Vuelo {
     private int idVuelo;
@@ -11,7 +14,30 @@ public class Vuelo {
     private ZonedDateTime fechaHoraSalida;
     private ZonedDateTime fechaHoraLlegada;
     private int capacidad;
-    private int capacidadActual;
+    private HashMap<LocalDate, Integer> cargaPorDia;
+
+    public HashMap<LocalDate,Integer> getCargaPorDia() {
+        return this.cargaPorDia;
+    }
+
+    public void setCargaPorDia(HashMap<LocalDate,Integer> cargaPorDia) {
+        this.cargaPorDia = cargaPorDia;
+    }
+
+
+    private Boolean cambioDeDia;
+
+    public Boolean isCambioDeDia() {
+        return this.cambioDeDia;
+    }
+
+    public Boolean getCambioDeDia() {
+        return this.cambioDeDia;
+    }
+
+    public void setCambioDeDia(Boolean cambioDeDia) {
+        this.cambioDeDia = cambioDeDia;
+    }
 
     public Vuelo(String origen, String destino, ZonedDateTime fechaHoraSalida, ZonedDateTime fechaHoraLlegada, int capacidad) {
         this.origen = origen;
@@ -19,7 +45,17 @@ public class Vuelo {
         this.fechaHoraSalida = fechaHoraSalida;
         this.fechaHoraLlegada = fechaHoraLlegada;
         this.capacidad = capacidad;
-        this.capacidadActual = capacidad; //se inicializa también
+        this.cargaPorDia = new HashMap<LocalDate, Integer>();
+
+        ZonedDateTime auxInicio = fechaHoraSalida;
+        ZonedDateTime auxFin = fechaHoraLlegada;
+        // Cambio de día sucece si la hora de llegada es antes de la hora de salida. Ya se consideran las zonas horarias
+        // auxInicio = auxInicio.withZoneSameInstant(auxFin.getZone());
+        if (auxFin.isBefore(auxInicio)) {
+            this.cambioDeDia = true;
+        } else {
+            this.cambioDeDia = false;
+        }
     }
 
     public Vuelo() {
@@ -36,13 +72,6 @@ public class Vuelo {
 
     public void setIdVuelo(int idVuelo) {
         this.idVuelo = idVuelo;
-    }
-    public int getCapacidadActual() {
-        return this.capacidadActual;
-    }
-
-    public void setCapacidadActual(int capacidadActual) { //no es correcto, pero luego lo cambiaremos. Si se quiere actualizar la capacidad, será de 1 en 1
-        this.capacidadActual = capacidadActual;
     }
 
     public String getOrigen() {
@@ -85,16 +114,29 @@ public class Vuelo {
         this.capacidad = capacidad;
     }
 
-    public static int getVueloRandomDesde(HashMap<Integer, Vuelo> vuelos, String origen) {
+    public static int getVueloRandomDesde(HashMap<Integer, Vuelo> vuelos, Envio envio) {
         //Devuelve un vuelo aleatorio desde el aeropuerto origen
-        int idVuelo = 0;
+        Random rand = new Random();
+        Vuelo closestFlight = null;
+        Duration smallestDifference = null;
+
         for (Vuelo vuelo : vuelos.values()) {
-            if (vuelo.getOrigen().equals(origen)) {
-                idVuelo = vuelo.getIdVuelo();
-                break;
+            if(vuelo.getOrigen().equals(envio.getOrigen()) && vuelo.getDestino().equals(envio.getDestino())){
+                if (vuelo.getFechaHoraSalida().with(envio.getFechaHoraSalida().toLocalDate()).isAfter(envio.getFechaHoraSalida())) {
+                    Duration difference = Duration.between(envio.getFechaHoraSalida(), vuelo.getFechaHoraSalida());
+                    if (smallestDifference == null || difference.compareTo(smallestDifference) < 0) {
+                        smallestDifference = difference;
+                        closestFlight = vuelo;
+                    }
+                }
             }
         }
-        return idVuelo;
+        int max = vuelos.size();
+        int min = 1;
+        if (closestFlight == null) {
+            return (int)(Math.random()*(max-min+1)+min);
+        }
+        return closestFlight.getIdVuelo();
     }
     public double calcularMinutosDeVuelo() {
         //Calcular la diferencia de tiempo entre la fecha y hora de salida y la fecha y hora de llegada

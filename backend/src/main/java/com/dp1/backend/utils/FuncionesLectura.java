@@ -20,22 +20,29 @@ import com.dp1.backend.models.Vuelo;
 import java.time.format.DateTimeFormatter;
 import java.time.Duration;
 
-
 public class FuncionesLectura {
 
     public static HashMap<String, Aeropuerto> leerAeropuertos(String archivo) {
         System.out.println("Leyendo aeropuertos desde " + archivo);
         HashMap<String, Aeropuerto> aeropuertos = new HashMap<>();
-        try (BufferedReader br = Files.newBufferedReader(Paths.get(archivo), Charset.forName("UTF-8"))) {
+        String currentContinent = "";
+        try (BufferedReader br = Files.newBufferedReader(Paths.get(archivo), Charset.forName("UTF-16"))) {
             String line;
             int lineCount = 0;
             while ((line = br.readLine()) != null) {
                 lineCount++;
-                if (line.trim().isEmpty() || line.contains("GMT") || lineCount <= 4 || line.contains("Europa")) {
+                if (line.trim().isEmpty() || lineCount <= 7) {
                     continue; // Skip empty lines and headers
                 }
-                String[] parts = line.split("\\s{2,}"); // Split on two or more spaces
-                //Elminar espacios en blanco
+                if (line.contains("America del Sur") || line.contains("Europa") || line.contains("ASIA")) {
+                    currentContinent = line.trim();
+                    if (currentContinent.contains("America")) {
+                        currentContinent = "America del Sur";
+                    }
+                    continue; // Skip continent lines
+                }
+                String[] parts = line.split("\\s{3,}"); // Split on three or more spaces
+                // Eliminar espacios en blanco
                 for (int i = 0; i < parts.length; i++) {
                     parts[i] = parts[i].trim();
                 }
@@ -44,15 +51,15 @@ public class FuncionesLectura {
                 String city = parts[2];
                 String country = parts[3];
                 String shortName = parts[4];
-                int gmt = Integer.parseInt(parts[5]);
+                int gmt = Integer.parseInt(parts[5].replace("+", "").replace("-", ""));
                 int capacity = Integer.parseInt(parts[6]);
-                double longitud = Double.parseDouble(parts[7]);
-                double latitud = Double.parseDouble(parts[8]);
+                double longitud = convertToDecimalDegrees(parts[8]);
+                double latitud = convertToDecimalDegrees(parts[7]);
 
-                // System.out.println("Aeropuerto: " + number + " " + oaciCode + " " + city + " " + country + " " + shortName + " " + gmt + " " + capacity);
                 Aeropuerto aeropuerto = new Aeropuerto(number, oaciCode, city, country, shortName, gmt, capacity);
                 aeropuerto.setLongitud(longitud);
                 aeropuerto.setLatitud(latitud);
+                aeropuerto.setContinente(currentContinent);
                 aeropuertos.put(oaciCode, aeropuerto);
             }
         } catch (IOException e) {
@@ -80,17 +87,16 @@ public class FuncionesLectura {
                 TimeZone zonaOrigen = aeropuertos.get(ciudadOrigen).getZonaHoraria();
                 TimeZone zonaDestino = aeropuertos.get(ciudadDestino).getZonaHoraria();
 
-                LocalDate localDate= LocalDate.now();
+                LocalDate localDate = LocalDate.now();
                 LocalTime origenLocalTime = LocalTime.parse(horaOrigen);
                 LocalTime destinoLocalTime = LocalTime.parse(horaDestino);
 
                 ZonedDateTime horaOrigenZoned = ZonedDateTime.of(localDate, origenLocalTime, zonaOrigen.toZoneId());
                 ZonedDateTime horaDestinoZoned = ZonedDateTime.of(localDate, destinoLocalTime, zonaDestino.toZoneId());
 
-
                 int capacidadCarga = Integer.parseInt(parts[4]);
 
-                Vuelo vuelo= new Vuelo(ciudadOrigen, ciudadDestino, horaOrigenZoned, horaDestinoZoned, capacidadCarga);
+                Vuelo vuelo = new Vuelo(ciudadOrigen, ciudadDestino, horaOrigenZoned, horaDestinoZoned, capacidadCarga);
                 vuelo.setIdVuelo(id);
                 vuelos.put(id, vuelo);
                 id++;
@@ -101,22 +107,41 @@ public class FuncionesLectura {
         return vuelos;
     }
 
-    public static HashMap<Integer, Envio> leerEnvios(String archivo, HashMap<String, Aeropuerto> aeropuertos) {
+    private static double convertToDecimalDegrees(String dms) {
+        // Remove more than one space
+        dms = dms.replaceAll("\\s+", " ");
+        String[] parts = dms.split("\\s");
+        // Remove °, ', "
+        parts[1] = parts[1].replace("°", "");
+        parts[2] = parts[2].replace("'", "");
+        parts[3] = parts[3].replace("\"", "");
+
+        double degrees = Double.parseDouble(parts[1]);
+        double minutes = Double.parseDouble(parts[2]) / 60;
+        double seconds = Double.parseDouble(parts[3]) / 3600;
+        double decimalDegrees = degrees + minutes + seconds;
+        if (parts[4].equals("S") || parts[4].equals("W")) {
+            decimalDegrees = -decimalDegrees; // Invert the sign for south and west coordinates
+        }
+        return decimalDegrees;
+    }
+
+    public static HashMap<Integer, Envio> leerEnvios(String archivo, HashMap<String, Aeropuerto> aeropuertos, int maxEnvios){
         System.out.println("Leyendo envios desde " + archivo);
         HashMap<Integer, Envio> envios = new HashMap<>();
-        int id = 1;
+        int counter=0;
         try (BufferedReader br = Files.newBufferedReader(Paths.get(archivo), Charset.forName("UTF-8"))) {
             String line;
-            while ((line = br.readLine()) != null) {
+            while ((line = br.readLine()) != null && counter < maxEnvios) {
                 if (line.trim().isEmpty()) {
                     continue; // Skip empty lines
                 }
                 String[] parts = line.split("-");
-                String ciudadOrigenEnvio = parts[0].substring(0, 4);
-                int envioId = Integer.parseInt(parts[0].substring(4));
-                LocalDate fechaOrigen = LocalDate.parse(parts[1], DateTimeFormatter.ofPattern("yyyyMMdd"));
-                String horaOrigen = parts[2];
-                String[] destinoParts = parts[3].split(":");
+                String ciudadOrigenEnvio = parts[0];
+                int envioId = Integer.parseInt(parts[1]);
+                LocalDate fechaOrigen = LocalDate.parse(parts[2], DateTimeFormatter.ofPattern("yyyyMMdd"));
+                LocalTime horaOrigen = LocalTime.parse(parts[3]);
+                String[] destinoParts = parts[4].split(":");
                 String ciudadDestino = destinoParts[0];
                 int cantidadPaquetes = Integer.parseInt(destinoParts[1]);
 
@@ -125,37 +150,38 @@ public class FuncionesLectura {
 
                 TimeZone zonaOrigen = origen.getZonaHoraria();
                 TimeZone zonaDestino = destino.getZonaHoraria();
-                LocalTime origenLocalTime = LocalTime.parse(horaOrigen);
 
-                ZonedDateTime horaOrigenZoned = ZonedDateTime.of(fechaOrigen, origenLocalTime, zonaOrigen.toZoneId());
+                ZonedDateTime horaOrigenZoned = ZonedDateTime.of(fechaOrigen, horaOrigen, zonaOrigen.toZoneId());
                 LocalDate fechaDestino;
                 ZonedDateTime horaDestinoZoned;
 
-                Duration tiempoEnvio = Duration.ofHours(0);
-                //El tiempo para enviar será de dos días si es continente distsinto y de un día si es el mismo continente
-                if (origen.getContinente() != destino.getContinente()){
-                    fechaDestino = fechaOrigen.plusDays(2);   
-                } else {
-                    fechaDestino = fechaOrigen.plusDays(1); 
-                }
-                horaDestinoZoned = ZonedDateTime.of(fechaDestino, origenLocalTime, zonaDestino.toZoneId());
-                tiempoEnvio = Duration.between(horaOrigenZoned, horaDestinoZoned);
 
-                ArrayList<Paquete> paquetes= new ArrayList<>();
+                // El tiempo para enviar será de dos días si es continente distsinto y de un día
+                // si es el mismo continente
+                if (!origen.getContinente().equals(destino.getContinente())) {
+                    fechaDestino = fechaOrigen.plusDays(2);
+                } else {
+                    fechaDestino = fechaOrigen.plusDays(1);
+                }
+                horaDestinoZoned = ZonedDateTime.of(fechaDestino, horaOrigen, zonaDestino.toZoneId());
+                ArrayList<Paquete> paquetes = new ArrayList<>();
                 for (int i = 0; i < cantidadPaquetes; i++) {
                     Paquete paquete = new Paquete();
                     paquete.setIdEnvío(envioId);
-                    paquete.setIdPaquete(id);
-                    paquete.setTiempoRestante(tiempoEnvio);
+                    // Add more properties to the package if needed
                     paquetes.add(paquete);
-                    id++;
                 }
-                envios.put(envioId, new Envio(ciudadOrigenEnvio, ciudadDestino, horaOrigenZoned, cantidadPaquetes, paquetes));
+                Envio nuevoEnvio = new Envio(ciudadOrigenEnvio, ciudadDestino, horaOrigenZoned, cantidadPaquetes, paquetes);
+                nuevoEnvio.setIdEnvio(envioId);
+                nuevoEnvio.setFechaHoraLlegadaPrevista(horaDestinoZoned);
+
+                envios.put(envioId, nuevoEnvio);
+                counter++;
             }
         } catch (IOException e) {
             System.err.println("Error reading file: " + e);
         }
         return envios;
     }
-    
+
 }

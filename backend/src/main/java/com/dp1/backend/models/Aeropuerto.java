@@ -1,6 +1,9 @@
 package com.dp1.backend.models;
 
+import java.time.LocalDateTime;
 import java.util.TimeZone;
+import java.util.TreeMap;
+
 
 public class Aeropuerto{
     private int idAeropuerto;
@@ -10,10 +13,36 @@ public class Aeropuerto{
     private String paisCorto;
     private String continente;
     private int gmt;
-    private int capacidad;
+    private int capacidadMaxima;
     private TimeZone zonaHoraria;
     private double latitud;
     private double longitud;
+    //Estos tienen la zona horaria del aeropuerto
+    private TreeMap<LocalDateTime, Integer> entradas;
+    private TreeMap<LocalDateTime, Integer> salidas;
+
+
+    public TreeMap<LocalDateTime,Integer> getEntradas() {
+        return this.entradas;
+    }
+
+    public void setEntradas(TreeMap<LocalDateTime,Integer> entradas) {
+        this.entradas = entradas;
+    }
+
+    public TreeMap<LocalDateTime,Integer> getSalidas() {
+        return this.salidas;
+    }
+
+    public void setSalidas(TreeMap<LocalDateTime,Integer> salidas) {
+        this.salidas = salidas;
+    }
+
+    public int cargaAEstaHora(LocalDateTime hora) {
+        int salidasHastaAhora = this.salidas.headMap(hora).values().stream().mapToInt(Integer::intValue).sum();
+        int entradasHastaAhora = this.entradas.headMap(hora).values().stream().mapToInt(Integer::intValue).sum();
+        return entradasHastaAhora - salidasHastaAhora;
+    }
 
     public double getLatitud() {
         return this.latitud;
@@ -45,17 +74,19 @@ public class Aeropuerto{
         this.pais = pais;
         this.paisCorto = paisCorto;
         this.gmt = gmt;
-        this.capacidad = capacidad;
+        this.capacidadMaxima = capacidad;
         this.idAeropuerto = idAeropuerto;
+        this.entradas = new TreeMap<LocalDateTime, Integer>();
+        this.salidas = new TreeMap<LocalDateTime, Integer>();
 
-        //set timezone from GMT
-        String[] ids = TimeZone.getAvailableIDs(gmt * 3600000);
-        if (ids.length == 0) {
-            System.out.println("No se encontró la zona horaria para GMT " + gmt);
+        //set timezone from GMT like "Etc/GMT{gmt}"
+        String timeZone = "Etc/GMT";
+        if (gmt >= 0) {
+            timeZone += "+" + gmt;
         } else {
-            this.zonaHoraria = TimeZone.getTimeZone(ids[0]);
+            timeZone += gmt;
         }
-        
+        this.zonaHoraria = TimeZone.getTimeZone(timeZone);
     }
 
     public Aeropuerto() {
@@ -64,7 +95,7 @@ public class Aeropuerto{
         this.pais = "";
         this.paisCorto = "";
         this.gmt = 0;
-        this.capacidad = 0;
+        this.capacidadMaxima = 0;
         this.continente = "";
     }
 
@@ -125,12 +156,12 @@ public class Aeropuerto{
         this.gmt = gmt;
     }
 
-    public int getCapacidad() {
-        return this.capacidad;
+    public int getCapacidadMaxima() {
+        return this.capacidadMaxima;
     }
 
-    public void setCapacidad(int capacidad) {
-        this.capacidad = capacidad;
+    public void setCapacidadMaxima(int capacidad) {
+        this.capacidadMaxima = capacidad;
     }
 
 

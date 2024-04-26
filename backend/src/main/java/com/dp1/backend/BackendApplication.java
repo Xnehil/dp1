@@ -1,13 +1,9 @@
 package com.dp1.backend;
 
-import java.text.DecimalFormat;
-import java.time.LocalTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Random;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -19,49 +15,28 @@ import com.dp1.backend.models.Vuelo;
 import com.dp1.backend.utils.ACO;
 import com.dp1.backend.utils.Auxiliares;
 import com.dp1.backend.utils.FuncionesLectura;
-import com.dp1.backend.utils.MPA;
-import com.dp1.backend.utils.Normalizacion;
+import com.dp1.backend.utils.MPAv2;
+
+import java.io.FileWriter;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 @SpringBootApplication
 public class BackendApplication {
 
 	public static void main(String[] args) {
 		// SpringApplication.run(BackendApplication.class, args);
-		HashMap<String, Aeropuerto> aeropuertos = FuncionesLectura.leerAeropuertos("algoritmos/data/Aeropuerto.husos.v1.incompleto.txt");
-        for (Aeropuerto a : aeropuertos.values()) {
-            if (a.getGmt() <0 ){
-                a.setContinente("América del Sur");
-            }
-            else{
-                a.setContinente("Europa");
-            }
+		HashMap<String, Aeropuerto> aeropuertos = FuncionesLectura.leerAeropuertos("data/Aeropuerto.husos.v2.txt");
+        HashMap<Integer, Vuelo> vuelos = FuncionesLectura.leerVuelos("data/planes_vuelo.v3.txt", aeropuertos);
+        String rutaArchivos="data/pack_enviado_";
+        String[] ciudades = {"SKBO", "SEQM", "SUAA", "SCEL", "SABE", "EBCI", "EHAM", "WMKK", "VIDP", "ZBAA"};
+        HashMap<Integer, Envio> envios = new HashMap<Integer, Envio>();
+        for (int i = 0; i < ciudades.length; i++) {
+            envios.putAll(FuncionesLectura.leerEnvios(rutaArchivos+ciudades[i]+".txt", aeropuertos, 20));
         }
-        /*
-        for (Aeropuerto aeropuerto : aeropuertos.values()) {
-            System.out.println("ID: " + aeropuerto.getIdAeropuerto() + ", " +
-                           "Código OACI: " + aeropuerto.getCodigoOACI() + ", " +
-                           "Ciudad: " + aeropuerto.getCiudad() + ", " +
-                           "País: " + aeropuerto.getPais() + ", " +
-                           "País Corto: " + aeropuerto.getPaisCorto() + ", " +
-                           "Continente: " + aeropuerto.getContinente() + ", " +
-                           "GMT: " + aeropuerto.getGmt() + ", " +
-                           "Capacidad: " + aeropuerto.getCapacidad() + ", " +
-                           "Zona Horaria: " + aeropuerto.getZonaHoraria().getID() + ", " +
-                           "Latitud: " + aeropuerto.getLatitud() + ", " +
-                           "Longitud: " + aeropuerto.getLongitud());
-        }
-         */
-        // for (Aeropuerto aeropuerto : aeropuertos.values()) {
-        //     System.out.println("ID: " + aeropuerto.getIdAeropuerto() + ", " +
-        //                    "Código OACI: " + aeropuerto.getCodigoOACI() + ", " +
-        //                    "Ciudad: " + aeropuerto.getCiudad() + ", " +
-        //                    "País: " + aeropuerto.getPais() + ", " +
-        //                    "GMT: " + aeropuerto.getGmt() + ", " +
-        //                    "Zona Horaria: " + aeropuerto.getZonaHoraria().getID());
-        // }
-        HashMap<Integer, Vuelo> vuelos = FuncionesLectura.leerVuelos("algoritmos/data/Planes.vuelo.v1.incompleto.txt", aeropuertos);
-        HashMap<Integer, Envio> envios = FuncionesLectura.leerEnvios("algoritmos/data/pack_enviado/pack_enviado_SEQM.txt", aeropuertos);
-        
+        // envios = FuncionesLectura.leerEnvios("algoritmos/data/pack_enviado/pack_enviado_SEQM.txt", aeropuertos);
+
         //System.out.println(envios.get(1).getFechaHoraLlegada());
 
 
@@ -70,43 +45,65 @@ public class BackendApplication {
 			paquetes.addAll(e.getPaquetes());
 		}
 
+        int tamanioSolucion=5;
+        //Initialize the owo
+        int[] owo = new int[tamanioSolucion*paquetes.size()];
+        try {
+            FileWriter writer = new FileWriter("output/results_"+LocalDate.now()+".txt");
         
+            writer.write("Iteración\tTiempo de ejecución (ms)\tPaquetes entregados\tPorcentaje de paquetes entregados\n");
+            double promedio=0;
+            int iteraciones=1;
+            for (int i = 0; i < iteraciones; i++) {
+                Long startTime = System.currentTimeMillis();
+                owo=MPAv2.run(aeropuertos, vuelos, envios, paquetes, 500, 100, tamanioSolucion);
+                long endTime = System.currentTimeMillis();
+                long executionTime = endTime - startTime;
+                int paquetesEntregados=Auxiliares.verificacionTotal(owo, aeropuertos, vuelos, envios, paquetes, tamanioSolucion);
+                double porcentajeEntregados = (double)(paquetesEntregados*100)/paquetes.size();
+                promedio+=porcentajeEntregados;
+                String resultLine = String.format("%d\t%d\t%d\t%.2f%%\n", i, executionTime, paquetesEntregados, porcentajeEntregados);
+                writer.write(resultLine);
+            }
+            promedio/=iteraciones;
+            writer.write("\nPromedio\t\t\t"+promedio+"%\n");
         
-        //internamente cada paquete retornará con una ruta
-        ACO.run(aeropuertos, vuelos, envios, paquetes,1);
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    
+        //Asignar rutas a los paquetes
+        for (int i = 0; i < paquetes.size(); i++) {
+            ArrayList<Integer> ruta = new ArrayList<Integer>();
+            for (int j = i*tamanioSolucion; j < tamanioSolucion*(i+1); j++) {
+                ruta.add(owo[j]);
+            }
+            paquetes.get(i).setRuta(ruta);
+        }
 
-
-
-
-        // System.out.println("Distancia: " + Normalizacion.obtenerDistanciaEntreAeropuertos(aeropuertos, "UMMS", "SCEL"));
+        ArrayList<Paquete> noEntregados = new ArrayList<Paquete>();
+        for (Paquete p : paquetes) {
+            if(Auxiliares.solucionValidav2( aeropuertos, vuelos, envios, p, false)==false){
+                noEntregados.add(p);
+                Auxiliares.solucionValidav2( aeropuertos, vuelos, envios, p, true);
+            }
+        }
         
-
-
-        // for(Paquete p:paquetes){
-        //     System.out.println(p.getIdEnvío() + "  "+ p.getIdPaquete());
-        // }
-        /*
-
-		int[] owo=MPA.run(aeropuertos, vuelos, envios, paquetes, 40, 20);
 
         //Una solución
-        for (int i = 0; i < aeropuertos.size(); i++) {
-            System.out.print(owo[i] + ": ");
-            System.out.print(vuelos.get(owo[i]).getOrigen()+"  - " + vuelos.get(owo[i]).getDestino() + " \n");
-        }
-        //Se quería llegar de 
-        System.out.println("Se quería llegar de " + envios.get(1).getOrigen() + " a " + envios.get(1).getDestino());
- */
-
-    
-        // ZonedDateTime nowGMT = ZonedDateTime.now(ZoneId.of("GMT-5"));
-        // DateTimeFormatter formatter = DateTimeFormatter.ofPattern("uuuu-MM-dd HH:mm:ss z");
-        // System.out.println("Fecha y hora actual en GMT: " + nowGMT.format(formatter));
+        int verPaquete=0;        
+        //System.out.println("L solucion es valida: " + esSolucionValida);
+        System.out.println("Funcion validacion:  ");
+        Paquete auxPaquete = noEntregados.get(verPaquete);
+        Boolean esSolucionValida = Auxiliares.solucionValidav2(aeropuertos, vuelos, envios, auxPaquete, true);
+        System.out.println("La solución es valida: " + esSolucionValida);
         
-        // while(true){
-        //     LocalTime localTime = LocalTime.now();
-        //     System.out.println(localTime);
-        // }
+    }
+
+
+
         
 	}
-}
+
+
