@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 public class Envio {
     private int idEnvio;
+    private String codigoEnvio;
     private String origen;
     private String destino;
     private ZonedDateTime fechaHoraSalida;
@@ -39,6 +40,16 @@ public class Envio {
         this.cantidadPaquetes = 0;
         this.paquetes = new ArrayList<Paquete>();
     }
+
+
+    public String getCodigoEnvio() {
+        return this.codigoEnvio;
+    }
+
+    public void setCodigoEnvio(String codigoEnvio) {
+        this.codigoEnvio = codigoEnvio;
+    }
+
 
 
     public int getIdEnvio() {

@@ -6,8 +6,19 @@ import java.util.ArrayList;
 
 public class Paquete {
     private int idPaquete;
-    private int idEnvío;
+    private int idEnvio;
+    private String codigoEnvio;
     //Se almacena la lista de ids de los vuelos a seguir
+
+
+    public String getCodigoEnvio() {
+        return this.codigoEnvio;
+    }
+
+    public void setCodigoEnvio(String codigoEnvio) {
+        this.codigoEnvio = codigoEnvio;
+    }
+
 
     public int getIdPaquete() {
         return this.idPaquete;
@@ -17,12 +28,12 @@ public class Paquete {
         this.idPaquete = idPaquete;
     }
 
-    public int getIdEnvío() {
-        return this.idEnvío;
+    public int getIdEnvio() {
+        return this.idEnvio;
     }
 
-    public void setIdEnvío(int idEnvío) {
-        this.idEnvío = idEnvío;
+    public void setIdEnvio(int idEnvío) {
+        this.idEnvio = idEnvío;
     }
 
     public ArrayList<Integer> getRuta() {
@@ -50,14 +61,14 @@ public class Paquete {
 
     public Paquete(int idPaquete, int idEnvío, ArrayList<Integer> ruta, Duration tiempoRestante) {
         this.idPaquete = idPaquete;
-        this.idEnvío = idEnvío;
+        this.idEnvio = idEnvío;
         this.ruta = ruta;
         this.tiempoRestante = tiempoRestante;
     }
 
     public Paquete() {
         this.idPaquete = 0;
-        this.idEnvío = 0;
+        this.idEnvio = 0;
         this.ruta = new ArrayList<Integer>();
         this.tiempoRestante = Duration.ZERO;
     }

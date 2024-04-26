@@ -163,27 +163,23 @@ public class Aeropuerto{
 
     public void paqueteEntraPlanificacion(LocalDateTime time) {
         Map.Entry<LocalDateTime, Integer> entry = cantPaqParaPlanificacion.floorEntry(time);
-        int lastValue = (entry != null) ? entry.getValue() : 0;
+        int lastValue = (entry != null) ? entry.getValue() : paquetesAEstaHoraReal(time);;
 
-        lastValue+=paquetesAEstaHoraReal(time);
-        
         cantPaqParaPlanificacion.put(time, lastValue + 1);
         updateFutureCounts(time, 1);
     }
 
     public void paqueteSalePlanificacion(LocalDateTime time) {
         Map.Entry<LocalDateTime, Integer> entry = cantPaqParaPlanificacion.floorEntry(time);
-        int lastValue = (entry != null) ? entry.getValue() : 0;
+        int lastValue = (entry != null) ? entry.getValue() : paquetesAEstaHoraReal(time);
 
-        lastValue+=paquetesAEstaHoraReal(time);
         cantPaqParaPlanificacion.put(time, lastValue - 1);
         updateFutureCounts(time, -1);
     }
 
     public int paquetesAEstaHoraPlanificacion(LocalDateTime time) {
         Map.Entry<LocalDateTime, Integer> entry = cantPaqParaPlanificacion.floorEntry(time);
-        int lastValue = (entry != null) ? entry.getValue() : 0;
-        lastValue+=paquetesAEstaHoraReal(time);
+        int lastValue = (entry != null) ? entry.getValue() : paquetesAEstaHoraReal(time);
         return lastValue;
     }
 

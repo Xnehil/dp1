@@ -126,9 +126,9 @@ public class FuncionesLectura {
         return decimalDegrees;
     }
 
-    public static HashMap<Integer, Envio> leerEnvios(String archivo, HashMap<String, Aeropuerto> aeropuertos, int maxEnvios){
+    public static HashMap<String, Envio> leerEnvios(String archivo, HashMap<String, Aeropuerto> aeropuertos, int maxEnvios){
         System.out.println("Leyendo envios desde " + archivo);
-        HashMap<Integer, Envio> envios = new HashMap<>();
+        HashMap<String, Envio> envios = new HashMap<>();
         int counter=0;
         try (BufferedReader br = Files.newBufferedReader(Paths.get(archivo), Charset.forName("UTF-8"))) {
             String line;
@@ -166,7 +166,8 @@ public class FuncionesLectura {
                 ArrayList<Paquete> paquetes = new ArrayList<>();
                 for (int i = 0; i < cantidadPaquetes; i++) {
                     Paquete paquete = new Paquete();
-                    paquete.setIdEnvío(envioId);
+                    paquete.setIdEnvio(envioId);
+                    paquete.setCodigoEnvio(ciudadOrigenEnvio + envioId);
                     // Add more properties to the package if needed
                     paquetes.add(paquete);
                     
@@ -177,7 +178,8 @@ public class FuncionesLectura {
                 nuevoEnvio.setIdEnvio(envioId);
                 nuevoEnvio.setFechaHoraLlegadaPrevista(horaDestinoZoned);
 
-                envios.put(envioId, nuevoEnvio);
+                String codigo=ciudadOrigenEnvio+envioId;
+                envios.put(codigo, nuevoEnvio);
                 counter++;
             }
         } catch (IOException e) {

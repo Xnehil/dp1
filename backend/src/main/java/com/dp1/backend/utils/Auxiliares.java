@@ -43,7 +43,7 @@ public class Auxiliares {
     }
 
     public static double fitnessTotal(int[] solucion, HashMap<String, Aeropuerto> aeropuertos,
-            HashMap<Integer, Vuelo> vuelos, HashMap<Integer, Envio> envios, ArrayList<Paquete> paquetes, int minVuelo,
+            HashMap<Integer, Vuelo> vuelos, HashMap<String, Envio> envios, ArrayList<Paquete> paquetes, int minVuelo,
             int maxVuelo) {
         // Aquí tengo la solución de todos los paquetes, cada n elementos es un paquete
         int n = aeropuertos.size();
@@ -62,7 +62,7 @@ public class Auxiliares {
     }
 
     public static double fitnessTotalv2(int[] solucion, HashMap<String, Aeropuerto> aeropuertos,
-            HashMap<Integer, Vuelo> vuelos, HashMap<Integer, Envio> envios, ArrayList<Paquete> paquetes, int minVuelo,
+            HashMap<Integer, Vuelo> vuelos, HashMap<String, Envio> envios, ArrayList<Paquete> paquetes, int minVuelo,
             int maxVuelo, double[][] fitnessMatrix, int individuo) {
         // Aquí tengo la solución de todos los paquetes, cada n elementos es un paquete
         int n = solucion.length / paquetes.size();
@@ -89,11 +89,11 @@ public class Auxiliares {
     }
 
     public static double fitnessUnPaquete(int[] solucion, HashMap<String, Aeropuerto> aeropuertos,
-            HashMap<Integer, Vuelo> vuelos, HashMap<Integer, Envio> envios, Paquete paquete, int start, int end,
+            HashMap<Integer, Vuelo> vuelos, HashMap<String, Envio> envios, Paquete paquete, int start, int end,
             int minVuelo, int maxVuelo) {
         // Aquí tengo la solución de un solo paquete
         double fitness = 0;
-        Envio envio = envios.get(paquete.getIdEnvío());
+        Envio envio = envios.get(paquete.getCodigoEnvio());
         String ciudadActual = envio.getOrigen();
         String ciudadDestino = envio.getDestino();
         Boolean rutaValida = true;
@@ -126,7 +126,7 @@ public class Auxiliares {
 
             //Penalización por visitar un aeropuerto ya visitado
             if (yaVisitados.contains(vuelo.getDestino())) {
-                fitness -= 6;
+                fitness -= 15;
             }
 
             fechaHoraSiguienteSalida = vuelo.getFechaHoraSalida();
@@ -134,21 +134,28 @@ public class Auxiliares {
             // fechas, se realizan todos los días.
             fechaHoraSiguienteSalida = fechaHoraSiguienteSalida.with(fechaHoraActual.toLocalDate());
 
-            //Penalización por tiempo de espera
-            Duration espera = Duration.between(fechaHoraActual, fechaHoraSiguienteSalida);
-            fitness -= espera.toMinutes() / 60;
+            
 
             Boolean ubicacionValida = vuelo.getOrigen().equals(ciudadActual);
             // Modificación, tiempoValido no es necesario. Si la hora de salida es menor a
             // la hora de llegada, se considera que el vuelo sale al día siguiente
             if (fechaHoraActual.isAfter(fechaHoraSiguienteSalida)) {
                 fechaHoraSiguienteSalida = fechaHoraSiguienteSalida.plusDays(1);
+                //Penalización por cambio de día
+                // fitness -= 4;
             }
             LocalDate fechaAuxiliar = fechaHoraSiguienteSalida.toLocalDate();
             fechaHoraSiguienteLlegada = vuelo.getFechaHoraLlegada().with(fechaAuxiliar);
             fechaHoraSiguienteLlegada = vuelo.getCambioDeDia() ? fechaHoraSiguienteLlegada.plusDays(1)
                     : fechaHoraSiguienteLlegada;
 
+            //Penalización por tiempo de espera
+            Duration espera = Duration.between(fechaHoraActual, fechaHoraSiguienteSalida);
+            fitness -= espera.toHours() / 12;
+
+            if (fechaHoraSiguienteLlegada.isAfter(fechaHoraLimite)) {
+                fitness -= 5;
+            }
 
             // Se verifica que haya espacio en el vuelo en tal día. 
             int cargaAuxiliarVuelo;
@@ -166,7 +173,7 @@ public class Auxiliares {
             Boolean espacioEnAlmacen = (destinoDeEsteVuelo.getCapacidadMaxima() >cargaAuxiliarAeropuerto + 1);
 
             if (ubicacionValida && espacioEnVuelo && espacioEnAlmacen) {
-                fitness += 5;
+                fitness += 8;
                 // Cambio de ciudad
                 ciudadActual = vuelo.getDestino();
 
@@ -183,9 +190,9 @@ public class Auxiliares {
                 destinoDeEsteVuelo.paqueteEntraPlanificacion(fechaHoraSiguienteLlegada.toLocalDateTime());
             } else {
                 // Penalización por no ser una ruta válida
-                fitness -= (!ubicacionValida ? 10 : 0);
-                fitness -= !espacioEnVuelo ? 10 : 0;
-                fitness -= !espacioEnAlmacen ? 20 : 0;
+                fitness -= (!ubicacionValida ? 14 : 0);
+                fitness -= !espacioEnVuelo ? 5 : 0;
+                fitness -= !espacioEnAlmacen ? 5 : 0;
                 rutaValida = false;
             }
 
@@ -197,23 +204,23 @@ public class Auxiliares {
                     if (fechaHoraActual.isBefore(fechaHoraLimite)) {
                         fitness += 100;
                     } else {
-                        fitness -= 50;
+                        fitness -= 95;
                     }
                     break;
                 }
 
                 // Por distancia
                 // Before the flight
-                double oldDistance = calculateEuclideanDistance(actual, destino);
+                double oldDistance = calculateHaversineDistance(actual, destino);
                 // After the flight
                 actual = aeropuertos.get(ciudadActual);
-                double newDistance = calculateEuclideanDistance(actual, destino);
+                double newDistance = calculateHaversineDistance(actual, destino);
                 // Normalizar la distancia para que esté entre -2 y 2
                 // fitness += ((oldDistance - newDistance) / 403074761) *2 - 1;
-                fitness += ((oldDistance - newDistance) / 162000) *4 - 2;
+                // fitness += ((oldDistance - newDistance) / 162000) *4 - 2;
 
 
-                // fitness += ((oldDistance - newDistance) / 20015) * 2 - 1;
+                fitness += ((oldDistance - newDistance) / 20015) * 2 - 1;
 
                 // Get the ratio of the current load to the maximum load
                 // double penalization = (actual.getCargaActual() +
@@ -230,7 +237,7 @@ public class Auxiliares {
     }
 
     private static double calculateHaversineDistance(Aeropuerto a, Aeropuerto b) {
-        final int R = 6371; // Radius of the earth in km
+        final int R = 6371; // Radio de la Tierra en km
         double latDistance = Math.toRadians(b.getLatitud() - a.getLatitud());
         double lonDistance = Math.toRadians(b.getLongitud() - a.getLongitud());
         double aVal = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
@@ -241,7 +248,7 @@ public class Auxiliares {
     }
 
     private static double calculateEquirectangularApproximation(Aeropuerto a, Aeropuerto b) {
-        final int R = 6371; // Radius of the earth in km
+        final int R = 6371; // Radio de la Tierra en km
         double lat1 = Math.toRadians(a.getLatitud());
         double lat2 = Math.toRadians(b.getLatitud());
         double lon1 = Math.toRadians(a.getLongitud());
@@ -258,8 +265,8 @@ public class Auxiliares {
     }
 
     public static Boolean solucionValidav2(HashMap<String, Aeropuerto> aeropuertos, HashMap<Integer, Vuelo> vuelos,
-            HashMap<Integer, Envio> envios, Paquete paquete, Boolean verbose) {
-        Envio envio = envios.get(paquete.getIdEnvío());
+            HashMap<String, Envio> envios, Paquete paquete, Boolean verbose) {
+        Envio envio = envios.get(paquete.getCodigoEnvio());
         String ciudadActual = envio.getOrigen();
         String ciudadDestino = envio.getDestino();
         ZonedDateTime fechaHoraActual = envio.getFechaHoraSalida();
@@ -413,7 +420,7 @@ public class Auxiliares {
     }
 
     public static int verificacionTotal(int[] solucion, HashMap<String, Aeropuerto> aeropuertos,
-            HashMap<Integer, Vuelo> vuelos, HashMap<Integer, Envio> envios, ArrayList<Paquete> paquetes,
+            HashMap<Integer, Vuelo> vuelos, HashMap<String, Envio> envios, ArrayList<Paquete> paquetes,
             int solutionSize) {
         int n = paquetes.size();
         Boolean esSolucionValida;
@@ -444,6 +451,17 @@ public class Auxiliares {
                 paquetesEntregados++;
             }
         }
+
+        // Limpiar carga por día de los aeropuertos
+        for (String i : aeropuertos.keySet()) {
+            aeropuertos.get(i).setCantPaqParaPlanificacion(new TreeMap<>());
+        }
+        // Limpiar carga por día
+        for (int i : vuelos.keySet()) {
+            vuelos.get(i).setCargaPorDia(new HashMap<>());
+        }
+
+
         return paquetesEntregados;
     }
 
