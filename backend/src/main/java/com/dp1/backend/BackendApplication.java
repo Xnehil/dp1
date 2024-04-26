@@ -62,7 +62,9 @@ public class BackendApplication {
         HashMap<Integer, Vuelo> vuelos = FuncionesLectura.leerVuelos("algoritmos/data/Planes.vuelo.v1.incompleto.txt", aeropuertos);
         HashMap<Integer, Envio> envios = FuncionesLectura.leerEnvios("algoritmos/data/pack_enviado/pack_enviado_SEQM.txt", aeropuertos);
         
-        
+        //System.out.println(envios.get(1).getFechaHoraLlegada());
+
+
 		ArrayList<Paquete> paquetes = new ArrayList<Paquete>();
 		for(Envio e : envios.values()){
 			paquetes.addAll(e.getPaquetes());
