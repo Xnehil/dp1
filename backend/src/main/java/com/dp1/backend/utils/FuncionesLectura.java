@@ -168,7 +168,8 @@ public class FuncionesLectura {
                 for (int i = 0; i < cantidadPaquetes; i++) {
                     Paquete paquete = new Paquete();
                     paquete.setIdEnvío(envioId);
-                    // Add more properties to the package if needed
+                    //Add more properties to the package if needed
+                    //paquete.setIdPaquete(100*envioId + (cantidadPaquetes+1));
                     paquetes.add(paquete);
                 }
                 Envio nuevoEnvio = new Envio(ciudadOrigenEnvio, ciudadDestino, horaOrigenZoned, cantidadPaquetes, paquetes);
@@ -178,9 +179,13 @@ public class FuncionesLectura {
                 envios.put(envioId, nuevoEnvio);
                 counter++;
             }
+            //System.out.println("Numero de envios: " + counter);
         } catch (IOException e) {
             System.err.println("Error reading file: " + e);
         }
+        // for(int id: envios.keySet()){
+        //     System.out.println(envios.get(id).getIdEnvio());
+        // }
         return envios;
     }
 
