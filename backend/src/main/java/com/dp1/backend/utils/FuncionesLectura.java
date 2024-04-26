@@ -155,7 +155,6 @@ public class FuncionesLectura {
                 LocalDate fechaDestino;
                 ZonedDateTime horaDestinoZoned;
 
-
                 // El tiempo para enviar será de dos días si es continente distsinto y de un día
                 // si es el mismo continente
                 if (!origen.getContinente().equals(destino.getContinente())) {
@@ -170,6 +169,9 @@ public class FuncionesLectura {
                     paquete.setIdEnvío(envioId);
                     // Add more properties to the package if needed
                     paquetes.add(paquete);
+                    
+                    // Meter paquetes al aeropuerto de origen
+                    origen.paqueteEntraReal(horaOrigenZoned.toLocalDateTime());
                 }
                 Envio nuevoEnvio = new Envio(ciudadOrigenEnvio, ciudadDestino, horaOrigenZoned, cantidadPaquetes, paquetes);
                 nuevoEnvio.setIdEnvio(envioId);

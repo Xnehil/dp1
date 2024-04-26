@@ -1,6 +1,8 @@
 package com.dp1.backend.models;
 
 import java.time.LocalDateTime;
+import java.util.Map;
+import java.util.SortedMap;
 import java.util.TimeZone;
 import java.util.TreeMap;
 
@@ -18,30 +20,25 @@ public class Aeropuerto{
     private double latitud;
     private double longitud;
     //Estos tienen la zona horaria del aeropuerto
-    private TreeMap<LocalDateTime, Integer> entradas;
-    private TreeMap<LocalDateTime, Integer> salidas;
+    private TreeMap<LocalDateTime, Integer> cantPaqParaPlanificacion;
+    private TreeMap<LocalDateTime, Integer> cantPaqReal;
 
 
-    public TreeMap<LocalDateTime,Integer> getEntradas() {
-        return this.entradas;
+    public TreeMap<LocalDateTime,Integer> getCantPaqReal() {
+        return this.cantPaqReal;
     }
 
-    public void setEntradas(TreeMap<LocalDateTime,Integer> entradas) {
-        this.entradas = entradas;
+    public void setCantPaqReal(TreeMap<LocalDateTime,Integer> cantPaqReal) {
+        this.cantPaqReal = cantPaqReal;
     }
 
-    public TreeMap<LocalDateTime,Integer> getSalidas() {
-        return this.salidas;
+
+    public TreeMap<LocalDateTime,Integer> getCantPaqParaPlanificacion() {
+        return this.cantPaqParaPlanificacion;
     }
 
-    public void setSalidas(TreeMap<LocalDateTime,Integer> salidas) {
-        this.salidas = salidas;
-    }
-
-    public int cargaAEstaHora(LocalDateTime hora) {
-        int salidasHastaAhora = this.salidas.headMap(hora).values().stream().mapToInt(Integer::intValue).sum();
-        int entradasHastaAhora = this.entradas.headMap(hora).values().stream().mapToInt(Integer::intValue).sum();
-        return entradasHastaAhora - salidasHastaAhora;
+    public void setCantPaqParaPlanificacion(TreeMap<LocalDateTime,Integer> estadoAlmacen) {
+        this.cantPaqParaPlanificacion = estadoAlmacen;
     }
 
     public double getLatitud() {
@@ -76,8 +73,8 @@ public class Aeropuerto{
         this.gmt = gmt;
         this.capacidadMaxima = capacidad;
         this.idAeropuerto = idAeropuerto;
-        this.entradas = new TreeMap<LocalDateTime, Integer>();
-        this.salidas = new TreeMap<LocalDateTime, Integer>();
+        this.cantPaqParaPlanificacion = new TreeMap<LocalDateTime, Integer>();
+        this.cantPaqReal = new TreeMap<LocalDateTime, Integer>();
 
         //set timezone from GMT like "Etc/GMT{gmt}"
         String timeZone = "Etc/GMT";
@@ -162,6 +159,58 @@ public class Aeropuerto{
 
     public void setCapacidadMaxima(int capacidad) {
         this.capacidadMaxima = capacidad;
+    }
+
+    public void paqueteEntraPlanificacion(LocalDateTime time) {
+        Map.Entry<LocalDateTime, Integer> entry = cantPaqParaPlanificacion.floorEntry(time);
+        int lastValue = (entry != null) ? entry.getValue() : 0;
+
+        lastValue+=paquetesAEstaHoraReal(time);
+        
+        cantPaqParaPlanificacion.put(time, lastValue + 1);
+        updateFutureCounts(time, 1);
+    }
+
+    public void paqueteSalePlanificacion(LocalDateTime time) {
+        Map.Entry<LocalDateTime, Integer> entry = cantPaqParaPlanificacion.floorEntry(time);
+        int lastValue = (entry != null) ? entry.getValue() : 0;
+
+        lastValue+=paquetesAEstaHoraReal(time);
+        cantPaqParaPlanificacion.put(time, lastValue - 1);
+        updateFutureCounts(time, -1);
+    }
+
+    public int paquetesAEstaHoraPlanificacion(LocalDateTime time) {
+        Map.Entry<LocalDateTime, Integer> entry = cantPaqParaPlanificacion.floorEntry(time);
+        int lastValue = (entry != null) ? entry.getValue() : 0;
+        lastValue+=paquetesAEstaHoraReal(time);
+        return lastValue;
+    }
+
+    private void updateFutureCounts(LocalDateTime time, int delta) {
+        SortedMap<LocalDateTime, Integer> tailMap = cantPaqParaPlanificacion.tailMap(time);
+        for (Map.Entry<LocalDateTime, Integer> entry : tailMap.entrySet()) {
+            cantPaqParaPlanificacion.put(entry.getKey(), entry.getValue() + delta);
+        }
+    }
+
+    public void paqueteEntraReal(LocalDateTime time) {
+        Map.Entry<LocalDateTime, Integer> entry = cantPaqReal.floorEntry(time);
+        int lastValue = (entry != null) ? entry.getValue() : 0;
+        
+        cantPaqReal.put(time, lastValue + 1);
+    }
+
+    public void paqueteSaleReal(LocalDateTime time) {
+        Map.Entry<LocalDateTime, Integer> entry = cantPaqReal.floorEntry(time);
+        int lastValue = (entry != null) ? entry.getValue() : 0;
+        
+        cantPaqReal.put(time, lastValue - 1);
+    }
+
+    public int paquetesAEstaHoraReal(LocalDateTime time) {
+        Map.Entry<LocalDateTime, Integer> entry = cantPaqReal.floorEntry(time);
+        return (entry != null) ? entry.getValue() : 0;
     }
 
 

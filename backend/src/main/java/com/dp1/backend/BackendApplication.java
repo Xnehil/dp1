@@ -51,10 +51,10 @@ public class BackendApplication {
         
             writer.write("Iteración\tTiempo de ejecución (ms)\tPaquetes entregados\tPorcentaje de paquetes entregados\n");
             double promedio=0;
-            int iteraciones=1;
+            int iteraciones=10;
             for (int i = 0; i < iteraciones; i++) {
                 Long startTime = System.currentTimeMillis();
-                owo=MPAv2.run(aeropuertos, vuelos, envios, paquetes, 500, 100, tamanioSolucion);
+                owo=MPAv2.run(aeropuertos, vuelos, envios, paquetes, 350, 150, tamanioSolucion);
                 long endTime = System.currentTimeMillis();
                 long executionTime = endTime - startTime;
                 int paquetesEntregados=Auxiliares.verificacionTotal(owo, aeropuertos, vuelos, envios, paquetes, tamanioSolucion);
@@ -92,7 +92,7 @@ public class BackendApplication {
         //Una solución
         int verPaquete=0;        
         //System.out.println("L solucion es valida: " + esSolucionValida);
-        System.out.println("Funcion validacion:  ");
+        System.out.println("Funcion validación:  ");
         Paquete auxPaquete = noEntregados.get(verPaquete);
         Boolean esSolucionValida = Auxiliares.solucionValidav2(aeropuertos, vuelos, envios, auxPaquete, true);
         System.out.println("La solución es valida: " + esSolucionValida);

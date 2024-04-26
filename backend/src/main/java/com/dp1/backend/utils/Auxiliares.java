@@ -72,8 +72,7 @@ public class Auxiliares {
             vuelos.get(i).setCargaPorDia(new HashMap<>());
         }
         for (String i : aeropuertos.keySet()) {
-            aeropuertos.get(i).setSalidas(new TreeMap<>());
-            aeropuertos.get(i).setEntradas(new TreeMap<>());
+            aeropuertos.get(i).setCantPaqParaPlanificacion(new TreeMap<>());
         }
 
         for (int i = 0; i < solucion.length; i += n) {
@@ -99,7 +98,8 @@ public class Auxiliares {
         String ciudadDestino = envio.getDestino();
         Boolean rutaValida = true;
         Aeropuerto destino = aeropuertos.get(ciudadDestino);
-        Aeropuerto actual = aeropuertos.get(ciudadActual);
+        Aeropuerto actual;
+        Aeropuerto destinoDeEsteVuelo;
         ArrayList<String> yaVisitados = new ArrayList<>();
 
         ZonedDateTime fechaHoraActual = envio.getFechaHoraSalida();
@@ -119,8 +119,10 @@ public class Auxiliares {
                 continue;
             }
             yaVisitados.add(ciudadActual);
+
             Vuelo vuelo = vuelos.get(solucion[i]);
-            Aeropuerto destinoDeEsteVuelo = aeropuertos.get(vuelo.getDestino());
+            actual= aeropuertos.get(ciudadActual);
+            destinoDeEsteVuelo = aeropuertos.get(vuelo.getDestino());
 
             //Penalización por visitar un aeropuerto ya visitado
             if (yaVisitados.contains(vuelo.getDestino())) {
@@ -134,7 +136,7 @@ public class Auxiliares {
 
             //Penalización por tiempo de espera
             Duration espera = Duration.between(fechaHoraActual, fechaHoraSiguienteSalida);
-            fitness -= espera.toMinutes() / 20;
+            fitness -= espera.toMinutes() / 60;
 
             Boolean ubicacionValida = vuelo.getOrigen().equals(ciudadActual);
             // Modificación, tiempoValido no es necesario. Si la hora de salida es menor a
@@ -148,7 +150,7 @@ public class Auxiliares {
                     : fechaHoraSiguienteLlegada;
 
 
-            // Se verifica que haya espacio en el vuelo en tal día. Esto es nuevo
+            // Se verifica que haya espacio en el vuelo en tal día. 
             int cargaAuxiliarVuelo;
             if (vuelo.getCargaPorDia().containsKey(fechaAuxiliar)) {
                 cargaAuxiliarVuelo = vuelo.getCargaPorDia().get(fechaAuxiliar);
@@ -157,15 +159,13 @@ public class Auxiliares {
                 vuelo.getCargaPorDia().put(fechaHoraSiguienteSalida.toLocalDate(), 0);
             }
 
-            // Verificamos que haya espacio en el almacén a esa hora
-            // int cargaAuxiliarAeropuerto =
-            // destinoDeEsteVuelo.cargaAEstaHora(fechaHoraSiguienteSalida.toLocalDateTime());
+            // Verificamos que haya espacio en el almacén a esa hora de llegada
+            int cargaAuxiliarAeropuerto =destinoDeEsteVuelo.paquetesAEstaHoraPlanificacion(fechaHoraSiguienteLlegada.toLocalDateTime());
 
             Boolean espacioEnVuelo = (vuelo.getCapacidad() > cargaAuxiliarVuelo + 1);
-            // Boolean espacioEnAlmacen = (destinoDeEsteVuelo.getCapacidadMaxima() >
-            // cargaAuxiliarAeropuerto + 1);
+            Boolean espacioEnAlmacen = (destinoDeEsteVuelo.getCapacidadMaxima() >cargaAuxiliarAeropuerto + 1);
 
-            if (ubicacionValida && espacioEnVuelo) {
+            if (ubicacionValida && espacioEnVuelo && espacioEnAlmacen) {
                 fitness += 5;
                 // Cambio de ciudad
                 ciudadActual = vuelo.getDestino();
@@ -177,13 +177,10 @@ public class Auxiliares {
                 // Actualizar carga por día del vuelo
                 vuelo.getCargaPorDia().put(fechaAuxiliar, cargaAuxiliarVuelo + 1);
 
-                // Actualizar carga auxiliar del aeropuerto
-                // actual.getSalidas().put(fechaHoraSiguienteSalida.toLocalDateTime(),
-                // actual.getSalidas().getOrDefault(fechaHoraSiguienteSalida.toLocalDateTime(),
-                // 0) + 1);
-                // destinoDeEsteVuelo.getEntradas().put(fechaHoraSiguienteLlegada.toLocalDateTime(),
-                // destinoDeEsteVuelo.getEntradas().getOrDefault(fechaHoraSiguienteLlegada.toLocalDateTime(),0)
-                // + 1);
+                // Actualizar carga del aeropuerto luego de salir
+                actual.paqueteSalePlanificacion(fechaHoraSiguienteSalida.toLocalDateTime());
+                // Actualizar carga del aeropuerto luego de llegar
+                destinoDeEsteVuelo.paqueteEntraPlanificacion(fechaHoraSiguienteLlegada.toLocalDateTime());
             } else {
                 // Penalización por no ser una ruta válida
                 fitness -= (!ubicacionValida ? 10 : 0);
@@ -211,7 +208,7 @@ public class Auxiliares {
                 // After the flight
                 actual = aeropuertos.get(ciudadActual);
                 double newDistance = calculateEuclideanDistance(actual, destino);
-                // Normalize the fitness change to be between -1 and 1
+                // Normalizar la distancia para que esté entre -2 y 2
                 // fitness += ((oldDistance - newDistance) / 403074761) *2 - 1;
                 fitness += ((oldDistance - newDistance) / 162000) *4 - 2;
 
@@ -267,13 +264,10 @@ public class Auxiliares {
         String ciudadDestino = envio.getDestino();
         ZonedDateTime fechaHoraActual = envio.getFechaHoraSalida();
         ZonedDateTime fechaHoraLimite = envio.getFechaHoraLlegadaPrevista();
+        Aeropuerto aeropuertoActual = aeropuertos.get(ciudadActual);
+        Aeropuerto aeropuertoDestinoVuelo;
 
         boolean rutaValida = true;
-
-        // Limpiar carga por día
-        for (int i : vuelos.keySet()) {
-            vuelos.get(i).setCargaPorDia(new HashMap<>());
-        }
 
         if (verbose){
             System.out.println("\nPaquete saliente de " + ciudadActual + " con destino a " + ciudadDestino + " a las "
@@ -338,8 +332,24 @@ public class Auxiliares {
                 break;
             }
 
+            //Controlar la carga del aeropuerto
+            aeropuertoDestinoVuelo = aeropuertos.get(vuelo.getDestino());
+            int cargaAuxiliarAeropuerto = aeropuertoDestinoVuelo.paquetesAEstaHoraPlanificacion(fechaHoraLlegada.toLocalDateTime());
+            if (aeropuertoDestinoVuelo.getCapacidadMaxima() <= cargaAuxiliarAeropuerto + 1) {
+                if (verbose)
+                    System.out.println("El aeropuerto " + vuelo.getDestino() + " no tiene capacidad suficiente.");
+                rutaValida = false;
+                break;
+            }
+
             // Actualizar carga por día
             vuelo.getCargaPorDia().put(fechaHoraVuelo.toLocalDate(), cargaAuxiliarVuelo + 1);
+
+            // Actualizar carga del aeropuerto luego de salir
+            aeropuertoActual.paqueteSalePlanificacion(fechaHoraVuelo.toLocalDateTime());
+            // Actualizar carga del aeropuerto luego de llegar
+            aeropuertoDestinoVuelo.paqueteEntraPlanificacion(fechaHoraLlegada.toLocalDateTime());
+
 
             // Actualizar ciudad y fecha/hora actual
             ciudadActual = vuelo.getDestino();
@@ -408,6 +418,17 @@ public class Auxiliares {
         int n = paquetes.size();
         Boolean esSolucionValida;
         int paquetesEntregados = 0;
+
+        // Limpiar carga por día
+        for (int i : vuelos.keySet()) {
+            vuelos.get(i).setCargaPorDia(new HashMap<>());
+        }
+
+        // Limpiar carga por día de los aeropuertos
+        for (String i : aeropuertos.keySet()) {
+            aeropuertos.get(i).setCantPaqParaPlanificacion(new TreeMap<>());
+        }
+
         // Verifico todos los paquetes
         for (int j = 0; j < n; j++) {
             ArrayList<Integer> solucionPaquete = new ArrayList<Integer>();
