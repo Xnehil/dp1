@@ -29,16 +29,23 @@ public class BackendApplication {
         HashMap<String, Aeropuerto> aeropuertos = FuncionesLectura.leerAeropuertos("data/Aeropuerto.husos.v2.txt");
         HashMap<Integer, Vuelo> vuelos = FuncionesLectura.leerVuelos("data/planes_vuelo.v3.txt", aeropuertos);
         String rutaArchivos = "data/pack_enviado_";
+<<<<<<< HEAD
         String[] ciudades = {"SKBO", "SEQM", "SVMI", "SBBR", "SPIM", "SLLP", "SCEL", "SABE", "SGAS", "SUAA", "LATI", "EDDI", "LOWW", "EBCI", "UMMS", "LBSF", "LKPR", "LDZA", "EKCH", "EHAM", "VIDP", "RKSI", "VTBS", "OMDB", "ZBAA", "RJTT", "WMKK", "WSSS", "WIII", "RPLL"};
         HashMap<Integer, Envio> envios = new HashMap<Integer, Envio>();
+=======
+        String[] ciudades = { "SKBO", "SEQM", "SUAA", "SCEL", "SABE", "EBCI", "EHAM", "WMKK", "VIDP", "ZBAA" };
+        HashMap<String, Envio> envios = new HashMap<String, Envio>();
+>>>>>>> Harvy
         for (int i = 0; i < ciudades.length; i++) {
-            envios.putAll(FuncionesLectura.leerEnvios(rutaArchivos + ciudades[i] + ".txt", aeropuertos, 20));
+            envios.putAll(FuncionesLectura.leerEnvios(rutaArchivos + ciudades[i] + ".txt", aeropuertos, 9));
         }
         ArrayList<Paquete> paquetes = new ArrayList<Paquete>();
         for (Envio e : envios.values()) {
             paquetes.addAll(e.getPaquetes());
         }
+        System.out.println("Paquetes: " + paquetes.size());
 
+<<<<<<< HEAD
         for(Envio envio : envios.values()){
             System.out.println(envio.getIdEnvio());
 
@@ -47,32 +54,38 @@ public class BackendApplication {
 
 
         /*
+=======
+        // ACO.run(aeropuertos, vuelos, envios, paquetes, 2);
+
+        /* MPA */
+>>>>>>> Harvy
         int tamanioSolucion = 5;
         // Initialize the owo
         int[] owo = new int[tamanioSolucion * paquetes.size()];
         try {
-            FileWriter writer = new FileWriter("output/results_" + LocalDate.now() + ".txt");
-
-            writer.write(
-                    "Iteración\tTiempo de ejecución (ms)\tPaquetes entregados\tPorcentaje de paquetes entregados\n");
-            double promedio = 0;
-            int iteraciones = 1;
+            FileWriter writer = new FileWriter("output/results_chiquito_"+LocalDate.now()+".csv");
+        
+            writer.write("Iteracion,Tiempo de ejecucion (ms),Paquetes entregados,Porcentaje de paquetes entregados,Paquetes no entregados\n");
+            double promedio=0;
+            int iteraciones=30;
             for (int i = 0; i < iteraciones; i++) {
                 Long startTime = System.currentTimeMillis();
-                owo = MPAv2.run(aeropuertos, vuelos, envios, paquetes, 500, 100, tamanioSolucion);
+                owo=MPAv2.run(aeropuertos, vuelos, envios, paquetes, 500, 120, tamanioSolucion);
                 long endTime = System.currentTimeMillis();
                 long executionTime = endTime - startTime;
                 int paquetesEntregados = Auxiliares.verificacionTotal(owo, aeropuertos, vuelos, envios, paquetes,
                         tamanioSolucion);
+                int paquetesNoEntregados = paquetes.size() - paquetesEntregados;
                 double porcentajeEntregados = (double) (paquetesEntregados * 100) / paquetes.size();
                 promedio += porcentajeEntregados;
-                String resultLine = String.format("%d\t%d\t%d\t%.2f%%\n", i, executionTime, paquetesEntregados,
-                        porcentajeEntregados);
+                String resultLine = String.format("%d,%d,%d,%.2f%%,%d\n", i, executionTime, paquetesEntregados,
+                        porcentajeEntregados, paquetesNoEntregados);
                 writer.write(resultLine);
             }
             promedio /= iteraciones;
-            writer.write("\nPromedio\t\t\t" + promedio + "%\n");
-
+            // writer.write("\nPromedio,,," + promedio + "%,\n");
+            System.out.println("Promedio: " + promedio);
+        
             writer.close();
         } catch (IOException e) {
             e.printStackTrace();
@@ -91,18 +104,17 @@ public class BackendApplication {
         for (Paquete p : paquetes) {
             if (Auxiliares.solucionValidav2(aeropuertos, vuelos, envios, p, false) == false) {
                 noEntregados.add(p);
-                Auxiliares.solucionValidav2(aeropuertos, vuelos, envios, p, true);
             }
         }
 
-        // Una solución
-        int verPaquete = 0;
-        // System.out.println("L solucion es valida: " + esSolucionValida);
-        System.out.println("Funcion validacion:  ");
+        //Una solución
+        int verPaquete=0;        
+        //System.out.println("L solucion es valida: " + esSolucionValida);
+        System.out.println("Funcion validación:  ");
         Paquete auxPaquete = noEntregados.get(verPaquete);
         Boolean esSolucionValida = Auxiliares.solucionValidav2(aeropuertos, vuelos, envios, auxPaquete, true);
         System.out.println("La solución es valida: " + esSolucionValida);
-         */
+         
     }
 
 }

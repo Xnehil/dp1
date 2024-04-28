@@ -72,7 +72,7 @@ public class ACO {
                     // validar que no vuelva a una ciudad ya visitada
                     if (paq.getRuta().isEmpty()) {
                         // de acuerdo a su aeropuerto de origen
-                        ciudadActualPaquete = envios.get(paq.getIdEnvío()).getOrigen();
+                        ciudadActualPaquete = envios.get(paq.getIdEnvio()).getOrigen();
                     } else {
                         // de acuerdo al aeropuerto destino de su último vuelo
                         ArrayList<Integer> rutaPaquete = paq.getRuta();
@@ -128,8 +128,8 @@ public class ACO {
 
 
                     System.out.println("                IMPRIMIENDO TABLA DE OPCIONES PARA EL PAQUETE "
-                    + paq.getIdPaquete() + " " + envios.get(paq.getIdEnvío()).getOrigen() + " "
-                    + envios.get(paq.getIdEnvío()).getDestino());
+                    + paq.getIdPaquete() + " " + envios.get(paq.getIdEnvio()).getOrigen() + " "
+                    + envios.get(paq.getIdEnvio()).getDestino());
                     
                     // generarArchivoTabla(tablaOpcionesVuelos, "salida");
                     imprimirTabla(tablaOpcionesVuelos, vuelos);
@@ -142,7 +142,7 @@ public class ACO {
                     // Si ya llegamos al destino, salimos del while || si ya nos quedamos sin tiempo para seguir buscando (creo que en Costo no hay manera de incluir este param)
                         //Comparar el destino del ultimo vuelo tomado con el destino de su envio
                     String destinoVueloElegido = vuelos.get(vueloEscogido).getDestino();
-                    String destinoFinalPaquete = envios.get(paq.getIdEnvío()).getDestino();
+                    String destinoFinalPaquete = envios.get(paq.getIdEnvio()).getDestino();
                     if(destinoVueloElegido.equals(destinoFinalPaquete)){
                         //Estos tiempo se deben calcular para así tener el t que toma todo su viaje
                         //Si no llegamos al destino por quedarnos sin tiempo (2dias o 1 dia), salimos
@@ -246,7 +246,7 @@ public class ACO {
         double tiempoVuelo = vuelo.calcularMinutosDeVuelo();
         // hallar la distancia del destino del vuelo al destino del paquete
         String destinoVueloTomado = vuelo.getDestino();
-        String destinoFinalPaquete = envios.get(paquete.getIdEnvío()).getDestino();
+        String destinoFinalPaquete = envios.get(paquete.getIdEnvio()).getDestino();
         // hallaremos la distancia entre estos aeropuertos
         double distanciaAlDestinoFinal = Normalizacion.obtenerDistanciaEntreAeropuertos(aeropuertos, destinoVueloTomado,
                 destinoFinalPaquete);

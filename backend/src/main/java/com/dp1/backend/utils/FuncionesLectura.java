@@ -126,9 +126,9 @@ public class FuncionesLectura {
         return decimalDegrees;
     }
 
-    public static HashMap<Integer, Envio> leerEnvios(String archivo, HashMap<String, Aeropuerto> aeropuertos, int maxEnvios){
+    public static HashMap<String, Envio> leerEnvios(String archivo, HashMap<String, Aeropuerto> aeropuertos, int maxEnvios){
         System.out.println("Leyendo envios desde " + archivo);
-        HashMap<Integer, Envio> envios = new HashMap<>();
+        HashMap<String, Envio> envios = new HashMap<>();
         int counter=0;
         try (BufferedReader br = Files.newBufferedReader(Paths.get(archivo), Charset.forName("UTF-8"))) {
             String line;
@@ -155,7 +155,6 @@ public class FuncionesLectura {
                 LocalDate fechaDestino;
                 ZonedDateTime horaDestinoZoned;
 
-
                 // El tiempo para enviar será de dos días si es continente distsinto y de un día
                 // si es el mismo continente
                 if (!origen.getContinente().equals(destino.getContinente())) {
@@ -167,16 +166,26 @@ public class FuncionesLectura {
                 ArrayList<Paquete> paquetes = new ArrayList<>();
                 for (int i = 0; i < cantidadPaquetes; i++) {
                     Paquete paquete = new Paquete();
+<<<<<<< HEAD
                     paquete.setIdEnvío(envioId);
                     //Add more properties to the package if needed
                     //paquete.setIdPaquete(100*envioId + (cantidadPaquetes+1));
+=======
+                    paquete.setIdEnvio(envioId);
+                    paquete.setCodigoEnvio(ciudadOrigenEnvio + envioId);
+                    // Add more properties to the package if needed
+>>>>>>> Harvy
                     paquetes.add(paquete);
+                    
+                    // Meter paquetes al aeropuerto de origen
+                    origen.paqueteEntraReal(horaOrigenZoned.toLocalDateTime());
                 }
                 Envio nuevoEnvio = new Envio(ciudadOrigenEnvio, ciudadDestino, horaOrigenZoned, cantidadPaquetes, paquetes);
                 nuevoEnvio.setIdEnvio(envioId);
                 nuevoEnvio.setFechaHoraLlegadaPrevista(horaDestinoZoned);
 
-                envios.put(envioId, nuevoEnvio);
+                String codigo=ciudadOrigenEnvio+envioId;
+                envios.put(codigo, nuevoEnvio);
                 counter++;
             }
             //System.out.println("Numero de envios: " + counter);
