@@ -166,15 +166,9 @@ public class FuncionesLectura {
                 ArrayList<Paquete> paquetes = new ArrayList<>();
                 for (int i = 0; i < cantidadPaquetes; i++) {
                     Paquete paquete = new Paquete();
-<<<<<<< HEAD
-                    paquete.setIdEnvío(envioId);
-                    //Add more properties to the package if needed
-                    //paquete.setIdPaquete(100*envioId + (cantidadPaquetes+1));
-=======
                     paquete.setIdEnvio(envioId);
                     paquete.setCodigoEnvio(ciudadOrigenEnvio + envioId);
                     // Add more properties to the package if needed
->>>>>>> Harvy
                     paquetes.add(paquete);
                     
                     // Meter paquetes al aeropuerto de origen

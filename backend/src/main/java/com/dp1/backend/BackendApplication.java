@@ -29,36 +29,22 @@ public class BackendApplication {
         HashMap<String, Aeropuerto> aeropuertos = FuncionesLectura.leerAeropuertos("data/Aeropuerto.husos.v2.txt");
         HashMap<Integer, Vuelo> vuelos = FuncionesLectura.leerVuelos("data/planes_vuelo.v3.txt", aeropuertos);
         String rutaArchivos = "data/pack_enviado_";
-<<<<<<< HEAD
-        String[] ciudades = {"SKBO", "SEQM", "SVMI", "SBBR", "SPIM", "SLLP", "SCEL", "SABE", "SGAS", "SUAA", "LATI", "EDDI", "LOWW", "EBCI", "UMMS", "LBSF", "LKPR", "LDZA", "EKCH", "EHAM", "VIDP", "RKSI", "VTBS", "OMDB", "ZBAA", "RJTT", "WMKK", "WSSS", "WIII", "RPLL"};
-        HashMap<Integer, Envio> envios = new HashMap<Integer, Envio>();
-=======
         String[] ciudades = { "SKBO", "SEQM", "SUAA", "SCEL", "SABE", "EBCI", "EHAM", "WMKK", "VIDP", "ZBAA" };
         HashMap<String, Envio> envios = new HashMap<String, Envio>();
->>>>>>> Harvy
         for (int i = 0; i < ciudades.length; i++) {
-            envios.putAll(FuncionesLectura.leerEnvios(rutaArchivos + ciudades[i] + ".txt", aeropuertos, 9));
+            envios.putAll(FuncionesLectura.leerEnvios(rutaArchivos + ciudades[i] + ".txt", aeropuertos,16));
         }
+
         ArrayList<Paquete> paquetes = new ArrayList<Paquete>();
         for (Envio e : envios.values()) {
             paquetes.addAll(e.getPaquetes());
         }
+        System.out.println("Envios: " + envios.size());
         System.out.println("Paquetes: " + paquetes.size());
 
-<<<<<<< HEAD
-        for(Envio envio : envios.values()){
-            System.out.println(envio.getIdEnvio());
-
-        }
-        //ACO.run(aeropuertos, vuelos, envios, paquetes, 100);
-
-
-        /*
-=======
         // ACO.run(aeropuertos, vuelos, envios, paquetes, 2);
 
-        /* MPA */
->>>>>>> Harvy
+        /* MPA 
         int tamanioSolucion = 5;
         // Initialize the owo
         int[] owo = new int[tamanioSolucion * paquetes.size()];
@@ -114,7 +100,7 @@ public class BackendApplication {
         Paquete auxPaquete = noEntregados.get(verPaquete);
         Boolean esSolucionValida = Auxiliares.solucionValidav2(aeropuertos, vuelos, envios, auxPaquete, true);
         System.out.println("La solución es valida: " + esSolucionValida);
-         
+         */
     }
-
+    
 }
