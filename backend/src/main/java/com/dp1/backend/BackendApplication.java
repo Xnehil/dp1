@@ -29,10 +29,10 @@ public class BackendApplication {
         HashMap<String, Aeropuerto> aeropuertos = FuncionesLectura.leerAeropuertos("data/Aeropuerto.husos.v2.txt");
         HashMap<Integer, Vuelo> vuelos = FuncionesLectura.leerVuelos("data/planes_vuelo.v3.txt", aeropuertos);
         String rutaArchivos = "data/pack_enviado_";
-        String[] ciudades = { "SKBO", "SEQM", "SUAA", "SCEL", "SABE", "EBCI", "EHAM", "WMKK", "VIDP", "ZBAA" };
+        String[] ciudades = { "SKBO", "SEQM", "SUAA", "SCEL", "SABE", "EBCI", "EHAM", "WMKK", "VIDP", "ZBAA"};
         HashMap<String, Envio> envios = new HashMap<String, Envio>();
         for (int i = 0; i < ciudades.length; i++) {
-            envios.putAll(FuncionesLectura.leerEnvios(rutaArchivos + ciudades[i] + ".txt", aeropuertos,16));
+            envios.putAll(FuncionesLectura.leerEnvios(rutaArchivos + ciudades[i] + ".txt", aeropuertos,9));
         }
 
         ArrayList<Paquete> paquetes = new ArrayList<Paquete>();
@@ -42,7 +42,20 @@ public class BackendApplication {
         System.out.println("Envios: " + envios.size());
         System.out.println("Paquetes: " + paquetes.size());
 
-        // ACO.run(aeropuertos, vuelos, envios, paquetes, 2);
+        int i=0;
+        
+        /*
+        for (Paquete paq : paquetes) {
+            i++;
+            String formattedIndex = String.format("%4d", i); // Alineación a la derecha, ancho del campo de 4 caracteres
+            String formattedId = String.format("%10s", paq.getIdPaquete()); // Alineación a la derecha, ancho del campo de 10 caracteres
+            System.out.println("Paquete " + formattedIndex + ": " + formattedId);
+            System.out.println("Envio del paquete: " + envios.get(paq.getCodigoEnvio()).getOrigen() + " " +  envios.get(paq.getCodigoEnvio()).getDestino());
+            
+        }
+         */
+
+        ACO.run(aeropuertos, vuelos, envios, paquetes, 1);
 
         /* MPA 
         int tamanioSolucion = 5;

@@ -13,7 +13,7 @@ public class ACO {
     public static double[] minYMaxDistanciaAeropuertos;
 
     public static void run(HashMap<String, Aeropuerto> aeropuertos, HashMap<Integer, Vuelo> vuelos,
-            HashMap<Integer, Envio> envios,
+            HashMap<String, Envio> envios,
             ArrayList<Paquete> paquetes, int numeroIteraciones) {
         // Definir una matriz que defina Vuelo, Costo, Visibilidad() y Fermonas
         // El costo será dinámico para algunas variables: tiempo de vuelo (entre mismas
@@ -27,10 +27,9 @@ public class ACO {
         minYMaxDistanciaAeropuertos = Normalizacion.obtenerDistanciaExtrema(aeropuertos); // el mínimo no tiene sentido.
                                                                                           // Es 0
         minYMaxDistanciaAeropuertos[0] = 0;
+        minYMaxTiempoVuelo[0] = 0;
         // System.out.println("Min tiempo de vuelo: " + minYMaxTiempoVuelo[0]); //129
-        // min
         // System.out.println("Max tiempo de vuelo: " + minYMaxTiempoVuelo[1]); //890
-        // min
         // System.out.println("Min distancia entre aeropuertos: " +
         // minYMaxDistanciaAeropuertos[0]); //0km
         // System.out.println("Max distancia entre aeropuertos: " +
@@ -45,7 +44,6 @@ public class ACO {
                                                                                               // dinámicos, por eso será
                                                                                               // definido en las
                                                                                               // iteraciones
-
         }
         System.out.println("Numero de paquetes: " + paquetes.size());
 
@@ -61,7 +59,9 @@ public class ACO {
                                                     // mientra q en la 1ra guardaré la capacidad máxima del vuelo
             }
 
+            int numPaq=0;
             for (Paquete paq : paquetes) {
+                numPaq++;
                 int i=0;
                 String ciudadActualPaquete;
                 while (true) {
@@ -72,7 +72,7 @@ public class ACO {
                     // validar que no vuelva a una ciudad ya visitada
                     if (paq.getRuta().isEmpty()) {
                         // de acuerdo a su aeropuerto de origen
-                        ciudadActualPaquete = envios.get(paq.getIdEnvio()).getOrigen();
+                        ciudadActualPaquete = envios.get(paq.getCodigoEnvio()).getOrigen();
                     } else {
                         // de acuerdo al aeropuerto destino de su último vuelo
                         ArrayList<Integer> rutaPaquete = paq.getRuta();
@@ -128,8 +128,8 @@ public class ACO {
 
 
                     System.out.println("                IMPRIMIENDO TABLA DE OPCIONES PARA EL PAQUETE "
-                    + paq.getIdPaquete() + " " + envios.get(paq.getIdEnvio()).getOrigen() + " "
-                    + envios.get(paq.getIdEnvio()).getDestino());
+                    + paq.getIdPaquete() + " " + envios.get(paq.getCodigoEnvio()).getOrigen() + " "
+                    + envios.get(paq.getCodigoEnvio()).getDestino());
                     
                     // generarArchivoTabla(tablaOpcionesVuelos, "salida");
                     imprimirTabla(tablaOpcionesVuelos, vuelos);
@@ -142,7 +142,7 @@ public class ACO {
                     // Si ya llegamos al destino, salimos del while || si ya nos quedamos sin tiempo para seguir buscando (creo que en Costo no hay manera de incluir este param)
                         //Comparar el destino del ultimo vuelo tomado con el destino de su envio
                     String destinoVueloElegido = vuelos.get(vueloEscogido).getDestino();
-                    String destinoFinalPaquete = envios.get(paq.getIdEnvio()).getDestino();
+                    String destinoFinalPaquete = envios.get(paq.getCodigoEnvio()).getDestino();
                     if(destinoVueloElegido.equals(destinoFinalPaquete)){
                         //Estos tiempo se deben calcular para así tener el t que toma todo su viaje
                         //Si no llegamos al destino por quedarnos sin tiempo (2dias o 1 dia), salimos
@@ -167,11 +167,11 @@ public class ACO {
                     
                     
 
-                    if(i==10) break;
+                    if(i==5) break;
                     i++;
                 }
 
-                if (paq.getIdPaquete() == 5)
+                if (numPaq == 5)
                     break;
             }
 
@@ -232,7 +232,7 @@ public class ACO {
         }
     }
 
-    public static double costo(Vuelo vuelo, Paquete paquete, HashMap<Integer, Envio> envios,
+    public static double costo(Vuelo vuelo, Paquete paquete, HashMap<String, Envio> envios,
             HashMap<String, Aeropuerto> aeropuertos) {
         // Inicialmente será el tiempo que le toma en ir a una próxima ciudad + la
         // distancia que le queda para llegar a la ciudad destino
@@ -246,7 +246,7 @@ public class ACO {
         double tiempoVuelo = vuelo.calcularMinutosDeVuelo();
         // hallar la distancia del destino del vuelo al destino del paquete
         String destinoVueloTomado = vuelo.getDestino();
-        String destinoFinalPaquete = envios.get(paquete.getIdEnvio()).getDestino();
+        String destinoFinalPaquete = envios.get(paquete.getCodigoEnvio()).getDestino();
         // hallaremos la distancia entre estos aeropuertos
         double distanciaAlDestinoFinal = Normalizacion.obtenerDistanciaEntreAeropuertos(aeropuertos, destinoVueloTomado,
                 destinoFinalPaquete);
@@ -256,6 +256,9 @@ public class ACO {
         double distanciaDestinoFinalNormalizado = Normalizacion.normalizarDistancia(distanciaAlDestinoFinal,
                 minYMaxDistanciaAeropuertos[0], minYMaxDistanciaAeropuertos[1]);
         //System.out.println("VERIFICANDO: " + tiempoVueloNormalizado + " " + distanciaDestinoFinalNormalizado);
-        return 100 * (tiempoVueloNormalizado + distanciaDestinoFinalNormalizado);
+        if(distanciaAlDestinoFinal == 0){
+            return 1;
+        }
+        return 20*tiempoVueloNormalizado + 80*distanciaDestinoFinalNormalizado;
     }
 }

@@ -168,6 +168,7 @@ public class FuncionesLectura {
                     Paquete paquete = new Paquete();
                     paquete.setIdEnvio(envioId);
                     paquete.setCodigoEnvio(ciudadOrigenEnvio + envioId);
+                    paquete.setIdPaquete(1000000*origen.getIdAeropuerto() + 100*envioId + (i+1));//un envió no tiene más de 99 paquetes en principio
                     // Add more properties to the package if needed
                     paquetes.add(paquete);
                     
