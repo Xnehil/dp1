@@ -50,7 +50,7 @@ public class ACO {
         generarArchivoTabla(tabla, "salida");
         // Iteraremos muchas veces para todos los paquetes. Es decir, para cada
         // iteración se tomarán en cuenta todos los paquettes
-        int iteracionAux = 1;
+        int iteracionAux = 1, exito=0;
         while (iteracionAux <= numeroIteraciones) {
 
             for (int id : vuelos.keySet()) { // Esto es para inicializar las capacidades de los vuelos en cada iteración
@@ -59,9 +59,8 @@ public class ACO {
                                                     // mientra q en la 1ra guardaré la capacidad máxima del vuelo
             }
 
-            int numPaq=0;
             for (Paquete paq : paquetes) {
-                numPaq++;
+
                 int i=0;
                 String ciudadActualPaquete;
                 while (true) {
@@ -122,7 +121,7 @@ public class ACO {
                     paq.getRuta().add(vueloEscogido);
                     
                     // quitar un slot al vuelo
-                    tabla.get(vueloEscogido)[0]--; // ¿Qué pasaría si ya no hay vuelos por tomar? Creo que eso no va a pasar
+                    tabla.get(vueloEscogido)[1]--; // ¿Qué pasaría si ya no hay vuelos por tomar? Creo que eso no va a pasar
                     
 
 
@@ -146,33 +145,16 @@ public class ACO {
                     if(destinoVueloElegido.equals(destinoFinalPaquete)){
                         //Estos tiempo se deben calcular para así tener el t que toma todo su viaje
                         //Si no llegamos al destino por quedarnos sin tiempo (2dias o 1 dia), salimos
+                        exito++;
                         System.out.println("El paquete " + paq.getIdPaquete() + " llegó al destino");
                         break;
                     }else{
                         System.out.println("El paquete " + paq.getIdPaquete() + " aun no llega al destino");
                     }
 
-                    //
-                    // System.out.println("Vuelos disponibles para paquete " + paq.getIdPaquete() +
-                    //         " " + envios.get(paq.getIdEnvío()).getOrigen() + " " +
-                    //         envios.get(paq.getIdEnvío()).getDestino());
-                    // for (int idVuelo : tablaOpcionesVuelos.keySet()) {
-                    //     System.out.println("idVuelo " + idVuelo + " origen: " +
-                    //             vuelos.get(idVuelo).getOrigen() + " destino: " +
-                    //             vuelos.get(idVuelo).getDestino());
-                    // }
-                    //
-                    
-
-                    
-                    
-
-                    if(i==5) break;
+                    if(i==5) break; //hasta que se quede sin tiempo para buscar su destino. Por ahora maximo visitará 5 aeropuertos
                     i++;
                 }
-
-                if (numPaq == 5)
-                    break;
             }
 
             // Actualizar mi tabla (feromonas). Aumentar si ha llegado al destino. Restar o
@@ -182,8 +164,8 @@ public class ACO {
             iteracionAux++;
         }
 
-        // generarArchivoTabla(tabla, "salida");
-
+        generarArchivoTabla(tabla, "salida");
+        System.out.println("Numero de éxitos / numero paquetes: "+ exito + " / " + paquetes.size());
         // for (Paquete p : paquetes) {
         // System.out.println(envios.get(p.getIdEnvío()).getDestino() + " " +
         // p.getIdPaquete());
@@ -256,9 +238,9 @@ public class ACO {
         double distanciaDestinoFinalNormalizado = Normalizacion.normalizarDistancia(distanciaAlDestinoFinal,
                 minYMaxDistanciaAeropuertos[0], minYMaxDistanciaAeropuertos[1]);
         //System.out.println("VERIFICANDO: " + tiempoVueloNormalizado + " " + distanciaDestinoFinalNormalizado);
-        if(distanciaAlDestinoFinal == 0){
+        if(distanciaDestinoFinalNormalizado == 0){
             return 1;
         }
-        return 20*tiempoVueloNormalizado + 80*distanciaDestinoFinalNormalizado;
+        return 25*tiempoVueloNormalizado + 75*distanciaDestinoFinalNormalizado;
     }
 }
