@@ -83,9 +83,9 @@ public class ACO {
                     for (int id : tabla.keySet()) {
                         String ciudadOrigenVuelo = vuelos.get(id).getOrigen();
                         if (ciudadActualPaquete.equals(ciudadOrigenVuelo) && tabla.get(id)[1] > 0) { // la 2da condición
-                                                                                                     // es que aún quede
+                                                                                                     // es que aún quede espacio en el vuelo. CONSIDERAREMOS OTRAS LUEGO
                             tablaOpcionesVuelos.put(id, new Double[4]); // guardaremos costo, visibilidad,
-                                                                        // visibilidad*fermonoas, probabilidad
+                                                                        // visibilidad*fermonoas y probabilidad
                         }
                     }
 
@@ -152,8 +152,8 @@ public class ACO {
                         System.out.println("El paquete " + paq.getIdPaquete() + " aun no llega al destino");
                     }
 
-                    if(i==5) break; //hasta que se quede sin tiempo para buscar su destino. Por ahora maximo visitará 5 aeropuertos
-                    i++;
+                    //if(i==5) break; //hasta que se quede sin tiempo para buscar su destino. Por ahora maximo visitará 5 aeropuertos
+                    //i++;
                 }
             }
 
