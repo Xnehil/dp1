@@ -152,8 +152,8 @@ public class ACO {
                         System.out.println("El paquete " + paq.getIdPaquete() + " aun no llega al destino");
                     }
 
-                    //if(i==5) break; //hasta que se quede sin tiempo para buscar su destino. Por ahora maximo visitará 5 aeropuertos
-                    //i++;
+                    if(i==5) break; //hasta que se quede sin tiempo para buscar su destino. Por ahora maximo visitará 5 aeropuertos
+                    i++;
                 }
             }
 
