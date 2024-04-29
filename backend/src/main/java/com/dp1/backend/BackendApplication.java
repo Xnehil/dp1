@@ -51,7 +51,7 @@ public class BackendApplication {
         
             writer.write("Iteracion,Tiempo de ejecucion (ms),Paquetes entregados,Porcentaje de paquetes entregados,Paquetes no entregados\n");
             double promedio=0;
-            int iteraciones=30;
+            int iteraciones=1;
             for (int i = 0; i < iteraciones; i++) {
                 Long startTime = System.currentTimeMillis();
                 owo=MPAv2.run(aeropuertos, vuelos, envios, paquetes, 500, 120, tamanioSolucion);
@@ -86,10 +86,14 @@ public class BackendApplication {
 
         ArrayList<Paquete> noEntregados = new ArrayList<Paquete>();
         for (Paquete p : paquetes) {
-            if (Auxiliares.solucionValidav2(aeropuertos, vuelos, envios, p, false) == false) {
+            if (Auxiliares.solucionValidav2(aeropuertos, vuelos, envios, p, false) == false) { //llamar a archivo
                 noEntregados.add(p);
+                //verificar si existe, creo, else append
+                //analizar la tendencia de errores (espacio capacidad/vuelo, plazo, secuencia geograficA) 
             }
         }
+
+
 
         //Una solución
         int verPaquete=0;        
