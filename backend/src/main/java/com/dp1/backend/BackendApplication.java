@@ -16,6 +16,8 @@ import com.dp1.backend.utils.Auxiliares;
 import com.dp1.backend.utils.FuncionesLectura;
 import com.dp1.backend.utils.MPAv2;
 
+import ch.qos.logback.core.util.Duration;
+
 import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDate;
@@ -42,9 +44,21 @@ public class BackendApplication {
         System.out.println("Envios: " + envios.size());
         System.out.println("Paquetes: " + paquetes.size());
 
-        int i=0;
-        
         /*
+        for (Aeropuerto a : aeropuertos.values()) {
+            System.out.println(a.getZonaHoraria());
+        }
+        */
+        for (Paquete paq : paquetes) {
+
+            System.out.println(envios.get(paq.getCodigoEnvio()).getOrigen() + " " + envios.get(paq.getCodigoEnvio()).getDestino());
+            System.out.println(envios.get(paq.getCodigoEnvio()).getFechaHoraSalida() + "  " + envios.get(paq.getCodigoEnvio()).getFechaHoraLlegadaPrevista());
+            System.out.println(paq.getTiempoRestante().toMinutes());
+        }
+
+
+        /*
+        int i=0;
         for (Paquete paq : paquetes) {
             i++;
             String formattedIndex = String.format("%4d", i); // Alineación a la derecha, ancho del campo de 4 caracteres

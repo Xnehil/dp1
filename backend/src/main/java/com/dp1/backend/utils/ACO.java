@@ -34,16 +34,15 @@ public class ACO {
         // minYMaxDistanciaAeropuertos[0]); //0km
         // System.out.println("Max distancia entre aeropuertos: " +
         // minYMaxDistanciaAeropuertos[1]); //13463 km
-
+        
+        
         for (int id : vuelos.keySet()) {
-            String origen = vuelos.get(id).getOrigen();
-            String destino = vuelos.get(id).getDestino();
-            // double costo = costo(vuelos.get(id), );
             tabla.put(id, new Double[] { (double) vuelos.get(id).getCapacidad(), 0.0, 0.1 }); // inicializar matrices.
                                                                                               // Los costos serán
                                                                                               // dinámicos, por eso será
                                                                                               // definido en las
                                                                                               // iteraciones
+                                                                                              
         }
         System.out.println("Numero de paquetes: " + paquetes.size());
 
@@ -82,10 +81,15 @@ public class ACO {
                     // tomar
                     for (int id : tabla.keySet()) {
                         String ciudadOrigenVuelo = vuelos.get(id).getOrigen();
-                        if (ciudadActualPaquete.equals(ciudadOrigenVuelo) && tabla.get(id)[1] > 0) { // la 2da condición
-                                                                                                     // es que aún quede espacio en el vuelo. CONSIDERAREMOS OTRAS LUEGO
-                            tablaOpcionesVuelos.put(id, new Double[4]); // guardaremos costo, visibilidad,
-                                                                        // visibilidad*fermonoas y probabilidad
+                        if (ciudadActualPaquete.equals(ciudadOrigenVuelo) && tabla.get(id)[1] > 0) { //que el vuelo tenga espacio aún 
+                            
+                            if(envios.get(paq.getCodigoEnvio()).getFechaHoraSalida().compareTo(vuelos.get(id).getFechaHoraSalida()) < 0){
+                                //que la fecha que llegó el paquete sea anterior al vuelo que tomará
+
+                                tablaOpcionesVuelos.put(id, new Double[4]); // guardaremos costo, visibilidad,
+                                                                            // visibilidad*fermonoas y probabilidad
+                            }
+                            
                         }
                     }
 
@@ -121,7 +125,7 @@ public class ACO {
                     paq.getRuta().add(vueloEscogido);
                     
                     // quitar un slot al vuelo
-                    tabla.get(vueloEscogido)[1]--; // ¿Qué pasaría si ya no hay vuelos por tomar? Creo que eso no va a pasar
+                    //tabla.get(vueloEscogido)[1]--; // ¿Qué pasaría si ya no hay vuelos por tomar? Creo que eso no va a pasar
                     
 
 
@@ -145,15 +149,22 @@ public class ACO {
                     if(destinoVueloElegido.equals(destinoFinalPaquete)){
                         //Estos tiempo se deben calcular para así tener el t que toma todo su viaje
                         //Si no llegamos al destino por quedarnos sin tiempo (2dias o 1 dia), salimos
+                        
+
+                        
+                        
                         exito++;
                         System.out.println("El paquete " + paq.getIdPaquete() + " llegó al destino");
                         break;
                     }else{
+                        
+                        
+                        
                         System.out.println("El paquete " + paq.getIdPaquete() + " aun no llega al destino");
                     }
 
-                    if(i==5) break; //hasta que se quede sin tiempo para buscar su destino. Por ahora maximo visitará 5 aeropuertos
-                    i++;
+                    //if(i==5) break; //hasta que se quede sin tiempo para buscar su destino. Por ahora maximo visitará 5 aeropuertos
+                    //i++;
                 }
             }
 

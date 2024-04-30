@@ -51,7 +51,7 @@ public class FuncionesLectura {
                 String city = parts[2];
                 String country = parts[3];
                 String shortName = parts[4];
-                int gmt = Integer.parseInt(parts[5].replace("+", "").replace("-", ""));
+                int gmt = Integer.parseInt(parts[5].replace("+", ""));
                 int capacity = Integer.parseInt(parts[6]);
                 double longitud = convertToDecimalDegrees(parts[8]);
                 double latitud = convertToDecimalDegrees(parts[7]);
@@ -170,6 +170,12 @@ public class FuncionesLectura {
                     paquete.setCodigoEnvio(ciudadOrigenEnvio + envioId);
                     paquete.setIdPaquete(1000000*origen.getIdAeropuerto() + 100*envioId + (i+1));//un envió no tiene más de 99 paquetes en principio
                     // Add more properties to the package if needed
+                    if (!origen.getContinente().equals(destino.getContinente())) {
+                        paquete.setTiempoRestante(Duration.ofDays(2));
+                    } else {
+                        paquete.setTiempoRestante(Duration.ofDays(1));
+                    }
+                    
                     paquetes.add(paquete);
                     
                     // Meter paquetes al aeropuerto de origen
