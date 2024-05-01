@@ -11,9 +11,25 @@ public class Paquete {
     private int idEnvio;
     private String codigoEnvio;
     private ArrayList<ZonedDateTime> fechasRuta;
+    private ArrayList<Double> costosRuta;
     private boolean llegoDestino;
     //Se almacena la lista de ids de los vuelos a seguir
 
+    public ArrayList<Double> getcostosRuta() {
+        return this.costosRuta;
+    }
+
+    public void setCostosRuta(ArrayList<Double> costosRuta) {
+        this.costosRuta = costosRuta;
+    }
+
+    public double costoTotalRuta(){
+        double suma = 0;
+        for(double costo : costosRuta){
+            suma += costo;
+        }
+        return suma;
+    }
 
     public boolean getLlegoDestino(){
         return this.llegoDestino;
@@ -103,6 +119,7 @@ public class Paquete {
         this.idEnvio = 0;
         this.ruta = new ArrayList<Integer>();
         this.fechasRuta = new ArrayList<ZonedDateTime>();
+        this.costosRuta = new ArrayList<>();
         this.tiempoRestante = Duration.ZERO;
         this.tiempoRestanteDinamico = Duration.ZERO;
         this.llegoDestino = false;

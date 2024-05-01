@@ -213,19 +213,7 @@ public class ACO {
         // System.out.println("Max distancia entre aeropuertos: " +
         // minYMaxDistanciaAeropuertos[1]); //13463 km
 
-        // esto se llenará de manera dinámica conforme se necesiten. Y no serán vuelos,
-        // sino que serán ProgramacionVuelo
-        /*
-         * for (int id : vuelos.keySet()) {
-         * tabla.put(id, new Double[] { (double) vuelos.get(id).getCapacidad(), 0.0, 0.1
-         * }); // inicializar matrices.
-         * // Los costos serán
-         * // dinámicos, por eso será
-         * // definido en las
-         * // iteraciones
-         * 
-         * }
-         */
+
         System.out.println("Numero de paquetes: " + paquetes.size());
 
         // generarArchivoTabla(tabla, "salida");
@@ -234,7 +222,7 @@ public class ACO {
         int iteracionAux = 1, exito = 0;
 
         while (iteracionAux <= numeroIteraciones) {
-            // Limpio algunos registros de iteraciones pasadas: capacidad actual vuelo
+            // Limpio algunos registros de iteraciones pasadas: capacidad actual vuelo, rutas de paquetes y var numero de éxitos
             for (int id : tabla.keySet()) { // Esto es para inicializar las capacidades de los vuelos en cada iteración
                 // double costo = costo(vuelos.get(id), );
                 tabla.get(id)[1] = tabla.get(id)[0];// en la 2da columna de mi tabla guardaré la capacidad dinámica,
@@ -353,6 +341,8 @@ public class ACO {
                     paq.getRuta().add(vueloEscogido);
 
                     paq.getFechasRuta().add(vuelosProgramados.get(vueloEscogido).getFechaHoraLlegada());
+
+                    paq.getcostosRuta().add(tablaOpcionesVuelos.get(vueloEscogido)[0]);
                     // Tiempo usado por el paquete en el vuelo
                     long tHastaSalidaVuelo = aco_auxiliares.calcularDiferenciaEnMinutos(fechaActualPaquete,
                             vuelosProgramados.get(vueloEscogido).getFechaHoraSalida());
@@ -435,11 +425,12 @@ public class ACO {
             if(paq.getLlegoDestino()){
                 for(int vueloTomado : paq.getRuta()){
                     //Me parece que tengo que acumular el costo en cada decisión para así
-                    tabla.get(vueloTomado)[2] = tabla.get(vueloTomado)[2] + aprendizaje/(paq.getTiempoRestante().toMinutes()-paq.getTiempoRestanteDinamico().toMinutes());
+                    tabla.get(vueloTomado)[2] = tabla.get(vueloTomado)[2] + aprendizaje/(paq.costoTotalRuta());
                 }
             }
         }
         //¿Haremos algo con la ruta si el paquete no llegó al destino? Fátima
+        
     }
 
     public static void agregarVuelosRequeridos(ZonedDateTime fechaPaquete, HashMap<Integer, Double[]> tabla,
