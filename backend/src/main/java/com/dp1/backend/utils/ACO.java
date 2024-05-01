@@ -234,15 +234,25 @@ public class ACO {
         int iteracionAux = 1, exito = 0;
 
         while (iteracionAux <= numeroIteraciones) {
-
+            // Limpio algunos registros de iteraciones pasadas: capacidad actual vuelo
             for (int id : tabla.keySet()) { // Esto es para inicializar las capacidades de los vuelos en cada iteración
                 // double costo = costo(vuelos.get(id), );
                 tabla.get(id)[1] = tabla.get(id)[0];// en la 2da columna de mi tabla guardaré la capacidad dinámica,
                 // mientra q en la 1ra guardaré la capacidad máxima del vuelo
-            }
 
+            }
+            // Limpiar rutas de los paquetes
             for (Paquete paq : paquetes) {
-                int i=0;
+                paq.setFechasRuta(new ArrayList<ZonedDateTime>());
+                paq.setRuta(new ArrayList<Integer>());
+                paq.setTiempoRestanteDinamico(paq.getTiempoRestante());
+                paq.setLlegoDestino(false);
+            }
+            // Limpiar numero de exitos (luego lo cambiaremos porque cada paq guarda una variable si ha llegado a su destino)
+            exito = 0;
+            // Empezamos
+            for (Paquete paq : paquetes) {
+                int i = 0;
                 // imprimirTabla_v2(tabla, vuelosProgramados,vuelos);
 
                 String ciudadActualPaquete;
@@ -261,15 +271,16 @@ public class ACO {
                         // de acuerdo al aeropuerto destino de su último vuelo
                         ArrayList<Integer> rutaPaquete = paq.getRuta();
                         int idUltimoVuelo = rutaPaquete.get(rutaPaquete.size() - 1);
-                        
+
                         fechaActualPaquete = paq.getFechaLlegadaUltimoVuelo();
                         ciudadActualPaquete = vuelos.get(vuelosProgramados.get(idUltimoVuelo).getIdVuelo())
                                 .getDestino();
                     }
-                    
+
                     // A partir de la ciudad actual, llenaremos la tabla de los vuelos que puede
                     // tomar
-                    agregarVuelosRequeridos(fechaActualPaquete, tabla, vuelosProgramados, vuelos, fechasVuelos, aeropuertos);
+                    agregarVuelosRequeridos(fechaActualPaquete, tabla, vuelosProgramados, vuelos, fechasVuelos,
+                            aeropuertos);
 
                     for (int id : tabla.keySet()) {
                         String ciudadOrigenVuelo = vuelos.get(vuelosProgramados.get(id).getIdVuelo()).getOrigen();
@@ -281,32 +292,39 @@ public class ACO {
                                 // comparar que date del paquete actual (fecha de su ultima ciudad) con
                                 // la fecha del vuelo (horas en Vuelo y date en Programacion vuelo)
 
-
-                                //long tHastaSalidaVuelo = aco_auxiliares.calcularDiferenciaEnMinutos(fechaActualPaquete, vuelosProgramados.get(id).getFechaHoraSalida());
-                                //long tVuelo = aco_auxiliares.calcularDiferenciaEnMinutos(vuelosProgramados.get(id).getFechaHoraSalida(), vuelosProgramados.get(id).getFechaHoraLlegada());
-                                //Duration tiempoAGastar = Duration.ofMinutes(tHastaSalidaVuelo + tVuelo);
-                                long tiempoAGastar = aco_auxiliares.calcularDiferenciaEnMinutos(fechaActualPaquete, vuelosProgramados.get(id).getFechaHoraLlegada());
-                                if((paq.getTiempoRestanteDinamico().toMinutes() - tiempoAGastar) >= 0){
-                                    //que el tiempo desde que toma un vuelo hasta que llegue al destino sea menor que el tiempo que le queda restante
-                                    System.out.println(paq.getTiempoRestanteDinamico().toMinutes() + "   " + tiempoAGastar);
+                                // long tHastaSalidaVuelo =
+                                // aco_auxiliares.calcularDiferenciaEnMinutos(fechaActualPaquete,
+                                // vuelosProgramados.get(id).getFechaHoraSalida());
+                                // long tVuelo =
+                                // aco_auxiliares.calcularDiferenciaEnMinutos(vuelosProgramados.get(id).getFechaHoraSalida(),
+                                // vuelosProgramados.get(id).getFechaHoraLlegada());
+                                // Duration tiempoAGastar = Duration.ofMinutes(tHastaSalidaVuelo + tVuelo);
+                                long tiempoAGastar = aco_auxiliares.calcularDiferenciaEnMinutos(fechaActualPaquete,
+                                        vuelosProgramados.get(id).getFechaHoraLlegada());
+                                if ((paq.getTiempoRestanteDinamico().toMinutes() - tiempoAGastar) >= 0) {
+                                    // que el tiempo desde que toma un vuelo hasta que llegue al destino sea menor
+                                    // que el tiempo que le queda restante
+                                    //System.out.println(paq.getTiempoRestanteDinamico().toMinutes() + "   " + tiempoAGastar);
                                     tablaOpcionesVuelos.put(id, new Double[4]); // guardaremos costo, visibilidad,
                                 }
 
-                                                                            // visibilidad*fermonoas y probabilidad
+                                // visibilidad*fermonoas y probabilidad
                             }
 
                         }
                     }
-                    // Si no hay vuelos disponibles para el paquete, significa que nos quedamos sin tiempo
-                    if(tablaOpcionesVuelos.size() == 0){
-                        System.out.println();
-                        System.out.println("El paquete " + paq.getIdPaquete() + " NO HA LLEGADO A SU DESTINO");
+                    // Si no hay vuelos disponibles para el paquete, significa que nos quedamos sin
+                    // tiempo
+                    if (tablaOpcionesVuelos.size() == 0) {
+                        //System.out.println();
+                        //System.out.println("El paquete " + paq.getIdPaquete() + " NO HA LLEGADO A SU DESTINO");
                         break;
                     }
-                    
+
                     // Definir costo de cada vuelo, visibilidad
                     for (int id : tablaOpcionesVuelos.keySet()) {
-                        tablaOpcionesVuelos.get(id)[0] = costo(fechaActualPaquete, vuelosProgramados.get(id),tabla.get(id), paq,
+                        tablaOpcionesVuelos.get(id)[0] = costo(fechaActualPaquete, vuelosProgramados.get(id),
+                                tabla.get(id), paq,
                                 envios, aeropuertos, vuelos);
                         tablaOpcionesVuelos.get(id)[1] = 1 / tablaOpcionesVuelos.get(id)[0];
                         tablaOpcionesVuelos.get(id)[2] = tablaOpcionesVuelos.get(id)[1] * tabla.get(id)[2];
@@ -335,16 +353,19 @@ public class ACO {
                     paq.getRuta().add(vueloEscogido);
 
                     paq.getFechasRuta().add(vuelosProgramados.get(vueloEscogido).getFechaHoraLlegada());
-                    //Tiempo usado por el paquete en el vuelo
-                    long tHastaSalidaVuelo = aco_auxiliares.calcularDiferenciaEnMinutos(fechaActualPaquete, vuelosProgramados.get(vueloEscogido).getFechaHoraSalida());
-                    long tVuelo = aco_auxiliares.calcularDiferenciaEnMinutos(vuelosProgramados.get(vueloEscogido).getFechaHoraSalida(), vuelosProgramados.get(vueloEscogido).getFechaHoraLlegada());
+                    // Tiempo usado por el paquete en el vuelo
+                    long tHastaSalidaVuelo = aco_auxiliares.calcularDiferenciaEnMinutos(fechaActualPaquete,
+                            vuelosProgramados.get(vueloEscogido).getFechaHoraSalida());
+                    long tVuelo = aco_auxiliares.calcularDiferenciaEnMinutos(
+                            vuelosProgramados.get(vueloEscogido).getFechaHoraSalida(),
+                            vuelosProgramados.get(vueloEscogido).getFechaHoraLlegada());
                     Duration tiempoGastado = Duration.ofMinutes(tHastaSalidaVuelo + tVuelo);
                     paq.setTiempoRestanteDinamico(paq.getTiempoRestanteDinamico().minus(tiempoGastado));
 
                     // quitar un slot al vuelo
                     tabla.get(vueloEscogido)[1]--; // ¿Qué pasaría si ya no hay vuelos por tomar?
                     // Creo que eso no va a pasar
-
+                    /*
                     System.out.println("                IMPRIMIENDO TABLA DE OPCIONES PARA EL PAQUETE "
                             + paq.getIdPaquete() + " " + envios.get(paq.getCodigoEnvio()).getOrigen() + " "
                             + envios.get(paq.getCodigoEnvio()).getDestino() + "   Hora actual: " + fechaActualPaquete);
@@ -353,10 +374,11 @@ public class ACO {
                     imprimirTabla_v2(tablaOpcionesVuelos, vuelosProgramados, vuelos);
                     System.out.println("VUELO ESCOGIDO PAQUETE " + paq.getIdPaquete() + ": " + vueloEscogido);
                     System.out.println("CIUDAD ACTUAL PAQUETE "
-                    + vuelos.get(vuelosProgramados.get(vueloEscogido).getIdVuelo()).getDestino());
-                    
-                    System.out.println("FECHA ACTUAL PAQUETE " + paq.getIdPaquete() + ": " + paq.getFechaLlegadaUltimoVuelo());
-                            
+                            + vuelos.get(vuelosProgramados.get(vueloEscogido).getIdVuelo()).getDestino());
+
+                    System.out.println(
+                            "FECHA ACTUAL PAQUETE " + paq.getIdPaquete() + ": " + paq.getFechaLlegadaUltimoVuelo());
+                     */
                     // Si ya llegamos al destino, salimos del while || si ya nos quedamos sin tiempo
                     // para seguir buscando (creo que en Costo no hay manera de incluir este param)
                     // Comparar el destino del ultimo vuelo tomado con el destino de su envio
@@ -368,32 +390,56 @@ public class ACO {
                         // Si no llegamos al destino por quedarnos sin tiempo (2dias o 1 dia), salimos
 
                         exito++;
-                        System.out.println("El paquete " + paq.getIdPaquete() + " llegó al destino");
-                        System.out.println("Tiempo restante paquete " + paq.getTiempoRestanteDinamico().toMinutes());
+                        paq.setLlegoDestino(true);
+                        // System.out.println("El paquete " + paq.getIdPaquete() + " llegó al destino");
+                        // System.out.println(
+                        //         "Tiempo restante paquete " + paq.getTiempoRestanteDinamico().toMinutes() + " minutos");
                         break;
                     } else {
 
-                        System.out.println("El paquete " + paq.getIdPaquete() + " aun no llega al destino");
-                        System.out.println("Tiempo restante paquete " + paq.getTiempoRestanteDinamico().toMinutes());
+                        // System.out.println("El paquete " + paq.getIdPaquete() + " aun no llega al destino");
+                        // System.out.println(
+                        //         "Tiempo restante paquete " + paq.getTiempoRestanteDinamico().toMinutes() + " minutos");
 
                     }
 
-                    //if(i==5) break; //hasta que se quede sin tiempo para buscar su destino. Por ahora maximo visitará 5 aeropuertos
-                    //i++;
+                    // if(i==5) break; //hasta que se quede sin tiempo para buscar su destino. Por
+                    // ahora maximo visitará 5 aeropuertos
+                    // i++;
                 }
-                //break;
+                // break;
             }
-            // imprimirTabla_v2(tabla, vuelosProgramados,vuelos);
+            System.out.println("TABLAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA " + iteracionAux);
+            imprimirTabla_v2(tabla, vuelosProgramados,vuelos);
             // Actualizar mi tabla (feromonas). Aumentar si ha llegado al destino. Restar o
             // no hacer nada si no ha llegado
 
             // Limpiar los vuelos tomados por el paquete
+            actualizarFeromonas(tabla, paquetes, 0.01, 1);
+
             iteracionAux++;
         }
 
-        generarArchivoTabla(tabla, "salida");
+        // generarArchivoTabla(tabla, "salida");
         System.out.println("Numero de éxitos / numero paquetes: " + exito + " / " + paquetes.size());
 
+    }
+
+    public static void actualizarFeromonas(HashMap<Integer, Double[]> tabla, ArrayList<Paquete> paquetes, double tasaEvaporacion, double aprendizaje){
+        //Actualizamos primero segun la tasa de evaporacion
+        for(int idVuelo : tabla.keySet()){
+            tabla.get(idVuelo)[2] = tabla.get(idVuelo)[2] * (1 - tasaEvaporacion);
+        }
+        //Actualizamos segun si el paquete tomó el vuelo
+        for(Paquete paq : paquetes){
+            if(paq.getLlegoDestino()){
+                for(int vueloTomado : paq.getRuta()){
+                    //Me parece que tengo que acumular el costo en cada decisión para así
+                    tabla.get(vueloTomado)[2] = tabla.get(vueloTomado)[2] + aprendizaje/(paq.getTiempoRestante().toMinutes()-paq.getTiempoRestanteDinamico().toMinutes());
+                }
+            }
+        }
+        //¿Haremos algo con la ruta si el paquete no llegó al destino? Fátima
     }
 
     public static void agregarVuelosRequeridos(ZonedDateTime fechaPaquete, HashMap<Integer, Double[]> tabla,
@@ -614,9 +660,10 @@ public class ACO {
         if (distanciaDestinoFinalNormalizado == 0) {
             return 1;
         }
-        
-        return (25 * tiempoVueloNormalizado + 75 * distanciaDestinoFinalNormalizado)*
-                    (1 - (paquete.getTiempoRestanteDinamico().toMinutes()-tiempoVuelo)/paquete.getTiempoRestante().toMinutes());
-                    //mientras más tiempo tenga, los caminos más largos 
+
+        return (25 * tiempoVueloNormalizado + 75 * distanciaDestinoFinalNormalizado) *
+                (1 - (paquete.getTiempoRestanteDinamico().toMinutes() - tiempoVuelo)
+                        / paquete.getTiempoRestante().toMinutes());
+        // mientras más tiempo tenga, los caminos más largos
     }
 }

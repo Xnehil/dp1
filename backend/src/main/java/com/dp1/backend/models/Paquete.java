@@ -11,9 +11,18 @@ public class Paquete {
     private int idEnvio;
     private String codigoEnvio;
     private ArrayList<ZonedDateTime> fechasRuta;
+    private boolean llegoDestino;
     //Se almacena la lista de ids de los vuelos a seguir
 
 
+    public boolean getLlegoDestino(){
+        return this.llegoDestino;
+    }
+
+    public void setLlegoDestino(boolean llegoDestino){
+        this.llegoDestino = llegoDestino;
+    }
+    
     public ZonedDateTime getFechaLlegadaUltimoVuelo(){
         return fechasRuta.get(fechasRuta.size()-1);
     }
@@ -96,5 +105,6 @@ public class Paquete {
         this.fechasRuta = new ArrayList<ZonedDateTime>();
         this.tiempoRestante = Duration.ZERO;
         this.tiempoRestanteDinamico = Duration.ZERO;
+        this.llegoDestino = false;
     }
 }
