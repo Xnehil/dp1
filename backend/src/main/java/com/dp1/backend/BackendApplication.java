@@ -21,7 +21,10 @@ import ch.qos.logback.core.util.Duration;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 
 @SpringBootApplication
 public class BackendApplication {
@@ -44,18 +47,46 @@ public class BackendApplication {
         System.out.println("Envios: " + envios.size());
         System.out.println("Paquetes: " + paquetes.size());
 
-        /*
-        for (Aeropuerto a : aeropuertos.values()) {
-            System.out.println(a.getZonaHoraria());
-        }
-        */
-        for (Paquete paq : paquetes) {
+        // ZoneId zoneId = ZoneId.of("GMT+1");
+        // ZonedDateTime horaEnPeru = ZonedDateTime.now();
+        // ZonedDateTime horachina = horaEnPeru.withZoneSameInstant(zoneId);
+        // System.out.println("Hora en "+ zoneId + ": " + horachina);
+        
+        // for (Vuelo a : vuelos.values()) {
+        //     ZonedDateTime fechaHora1 = a.getFechaHoraSalida();
+        //     ZonedDateTime fechaHora2 = a.getFechaHoraLlegada();
+        //     ZoneId zoneId = ZoneId.of("GMT-4");
+        //     System.out.println(fechaHora1 +  "  " + fechaHora2);
+        //     System.out.println(fechaHora1.getZone() +  "  " + fechaHora2.getZone());
+        //     System.out.println(fechaHora1.withZoneSameInstant(zoneId));
+            
+        // }
+        
 
-            System.out.println(envios.get(paq.getCodigoEnvio()).getOrigen() + " " + envios.get(paq.getCodigoEnvio()).getDestino());
-            System.out.println(envios.get(paq.getCodigoEnvio()).getFechaHoraSalida() + "  " + envios.get(paq.getCodigoEnvio()).getFechaHoraLlegadaPrevista());
-            System.out.println(paq.getTiempoRestante().toMinutes());
-        }
+        for(Aeropuerto a: aeropuertos.values()){
+            //ZonedDateTime ahora = ZonedDateTime.now();
+            //ZonedDateTime comparar = ZonedDateTime.now().plusHours(12);
 
+            //System.out.println(ahora.withZoneSameInstant(a.getZonaHoraria().toZoneId()));
+            //System.out.println(ahora.getZone());
+
+            // System.out.println(a.getZonaHoraria().getID());
+            // String gmt;
+            // if(a.getGmt()>=0){
+            //     gmt = "GMT+"+a.getGmt();
+            // }else{
+            //     gmt = "GMT"+ a.getGmt();
+            // }
+            // System.out.println(zdt.withZoneSameInstant(ZoneId.of(gmt)));
+        }
+        
+        // for (Paquete paq : paquetes) {
+
+        //     System.out.println(envios.get(paq.getCodigoEnvio()).getOrigen() + " " + envios.get(paq.getCodigoEnvio()).getDestino());
+        //     System.out.println(envios.get(paq.getCodigoEnvio()).getFechaHoraSalida() + "  " + envios.get(paq.getCodigoEnvio()).getFechaHoraLlegadaPrevista());
+        //     System.out.println(paq.getTiempoRestante().toMinutes());
+        // }
+        
 
         /*
         int i=0;
@@ -63,13 +94,16 @@ public class BackendApplication {
             i++;
             String formattedIndex = String.format("%4d", i); // Alineación a la derecha, ancho del campo de 4 caracteres
             String formattedId = String.format("%10s", paq.getIdPaquete()); // Alineación a la derecha, ancho del campo de 10 caracteres
-            System.out.println("Paquete " + formattedIndex + ": " + formattedId);
-            System.out.println("Envio del paquete: " + envios.get(paq.getCodigoEnvio()).getOrigen() + " " +  envios.get(paq.getCodigoEnvio()).getDestino());
+            //System.out.println("Paquete " + formattedIndex + ": " + formattedId);
+            //System.out.println("Envio del paquete: " + envios.get(paq.getCodigoEnvio()).getOrigen() + " " +  envios.get(paq.getCodigoEnvio()).getDestino());
             
+            ZonedDateTime fechaSalida = envios.get(paq.getCodigoEnvio()).getFechaHoraSalida();
+            System.out.println(fechaSalida);
+            System.out.println("Envio del paquete: "  + fechaSalida.getYear() + fechaSalida.getMonthValue() + fechaSalida.getDayOfMonth());
         }
-         */
+          */
 
-        ACO.run(aeropuertos, vuelos, envios, paquetes, 1);
+        ACO.run_v2(aeropuertos, vuelos, envios, paquetes, 1);
 
         /* MPA 
         int tamanioSolucion = 5;

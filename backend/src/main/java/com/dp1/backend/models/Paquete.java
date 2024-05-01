@@ -2,13 +2,29 @@ package com.dp1.backend.models;
 //Un paquete es parte de un envío
 
 import java.time.Duration;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
+
 
 public class Paquete {
     private int idPaquete;
     private int idEnvio;
     private String codigoEnvio;
+    private ArrayList<ZonedDateTime> fechasRuta;
     //Se almacena la lista de ids de los vuelos a seguir
+
+
+    public ZonedDateTime getFechaLlegadaUltimoVuelo(){
+        return fechasRuta.get(fechasRuta.size()-1);
+    }
+
+    public ArrayList<ZonedDateTime> getFechasRuta() {
+        return this.fechasRuta;
+    }
+
+    public void setFechasRuta(ArrayList<ZonedDateTime> fechasRuta) {
+        this.fechasRuta = fechasRuta;
+    }
 
 
     public String getCodigoEnvio() {
@@ -70,6 +86,7 @@ public class Paquete {
         this.idPaquete = 0;
         this.idEnvio = 0;
         this.ruta = new ArrayList<Integer>();
+        this.fechasRuta = new ArrayList<ZonedDateTime>();
         this.tiempoRestante = Duration.ZERO;
     }
 }

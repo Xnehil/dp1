@@ -1,6 +1,7 @@
 package com.dp1.backend.models;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TimeZone;
@@ -15,6 +16,7 @@ public class Aeropuerto{
     private String paisCorto;
     private String continente;
     private int gmt;
+    private ZoneId zoneId;
     private int capacidadMaxima;
     private TimeZone zonaHoraria;
     private double latitud;
@@ -75,13 +77,16 @@ public class Aeropuerto{
         this.idAeropuerto = idAeropuerto;
         this.cantPaqParaPlanificacion = new TreeMap<LocalDateTime, Integer>();
         this.cantPaqReal = new TreeMap<LocalDateTime, Integer>();
-
         //set timezone from GMT like "Etc/GMT{gmt}"
-        String timeZone = "Etc/GMT";
+        String timeZone = "Etc/GMT", zonaId;
         if (gmt >= 0) {
             timeZone += "+" + gmt;
+            zonaId = "GMT+"+gmt;
+            this.zoneId = ZoneId.of(zonaId);
         } else {
             timeZone += gmt;
+            zonaId = "GMT"+gmt;
+            this.zoneId = ZoneId.of(zonaId);
         }
         this.zonaHoraria = TimeZone.getTimeZone(timeZone);
     }
@@ -96,6 +101,9 @@ public class Aeropuerto{
         this.continente = "";
     }
 
+    public ZoneId getZoneId(){
+        return this.zoneId;
+    }
     public String getContinente() {
         return this.continente;
     }
