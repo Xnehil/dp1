@@ -1,6 +1,8 @@
 package com.dp1.backend.models;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TimeZone;
@@ -76,14 +78,11 @@ public class Aeropuerto{
         this.cantPaqParaPlanificacion = new TreeMap<LocalDateTime, Integer>();
         this.cantPaqReal = new TreeMap<LocalDateTime, Integer>();
 
-        //set timezone from GMT like "Etc/GMT{gmt}"
-        String timeZone = "Etc/GMT";
-        if (gmt >= 0) {
-            timeZone += "+" + gmt;
-        } else {
-            timeZone += gmt;
-        }
-        this.zonaHoraria = TimeZone.getTimeZone(timeZone);
+
+        ZoneOffset offset = ZoneOffset.ofHours(gmt);
+        ZoneId zoneId = offset.normalized();
+
+        this.zonaHoraria = TimeZone.getTimeZone(zoneId);
     }
 
     public Aeropuerto() {

@@ -49,12 +49,12 @@ public class BackendApplication {
             System.out.println(a.getZonaHoraria());
         }
         */
-        for (Paquete paq : paquetes) {
+        // for (Paquete paq : paquetes) {
 
-            System.out.println(envios.get(paq.getCodigoEnvio()).getOrigen() + " " + envios.get(paq.getCodigoEnvio()).getDestino());
-            System.out.println(envios.get(paq.getCodigoEnvio()).getFechaHoraSalida() + "  " + envios.get(paq.getCodigoEnvio()).getFechaHoraLlegadaPrevista());
-            System.out.println(paq.getTiempoRestante().toMinutes());
-        }
+        //     System.out.println(envios.get(paq.getCodigoEnvio()).getOrigen() + " " + envios.get(paq.getCodigoEnvio()).getDestino());
+        //     System.out.println(envios.get(paq.getCodigoEnvio()).getFechaHoraSalida() + "  " + envios.get(paq.getCodigoEnvio()).getFechaHoraLlegadaPrevista());
+        //     System.out.println(paq.getTiempoRestante().toMinutes());
+        // }
 
 
         /*
@@ -69,9 +69,9 @@ public class BackendApplication {
         }
          */
 
-        ACO.run(aeropuertos, vuelos, envios, paquetes, 1);
+        // ACO.run(aeropuertos, vuelos, envios, paquetes, 1);
 
-        /* MPA 
+        //  MPA 
         int tamanioSolucion = 5;
         // Initialize the owo
         int[] owo = new int[tamanioSolucion * paquetes.size()];
@@ -80,7 +80,7 @@ public class BackendApplication {
         
             writer.write("Iteracion,Tiempo de ejecucion (ms),Paquetes entregados,Porcentaje de paquetes entregados,Paquetes no entregados\n");
             double promedio=0;
-            int iteraciones=30;
+            int iteraciones=1;
             for (int i = 0; i < iteraciones; i++) {
                 Long startTime = System.currentTimeMillis();
                 owo=MPAv2.run(aeropuertos, vuelos, envios, paquetes, 500, 120, tamanioSolucion);
@@ -127,7 +127,7 @@ public class BackendApplication {
         Paquete auxPaquete = noEntregados.get(verPaquete);
         Boolean esSolucionValida = Auxiliares.solucionValidav2(aeropuertos, vuelos, envios, auxPaquete, true);
         System.out.println("La solución es valida: " + esSolucionValida);
-         */
+         
     }
     
 }
