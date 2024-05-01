@@ -555,7 +555,7 @@ public class ACO {
         try (FileWriter writer = new FileWriter(nombreArchivo)) {
             // Escribir encabezado de la tabla en el archivo
             writer.write("ID\tCosto\tVisibilidad\tFeromonas\n");
-
+            int suma = 0;
             // Iterar sobre cada vuelo en la tabla y escribir los datos en el archivo
             for (Map.Entry<Integer, Double[]> entry : tabla.entrySet()) {
                 Integer id = entry.getKey();
@@ -566,10 +566,13 @@ public class ACO {
                 for (Double dato : datos) {
                     writer.write(String.format("%.4f\t\t", dato));
                 }
+                writer.write(String.format("%.4f\t\t", datos[0] - datos[1]));
+                suma += datos[0] - datos[1];
                 writer.write("\n");
             }
 
             System.out.println("Archivo generado correctamente: " + nombreArchivo);
+            System.out.println("Archivo generado correctamente - suma de asientos ocupados en vuelos: " + suma);
         } catch (IOException e) {
             System.err.println("Error al generar el archivo: " + e.getMessage());
         }
