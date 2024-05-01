@@ -67,11 +67,18 @@ public class Paquete {
     public void setTiempoRestante(Duration tiempoRestante) {
         this.tiempoRestante = tiempoRestante;
     }
+    public Duration getTiempoRestanteDinamico() {
+        return this.tiempoRestanteDinamico;
+    }
 
+    public void setTiempoRestanteDinamico(Duration tiempoRestanteDinamico) {
+        this.tiempoRestanteDinamico = tiempoRestanteDinamico;
+    }
     
     private ArrayList<Integer> ruta;
 
     //Tiempo restante para que el paquete llegue a su destino
+    private Duration tiempoRestanteDinamico;
     private Duration tiempoRestante;
 
 
@@ -88,5 +95,6 @@ public class Paquete {
         this.ruta = new ArrayList<Integer>();
         this.fechasRuta = new ArrayList<ZonedDateTime>();
         this.tiempoRestante = Duration.ZERO;
+        this.tiempoRestanteDinamico = Duration.ZERO;
     }
 }

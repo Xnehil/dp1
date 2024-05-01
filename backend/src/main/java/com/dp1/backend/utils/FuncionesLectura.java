@@ -173,8 +173,10 @@ public class FuncionesLectura {
                     paquete.setIdPaquete(1000000*origen.getIdAeropuerto() + 100*envioId + (i+1));//un envió no tiene más de 99 paquetes en principio
                     // Add more properties to the package if needed
                     if (!origen.getContinente().equals(destino.getContinente())) {
+                        paquete.setTiempoRestanteDinamico(Duration.ofDays(2));
                         paquete.setTiempoRestante(Duration.ofDays(2));
                     } else {
+                        paquete.setTiempoRestanteDinamico(Duration.ofDays(1));
                         paquete.setTiempoRestante(Duration.ofDays(1));
                     }
                     

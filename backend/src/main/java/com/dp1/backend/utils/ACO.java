@@ -108,7 +108,8 @@ public class ACO {
 
                     // Definir costo de cada vuelo, visibilidad
                     for (int id : tablaOpcionesVuelos.keySet()) {
-                        tablaOpcionesVuelos.get(id)[0] = costo(vuelos.get(id), paq, envios, aeropuertos);
+                        // tablaOpcionesVuelos.get(id)[0] = costo(vuelos.get(id), paq, envios,
+                        // aeropuertos);
                         tablaOpcionesVuelos.get(id)[1] = 1 / tablaOpcionesVuelos.get(id)[0];
                         tablaOpcionesVuelos.get(id)[2] = tablaOpcionesVuelos.get(id)[1] * tabla.get(id)[2];
                     }
@@ -265,6 +266,7 @@ public class ACO {
                         ciudadActualPaquete = vuelos.get(vuelosProgramados.get(idUltimoVuelo).getIdVuelo())
                                 .getDestino();
                     }
+                    
                     // A partir de la ciudad actual, llenaremos la tabla de los vuelos que puede
                     // tomar
                     agregarVuelosRequeridos(fechaActualPaquete, tabla, vuelosProgramados, vuelos, fechasVuelos, aeropuertos);
@@ -279,17 +281,33 @@ public class ACO {
                                 // comparar que date del paquete actual (fecha de su ultima ciudad) con
                                 // la fecha del vuelo (horas en Vuelo y date en Programacion vuelo)
 
-                                tablaOpcionesVuelos.put(id, new Double[4]); // guardaremos costo, visibilidad,
+
+                                //long tHastaSalidaVuelo = aco_auxiliares.calcularDiferenciaEnMinutos(fechaActualPaquete, vuelosProgramados.get(id).getFechaHoraSalida());
+                                //long tVuelo = aco_auxiliares.calcularDiferenciaEnMinutos(vuelosProgramados.get(id).getFechaHoraSalida(), vuelosProgramados.get(id).getFechaHoraLlegada());
+                                //Duration tiempoAGastar = Duration.ofMinutes(tHastaSalidaVuelo + tVuelo);
+                                long tiempoAGastar = aco_auxiliares.calcularDiferenciaEnMinutos(fechaActualPaquete, vuelosProgramados.get(id).getFechaHoraLlegada());
+                                if((paq.getTiempoRestanteDinamico().toMinutes() - tiempoAGastar) >= 0){
+                                    //que el tiempo desde que toma un vuelo hasta que llegue al destino sea menor que el tiempo que le queda restante
+                                    System.out.println(paq.getTiempoRestanteDinamico().toMinutes() + "   " + tiempoAGastar);
+                                    tablaOpcionesVuelos.put(id, new Double[4]); // guardaremos costo, visibilidad,
+                                }
+
                                                                             // visibilidad*fermonoas y probabilidad
                             }
 
                         }
                     }
-
+                    // Si no hay vuelos disponibles para el paquete, significa que nos quedamos sin tiempo
+                    if(tablaOpcionesVuelos.size() == 0){
+                        System.out.println();
+                        System.out.println("El paquete " + paq.getIdPaquete() + " NO HA LLEGADO A SU DESTINO");
+                        break;
+                    }
+                    
                     // Definir costo de cada vuelo, visibilidad
                     for (int id : tablaOpcionesVuelos.keySet()) {
-                        tablaOpcionesVuelos.get(id)[0] = costo(vuelos.get(vuelosProgramados.get(id).getIdVuelo()), paq,
-                                envios, aeropuertos);
+                        tablaOpcionesVuelos.get(id)[0] = costo(fechaActualPaquete, vuelosProgramados.get(id),tabla.get(id), paq,
+                                envios, aeropuertos, vuelos);
                         tablaOpcionesVuelos.get(id)[1] = 1 / tablaOpcionesVuelos.get(id)[0];
                         tablaOpcionesVuelos.get(id)[2] = tablaOpcionesVuelos.get(id)[1] * tabla.get(id)[2];
                     }
@@ -317,6 +335,11 @@ public class ACO {
                     paq.getRuta().add(vueloEscogido);
 
                     paq.getFechasRuta().add(vuelosProgramados.get(vueloEscogido).getFechaHoraLlegada());
+                    //Tiempo usado por el paquete en el vuelo
+                    long tHastaSalidaVuelo = aco_auxiliares.calcularDiferenciaEnMinutos(fechaActualPaquete, vuelosProgramados.get(vueloEscogido).getFechaHoraSalida());
+                    long tVuelo = aco_auxiliares.calcularDiferenciaEnMinutos(vuelosProgramados.get(vueloEscogido).getFechaHoraSalida(), vuelosProgramados.get(vueloEscogido).getFechaHoraLlegada());
+                    Duration tiempoGastado = Duration.ofMinutes(tHastaSalidaVuelo + tVuelo);
+                    paq.setTiempoRestanteDinamico(paq.getTiempoRestanteDinamico().minus(tiempoGastado));
 
                     // quitar un slot al vuelo
                     tabla.get(vueloEscogido)[1]--; // ¿Qué pasaría si ya no hay vuelos por tomar?
@@ -346,16 +369,19 @@ public class ACO {
 
                         exito++;
                         System.out.println("El paquete " + paq.getIdPaquete() + " llegó al destino");
+                        System.out.println("Tiempo restante paquete " + paq.getTiempoRestanteDinamico().toMinutes());
                         break;
                     } else {
 
                         System.out.println("El paquete " + paq.getIdPaquete() + " aun no llega al destino");
+                        System.out.println("Tiempo restante paquete " + paq.getTiempoRestanteDinamico().toMinutes());
+
                     }
 
-                    if(i==5) break; //hasta que se quede sin tiempo para buscar su destino. Por ahora maximo visitará 5 aeropuertos
-                    i++;
+                    //if(i==5) break; //hasta que se quede sin tiempo para buscar su destino. Por ahora maximo visitará 5 aeropuertos
+                    //i++;
                 }
-                break;
+                //break;
             }
             // imprimirTabla_v2(tabla, vuelosProgramados,vuelos);
             // Actualizar mi tabla (feromonas). Aumentar si ha llegado al destino. Restar o
@@ -365,9 +391,8 @@ public class ACO {
             iteracionAux++;
         }
 
-        // generarArchivoTabla(tabla, "salida");
-        // System.out.println("Numero de éxitos / numero paquetes: " + exito + " / " +
-        // paquetes.size());
+        generarArchivoTabla(tabla, "salida");
+        System.out.println("Numero de éxitos / numero paquetes: " + exito + " / " + paquetes.size());
 
     }
 
@@ -388,25 +413,26 @@ public class ACO {
                 ZoneId origenZoneId = aeropuertos.get(vuelos.get(idVuelo).getOrigen()).getZoneId();
                 ZonedDateTime fechaHoraSalida = ZonedDateTime.of(ld1, horaSalida, origenZoneId);
 
-                //Calcularemos los minutos de vuelo
+                // Calcularemos los minutos de vuelo
                 LocalTime horaLlegada = vuelos.get(idVuelo).getFechaHoraLlegada().toLocalTime();
                 ZoneId destinoZoneId = aeropuertos.get(vuelos.get(idVuelo).getDestino()).getZoneId();
                 LocalTime horaSalidaEnZoneIdDestino = fechaHoraSalida.withZoneSameInstant(destinoZoneId).toLocalTime();
                 Duration duracionVuelo = Duration.between(horaSalidaEnZoneIdDestino, horaLlegada);
                 int duracionMinutos;
-                if(duracionVuelo.isNegative()){
-                    duracionMinutos = 1440 + (int)duracionVuelo.toMinutes();
-                }else{
-                    duracionMinutos = (int)duracionVuelo.toMinutes();
+                if (duracionVuelo.isNegative()) {
+                    duracionMinutos = 1440 + (int) duracionVuelo.toMinutes();
+                } else {
+                    duracionMinutos = (int) duracionVuelo.toMinutes();
                 }
 
                 numeroVuelos++;
                 //
-                ZonedDateTime fechaHoraLlegada = fechaHoraSalida.withZoneSameInstant(destinoZoneId).plusMinutes(duracionMinutos);
+                ZonedDateTime fechaHoraLlegada = fechaHoraSalida.withZoneSameInstant(destinoZoneId)
+                        .plusMinutes(duracionMinutos);
 
-                //System.out.println(fechaHoraSalida + "  " +  fechaHoraLlegada);
+                // System.out.println(fechaHoraSalida + " " + fechaHoraLlegada);
 
-                ProgramacionVuelo pv = new ProgramacionVuelo(numeroVuelos, idVuelo, fechaHoraSalida,fechaHoraLlegada);
+                ProgramacionVuelo pv = new ProgramacionVuelo(numeroVuelos, idVuelo, fechaHoraSalida, fechaHoraLlegada);
                 // tabla: guardará para cada vuelo su información
                 tabla.put(numeroVuelos, new Double[] { (double) vuelos.get(pv.getIdVuelo()).getCapacidad(),
                         (double) vuelos.get(pv.getIdVuelo()).getCapacidad(), 0.1 });
@@ -421,25 +447,25 @@ public class ACO {
                 ZoneId origenZoneId = aeropuertos.get(vuelos.get(idVuelo).getOrigen()).getZoneId();
                 ZonedDateTime fechaHoraSalida = ZonedDateTime.of(ld2, horaSalida, origenZoneId);
 
-                //Calcularemos los minutos de vuelo
+                // Calcularemos los minutos de vuelo
                 LocalTime horaLlegada = vuelos.get(idVuelo).getFechaHoraLlegada().toLocalTime();
                 ZoneId destinoZoneId = aeropuertos.get(vuelos.get(idVuelo).getDestino()).getZoneId();
                 LocalTime horaSalidaEnZoneIdDestino = fechaHoraSalida.withZoneSameInstant(destinoZoneId).toLocalTime();
                 Duration duracionVuelo = Duration.between(horaSalidaEnZoneIdDestino, horaLlegada);
                 int duracionMinutos;
-                if(duracionVuelo.isNegative()){
-                    duracionMinutos = 1440 + (int)duracionVuelo.toMinutes();
-                }else{
-                    duracionMinutos = (int)duracionVuelo.toMinutes();
+                if (duracionVuelo.isNegative()) {
+                    duracionMinutos = 1440 + (int) duracionVuelo.toMinutes();
+                } else {
+                    duracionMinutos = (int) duracionVuelo.toMinutes();
                 }
 
-                //System.out.println(fechaHoraSalida + "  " +  horaLlegada + "  "+ destinoZoneId);
-                
-                
+                // System.out.println(fechaHoraSalida + " " + horaLlegada + " "+ destinoZoneId);
+
                 numeroVuelos++;
                 //
-                ZonedDateTime fechaHoraLlegada = fechaHoraSalida.withZoneSameInstant(destinoZoneId).plusMinutes(duracionMinutos);
-                
+                ZonedDateTime fechaHoraLlegada = fechaHoraSalida.withZoneSameInstant(destinoZoneId)
+                        .plusMinutes(duracionMinutos);
+
                 ProgramacionVuelo pv = new ProgramacionVuelo(numeroVuelos, idVuelo, fechaHoraSalida, fechaHoraLlegada);
                 // tabla: guardará para cada vuelo su información
                 tabla.put(numeroVuelos, new Double[] { (double) vuelos.get(pv.getIdVuelo()).getCapacidad(),
@@ -455,25 +481,25 @@ public class ACO {
                 ZoneId origenZoneId = aeropuertos.get(vuelos.get(idVuelo).getOrigen()).getZoneId();
                 ZonedDateTime fechaHoraSalida = ZonedDateTime.of(ld3, horaSalida, origenZoneId);
 
-                //Calcularemos los minutos de vuelo
+                // Calcularemos los minutos de vuelo
                 LocalTime horaLlegada = vuelos.get(idVuelo).getFechaHoraLlegada().toLocalTime();
                 ZoneId destinoZoneId = aeropuertos.get(vuelos.get(idVuelo).getDestino()).getZoneId();
                 LocalTime horaSalidaEnZoneIdDestino = fechaHoraSalida.withZoneSameInstant(destinoZoneId).toLocalTime();
                 Duration duracionVuelo = Duration.between(horaSalidaEnZoneIdDestino, horaLlegada);
                 int duracionMinutos;
-                if(duracionVuelo.isNegative()){
-                    duracionMinutos = 1440 + (int)duracionVuelo.toMinutes();
-                }else{
-                    duracionMinutos = (int)duracionVuelo.toMinutes();
+                if (duracionVuelo.isNegative()) {
+                    duracionMinutos = 1440 + (int) duracionVuelo.toMinutes();
+                } else {
+                    duracionMinutos = (int) duracionVuelo.toMinutes();
                 }
 
-                //System.out.println(fechaHoraSalida + "  " +  horaLlegada + "  "+ destinoZoneId);
-                
-                
+                // System.out.println(fechaHoraSalida + " " + horaLlegada + " "+ destinoZoneId);
+
                 numeroVuelos++;
                 //
-                ZonedDateTime fechaHoraLlegada = fechaHoraSalida.withZoneSameInstant(destinoZoneId).plusMinutes(duracionMinutos);
-                
+                ZonedDateTime fechaHoraLlegada = fechaHoraSalida.withZoneSameInstant(destinoZoneId)
+                        .plusMinutes(duracionMinutos);
+
                 ProgramacionVuelo pv = new ProgramacionVuelo(numeroVuelos, idVuelo, fechaHoraSalida, fechaHoraLlegada);
                 // tabla: guardará para cada vuelo su información
                 tabla.put(numeroVuelos, new Double[] { (double) vuelos.get(pv.getIdVuelo()).getCapacidad(),
@@ -515,8 +541,9 @@ public class ACO {
             // Imprimir datos del vuelo con formato de 4 decimales
             System.out.print(id + "\t" + vuelos.get(vuelosProgramados.get(id).getIdVuelo()).getOrigen() +
                     "\t" + vuelos.get(vuelosProgramados.get(id).getIdVuelo()).getDestino() + "   "
-                    + vuelosProgramados.get(id).getFechaHoraSalida() + "  " + vuelosProgramados.get(id).getFechaHoraLlegada()
-                     + "\t");
+                    + vuelosProgramados.get(id).getFechaHoraSalida() + "  "
+                    + vuelosProgramados.get(id).getFechaHoraLlegada()
+                    + "\t");
             for (Double dato : datos) {
                 System.out.printf("%.4f\t\t", dato);
             }
@@ -548,8 +575,11 @@ public class ACO {
         }
     }
 
-    public static double costo(Vuelo vuelo, Paquete paquete, HashMap<String, Envio> envios,
-            HashMap<String, Aeropuerto> aeropuertos) {
+    public static double costo(ZonedDateTime fechaActualPaquete, ProgramacionVuelo vueloProgramado,
+            Double[] tablaValores, Paquete paquete, HashMap<String, Envio> envios,
+            HashMap<String, Aeropuerto> aeropuertos, HashMap<Integer, Vuelo> vuelos) {
+        // Tabla de valores: capacidad actual en [1]
+
         // Inicialmente será el tiempo que le toma en ir a una próxima ciudad + la
         // distancia que le queda para llegar a la ciudad destino
         // Dado que son 2 magnitudes diferentes, debemos normalizar ambas variables.
@@ -561,9 +591,12 @@ public class ACO {
         // esperando en el aero-
         // puerto (creo que esto es insignificante, no se debería tomar en cuenta)
 
-        double tiempoVuelo = vuelo.calcularMinutosDeVuelo();
+        double tiempoVuelo = aco_auxiliares.calcularDiferenciaEnMinutos(fechaActualPaquete,
+                vueloProgramado.getFechaHoraSalida()) +
+                aco_auxiliares.calcularDiferenciaEnMinutos(vueloProgramado.getFechaHoraSalida(),
+                        vueloProgramado.getFechaHoraLlegada());
         // hallar la distancia del destino del vuelo al destino del paquete
-        String destinoVueloTomado = vuelo.getDestino();
+        String destinoVueloTomado = vuelos.get(vueloProgramado.getIdVuelo()).getDestino();
         String destinoFinalPaquete = envios.get(paquete.getCodigoEnvio()).getDestino();
         // hallaremos la distancia entre estos aeropuertos
         double distanciaAlDestinoFinal = Normalizacion.obtenerDistanciaEntreAeropuertos(aeropuertos, destinoVueloTomado,
@@ -578,6 +611,9 @@ public class ACO {
         if (distanciaDestinoFinalNormalizado == 0) {
             return 1;
         }
-        return 25 * tiempoVueloNormalizado + 75 * distanciaDestinoFinalNormalizado;
+        
+        return (25 * tiempoVueloNormalizado + 75 * distanciaDestinoFinalNormalizado)*
+                    (1 - (paquete.getTiempoRestanteDinamico().toMinutes()-tiempoVuelo)/paquete.getTiempoRestante().toMinutes());
+                    //mientras más tiempo tenga, los caminos más largos 
     }
 }
