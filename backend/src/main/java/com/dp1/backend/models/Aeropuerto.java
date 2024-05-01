@@ -17,6 +17,7 @@ public class Aeropuerto{
     private String paisCorto;
     private String continente;
     private int gmt;
+    private ZoneId zoneId;
     private int capacidadMaxima;
     private TimeZone zonaHoraria;
     private double latitud;
@@ -83,6 +84,7 @@ public class Aeropuerto{
         ZoneId zoneId = offset.normalized();
 
         this.zonaHoraria = TimeZone.getTimeZone(zoneId);
+        this.zoneId = zoneId;
     }
 
     public Aeropuerto() {
@@ -95,6 +97,9 @@ public class Aeropuerto{
         this.continente = "";
     }
 
+    public ZoneId getZoneId(){
+        return this.zoneId;
+    }
     public String getContinente() {
         return this.continente;
     }
