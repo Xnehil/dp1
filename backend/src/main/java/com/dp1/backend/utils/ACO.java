@@ -188,7 +188,7 @@ public class ACO {
 
     }
 
-    public static void run_v2(HashMap<String, Aeropuerto> aeropuertos, HashMap<Integer, Vuelo> vuelos,
+    public static int run_v2(HashMap<String, Aeropuerto> aeropuertos, HashMap<Integer, Vuelo> vuelos,
             HashMap<String, Envio> envios,
             ArrayList<Paquete> paquetes, int numeroIteraciones) {
         // Definir una matriz que defina Vuelo, Costo, Visibilidad() y Fermonas
@@ -418,7 +418,7 @@ public class ACO {
 
         //generarArchivoTabla(tabla, "salida");
         System.out.println("Numero de éxitos / numero paquetes: " + exito + " / " + paquetes.size());
-
+        return exito;
     }
 
     

@@ -103,7 +103,35 @@ public class BackendApplication {
         }
           */
 
-        ACO.run_v2(aeropuertos, vuelos, envios, paquetes, 500);
+        //   try {
+        //       FileWriter writer = new FileWriter("output/results_chiquito_"+LocalDate.now()+".csv");
+          
+        //       writer.write("Iteracion,Tiempo de ejecucion (ms),Paquetes entregados,Porcentaje de paquetes entregados,Paquetes no entregados\n");
+        //       double promedio=0;
+        //       int iteraciones=30;
+        //       for (int i = 0; i < iteraciones; i++) {
+        //           Long startTime = System.currentTimeMillis();
+        //           int numPaqEntregados = ACO.run_v2(aeropuertos, vuelos, envios, paquetes, 10);
+        //           long endTime = System.currentTimeMillis();
+        //           long executionTime = endTime - startTime;
+                  
+        //           int paquetesNoEntregados = paquetes.size() - numPaqEntregados;
+        //           double porcentajeEntregados = (double) (numPaqEntregados * 100) / paquetes.size();
+        //           promedio += porcentajeEntregados;
+        //           String resultLine = String.format("%d,%d,%d,%.2f%%,%d\n", i, executionTime, numPaqEntregados,
+        //                   porcentajeEntregados, paquetesNoEntregados);
+        //           writer.write(resultLine);
+        //       }
+        //       promedio /= iteraciones;
+        //       // writer.write("\nPromedio,,," + promedio + "%,\n");
+        //       System.out.println("Promedio: " + promedio);
+          
+        //       writer.close();
+        //   } catch (IOException e) {
+        //       e.printStackTrace();
+        //   }
+        int numPaqEntregados = ACO.run_v2(aeropuertos, vuelos, envios, paquetes, 10);
+        
 
         /* MPA 
         int tamanioSolucion = 5;
