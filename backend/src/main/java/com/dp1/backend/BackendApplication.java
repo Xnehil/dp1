@@ -103,7 +103,7 @@ public class BackendApplication {
         }
           */
 
-        ACO.run_v2(aeropuertos, vuelos, envios, paquetes, 30);
+        ACO.run_v2(aeropuertos, vuelos, envios, paquetes, 500);
 
         /* MPA 
         int tamanioSolucion = 5;

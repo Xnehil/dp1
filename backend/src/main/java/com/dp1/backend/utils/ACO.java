@@ -353,7 +353,7 @@ public class ACO {
                     paq.setTiempoRestanteDinamico(paq.getTiempoRestanteDinamico().minus(tiempoGastado));
 
                     // quitar un slot al vuelo
-                    tabla.get(vueloEscogido)[1]--; // ¿Qué pasaría si ya no hay vuelos por tomar?
+                    tabla.get(vueloEscogido)[1] = tabla.get(vueloEscogido)[1] - 1; // ¿Qué pasaría si ya no hay vuelos por tomar?
                     // Creo que eso no va a pasar
                     /*
                     System.out.println("                IMPRIMIENDO TABLA DE OPCIONES PARA EL PAQUETE "
@@ -398,6 +398,7 @@ public class ACO {
                     // i++;
                 }
                 // break;
+                
             }
             System.out.println("TABLAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA " + iteracionAux);
             imprimirTabla_v2(tabla, vuelosProgramados,vuelos);
@@ -405,33 +406,22 @@ public class ACO {
             // no hacer nada si no ha llegado
 
             // Limpiar los vuelos tomados por el paquete
-            actualizarFeromonas(tabla, paquetes, 0.01, 1);
-
+            actualizarFeromonas(tabla, paquetes, 0.15, 10);
+            System.out.println("Numero de éxitos / numero paquetes: " + exito + " / " + paquetes.size());
+            try {
+                Thread.sleep(500); // 500 milisegundos (0.5 segundos)
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
             iteracionAux++;
         }
 
-        // generarArchivoTabla(tabla, "salida");
+        //generarArchivoTabla(tabla, "salida");
         System.out.println("Numero de éxitos / numero paquetes: " + exito + " / " + paquetes.size());
 
     }
 
-    public static void actualizarFeromonas(HashMap<Integer, Double[]> tabla, ArrayList<Paquete> paquetes, double tasaEvaporacion, double aprendizaje){
-        //Actualizamos primero segun la tasa de evaporacion
-        for(int idVuelo : tabla.keySet()){
-            tabla.get(idVuelo)[2] = tabla.get(idVuelo)[2] * (1 - tasaEvaporacion);
-        }
-        //Actualizamos segun si el paquete tomó el vuelo
-        for(Paquete paq : paquetes){
-            if(paq.getLlegoDestino()){
-                for(int vueloTomado : paq.getRuta()){
-                    //Me parece que tengo que acumular el costo en cada decisión para así
-                    tabla.get(vueloTomado)[2] = tabla.get(vueloTomado)[2] + aprendizaje/(paq.costoTotalRuta());
-                }
-            }
-        }
-        //¿Haremos algo con la ruta si el paquete no llegó al destino? Fátima
-        
-    }
+    
 
     public static void agregarVuelosRequeridos(ZonedDateTime fechaPaquete, HashMap<Integer, Double[]> tabla,
             HashMap<Integer, ProgramacionVuelo> vuelosProgramados, HashMap<Integer, Vuelo> vuelos,
@@ -648,13 +638,44 @@ public class ACO {
                 minYMaxDistanciaAeropuertos[0], minYMaxDistanciaAeropuertos[1]);
         // System.out.println("VERIFICANDO: " + tiempoVueloNormalizado + " " +
         // distanciaDestinoFinalNormalizado);
-        if (distanciaDestinoFinalNormalizado == 0) {
-            return 1;
-        }
+        // if (distanciaDestinoFinalNormalizado == 0) {
+        //     return 1;
+        // }
 
-        return (25 * tiempoVueloNormalizado + 75 * distanciaDestinoFinalNormalizado) *
-                (1 - (paquete.getTiempoRestanteDinamico().toMinutes() - tiempoVuelo)
-                        / paquete.getTiempoRestante().toMinutes());
+        // return (25 * tiempoVueloNormalizado + 75 * distanciaDestinoFinalNormalizado) *
+        //         (1 - (paquete.getTiempoRestanteDinamico().toMinutes() - tiempoVuelo)
+        //                 / paquete.getTiempoRestante().toMinutes());
+        return 1 + 100000*(tiempoVueloNormalizado * distanciaDestinoFinalNormalizado) *tablaValores[2] * (100 + ((tablaValores[0]-tablaValores[1])/tablaValores[0]))/100;
         // mientras más tiempo tenga, los caminos más largos
+    }
+    public static void actualizarFeromonas(HashMap<Integer, Double[]> tabla, ArrayList<Paquete> paquetes, double tasaEvaporacion, double aprendizaje){
+        //Actualizamos primero segun la tasa de evaporacion
+        for(int idVuelo : tabla.keySet()){
+            tabla.get(idVuelo)[2] = tabla.get(idVuelo)[2] * (1 - tasaEvaporacion);
+        }
+        //Actualizamos segun si el paquete tomó el vuelo
+        for(Paquete paq : paquetes){
+            if(paq.getLlegoDestino()){
+                for(int vueloTomado : paq.getRuta()){
+                    //Me parece que tengo que acumular el costo en cada decisión para así
+                    //System.out.println(paq.costoTotalRuta());
+                    tabla.get(vueloTomado)[2] = tabla.get(vueloTomado)[2] + aprendizaje/(paq.costoTotalRuta());
+                }
+            }
+        }
+        //¿Haremos algo con la ruta si el paquete no llegó al destino? Fátima
+        //Invertimos la cantidad de feromonas
+        // double suma = 0;
+        // for(int id : tabla.keySet()){
+        //     suma = suma + 1 / tabla.get(id)[2];
+        // }
+    
+        // for(int id : tabla.keySet()){
+        //     tabla.get(id)[2] = (1 / tabla.get(id)[2]) / suma; 
+        // }
+        // for(int id : tabla.keySet()){
+        //     tabla.get(id)[2] = 1 / tabla.get(id)[2]; 
+        // }
+    
     }
 }
