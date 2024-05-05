@@ -5,13 +5,34 @@ import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
-public class Paquete {
-    private int idPaquete;
-    private int idEnvio;
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OrderColumn;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name = "paquete")
+@SQLDelete(sql = "UPDATE paquete SET active = false WHERE id = ?")
+@SQLRestriction(value = "active = true")
+public class Paquete extends BaseModel{
+
+    @ManyToOne
+    @JoinColumn(name = "codigo_envio")
+    private Envio envio;
+
     private String codigoEnvio;
+
     private ArrayList<ZonedDateTime> fechasRuta;
     private ArrayList<Double> costosRuta;
+
+    @Column(name = "llego_destino")
     private boolean llegoDestino;
     //Se almacena la lista de ids de los vuelos a seguir
 
@@ -62,19 +83,11 @@ public class Paquete {
 
 
     public int getIdPaquete() {
-        return this.idPaquete;
+        return super.getId();
     }
 
     public void setIdPaquete(int idPaquete) {
-        this.idPaquete = idPaquete;
-    }
-
-    public int getIdEnvio() {
-        return this.idEnvio;
-    }
-
-    public void setIdEnvio(int idEnvío) {
-        this.idEnvio = idEnvío;
+        super.setId(idPaquete);
     }
 
     public ArrayList<Integer> getRuta() {
@@ -100,6 +113,10 @@ public class Paquete {
         this.tiempoRestanteDinamico = tiempoRestanteDinamico;
     }
     
+    @ElementCollection
+    @CollectionTable(name = "ruta", joinColumns = @JoinColumn(name = "id"))
+    @Column(name = "ruta_point")
+    @OrderColumn(name = "index")
     private ArrayList<Integer> ruta;
 
     //Tiempo restante para que el paquete llegue a su destino
@@ -108,15 +125,13 @@ public class Paquete {
 
 
     public Paquete(int idPaquete, int idEnvío, ArrayList<Integer> ruta, Duration tiempoRestante) {
-        this.idPaquete = idPaquete;
-        this.idEnvio = idEnvío;
+        super.setId(idPaquete);
         this.ruta = ruta;
         this.tiempoRestante = tiempoRestante;
     }
 
     public Paquete() {
-        this.idPaquete = 0;
-        this.idEnvio = 0;
+        super.setId(0);
         this.ruta = new ArrayList<Integer>();
         this.fechasRuta = new ArrayList<ZonedDateTime>();
         this.costosRuta = new ArrayList<>();
