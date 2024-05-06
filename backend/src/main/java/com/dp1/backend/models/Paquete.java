@@ -22,9 +22,9 @@ import jakarta.persistence.Table;
 @SQLDelete(sql = "UPDATE paquete SET active = false WHERE id = ?")
 @SQLRestriction(value = "active = true")
 public class Paquete extends BaseModel{
-    // @ManyToOne
-    // @JoinColumn(name = "envio")
-    // private Envio envio;
+    @ManyToOne
+    @JoinColumn(name = "codigo_envio", insertable = false, updatable = false, referencedColumnName = "codigo_envio")
+    private Envio envio;
 
     @Column(name = "codigo_envio")
     private String codigoEnvio;
@@ -35,6 +35,17 @@ public class Paquete extends BaseModel{
     @Column(name = "llego_destino")
     private boolean llegoDestino;
     //Se almacena la lista de ids de los vuelos a seguir
+
+    @ElementCollection
+    @CollectionTable(name = "ruta", joinColumns = @JoinColumn(name = "id"))
+    @Column(name = "ruta_point")
+    @OrderColumn(name = "ruta_index")  // Changed from "index" to "ruta_index"
+    private ArrayList<Integer> ruta;
+
+    //Tiempo restante para que el paquete llegue a su destino
+    private Duration tiempoRestanteDinamico;
+    private Duration tiempoRestante;
+
 
     public ArrayList<Double> getcostosRuta() {
         return this.costosRuta;
@@ -113,16 +124,7 @@ public class Paquete extends BaseModel{
         this.tiempoRestanteDinamico = tiempoRestanteDinamico;
     }
     
-    @ElementCollection
-    @CollectionTable(name = "ruta", joinColumns = @JoinColumn(name = "id"))
-    @Column(name = "ruta_point")
-    @OrderColumn(name = "index")
-    private ArrayList<Integer> ruta;
-
-    //Tiempo restante para que el paquete llegue a su destino
-    private Duration tiempoRestanteDinamico;
-    private Duration tiempoRestante;
-
+    
 
     public Paquete(int idPaquete, int idEnvío, ArrayList<Integer> ruta, Duration tiempoRestante) {
         super.setId(idPaquete);

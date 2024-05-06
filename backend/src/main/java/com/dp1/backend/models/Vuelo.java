@@ -20,7 +20,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "plan_vuelo", indexes = {
-    @Index(name = "idx_plan_vuelo", columnList = "idVuelo"),
+    @Index(name = "idx_origen_vuelo", columnList = "origen"),
 })
 @SQLDelete(sql = "UPDATE plan_vuelo SET active = false WHERE id = ?")
 @SQLRestriction(value = "active = true")
