@@ -1,8 +1,8 @@
 spring:
     datasource:
-        url: jdbc:mysql://lp2.chya6iycyd21.us-east-1.rds.amazonaws.com:3306/nysobecas?useSSL=false
+        url: jdbc:mysql://bd-dp1.caido0azqzdz.us-east-1.rds.amazonaws.com:3306/dp1?useSSL=false
         username: admin
-        password: L24NFji44EAd7AC
+        password: DP1grupo2b
         driver-class-name: com.mysql.cj.jdbc.Driver
 
 #JPA 

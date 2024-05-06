@@ -22,11 +22,11 @@ import jakarta.persistence.Table;
 @SQLDelete(sql = "UPDATE paquete SET active = false WHERE id = ?")
 @SQLRestriction(value = "active = true")
 public class Paquete extends BaseModel{
+    // @ManyToOne
+    // @JoinColumn(name = "envio")
+    // private Envio envio;
 
-    @ManyToOne
-    @JoinColumn(name = "codigo_envio")
-    private Envio envio;
-
+    @Column(name = "codigo_envio")
     private String codigoEnvio;
 
     private ArrayList<ZonedDateTime> fechasRuta;
