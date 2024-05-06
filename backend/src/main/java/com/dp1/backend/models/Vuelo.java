@@ -7,13 +7,42 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
 
-public class Vuelo {
-    private int idVuelo;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
+import org.hibernate.annotations.Type;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Index;
+import jakarta.persistence.Table;
+
+
+@Entity
+@Table(name = "plan_vuelo", indexes = {
+    @Index(name = "idx_plan_vuelo", columnList = "idVuelo"),
+})
+@SQLDelete(sql = "UPDATE plan_vuelo SET active = false WHERE id = ?")
+@SQLRestriction(value = "active = true")
+public class Vuelo extends BaseModel {
+    @Column(name="origen")
     private String origen;
+
+    @Column(name="destino")
     private String destino;
+
+    @Column(name="hora_salida")
     private ZonedDateTime fechaHoraSalida;
+    
+    @Column(name="hora_llegada")
     private ZonedDateTime fechaHoraLlegada;
+
+    @Column(name="capacidad")
     private int capacidad;
+
+    @Column(name="cambio_de_dia")
+    private Boolean cambioDeDia;
+
     private HashMap<LocalDate, Integer> cargaPorDia;
 
     public HashMap<LocalDate,Integer> getCargaPorDia() {
@@ -25,7 +54,7 @@ public class Vuelo {
     }
 
 
-    private Boolean cambioDeDia;
+    
 
     public Boolean isCambioDeDia() {
         return this.cambioDeDia;
@@ -67,11 +96,11 @@ public class Vuelo {
     }
 
     public int getIdVuelo() {
-        return this.idVuelo;
+        return super.getId();
     }
 
     public void setIdVuelo(int idVuelo) {
-        this.idVuelo = idVuelo;
+        super.setId(idVuelo);
     }
 
     public String getOrigen() {

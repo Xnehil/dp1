@@ -1,23 +1,56 @@
 package com.dp1.backend.models;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TimeZone;
 import java.util.TreeMap;
 
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
-public class Aeropuerto{
-    private int idAeropuerto;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Index;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name = "aeropuerto", indexes = {
+    @Index(name = "idx_aeropuerto_codigo_oaci", columnList = "codigo_oaci")
+})
+@SQLDelete(sql = "UPDATE aeropuerto SET active = false WHERE id = ?")
+@SQLRestriction(value = "active = true")
+public class Aeropuerto extends BaseModel {
+    @Column(name = "codigo_oaci")
     private String codigoOACI;
+
+    @Column(name = "ciudad")
     private String ciudad;
+
+    @Column(name = "pais")
     private String pais;
+
+    @Column(name = "pais_corto")
     private String paisCorto;
+
+    @Column(name = "continente")
     private String continente;
+
+    @Column(name = "gmt")
     private int gmt;
+
+    private ZoneId zoneId;
+
+    @Column(name = "capacidad_maxima")
     private int capacidadMaxima;
     private TimeZone zonaHoraria;
+
+    @Column(name = "latitud")
     private double latitud;
+
+    @Column(name = "longitud")
     private double longitud;
     //Estos tienen la zona horaria del aeropuerto
     private TreeMap<LocalDateTime, Integer> cantPaqParaPlanificacion;
@@ -72,18 +105,16 @@ public class Aeropuerto{
         this.paisCorto = paisCorto;
         this.gmt = gmt;
         this.capacidadMaxima = capacidad;
-        this.idAeropuerto = idAeropuerto;
+        super.setId(idAeropuerto);
         this.cantPaqParaPlanificacion = new TreeMap<LocalDateTime, Integer>();
         this.cantPaqReal = new TreeMap<LocalDateTime, Integer>();
 
-        //set timezone from GMT like "Etc/GMT{gmt}"
-        String timeZone = "Etc/GMT";
-        if (gmt >= 0) {
-            timeZone += "+" + gmt;
-        } else {
-            timeZone += gmt;
-        }
-        this.zonaHoraria = TimeZone.getTimeZone(timeZone);
+
+        ZoneOffset offset = ZoneOffset.ofHours(gmt);
+        ZoneId zoneId = offset.normalized();
+
+        this.zonaHoraria = TimeZone.getTimeZone(zoneId);
+        this.zoneId = zoneId;
     }
 
     public Aeropuerto() {
@@ -96,6 +127,9 @@ public class Aeropuerto{
         this.continente = "";
     }
 
+    public ZoneId getZoneId(){
+        return this.zoneId;
+    }
     public String getContinente() {
         return this.continente;
     }
@@ -106,11 +140,11 @@ public class Aeropuerto{
 
 
     public int getIdAeropuerto() {
-        return this.idAeropuerto;
+        return super.getId();
     }
 
     public void setIdAeropuerto(int idAeropuerto) {
-        this.idAeropuerto = idAeropuerto;
+        super.setId(idAeropuerto);
     }
 
     public String getCodigoOACI() {

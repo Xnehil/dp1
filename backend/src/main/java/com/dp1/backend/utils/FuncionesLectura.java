@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.nio.charset.Charset;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.TimeZone;
 
 import com.dp1.backend.models.Aeropuerto;
@@ -51,7 +52,7 @@ public class FuncionesLectura {
                 String city = parts[2];
                 String country = parts[3];
                 String shortName = parts[4];
-                int gmt = Integer.parseInt(parts[5].replace("+", "").replace("-", ""));
+                int gmt = Integer.parseInt(parts[5].replace("+", ""));
                 int capacity = Integer.parseInt(parts[6]);
                 double longitud = convertToDecimalDegrees(parts[8]);
                 double latitud = convertToDecimalDegrees(parts[7]);
@@ -84,15 +85,18 @@ public class FuncionesLectura {
                 String horaOrigen = parts[2];
                 String horaDestino = parts[3];
 
-                TimeZone zonaOrigen = aeropuertos.get(ciudadOrigen).getZonaHoraria();
-                TimeZone zonaDestino = aeropuertos.get(ciudadDestino).getZonaHoraria();
+
+                ZoneId zonaOrigen = aeropuertos.get(ciudadOrigen).getZoneId();
+                ZoneId zonaDestino = aeropuertos.get(ciudadDestino).getZoneId();
+                // TimeZone zonaOrigen = aeropuertos.get(ciudadOrigen).getZonaHoraria();
+                // TimeZone zonaDestino = aeropuertos.get(ciudadDestino).getZonaHoraria();
 
                 LocalDate localDate = LocalDate.now();
                 LocalTime origenLocalTime = LocalTime.parse(horaOrigen);
                 LocalTime destinoLocalTime = LocalTime.parse(horaDestino);
 
-                ZonedDateTime horaOrigenZoned = ZonedDateTime.of(localDate, origenLocalTime, zonaOrigen.toZoneId());
-                ZonedDateTime horaDestinoZoned = ZonedDateTime.of(localDate, destinoLocalTime, zonaDestino.toZoneId());
+                ZonedDateTime horaOrigenZoned = ZonedDateTime.of(localDate, origenLocalTime, zonaOrigen);
+                ZonedDateTime horaDestinoZoned = ZonedDateTime.of(localDate, destinoLocalTime, zonaDestino);
 
                 int capacidadCarga = Integer.parseInt(parts[4]);
 
@@ -148,27 +152,33 @@ public class FuncionesLectura {
                 Aeropuerto origen = aeropuertos.getOrDefault(ciudadOrigenEnvio, aeropuertos.get("EKCH"));
                 Aeropuerto destino = aeropuertos.getOrDefault(ciudadDestino, aeropuertos.get("EKCH"));
 
-                TimeZone zonaOrigen = origen.getZonaHoraria();
-                TimeZone zonaDestino = destino.getZonaHoraria();
+                ZoneId zonaOrigen = origen.getZoneId();
+                ZoneId zonaDestino = destino.getZoneId();
 
-                ZonedDateTime horaOrigenZoned = ZonedDateTime.of(fechaOrigen, horaOrigen, zonaOrigen.toZoneId());
-                LocalDate fechaDestino;
+                ZonedDateTime horaOrigenZoned = ZonedDateTime.of(fechaOrigen, horaOrigen, zonaOrigen);
                 ZonedDateTime horaDestinoZoned;
 
                 // El tiempo para enviar será de dos días si es continente distsinto y de un día
                 // si es el mismo continente
                 if (!origen.getContinente().equals(destino.getContinente())) {
-                    fechaDestino = fechaOrigen.plusDays(2);
+                    horaDestinoZoned = horaOrigenZoned.plusDays(2).withZoneSameInstant(zonaDestino);
                 } else {
-                    fechaDestino = fechaOrigen.plusDays(1);
+                    horaDestinoZoned = horaOrigenZoned.plusDays(1).withZoneSameInstant(zonaDestino);
                 }
-                horaDestinoZoned = ZonedDateTime.of(fechaDestino, horaOrigen, zonaDestino.toZoneId());
                 ArrayList<Paquete> paquetes = new ArrayList<>();
                 for (int i = 0; i < cantidadPaquetes; i++) {
                     Paquete paquete = new Paquete();
-                    paquete.setIdEnvio(envioId);
                     paquete.setCodigoEnvio(ciudadOrigenEnvio + envioId);
+                    paquete.setIdPaquete(1000000*origen.getIdAeropuerto() + 100*envioId + (i+1));//un envió no tiene más de 99 paquetes en principio
                     // Add more properties to the package if needed
+                    if (!origen.getContinente().equals(destino.getContinente())) {
+                        paquete.setTiempoRestanteDinamico(Duration.ofDays(2));
+                        paquete.setTiempoRestante(Duration.ofDays(2));
+                    } else {
+                        paquete.setTiempoRestanteDinamico(Duration.ofDays(1));
+                        paquete.setTiempoRestante(Duration.ofDays(1));
+                    }
+                    
                     paquetes.add(paquete);
                     
                     // Meter paquetes al aeropuerto de origen
@@ -182,9 +192,13 @@ public class FuncionesLectura {
                 envios.put(codigo, nuevoEnvio);
                 counter++;
             }
+            //System.out.println("Numero de envios: " + counter);
         } catch (IOException e) {
             System.err.println("Error reading file: " + e);
         }
+        // for(int id: envios.keySet()){
+        //     System.out.println(envios.get(id).getIdEnvio());
+        // }
         return envios;
     }
 

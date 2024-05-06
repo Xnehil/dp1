@@ -3,6 +3,9 @@ package com.dp1.backend.models;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
+
+
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 
@@ -11,8 +14,14 @@ import jakarta.persistence.Table;
 @SQLDelete(sql = "UPDATE usuario SET active = false WHERE id = ?")
 @SQLRestriction( value = "active = true")
 public class Usuario extends BaseModel {    
+
+    @Column(name = "username", nullable = false, unique = true)
     private String username;
+
+    @Column(name = "password", nullable = false)
     private String password;
+
+    @Column(name = "email", nullable = false, unique = true)
     private String email;
 
 
