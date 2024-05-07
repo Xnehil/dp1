@@ -1,12 +1,17 @@
 import Image from "next/image";
-export default function IconoTarea({ icon, description }) {
+import "@/styles/Componentes.css";
 
-  return (
-    <div>
-      <div className="w-35 h-35 bg-gray-200 rounded-xl flex flex-col items-center justify-center shadow-md">
-        <Image src={icon} alt="Icon" className="w-30 h-30"/>
-      </div>
-      <p className="mt-2 text-4xl text-gray-700 text-center">{description}</p>
-    </div>
-  );
+export default function IconoTarea({ icon, description }) {
+    return (
+        <div className="flex flex-col justify-center items-center">
+            <div className="w-35 h-35 flex flex-col items-center justify-center shadow-md FondoIconoTarea">
+                <Image src={icon} alt="Icon" className="w-30 h-30" />
+            </div>
+            <div className="w-4/5 text-center">
+                <p className="TextoIconoTarea">
+                    {description}
+                </p>
+            </div>
+        </div>
+    );
 }

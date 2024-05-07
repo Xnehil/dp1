@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useEffect, useState } from 'react';
+import Link from 'next/link';
+
 import IconoTarea from '@/components/IconoTarea'
 
 import srcAjustes from '@/logos/ajustes.png'
@@ -19,7 +21,9 @@ export default function Home() {
         </div>
       </div>
       <div className='flex justify-between'>
-        <IconoTarea icon={srcVuelosEnVivo} description="Vuelos en vivo" />
+        <Link href={'/vuelosEnVivo'} className=''>
+          <IconoTarea icon={srcVuelosEnVivo} description="Vuelos en vivo" />
+        </Link>
         <IconoTarea icon={srcSimulacion} description="Simulación de envíos" />
         <IconoTarea icon={srcAjustes} description="Ajustes" />
       </div>
