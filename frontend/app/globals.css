@@ -1,6 +1,6 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
 
 :root {
   --foreground-rgb: 0, 0, 0;
@@ -8,26 +8,72 @@
   --background-end-rgb: 255, 255, 255;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
+.centered-column {
+  text-align: center;
 }
 
-body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+.highlight-green {
+  background-color: #c6f6d5; 
+  padding: 0.4rem 0.8rem; 
+  border-radius: 0.4rem; 
+  display: inline-block; 
+  color: #1dba4b;
+  font-weight: bold;
+  justify-self: center;
 }
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
+.highlight-red {
+  background-color: #fed7d7; 
+  padding: 0.4rem 0.8rem;
+  border-radius: 0.4rem; 
+  display: inline-block;
+  color: #fb4d4d;
+  font-weight: bold;
+  justify-self: center;
+}
+
+.highlight-orange {
+  background-color: #fbcc7d;
+  padding: 0.4rem 0.8rem;
+  border-radius: 0.4rem; 
+  display: inline-block;
+  color: #b47305;
+  font-weight: bold;
+  justify-self: center;
+}
+
+.highlight-blue {
+  background-color: #bee3f8; 
+  padding: 0.4rem 0.8rem;
+  border-radius: 0.4rem;
+  display: inline-block;
+  color: #179de6;
+  font-weight: bold;
+  justify-self: center;
+
+}
+
+.highlight-gray {
+  background-color: #e2e8f0; 
+  padding: 0.4rem 0.8rem;
+  border-radius: 0.4rem;
+  display: inline-block;
+  justify-self: center;
+
+}
+
+.highlight-yellow {
+  background-color: #fefcbf; 
+  padding: 0.4rem 0.8rem;
+  border-radius: 0.4rem;
+  display: inline-block;
+  color: #b8aa01;
+  font-weight: bold;
+  justify-self: center;
+
+
+}
+
+.labelWidth {
+  width: 256px; 
 }
