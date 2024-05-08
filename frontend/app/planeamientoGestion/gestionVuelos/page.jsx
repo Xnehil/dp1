@@ -2,6 +2,6 @@ export default function Page (){
 
 
     return (
-        <p>Prueba</p>
+        <p>Gestión de aviones</p>
     );
 }
