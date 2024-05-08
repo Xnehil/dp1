@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef } from "react";
 import "ol/ol.css";
-import Map from "ol/Map";
+import {Map as OLMap} from "ol";
 import View from "ol/View";
 import TileLayer from "ol/layer/Tile";
 import OSM from "ol/source/OSM";
@@ -14,9 +14,16 @@ import { Coordinate } from "ol/coordinate";
 import { fromLonLat, toLonLat } from "ol/proj";
 
 import { planeStyle, airportStyle, lineStyle } from "./EstilosMapa";
+import { Vuelo } from "@/types/Vuelo";
+import { Aeropuerto } from "@/types/Aeropuerto";
 
-const Mapa = () => {
-    let map: Map;
+type MapaProps = {
+    vuelos: Vuelo[];
+    aeropuertos: Map<string, Aeropuerto>;
+};
+
+const Mapa = ({vuelos, aeropuertos}: MapaProps)  => {
+    let map: OLMap;
 
     const planes = [
         { start: [-77.0428, -12.0464], end: [-73.5673, -33.4691] },
@@ -50,15 +57,24 @@ const Mapa = () => {
             return feature;
         });
 
+        const aeropuertoFeatures = Array.from(aeropuertos.values()).map((aeropuerto) => {
+            const point = new Point(fromLonLat([aeropuerto.longitud, aeropuerto.latitud]));
+            const feature = new Feature({
+                geometry: point,
+            });
+            feature.setStyle(airportStyle);
+            return feature;
+        });
+
         const vectorSource = new VectorSource({
-            features: [...lineFeatures, ...pointFeatures],
+            features: [...lineFeatures, ...pointFeatures, ...aeropuertoFeatures],
         });
 
         const vectorLayer = new VectorLayer({
             source: vectorSource,
         });
 
-        map = new Map({
+        map = new OLMap({
             target: "map",
             layers: [
                 new TileLayer({

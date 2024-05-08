@@ -9,7 +9,7 @@ export const airportStyle = new Style({
         anchor: [0.5, 1],
         anchorXUnits: 'fraction',
         anchorYUnits: 'fraction',
-        src: '@/public/logos/oficinas.png',
+        src: '/logos/oficinas.png',
         scale: 0.15,
     }),
 });
