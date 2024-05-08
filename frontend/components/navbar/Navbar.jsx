@@ -1,10 +1,10 @@
 "use client"
 
 import { usePathname } from 'next/navigation'
-import RedExIcon from '../../icons/LogoRedEx'
+import RedExIcon from '../../public/icons/LogoRedEx'
 import NavbarItem from './NavbarItem'
 import Link from 'next/link'
-import LogoTest from '../../icons/LogoTest'
+import LogoTest from '../../public/icons/LogoTest'
 
 const Navbar = () => {
 	const navbarItems = [

@@ -5,12 +5,12 @@ import Link from "next/link";
 
 import IconoTarea from "@/components/IconoTarea";
 
-import srcAjustes from "@/logos/ajustes.png";
-import srcEstadisticas from "@/logos/estadisticas.png";
-import srcPlaneamiento from "@/logos/planeamientoGestion.png";
-import srcSimulacion from "@/logos/simulacionEnvios.png";
-import srcVuelosEnVivo from "@/logos/vuelosEnVivo.png";
-import Link from "next/link";
+import srcAjustes from "@/public/logos/ajustes.png";
+import srcEstadisticas from "@/public/logos/estadisticas.png";
+import srcPlaneamiento from "@/public/logos/planeamientoGestion.png";
+import srcSimulacion from "@/public/logos/simulacionEnvios.png";
+import srcVuelosEnVivo from "@/public/logos/vuelosEnVivo.png";
+
 
 export default function Home() {
     return (
@@ -22,7 +22,7 @@ export default function Home() {
             </div>
             <section className="w-4/5 mx-auto">
                 <div className="flex flex-row justify-between p-5">
-                    <Link href={"/vuelosEnVivo"} className="">
+                    <Link href={"/vuelosEnVivo"} className="h-full">
                         <IconoTarea
                             icon={srcVuelosEnVivo}
                             description="Vuelos en vivo"

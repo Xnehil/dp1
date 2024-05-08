@@ -24,7 +24,7 @@ export default function RootLayout({
       <body className={`${inter.className} bg-[#EFEFEF] w-auto h-screen`}>
         <Navbar />
         <main className={`h-screen`}>
-          <div className="grid grid-cols-[1fr_10fr_1fr]">
+          <div className="grid grid-cols-[1fr_38fr_1fr]">
             <div></div>
             <div>
               {

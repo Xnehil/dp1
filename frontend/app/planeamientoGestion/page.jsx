@@ -2,11 +2,11 @@ import React from "react";
 import Link from "next/link";
 
 import IconoTarea from "@/components/IconoTarea";
-import srcVuelo from '@/logos/vuelo.png'
-import srcCliente from '@/logos/cliente.png'
-import srcCalendario from '@/logos/calendario.png'
-import srcOficinas from '@/logos/oficinas.png'
-import srcPaquete from '@/logos/paquete.png'
+import srcVuelo from '@/public/logos/vuelo.png'
+import srcCliente from '@/public/logos/cliente.png'
+import srcCalendario from '@/public/logos/calendario.png'
+import srcOficinas from '@/public/logos/oficinas.png'
+import srcPaquete from '@/public/logos/paquete.png'
 
 export default function PlaneamientoYGestion() {
 
