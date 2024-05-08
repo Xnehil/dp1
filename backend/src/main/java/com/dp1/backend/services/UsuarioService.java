@@ -12,10 +12,6 @@ import com.dp1.backend.repository.UsuarioRepository;
 public class UsuarioService {
     @Autowired
     private UsuarioRepository usuarioRepository;
-
-    public UsuarioService(UsuarioRepository usuarioRepository) {
-        this.usuarioRepository = usuarioRepository;
-    }
     
     public Usuario createUsuario(Usuario usuario)
     {
