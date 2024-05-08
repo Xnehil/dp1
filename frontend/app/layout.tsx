@@ -31,9 +31,9 @@ export default function RootLayout({
                 <NextBreadcrumb
                   homeElement={"Inicio"}
                   separator={<span>/</span>}
-                  activeClasses="text-gray-700 font-bold text-1xl"
+                  activeClasses="text-gray-700 font-bold text-sm"
                   containerClasses="flex py-5 bg-transparent rounded-t-md text-black"
-                  listClasses="px-4 text-xl text-slate-700 hover:text-blue-700"
+                  listClasses="px-4 text-sm text-slate-700 hover:text-blue-700"
                   capitalizeLinks
                 />
               }
