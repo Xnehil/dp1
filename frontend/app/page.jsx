@@ -14,7 +14,7 @@ export default function Home() {
   return (
     <main>
       <div className='w-3/5 mx-auto flex items-center px-3 rounded-2xl'>
-        <h1 className="text-4xl  text-black-500 px-4 text-center mt-0 mb-10">
+        <h1 className="text-4xl  text-black-500 px-4 text-center mt-0 mb-5">
           Bienvenid@ al sistema de gestión de envíos de RedEx
         </h1>
       </div>
