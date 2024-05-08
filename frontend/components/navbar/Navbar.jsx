@@ -4,15 +4,31 @@ import { usePathname } from 'next/navigation'
 import RedExIcon from '../../icons/LogoRedEx'
 import NavbarItem from './NavbarItem'
 import Link from 'next/link'
-import LogoTest from '../../icons/LogoTest'
+import LogoPlane from '../../icons/LogoPlane'
+import LogoSimu from '../../icons/LogoSimu'
+import LogoHome from '../../icons/LogoHome'
+import LogoGest from '../../icons/LogoGest'
+import LogoStats from '../../icons/LogoStats'
+import LogoConfig from '../../icons/LogoConfig'
 
 const Navbar = () => {
 	const navbarItems = [
-		{ name: 'Prueba', route: '/prueba', Icon: LogoTest},
+		{ name: 'Inicio', route: '/', Icon: LogoHome},
+		{ name: 'En vivo', route: '/enVivo', Icon: LogoPlane},
+		{ name: 'Gestión', route: '/gestion', Icon: LogoGest},
+		{ name: 'Simulación', route: '/simulacion', Icon: LogoSimu},
+		{ name: 'Estadísticas', route: '/estadisticas', Icon: LogoStats},
+		{ name: '', route: '/configuracion', Icon: LogoConfig},
 	]
 	const pathname = usePathname()
 
-	const isActive = (route) => pathname.startsWith(route)
+	const isActive = (route) => {
+		if (route === '/') {
+			return pathname === '/';  // Solo marca como activo si es exactamente '/'
+		}
+		return pathname.startsWith(route);  // Para todas las demás rutas, usa el método de inicio
+	}
+	
 
 	return (
 		<nav className="bg-[#55BBBB] px-6 py-2 flex justify-between">
