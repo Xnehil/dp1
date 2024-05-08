@@ -1,0 +1,43 @@
+import React from "react";
+import Link from "next/link";
+
+import IconoTarea from "@/components/IconoTarea";
+import srcVuelo from '@/public/logos/vuelo.png'
+import srcCliente from '@/public/logos/cliente.png'
+import srcCalendario from '@/public/logos/calendario.png'
+import srcOficinas from '@/public/logos/oficinas.png'
+import srcPaquete from '@/public/logos/paquete.png'
+
+export default function PlaneamientoYGestion() {
+
+  return (
+    <div className="flex flex-row mt-2 h-screen">
+      <div className='w-1/2 flex flex-col border-solid'>
+        <h2 className="text-5xl  text-black-500 mt-0 mb-12 mx-auto">
+          Gestionar
+        </h2>
+        <div className='flex flex-row justify-around p-5 mb-5'>
+          <IconoTarea icon={srcOficinas} description="Oficinas" />
+          <Link href={"planeamientoGestion/gestionVuelos"}>
+            <IconoTarea icon={srcVuelo} description="Vuelos" />
+          </Link>
+        </div>
+        <div className='flex flex-row justify-around p-5'>
+          <IconoTarea icon={srcPaquete} description="Paquetes" />
+          <IconoTarea icon={srcCliente} description="Clientes" />
+        </div>
+      </div>
+      <div className="w-[1.5px] h-[500px] bg-gray-800 mt-20"></div>
+
+
+      <div className='w-1/2 flex flex-col'>
+        <h2 className="text-5xl  text-black-500 mt-0 mb-5 mx-auto">
+          Planificar
+        </h2>
+        <div className='flex flex-row justify-around p-5 mt-10'>
+          <IconoTarea icon={srcCalendario} description="Correr algoritmos de planificación" size="140" styleBg="bg-[#59C3C3]" />
+        </div>
+      </div>
+    </div>
+  );
+}
