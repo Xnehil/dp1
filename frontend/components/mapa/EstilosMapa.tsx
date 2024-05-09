@@ -28,6 +28,7 @@ export const planeStyle = new Style({
 export const lineStyle = new Style({
     stroke: new Stroke({
       color: '#ffcc33',
-      width: 2,
+      lineDash: [4],
+      width: 0,
     }),
 });

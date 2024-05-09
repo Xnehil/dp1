@@ -14,7 +14,7 @@ import LogoConfig from '@/public/icons/LogoConfig'
 const Navbar = () => {
 	const navbarItems = [
 		{ name: 'Inicio', route: '/', Icon: LogoHome},
-		{ name: 'En vivo', route: '/enVivo', Icon: LogoPlane},
+		{ name: 'En vivo', route: '/vuelosEnVivo', Icon: LogoPlane},
 		{ name: 'Gestión', route: '/gestion', Icon: LogoGest},
 		{ name: 'Simulación', route: '/simulacion', Icon: LogoSimu},
 		{ name: 'Estadísticas', route: '/estadisticas', Icon: LogoStats},

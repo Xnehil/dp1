@@ -19,21 +19,29 @@ const Page = () => {
     }, [cargado]);
 
     useEffect(() => {
-        // Cargar planes de vuelo desde la API
-        console.log("Cargando vuelos desde: ", apiURL);
-        axios
-            .get(`${apiURL}/vuelo`)
-            .then((response) => {
-                setVuelos(response.data);
-            })
-            .catch((error) => {
-                console.error(error);
-            });
-
-        // Cargar aeropuertos desde la API
-        console.log("Cargando aeropuertos desde: ", apiURL);
-        axios
-            .get(`${apiURL}/aeropuerto`)
+        const fetchActiveFlights = () => {
+            axios.get(`${apiURL}/vuelo`)
+                .then((response) => {
+                    setVuelos(response.data);
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
+            console.log("Vuelos cargados: ", vuelos);
+        };
+    
+        // Fetch active flights immediately
+        fetchActiveFlights();
+    
+        // Then fetch active flights every minute
+        const intervalId = setInterval(fetchActiveFlights, 60 * 1000);
+    
+        // Clean up the interval on component unmount
+        return () => clearInterval(intervalId);
+    }, []);
+    
+    useEffect(() => {
+        axios.get(`${apiURL}/aeropuerto`)
             .then((response) => {
                 const aeropuertos = new Map<string, Aeropuerto>();
                 response.data.forEach((aeropuerto: Aeropuerto) => {
@@ -57,7 +65,7 @@ const Page = () => {
         <>
             {cargado && (
                 <div className="pb-4">
-                    <Mapa vuelos={vuelos} aeropuertos={aeropuertos} />
+                    <Mapa vuelos={vuelos.slice(0,150)} aeropuertos={aeropuertos} />
                     <div ref={bottomRef}></div>
                 </div>
             )}

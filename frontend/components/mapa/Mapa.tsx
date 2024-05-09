@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import "ol/ol.css";
 import {Map as OLMap} from "ol";
 import View from "ol/View";
@@ -24,22 +24,39 @@ type MapaProps = {
 
 const Mapa = ({vuelos, aeropuertos}: MapaProps)  => {
     let map: OLMap;
-
-    const planes = [
-        { start: [-77.0428, -12.0464], end: [-73.5673, -33.4691] },
-        { start: [-77.0428, -12.0464], end: [-74.0721, 4.711] },
-    ];
+    const mapRef = useRef<OLMap | null>(null);
 
     useEffect(() => {
-        if (typeof window === "undefined") {
+        const initialCoordinates = fromLonLat([-77.0428, -12.0464]);
+        map = new OLMap({
+            target: "map",
+            layers: [
+                new TileLayer({
+                    source: new OSM(),
+                }),
+            ],
+            view: new View({
+                center: initialCoordinates,
+                zoom: 5,
+            }),
+        });
+        mapRef.current = map;
+    }, []);
+
+    useEffect(() => {
+        if (typeof window === "undefined" || !mapRef.current){
             return;
         }
-        const initialCoordinates = fromLonLat([-77.0428, -12.0464]);
+        
+        const lineFeatures = vuelos.map((vuelo) => {
+            const aeropuertoOrigen = aeropuertos.get(vuelo.origen);
+            const aeropuertoDestino = aeropuertos.get(vuelo.destino);
+            const lonlatInicio= [aeropuertoOrigen?.longitud ?? 0, aeropuertoOrigen?.latitud ?? 0];
+            const lonlatFin = [aeropuertoDestino?.longitud ?? 0, aeropuertoDestino?.latitud ?? 0] ;
 
-        const lineFeatures = planes.map((plane) => {
             const line = new LineString([
-                fromLonLat(plane.start),
-                fromLonLat(plane.end),
+                fromLonLat(lonlatInicio),
+                fromLonLat(lonlatFin),
             ]);
             const feature = new Feature({
                 geometry: line,
@@ -48,8 +65,9 @@ const Mapa = ({vuelos, aeropuertos}: MapaProps)  => {
             return feature;
         });
 
-        const pointFeatures = planes.map((plane) => {
-            const point = new Point(fromLonLat(plane.start));
+        const pointFeatures = vuelos.map((vuelos) => {
+            const aeropuertoOrigen = aeropuertos.get(vuelos.origen);
+            const point = new Point(fromLonLat([aeropuertoOrigen?.longitud ?? 0, aeropuertoOrigen?.latitud ?? 0]));
             const feature = new Feature({
                 geometry: point,
             });
@@ -74,19 +92,7 @@ const Mapa = ({vuelos, aeropuertos}: MapaProps)  => {
             source: vectorSource,
         });
 
-        map = new OLMap({
-            target: "map",
-            layers: [
-                new TileLayer({
-                    source: new OSM(),
-                }),
-                vectorLayer,
-            ],
-            view: new View({
-                center: initialCoordinates,
-                zoom: 4,
-            }),
-        });
+        mapRef.current.addLayer(vectorLayer);
 
         const intervalId: NodeJS.Timeout = setInterval(() => {
             for (let i = 0; i < pointFeatures.length; i++) {
@@ -104,13 +110,12 @@ const Mapa = ({vuelos, aeropuertos}: MapaProps)  => {
                 ] as Coordinate;
                 point.setCoordinates(newCoordinates);
             }
-        }, 100);
+        }, 1000);
 
         return () => {
             clearInterval(intervalId);
-            map.setTarget(undefined);
         };
-    }, []);
+    }, [vuelos, aeropuertos, mapRef]);
 
     return <div id="map" style={{ width: "100%", height: "900px" }}></div>;
 };

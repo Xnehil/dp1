@@ -15,8 +15,8 @@ import srcVuelosEnVivo from "@/public/logos/vuelosEnVivo.png";
 export default function Home() {
     return (
         <main>
-            <div className="w-3/5 mx-auto flex items-center px-3 rounded-2xl">
-                <h1 className="text-4xl  text-black-500 px-4 text-center mt-0 mb-10">
+            <div className="w-1/2 mx-auto flex items-center px-3 rounded-2xl">
+                <h1 className="text-6xl  text-black-500 px-4 text-center mt-0 mb-10 font-title">
                     Bienvenid@ al sistema de gestión de envíos de RedEx
                 </h1>
             </div>
@@ -26,11 +26,13 @@ export default function Home() {
                         <IconoTarea
                             icon={srcVuelosEnVivo}
                             description="Vuelos en vivo"
+                            size="220"
                         />
                     </Link>
                     <IconoTarea
                         icon={srcSimulacion}
                         description="Simulación de envíos"
+                        size="220"
                     />
                     <IconoTarea icon={srcAjustes} description="Ajustes" />
                 </div>
