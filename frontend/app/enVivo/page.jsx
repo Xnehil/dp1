@@ -2,6 +2,6 @@ export default function Page (){
 
 
     return (
-        <p>Dashboard</p>
+        <p>Soy un En vivo</p>
     );
 }
