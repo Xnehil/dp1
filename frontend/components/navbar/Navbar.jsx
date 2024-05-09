@@ -1,15 +1,15 @@
 "use client"
 
 import { usePathname } from 'next/navigation'
-import RedExIcon from '../../public/icons/LogoRedEx'
+import RedExIcon from '@/public/icons/LogoRedEx'
 import NavbarItem from './NavbarItem'
 import Link from 'next/link'
-import LogoPlane from '../../icons/LogoPlane'
-import LogoSimu from '../../icons/LogoSimu'
-import LogoHome from '../../icons/LogoHome'
-import LogoGest from '../../icons/LogoGest'
-import LogoStats from '../../icons/LogoStats'
-import LogoConfig from '../../icons/LogoConfig'
+import LogoPlane from '@/public/icons/LogoPlane'
+import LogoSimu from '@/public/icons/LogoSimu'
+import LogoHome from '@/public/icons/LogoHome'
+import LogoGest from '@/public/icons/LogoGest'
+import LogoStats from '@/public/icons/LogoStats'
+import LogoConfig from '@/public/icons/LogoConfig'
 
 const Navbar = () => {
 	const navbarItems = [

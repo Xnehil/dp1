@@ -5,9 +5,10 @@ import NextBreadcrumb from '@/components/breadcrumb/NextBreadcrumb'
 import "./globals.css";
 import Navbar from "@/components/navbar/Navbar";
 const inter = Inter({ subsets: ["latin"] });
+const montserrat = Montserrat({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-    title: "Create Next DP1 RedEx",
+    title: "DP1 RedEx",
     description: "Proyecto del curso DP1",
 };
 
