@@ -1,24 +1,29 @@
 package com.dp1.backend.services;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.dp1.backend.models.Aeropuerto;
 import com.dp1.backend.models.Vuelo;
 import com.dp1.backend.repository.VueloRepository;
 
 @Service
 public class VueloService {
-    @Autowired
+    private AeropuertoService aeropuertoService;
     private VueloRepository vueloRepository;
 
-    public VueloService(VueloRepository vueloRepository) {
+    @Autowired
+    public VueloService(VueloRepository vueloRepository, AeropuertoService aeropuertoService) {
         this.vueloRepository = vueloRepository;
+        this.aeropuertoService = aeropuertoService;
     }
 
-    public Vuelo createVuelo(Vuelo vuelo)
-    {
+    public Vuelo createVuelo(Vuelo vuelo) {
         try {
             return vueloRepository.save(vuelo);
         } catch (Exception e) {
@@ -26,8 +31,7 @@ public class VueloService {
         }
     }
 
-    public Vuelo getVuelo(int id)
-    {
+    public Vuelo getVuelo(int id) {
         try {
             return vueloRepository.findById(id).get();
         } catch (Exception e) {
@@ -35,10 +39,9 @@ public class VueloService {
         }
     }
 
-    public Vuelo updateVuelo(Vuelo vuelo){
+    public Vuelo updateVuelo(Vuelo vuelo) {
         try {
-            if (vuelo == null)
-            {
+            if (vuelo == null) {
                 return null;
             }
             return vueloRepository.save(vuelo);
@@ -47,13 +50,12 @@ public class VueloService {
         }
     }
 
-    public String deleteVuelo(int id){
+    public String deleteVuelo(int id) {
         try {
             Vuelo vuelo = vueloRepository.findById(id).get();
             if (vuelo != null) {
                 vueloRepository.delete(vuelo);
-            }
-            else {
+            } else {
                 return "Vuelo no encontrado";
             }
             return "Vuelo eliminado";
@@ -62,11 +64,52 @@ public class VueloService {
         }
     }
 
-    public ArrayList<Vuelo> getVuelos()
-    {
+    public ArrayList<Vuelo> getVuelos() {
         try {
             return (ArrayList<Vuelo>) vueloRepository.findAll();
         } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public ArrayList<Vuelo> getVuelosEnElAire() {
+        try {
+            ArrayList<Vuelo> vuelos = (ArrayList<Vuelo>) vueloRepository.findAll();
+            // Fetch aeropuertos para obtener las zona horarias
+            ArrayList<Aeropuerto> aeropuertos = aeropuertoService.getAeropuertos();
+            HashMap<String, ZoneId> zonasHorarias = new HashMap<String, ZoneId>();
+            for (Aeropuerto aeropuerto : aeropuertos) {
+                zonasHorarias.put(aeropuerto.getCodigoOACI(), aeropuerto.getZoneId());
+                // System.out.println("Aeropuerto: " + aeropuerto.getCodigoOACI() + " Zona
+                // horaria: " + aeropuerto.getZoneId());
+            }
+            // Conservar solo los que hayan despegado y no hayan aterrizado
+            ArrayList<Vuelo> vuelosEnElAire = new ArrayList<Vuelo>();
+            for (Vuelo vuelo : vuelos) {
+                ZonedDateTime horaActual = ZonedDateTime.now();
+                ZoneId zonaOrigen = zonasHorarias.get(vuelo.getOrigen());
+                ZoneId zonaDestino = zonasHorarias.get(vuelo.getDestino());
+
+                if (zonaOrigen != null && zonaDestino != null) {
+                    ZonedDateTime horaDespegue = ZonedDateTime.now().withZoneSameInstant(zonaOrigen);
+                    ZonedDateTime horaAterrizaje = ZonedDateTime.now().withZoneSameInstant(zonaDestino);
+
+                    horaDespegue = horaDespegue.with(vuelo.getFechaHoraSalida().toLocalTime());
+                    horaAterrizaje = horaAterrizaje.with(vuelo.getFechaHoraLlegada().toLocalTime());
+
+                    if (horaActual.isAfter(horaDespegue) && horaActual.isBefore(horaAterrizaje)) {
+                        vuelosEnElAire.add(vuelo);
+                    }
+                } else {
+                    System.out.println("Error: No se encontró la zona horaria para el origen o destino del vuelo "
+                            + vuelo.getId()+ " Origen: " + vuelo.getOrigen() + " Destino: " + vuelo.getDestino());
+                }
+            }
+            // System.out.println("Vuelos en el aire: " + vuelosEnElAire.size());
+            // System.out.println("Vuelos totales: " + vuelos.size());
+            return vuelosEnElAire;
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getLocalizedMessage());
             return null;
         }
     }

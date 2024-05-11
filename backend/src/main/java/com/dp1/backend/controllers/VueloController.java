@@ -49,4 +49,9 @@ public class VueloController {
     public String deleteVuelo(@PathVariable(name = "id", required = true) int id) {
         return vueloService.deleteVuelo(id);
     }
+
+    @GetMapping("/enAire")
+    public ArrayList<Vuelo> getVuelosEnAire() {
+        return vueloService.getVuelosEnElAire();
+    }
 }

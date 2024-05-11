@@ -23,12 +23,11 @@ type MapaProps = {
 };
 
 const Mapa = ({vuelos, aeropuertos}: MapaProps)  => {
-    let map: OLMap;
     const mapRef = useRef<OLMap | null>(null);
 
     useEffect(() => {
         const initialCoordinates = fromLonLat([-77.0428, -12.0464]);
-        map = new OLMap({
+        mapRef.current  = new OLMap({
             target: "map",
             layers: [
                 new TileLayer({
@@ -40,12 +39,16 @@ const Mapa = ({vuelos, aeropuertos}: MapaProps)  => {
                 zoom: 5,
             }),
         });
-        mapRef.current = map;
     }, []);
 
     useEffect(() => {
         if (typeof window === "undefined" || !mapRef.current){
             return;
+        }
+
+        //Limpiar el mapa
+        if (mapRef.current.getLayers().getLength() > 1) {
+            mapRef.current.getLayers().removeAt(1);
         }
         
         const lineFeatures = vuelos.map((vuelo) => {

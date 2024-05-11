@@ -20,7 +20,7 @@ const Page = () => {
 
     useEffect(() => {
         const fetchActiveFlights = () => {
-            axios.get(`${apiURL}/vuelo`)
+            axios.get(`${apiURL}/vuelo/enAire`)
                 .then((response) => {
                     setVuelos(response.data);
                 })
@@ -57,7 +57,7 @@ const Page = () => {
     useEffect(() => {
         if (vuelos && vuelos.length > 0 && aeropuertos.size > 0) {
             setCargado(true);
-            console.log("Aeropuertos cargados: ", aeropuertos);
+            // console.log("Aeropuertos cargados: ", aeropuertos);
         }
     }, [vuelos, aeropuertos]);
 
@@ -65,7 +65,7 @@ const Page = () => {
         <>
             {cargado && (
                 <div className="pb-4">
-                    <Mapa vuelos={vuelos.slice(0,150)} aeropuertos={aeropuertos} />
+                    <Mapa vuelos={vuelos} aeropuertos={aeropuertos} />
                     <div ref={bottomRef}></div>
                 </div>
             )}
