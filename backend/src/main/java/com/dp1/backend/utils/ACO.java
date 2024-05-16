@@ -214,7 +214,7 @@ public class ACO {
         // minYMaxDistanciaAeropuertos[1]); //13463 km
 
 
-        System.out.println("Numero de paquetes: " + paquetes.size());
+        System.out.println("Número de paquetes: " + paquetes.size());
 
         // generarArchivoTabla(tabla, "salida");
         // Iteraremos muchas veces para todos los paquetes. Es decir, para cada
@@ -400,19 +400,15 @@ public class ACO {
                 // break;
                 
             }
-            System.out.println("TABLAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA " + iteracionAux);
-            imprimirTabla_v2(tabla, vuelosProgramados,vuelos);
+            // System.out.println("TABLAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA " + iteracionAux);
+            // imprimirTabla_v2(tabla, vuelosProgramados,vuelos);
             // Actualizar mi tabla (feromonas). Aumentar si ha llegado al destino. Restar o
             // no hacer nada si no ha llegado
 
             // Limpiar los vuelos tomados por el paquete
             actualizarFeromonas(tabla, paquetes, 0.15, 10);
-            System.out.println("Numero de éxitos / numero paquetes: " + exito + " / " + paquetes.size());
-            try {
-                Thread.sleep(500); // 500 milisegundos (0.5 segundos)
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
+            // System.out.println("Numero de éxitos / numero paquetes: " + exito + " / " + paquetes.size());
+
             iteracionAux++;
         }
 
@@ -429,112 +425,29 @@ public class ACO {
         // Agregaremos a tabla todos los vuelos para la fecha del paquete. Esto ayudará
         // que sea dinámico los vuelos que se estarán programanado
         // conforme aumentan la cantidad de paquetes para la simulación
-        LocalDate ld1 = fechaPaquete.toLocalDate();
-        LocalDate ld2 = fechaPaquete.toLocalDate().plusDays(1);
-        LocalDate ld3 = fechaPaquete.toLocalDate().plusDays(2);
-
         int numeroVuelos = tabla.size();
-        if (!fechasVuelos.contains(ld1)) {
-            for (int idVuelo : vuelos.keySet()) {
-                LocalTime horaSalida = vuelos.get(idVuelo).getFechaHoraSalida().toLocalTime();
-                ZoneId origenZoneId = aeropuertos.get(vuelos.get(idVuelo).getOrigen()).getZoneId();
-                ZonedDateTime fechaHoraSalida = ZonedDateTime.of(ld1, horaSalida, origenZoneId);
+        for (int i = 0; i < 3; i++) {
+            LocalDate ld = fechaPaquete.toLocalDate().plusDays(i);
+            if (!fechasVuelos.contains(ld)) {
+                for (int idVuelo : vuelos.keySet()) {
+                    Vuelo vuelo = vuelos.get(idVuelo);
 
-                // Calcularemos los minutos de vuelo
-                LocalTime horaLlegada = vuelos.get(idVuelo).getFechaHoraLlegada().toLocalTime();
-                ZoneId destinoZoneId = aeropuertos.get(vuelos.get(idVuelo).getDestino()).getZoneId();
-                LocalTime horaSalidaEnZoneIdDestino = fechaHoraSalida.withZoneSameInstant(destinoZoneId).toLocalTime();
-                Duration duracionVuelo = Duration.between(horaSalidaEnZoneIdDestino, horaLlegada);
-                int duracionMinutos;
-                if (duracionVuelo.isNegative()) {
-                    duracionMinutos = 1440 + (int) duracionVuelo.toMinutes();
-                } else {
-                    duracionMinutos = (int) duracionVuelo.toMinutes();
+                    ZonedDateTime fechaHoraSalida = vuelo.getFechaHoraSalida().with(ld);
+                    numeroVuelos++;
+                    ZonedDateTime fechaHoraLlegada = vuelo.getFechaHoraLlegada().with(ld);
+                    if(vuelo.getCambioDeDia()) {
+                        fechaHoraLlegada = fechaHoraLlegada.plusDays(1);
+                    }
+
+                    ProgramacionVuelo pv = new ProgramacionVuelo(numeroVuelos, idVuelo, fechaHoraSalida, fechaHoraLlegada);
+                    // tabla: guardará para cada vuelo su información
+                    tabla.put(numeroVuelos, new Double[] { (double) vuelos.get(pv.getIdVuelo()).getCapacidad(),
+                            (double) vuelos.get(pv.getIdVuelo()).getCapacidad(), 0.1 });
+                    vuelosProgramados.put(numeroVuelos, pv);
                 }
-
-                numeroVuelos++;
-                //
-                ZonedDateTime fechaHoraLlegada = fechaHoraSalida.withZoneSameInstant(destinoZoneId)
-                        .plusMinutes(duracionMinutos);
-
-                // System.out.println(fechaHoraSalida + " " + fechaHoraLlegada);
-
-                ProgramacionVuelo pv = new ProgramacionVuelo(numeroVuelos, idVuelo, fechaHoraSalida, fechaHoraLlegada);
-                // tabla: guardará para cada vuelo su información
-                tabla.put(numeroVuelos, new Double[] { (double) vuelos.get(pv.getIdVuelo()).getCapacidad(),
-                        (double) vuelos.get(pv.getIdVuelo()).getCapacidad(), 0.1 });
-                vuelosProgramados.put(numeroVuelos, pv);
+        
+                fechasVuelos.add(ld);
             }
-
-            fechasVuelos.add(ld1);
-        }
-        if (!fechasVuelos.contains(ld2)) {
-            for (int idVuelo : vuelos.keySet()) {
-                LocalTime horaSalida = vuelos.get(idVuelo).getFechaHoraSalida().toLocalTime();
-                ZoneId origenZoneId = aeropuertos.get(vuelos.get(idVuelo).getOrigen()).getZoneId();
-                ZonedDateTime fechaHoraSalida = ZonedDateTime.of(ld2, horaSalida, origenZoneId);
-
-                // Calcularemos los minutos de vuelo
-                LocalTime horaLlegada = vuelos.get(idVuelo).getFechaHoraLlegada().toLocalTime();
-                ZoneId destinoZoneId = aeropuertos.get(vuelos.get(idVuelo).getDestino()).getZoneId();
-                LocalTime horaSalidaEnZoneIdDestino = fechaHoraSalida.withZoneSameInstant(destinoZoneId).toLocalTime();
-                Duration duracionVuelo = Duration.between(horaSalidaEnZoneIdDestino, horaLlegada);
-                int duracionMinutos;
-                if (duracionVuelo.isNegative()) {
-                    duracionMinutos = 1440 + (int) duracionVuelo.toMinutes();
-                } else {
-                    duracionMinutos = (int) duracionVuelo.toMinutes();
-                }
-
-                // System.out.println(fechaHoraSalida + " " + horaLlegada + " "+ destinoZoneId);
-
-                numeroVuelos++;
-                //
-                ZonedDateTime fechaHoraLlegada = fechaHoraSalida.withZoneSameInstant(destinoZoneId)
-                        .plusMinutes(duracionMinutos);
-
-                ProgramacionVuelo pv = new ProgramacionVuelo(numeroVuelos, idVuelo, fechaHoraSalida, fechaHoraLlegada);
-                // tabla: guardará para cada vuelo su información
-                tabla.put(numeroVuelos, new Double[] { (double) vuelos.get(pv.getIdVuelo()).getCapacidad(),
-                        (double) vuelos.get(pv.getIdVuelo()).getCapacidad(), 0.1 });
-                vuelosProgramados.put(numeroVuelos, pv);
-            }
-
-            fechasVuelos.add(ld2);
-        }
-        if (!fechasVuelos.contains(ld3)) {
-            for (int idVuelo : vuelos.keySet()) {
-                LocalTime horaSalida = vuelos.get(idVuelo).getFechaHoraSalida().toLocalTime();
-                ZoneId origenZoneId = aeropuertos.get(vuelos.get(idVuelo).getOrigen()).getZoneId();
-                ZonedDateTime fechaHoraSalida = ZonedDateTime.of(ld3, horaSalida, origenZoneId);
-
-                // Calcularemos los minutos de vuelo
-                LocalTime horaLlegada = vuelos.get(idVuelo).getFechaHoraLlegada().toLocalTime();
-                ZoneId destinoZoneId = aeropuertos.get(vuelos.get(idVuelo).getDestino()).getZoneId();
-                LocalTime horaSalidaEnZoneIdDestino = fechaHoraSalida.withZoneSameInstant(destinoZoneId).toLocalTime();
-                Duration duracionVuelo = Duration.between(horaSalidaEnZoneIdDestino, horaLlegada);
-                int duracionMinutos;
-                if (duracionVuelo.isNegative()) {
-                    duracionMinutos = 1440 + (int) duracionVuelo.toMinutes();
-                } else {
-                    duracionMinutos = (int) duracionVuelo.toMinutes();
-                }
-
-                // System.out.println(fechaHoraSalida + " " + horaLlegada + " "+ destinoZoneId);
-
-                numeroVuelos++;
-                //
-                ZonedDateTime fechaHoraLlegada = fechaHoraSalida.withZoneSameInstant(destinoZoneId)
-                        .plusMinutes(duracionMinutos);
-
-                ProgramacionVuelo pv = new ProgramacionVuelo(numeroVuelos, idVuelo, fechaHoraSalida, fechaHoraLlegada);
-                // tabla: guardará para cada vuelo su información
-                tabla.put(numeroVuelos, new Double[] { (double) vuelos.get(pv.getIdVuelo()).getCapacidad(),
-                        (double) vuelos.get(pv.getIdVuelo()).getCapacidad(), 0.1 });
-                vuelosProgramados.put(numeroVuelos, pv);
-            }
-
-            fechasVuelos.add(ld3);
         }
 
     }
