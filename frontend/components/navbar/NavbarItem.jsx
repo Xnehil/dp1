@@ -1,7 +1,7 @@
 import Link from "next/link";
 const NavbarItem = ({ name, route, isActive, icon: Icon }) => {
   const baseItemClasses =
-    "flex items-center transition duration-100 ease-in-out scale-90 hover:scale-100 ";
+    "flex items-center transition duration-100 ease-in-out scale-90 hover:scale-100 rounded py-1";
 
   const activeClasses = isActive
     ? `bg-[#50599C] text-white font-bold ${baseItemClasses}`  // Botón morado con texto y SVG en blanco

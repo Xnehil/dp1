@@ -1,20 +1,20 @@
 "use client"
 
 import { usePathname } from 'next/navigation'
-import RedExIcon from '../../icons/LogoRedEx'
+import RedExIcon from '@/public/icons/LogoRedEx'
 import NavbarItem from './NavbarItem'
 import Link from 'next/link'
-import LogoPlane from '../../icons/LogoPlane'
-import LogoSimu from '../../icons/LogoSimu'
-import LogoHome from '../../icons/LogoHome'
-import LogoGest from '../../icons/LogoGest'
-import LogoStats from '../../icons/LogoStats'
-import LogoConfig from '../../icons/LogoConfig'
+import LogoPlane from '@/public/icons/LogoPlane'
+import LogoSimu from '@/public/icons/LogoSimu'
+import LogoHome from '@/public/icons/LogoHome'
+import LogoGest from '@/public/icons/LogoGest'
+import LogoStats from '@/public/icons/LogoStats'
+import LogoConfig from '@/public/icons/LogoConfig'
 
 const Navbar = () => {
 	const navbarItems = [
 		{ name: 'Inicio', route: '/', Icon: LogoHome},
-		{ name: 'En vivo', route: '/enVivo', Icon: LogoPlane},
+		{ name: 'En vivo', route: '/vuelosEnVivo', Icon: LogoPlane},
 		{ name: 'Gestión', route: '/gestion', Icon: LogoGest},
 		{ name: 'Simulación', route: '/simulacion', Icon: LogoSimu},
 		{ name: 'Estadísticas', route: '/estadisticas', Icon: LogoStats},

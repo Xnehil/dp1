@@ -465,4 +465,43 @@ public class Auxiliares {
         return paquetesEntregados;
     }
 
+    public static int verificacionTotalPaquetes(HashMap<String, Aeropuerto> aeropuertos,
+            HashMap<Integer, Vuelo> vuelos, HashMap<String, Envio> envios, ArrayList<Paquete> paquetes) {
+        int n = paquetes.size();
+        Boolean esSolucionValida;
+        int paquetesEntregados = 0;
+
+        // Limpiar carga por día
+        for (int i : vuelos.keySet()) {
+            vuelos.get(i).setCargaPorDia(new HashMap<>());
+        }
+
+        // Limpiar carga por día de los aeropuertos
+        for (String i : aeropuertos.keySet()) {
+            aeropuertos.get(i).setCantPaqParaPlanificacion(new TreeMap<>());
+        }
+
+        // Verifico todos los paquetes
+        for (int j = 0; j < n; j++) {
+            // Asignar solución a paquete
+            Paquete paquete = paquetes.get(j);
+            esSolucionValida = solucionValidav2(aeropuertos, vuelos, envios, paquete, false);
+            if (esSolucionValida) {
+                paquetesEntregados++;
+            }
+        }
+
+        // Limpiar carga por día de los aeropuertos
+        for (String i : aeropuertos.keySet()) {
+            aeropuertos.get(i).setCantPaqParaPlanificacion(new TreeMap<>());
+        }
+        // Limpiar carga por día
+        for (int i : vuelos.keySet()) {
+            vuelos.get(i).setCargaPorDia(new HashMap<>());
+        }
+
+
+        return paquetesEntregados;
+    }
+
 }
