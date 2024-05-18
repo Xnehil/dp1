@@ -273,10 +273,8 @@ public class ACO {
                                                                                                     // tenga espacio
                                                                                                     // aún
                         // Compararemos que la fecha sea posterior
-                        if (fechaActualPaquete.compareTo(vuelosProgramados.get(id).getFechaHoraSalida()) <= 0) {
-                            // comparar que date del paquete actual (fecha de su ultima ciudad) con
-                            // la fecha del vuelo (horas en Vuelo y date en Programacion vuelo)
-
+                        if (fechaActualPaquete.isBefore(vuelosProgramados.get(id).getFechaHoraSalida())) {
+                            // Recordar que en vuelosProgramados ya están los 3 días en los que el vuelo puede salir
                             // long tHastaSalidaVuelo =
                             // aco_auxiliares.calcularDiferenciaEnMinutos(fechaActualPaquete,
                             // vuelosProgramados.get(id).getFechaHoraSalida());
@@ -335,7 +333,7 @@ public class ACO {
                 int posVueloEscogido = aco_auxiliares.determinarVueloEscogido(probabilidades);
                 int vueloEscogido = vuelosAux[posVueloEscogido];
                 // Registrar el vuelo elegido por el paquete
-                paq.getRuta().add(vueloEscogido);
+                paq.getRuta().add(vuelosProgramados.get(vueloEscogido).getIdVuelo());
 
                 paq.getFechasRuta().add(vuelosProgramados.get(vueloEscogido).getFechaHoraLlegada());
 
