@@ -268,13 +268,22 @@ public class ACO {
                         aeropuertos);
 
                 for (int id : tabla.keySet()) {
-                    String ciudadOrigenVuelo = vuelos.get(vuelosProgramados.get(id).getIdVuelo()).getOrigen();
+                    Vuelo vuelo = vuelos.get(vuelosProgramados.get(id).getIdVuelo());
+                    String ciudadOrigenVuelo = vuelo.getOrigen();
+                    
                     if (ciudadActualPaquete.equals(ciudadOrigenVuelo) && tabla.get(id)[1] > 0) { // que el vuelo
                                                                                                     // tenga espacio
                                                                                                     // aún
                         // Compararemos que la fecha sea posterior
                         if (fechaActualPaquete.isBefore(vuelosProgramados.get(id).getFechaHoraSalida())) {
                             // Recordar que en vuelosProgramados ya están los 3 días en los que el vuelo puede salir
+
+                            // Verificar que haya espacio en el aeropuerto de destino
+                            Aeropuerto aDestino = aeropuertos.get(vuelo.getDestino());
+                            Boolean quedaEspacioAlmacen = aDestino.paquetesAEstaHoraPlanificacion(fechaActualPaquete.toLocalDateTime()) + 1 < aDestino.getCapacidadMaxima();
+
+                            if(!quedaEspacioAlmacen) continue;
+
                             // long tHastaSalidaVuelo =
                             // aco_auxiliares.calcularDiferenciaEnMinutos(fechaActualPaquete,
                             // vuelosProgramados.get(id).getFechaHoraSalida());
@@ -331,24 +340,32 @@ public class ACO {
                     index++;
                 }
                 int posVueloEscogido = aco_auxiliares.determinarVueloEscogido(probabilidades);
-                int vueloEscogido = vuelosAux[posVueloEscogido];
+                int idVueloEscogido = vuelosAux[posVueloEscogido];
+                Vuelo vueloEscogido = vuelos.get(vuelosProgramados.get(idVueloEscogido).getIdVuelo());
                 // Registrar el vuelo elegido por el paquete
-                paq.getRuta().add(vuelosProgramados.get(vueloEscogido).getIdVuelo());
+                paq.getRuta().add(vuelosProgramados.get(idVueloEscogido).getIdVuelo());
 
-                paq.getFechasRuta().add(vuelosProgramados.get(vueloEscogido).getFechaHoraLlegada());
+                paq.getFechasRuta().add(vuelosProgramados.get(idVueloEscogido).getFechaHoraLlegada());
 
-                paq.getcostosRuta().add(tablaOpcionesVuelos.get(vueloEscogido)[0]);
+                paq.getcostosRuta().add(tablaOpcionesVuelos.get(idVueloEscogido)[0]);
+
+                //Actualizar capacidad planificación del almacén destino y origen
+                Aeropuerto aDestino = aeropuertos.get(vueloEscogido.getDestino());
+                aDestino.paqueteEntraPlanificacion(vuelosProgramados.get(idVueloEscogido).getFechaHoraLlegada().toLocalDateTime());
+                Aeropuerto aOrigen = aeropuertos.get(vueloEscogido.getOrigen());
+                aOrigen.paqueteSalePlanificacion(vuelosProgramados.get(idVueloEscogido).getFechaHoraSalida().toLocalDateTime());
+
                 // Tiempo usado por el paquete en el vuelo
                 long tHastaSalidaVuelo = aco_auxiliares.calcularDiferenciaEnMinutos(fechaActualPaquete,
-                        vuelosProgramados.get(vueloEscogido).getFechaHoraSalida());
+                        vuelosProgramados.get(idVueloEscogido).getFechaHoraSalida());
                 long tVuelo = aco_auxiliares.calcularDiferenciaEnMinutos(
-                        vuelosProgramados.get(vueloEscogido).getFechaHoraSalida(),
-                        vuelosProgramados.get(vueloEscogido).getFechaHoraLlegada());
+                        vuelosProgramados.get(idVueloEscogido).getFechaHoraSalida(),
+                        vuelosProgramados.get(idVueloEscogido).getFechaHoraLlegada());
                 Duration tiempoGastado = Duration.ofMinutes(tHastaSalidaVuelo + tVuelo);
                 paq.setTiempoRestanteDinamico(paq.getTiempoRestanteDinamico().minus(tiempoGastado));
 
                 // quitar un slot al vuelo
-                tabla.get(vueloEscogido)[1] = tabla.get(vueloEscogido)[1] - 1; // ¿Qué pasaría si ya no hay vuelos por tomar?
+                tabla.get(idVueloEscogido)[1] = tabla.get(idVueloEscogido)[1] - 1; // ¿Qué pasaría si ya no hay vuelos por tomar?
                 // Creo que eso no va a pasar
                 /*
                 System.out.println("                IMPRIMIENDO TABLA DE OPCIONES PARA EL PAQUETE "
@@ -367,7 +384,7 @@ public class ACO {
                 // Si ya llegamos al destino, salimos del while || si ya nos quedamos sin tiempo
                 // para seguir buscando (creo que en Costo no hay manera de incluir este param)
                 // Comparar el destino del ultimo vuelo tomado con el destino de su envio
-                String destinoVueloElegido = vuelos.get(vuelosProgramados.get(vueloEscogido).getIdVuelo())
+                String destinoVueloElegido = vuelos.get(vuelosProgramados.get(idVueloEscogido).getIdVuelo())
                         .getDestino();
                 String destinoFinalPaquete = envios.get(paq.getCodigoEnvio()).getDestino();
                 if (destinoVueloElegido.equals(destinoFinalPaquete)) {
