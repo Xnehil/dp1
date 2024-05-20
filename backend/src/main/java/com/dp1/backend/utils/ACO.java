@@ -220,13 +220,6 @@ public class ACO {
         // Iteraremos muchas veces para todos los paquetes. Es decir, para cada
         // iteración se tomarán en cuenta todos los paquettes
         int  exito = 0;
-
-        for (int id : tabla.keySet()) { // Esto es para inicializar las capacidades de los vuelos en cada iteración
-            // double costo = costo(vuelos.get(id), );
-            tabla.get(id)[1] = tabla.get(id)[0];// en la 2da columna de mi tabla guardaré la capacidad dinámica,
-            // mientra q en la 1ra guardaré la capacidad máxima del vuelo
-
-        }
         // Limpiar rutas de los paquetes
         for (Paquete paq : paquetes) {
             paq.setFechasRuta(new ArrayList<ZonedDateTime>());
@@ -270,10 +263,8 @@ public class ACO {
                 for (int id : tabla.keySet()) {
                     Vuelo vuelo = vuelos.get(vuelosProgramados.get(id).getIdVuelo());
                     String ciudadOrigenVuelo = vuelo.getOrigen();
-                    
-                    if (ciudadActualPaquete.equals(ciudadOrigenVuelo) && tabla.get(id)[1] > 0) { // que el vuelo
-                                                                                                    // tenga espacio
-                                                                                                    // aún
+                    Boolean espacioVuelo = vuelosProgramados.get(id).getCargaActualPlanificacion() + 1< vuelo.getCapacidad();
+                    if (ciudadActualPaquete.equals(ciudadOrigenVuelo) && espacioVuelo) { // que el vuelo tenga espacio aún
                         // Compararemos que la fecha sea posterior
                         if (fechaActualPaquete.isBefore(vuelosProgramados.get(id).getFechaHoraSalida())) {
                             // Recordar que en vuelosProgramados ya están los 3 días en los que el vuelo puede salir
@@ -344,9 +335,7 @@ public class ACO {
                 Vuelo vueloEscogido = vuelos.get(vuelosProgramados.get(idVueloEscogido).getIdVuelo());
                 // Registrar el vuelo elegido por el paquete
                 paq.getRuta().add(vuelosProgramados.get(idVueloEscogido).getIdVuelo());
-
                 paq.getFechasRuta().add(vuelosProgramados.get(idVueloEscogido).getFechaHoraLlegada());
-
                 paq.getcostosRuta().add(tablaOpcionesVuelos.get(idVueloEscogido)[0]);
 
                 //Actualizar capacidad planificación del almacén destino y origen
@@ -365,7 +354,10 @@ public class ACO {
                 paq.setTiempoRestanteDinamico(paq.getTiempoRestanteDinamico().minus(tiempoGastado));
 
                 // quitar un slot al vuelo
-                tabla.get(idVueloEscogido)[1] = tabla.get(idVueloEscogido)[1] - 1; // ¿Qué pasaría si ya no hay vuelos por tomar?
+                // tabla.get(idVueloEscogido)[1] = tabla.get(idVueloEscogido)[1] - 1; // ¿Qué pasaría si ya no hay vuelos por tomar?
+
+                //Actualizar capacidad planificación del vuelo
+                vuelosProgramados.get(idVueloEscogido).setCargaActualPlanificacion(vuelosProgramados.get(idVueloEscogido).getCargaActualPlanificacion() + 1);
                 // Creo que eso no va a pasar
                 /*
                 System.out.println("                IMPRIMIENDO TABLA DE OPCIONES PARA EL PAQUETE "
