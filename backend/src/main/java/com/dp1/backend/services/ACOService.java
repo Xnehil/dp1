@@ -3,6 +3,8 @@ package com.dp1.backend.services;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,11 +13,12 @@ import com.dp1.backend.models.Envio;
 import com.dp1.backend.models.Paquete;
 import com.dp1.backend.models.Vuelo;
 import com.dp1.backend.utils.ACO;
+import com.dp1.backend.utils.Auxiliares;
 import com.dp1.backend.utils.FuncionesLectura;
 
 @Service
 public class ACOService {
-
+    private static final Logger logger = LogManager.getLogger(ACOService.class);
     private ArrayList<Paquete> paquetes = new ArrayList<Paquete>();
     
     public boolean ejecutarAco(){
@@ -26,19 +29,23 @@ public class ACOService {
         HashMap<String, Envio> envios = new HashMap<String, Envio>();
         cargarDatos(aeropuertos, vuelos, envios, paquetes);
         //Imprimir datos
-        System.out.println("Aeropuertos: " + aeropuertos.size());
-        System.out.println("Vuelos: " + vuelos.size());
-        System.out.println("Envios: " + envios.size());
-        System.out.println("Paquetes: " + paquetes.size());
+        logger.info("Ejecutando ACO para: ");
+        logger.info("Aeropuertos: " + aeropuertos.size());
+        logger.info("Vuelos: " + vuelos.size());
+        logger.info("Envios: " + envios.size());
+        logger.info("Paquetes: " + paquetes.size());
         try{
             //Medit tiempo de ejecución
             Long startTime = System.currentTimeMillis();
             ACO.run_v2(aeropuertos, vuelos, envios, paquetes, 20);
             Long endTime = System.currentTimeMillis();
-            System.out.println("Tiempo de ejecución: " + (endTime - startTime) + " ms");
+            Long totalTime = endTime - startTime;
+            logger.info("Tiempo de ejecución: " + totalTime + " ms");
+            int paquetesEntregados=Auxiliares.verificacionTotalPaquetes(aeropuertos, vuelos, envios, paquetes);
+            logger.info("Paquetes entregados con función André: " + paquetesEntregados);
         }
         catch(Exception e){
-            System.out.println("Error en ejecutarAco: " + e.getMessage());
+            logger.error("Error en ejecutarAco: " + e.getMessage());
             return false;
         }
         return true;
@@ -50,7 +57,7 @@ public class ACOService {
             //To do fátima
         }
         catch(Exception e){
-            System.out.println("Error en guardarRutas: " + e.getMessage());
+            logger.error("Error en guardarRutas: " + e.getMessage());
             return false;
         }
         return true;

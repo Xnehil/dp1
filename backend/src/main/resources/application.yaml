@@ -19,9 +19,6 @@ spring:
             show-sql: true
             format-sql: true
             use_sql_comments: true
-        properties:
-            hibernate:
-                dialect: org.hibernate.dialect.MySQLDialect
         generate-ddl: true
 
 #MVC

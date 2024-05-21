@@ -30,28 +30,6 @@ public class BackendApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(BackendApplication.class, args);
-
-        // HashMap<String, Aeropuerto> aeropuertos = FuncionesLectura.leerAeropuertos("data/Aeropuerto.husos.v2.txt");
-        // HashMap<Integer, Vuelo> vuelos = FuncionesLectura.leerVuelos("data/planes_vuelo.v3.txt", aeropuertos);
-        // String rutaArchivos = "data/pack_enviado_";
-        // String[] ciudades = { "SKBO", "SEQM", "SUAA", "SCEL", "SABE", "EBCI", "EHAM", "WMKK", "VIDP", "ZBAA"};
-        // HashMap<String, Envio> envios = new HashMap<String, Envio>();
-        // for (int i = 0; i < ciudades.length; i++) {
-        //     envios.putAll(FuncionesLectura.leerEnvios(rutaArchivos + ciudades[i] + ".txt", aeropuertos,20));
-        // }
-
-        // ArrayList<Paquete> paquetes = new ArrayList<Paquete>();
-        // for (Envio e : envios.values()) {
-        //     paquetes.addAll(e.getPaquetes());
-        // }
-        // System.out.println("Envios: " + envios.size());
-        // System.out.println("Paquetes: " + paquetes.size());
-        // int numPaqEntregados = ACO.run_v2(aeropuertos, vuelos, envios, paquetes, 20);
-
-        // int numPaqNoEntregados = 0;
-        // numPaqEntregados=Auxiliares.verificacionTotalPaquetes(aeropuertos, vuelos, envios, paquetes);
-        // System.out.println("Paquetes entregados: " + numPaqEntregados);
-        // System.out.println("Paquetes no entregados: " + (paquetes.size()-numPaqEntregados));
     }
 
     @Bean
