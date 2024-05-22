@@ -54,4 +54,9 @@ public class VueloController {
     public ArrayList<Vuelo> getVuelosEnAire() {
         return vueloService.getVuelosEnElAire();
     }
+
+    @PostMapping("/deArchivo")
+    public int guardarVuelosArchivo() {
+        return vueloService.guardarVuelosArchivo();
+    }
 }

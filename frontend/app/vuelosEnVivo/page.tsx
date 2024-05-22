@@ -23,11 +23,11 @@ const Page = () => {
             axios.get(`${apiURL}/vuelo/enAire`)
                 .then((response) => {
                     setVuelos(response.data);
+                    console.log("Vuelos cargados: ", response.data);
                 })
                 .catch((error) => {
                     console.error(error);
                 });
-            console.log("Vuelos cargados: ", vuelos);
         };
     
         // Fetch active flights immediately

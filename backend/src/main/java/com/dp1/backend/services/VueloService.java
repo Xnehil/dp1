@@ -5,17 +5,22 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.dp1.backend.models.Aeropuerto;
 import com.dp1.backend.models.Vuelo;
 import com.dp1.backend.repository.VueloRepository;
+import com.dp1.backend.utils.FuncionesLectura;
 
 @Service
 public class VueloService {
     private AeropuertoService aeropuertoService;
     private VueloRepository vueloRepository;
+
+    private static final Logger logger = LogManager.getLogger(VueloService.class);
 
     @Autowired
     public VueloService(VueloRepository vueloRepository, AeropuertoService aeropuertoService) {
@@ -112,5 +117,20 @@ public class VueloService {
             System.out.println("Error: " + e.getLocalizedMessage());
             return null;
         }
+    }
+
+    public int guardarVuelosArchivo() {
+        HashMap<Integer, Vuelo> vuelos = new HashMap<Integer, Vuelo>();
+        // Leer vuelos de un archivo
+        HashMap<String, Aeropuerto> aeropuertos = FuncionesLectura.leerAeropuertos("data/Aeropuerto.husos.v2.txt");
+        vuelos = FuncionesLectura.leerVuelos("data/planes_vuelo.v3.txt", aeropuertos);
+        try {
+            vueloRepository.saveAll(vuelos.values());
+            logger.info("Vuelos guardados en la base de datos: " + vuelos.size());
+            return vuelos.size();
+        } catch (Exception e) {
+            logger.error("Error en guardarVuelosArchivo: " + e.getMessage());
+        }
+        return 0;
     }
 }

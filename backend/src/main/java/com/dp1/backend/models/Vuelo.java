@@ -43,6 +43,12 @@ public class Vuelo extends BaseModel {
     @Column(name="cambio_de_dia")
     private Boolean cambioDeDia;
 
+    @Column(name="duracion_vuelo")
+    private long duracionVuelo;
+
+    @Column(name="distancia_vuelo")
+    private double distanciaVuelo;
+
     private HashMap<LocalDate, Integer> cargaPorDia;
 
     public HashMap<LocalDate,Integer> getCargaPorDia() {
@@ -68,13 +74,14 @@ public class Vuelo extends BaseModel {
         this.cambioDeDia = cambioDeDia;
     }
 
-    public Vuelo(String origen, String destino, ZonedDateTime fechaHoraSalida, ZonedDateTime fechaHoraLlegada, int capacidad) {
+    public Vuelo(String origen, String destino, ZonedDateTime fechaHoraSalida, ZonedDateTime fechaHoraLlegada, int capacidad, double distanciaVuelo) {
         this.origen = origen;
         this.destino = destino;
         this.fechaHoraSalida = fechaHoraSalida;
         this.fechaHoraLlegada = fechaHoraLlegada;
         this.capacidad = capacidad;
         this.cargaPorDia = new HashMap<LocalDate, Integer>();
+        this.distanciaVuelo = distanciaVuelo;
 
         ZonedDateTime auxInicio = fechaHoraSalida;
         ZonedDateTime auxFin = fechaHoraLlegada;
@@ -85,6 +92,9 @@ public class Vuelo extends BaseModel {
         } else {
             this.cambioDeDia = false;
         }
+
+        this.duracionVuelo = Duration.between(fechaHoraSalida, fechaHoraLlegada).toMinutes();
+        if(this.duracionVuelo < 0) this.duracionVuelo = 1440 - (this.duracionVuelo*-1);
     }
 
     public Vuelo() {

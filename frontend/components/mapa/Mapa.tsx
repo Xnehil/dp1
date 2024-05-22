@@ -16,6 +16,7 @@ import { fromLonLat, toLonLat } from "ol/proj";
 import { planeStyle, airportStyle, lineStyle } from "./EstilosMapa";
 import { Vuelo } from "@/types/Vuelo";
 import { Aeropuerto } from "@/types/Aeropuerto";
+import { coordenadasIniciales, updateCoordinates } from "@/utils/FuncionesMapa";
 
 type MapaProps = {
     vuelos: Vuelo[];
@@ -26,19 +27,21 @@ const Mapa = ({vuelos, aeropuertos}: MapaProps)  => {
     const mapRef = useRef<OLMap | null>(null);
 
     useEffect(() => {
-        const initialCoordinates = fromLonLat([-77.0428, -12.0464]);
-        mapRef.current  = new OLMap({
-            target: "map",
-            layers: [
-                new TileLayer({
-                    source: new OSM(),
+        if (!mapRef.current) {
+            const initialCoordinates = fromLonLat([-77.0428, -12.0464]);
+            mapRef.current = new OLMap({
+                target: "map",
+                layers: [
+                    new TileLayer({
+                        source: new OSM(),
+                    }),
+                ],
+                view: new View({
+                    center: initialCoordinates,
+                    zoom: 5,
                 }),
-            ],
-            view: new View({
-                center: initialCoordinates,
-                zoom: 5,
-            }),
-        });
+            });
+        }
     }, []);
 
     useEffect(() => {
@@ -68,9 +71,8 @@ const Mapa = ({vuelos, aeropuertos}: MapaProps)  => {
             return feature;
         });
 
-        const pointFeatures = vuelos.map((vuelos) => {
-            const aeropuertoOrigen = aeropuertos.get(vuelos.origen);
-            const point = new Point(fromLonLat([aeropuertoOrigen?.longitud ?? 0, aeropuertoOrigen?.latitud ?? 0]));
+        const pointFeatures = vuelos.map((vuelo) => {
+            const point = new Point(coordenadasIniciales(vuelo, aeropuertos));
             const feature = new Feature({
                 geometry: point,
             });
@@ -98,21 +100,7 @@ const Mapa = ({vuelos, aeropuertos}: MapaProps)  => {
         mapRef.current.addLayer(vectorLayer);
 
         const intervalId: NodeJS.Timeout = setInterval(() => {
-            for (let i = 0; i < pointFeatures.length; i++) {
-                const pointFeature = pointFeatures[i];
-                const lineFeature = lineFeatures[i];
-                
-                const line = lineFeature.getGeometry() as LineString;
-                const coordinates = line.getCoordinates();
-                const point = pointFeature.getGeometry() as Point;
-                const currentCoordinate = point.getCoordinates();
-                const nextCoordinate = coordinates[1];
-                const newCoordinates = [
-                    currentCoordinate[0] + (nextCoordinate[0] - currentCoordinate[0]) / 500,
-                    currentCoordinate[1] + (nextCoordinate[1] - currentCoordinate[1]) / 500,
-                ] as Coordinate;
-                point.setCoordinates(newCoordinates);
-            }
+            updateCoordinates(aeropuertos, vuelos, pointFeatures, lineFeatures, 2)
         }, 1000);
 
         return () => {
@@ -124,3 +112,4 @@ const Mapa = ({vuelos, aeropuertos}: MapaProps)  => {
 };
 
 export default Mapa;
+

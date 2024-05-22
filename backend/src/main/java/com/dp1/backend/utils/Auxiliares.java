@@ -236,7 +236,7 @@ public class Auxiliares {
         return fitness;
     }
 
-    private static double calculateHaversineDistance(Aeropuerto a, Aeropuerto b) {
+    public static double calculateHaversineDistance(Aeropuerto a, Aeropuerto b) {
         final int R = 6371; // Radio de la Tierra en km
         double latDistance = Math.toRadians(b.getLatitud() - a.getLatitud());
         double lonDistance = Math.toRadians(b.getLongitud() - a.getLongitud());
@@ -258,10 +258,10 @@ public class Auxiliares {
         return (x * x + y * y) * R;
     }
 
-    private static double calculateEuclideanDistance(Aeropuerto a, Aeropuerto b) {
+    public static double calculateEuclideanDistance(Aeropuerto a, Aeropuerto b) {
         double x = a.getLatitud() - b.getLatitud();
         double y = a.getLongitud() - b.getLongitud();
-        return x * x + y * y;
+        return Math.sqrt(x * x + y * y);
     }
 
     public static Boolean solucionValidav2(HashMap<String, Aeropuerto> aeropuertos, HashMap<Integer, Vuelo> vuelos,

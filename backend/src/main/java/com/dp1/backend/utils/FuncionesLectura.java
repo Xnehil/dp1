@@ -99,8 +99,9 @@ public class FuncionesLectura {
                 ZonedDateTime horaDestinoZoned = ZonedDateTime.of(localDate, destinoLocalTime, zonaDestino);
 
                 int capacidadCarga = Integer.parseInt(parts[4]);
+                double distancia=Auxiliares.calculateHaversineDistance(aeropuertos.get(ciudadOrigen), aeropuertos.get(ciudadDestino));
 
-                Vuelo vuelo = new Vuelo(ciudadOrigen, ciudadDestino, horaOrigenZoned, horaDestinoZoned, capacidadCarga);
+                Vuelo vuelo = new Vuelo(ciudadOrigen, ciudadDestino, horaOrigenZoned, horaDestinoZoned, capacidadCarga, distancia);
                 vuelo.setIdVuelo(id);
                 vuelos.put(id, vuelo);
                 id++;
