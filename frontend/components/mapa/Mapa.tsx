@@ -21,10 +21,22 @@ import { coordenadasIniciales, updateCoordinates } from "@/utils/FuncionesMapa";
 type MapaProps = {
     vuelos: Vuelo[];
     aeropuertos: Map<string, Aeropuerto>;
+    simulationInterval: number;
 };
 
-const Mapa = ({vuelos, aeropuertos}: MapaProps)  => {
+const Mapa = ({vuelos, aeropuertos, simulationInterval}: MapaProps)  => {
     const mapRef = useRef<OLMap | null>(null);
+    const [simulationTime, setSimulationTime] = useState(new Date());
+
+    useEffect(() => {
+        const intervalId = setInterval(() => {
+            // Advance simulation time by simulationInterval minutes every real-time second
+            setSimulationTime(new Date(simulationTime.getTime() + simulationInterval * 60 * 1000));
+        }, 1000);
+
+        // Clean up interval on unmount
+        return () => clearInterval(intervalId);
+    }, [simulationTime, simulationInterval]); // A
 
     useEffect(() => {
         if (!mapRef.current) {
@@ -72,7 +84,7 @@ const Mapa = ({vuelos, aeropuertos}: MapaProps)  => {
         });
 
         const pointFeatures = vuelos.map((vuelo) => {
-            const point = new Point(coordenadasIniciales(vuelo, aeropuertos));
+            const point = coordenadasIniciales(vuelo, aeropuertos, simulationTime);
             const feature = new Feature({
                 geometry: point,
             });
@@ -100,8 +112,8 @@ const Mapa = ({vuelos, aeropuertos}: MapaProps)  => {
         mapRef.current.addLayer(vectorLayer);
 
         const intervalId: NodeJS.Timeout = setInterval(() => {
-            updateCoordinates(aeropuertos, vuelos, pointFeatures, lineFeatures, 2)
-        }, 1000);
+            updateCoordinates(aeropuertos, vuelos, pointFeatures, lineFeatures,simulationTime);
+        }, 3000);
 
         return () => {
             clearInterval(intervalId);

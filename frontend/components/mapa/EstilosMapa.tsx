@@ -29,6 +29,6 @@ export const lineStyle = new Style({
     stroke: new Stroke({
       color: '#ffcc33',
       lineDash: [4],
-      width: 0,
+      width: 2,
     }),
 });

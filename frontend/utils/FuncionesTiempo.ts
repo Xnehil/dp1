@@ -25,20 +25,42 @@ export function actualmenteEnVuelo(vuelo: Vuelo, aeropuertos: Map<string, Aeropu
     //Creo que esto mejor no
 }
 
-export function tiempoEntreAhoraYSalida(vuelo: Vuelo, aeropuertos: Map<String, Aeropuerto>): number {
+export function tiempoEntreAhoraYSalida(vuelo: Vuelo, aeropuertos: Map<String, Aeropuerto>, simulationTime: Date): number {
     //Devuelve el tiempo en minutos entre el momento actual y la hora de inicio del vuelo
-    const ahora = new Date();
+    // console.log("vuelo: ", vuelo);
     const ciudadSalida = aeropuertos.get(vuelo.origen);
+    // console.log("ciudadSalida: ", ciudadSalida);
+    const ahora = simulationTime;
+    const [ , time] = vuelo.fechaHoraSalida.split('T');
+    const [ hour, minute ] = time.split(':');
 
-    // Convert the timezone from the format 'GMT-04:00' to a format that JavaScript's Date object can understand
-    const timeZone = ciudadSalida?.zoneId ?? "GMT-05:00";
+    const horaInicio = new Date();
+    horaInicio.setHours(parseInt(hour));
+    horaInicio.setMinutes(parseInt(minute));
+
+    // Poner ambos el mismo día
+    horaInicio.setFullYear(ahora.getFullYear());
+    horaInicio.setMonth(ahora.getMonth());
+    horaInicio.setDate(ahora.getDate());
+
+    // Convertir la horaactual a la zona horaria de la ciudad de salida
+    const timeZone = ciudadSalida?.zoneId;
     const ahoraEnZonaHorariaSalida = new Date(ahora.toLocaleString("en-US", {timeZone: timeZone}));
+    // console.log("ahoraEnZonaHorariaSalida: ", ahoraEnZonaHorariaSalida);
+    // console.log("horaInicio: ", horaInicio);
+    // Calcular la diferencia en minutos
+    let tiempoTranscurrido = tiempoEntre(horaInicio, ahoraEnZonaHorariaSalida);
+    // console.log("tiempoTranscurrido: ", tiempoTranscurrido);
+    // Si el tiempo transcurrido es negativo, sumar 24 horas
+    if (tiempoTranscurrido < 0) {
+        tiempoTranscurrido += 24 * 60;
+    }
 
-    const horaInicio = new Date(vuelo.fechaHoraSalida);
-    return (ahoraEnZonaHorariaSalida.getTime() - horaInicio.getTime()) / 60000;
+    return tiempoTranscurrido;
 }
 
-export function tiempoEntre(fecha1: Date, fecha2: Date): number {
-    //Devuelve el tiempo en minutos entre dos fechas
-    return (fecha1.getTime() - fecha2.getTime()) / 60000;
+export function tiempoEntre(fechaInicio: Date, fechaFin: Date): number {
+    //Devuelve la diferencia en minutos entre dos fechas
+    const diferencia = fechaFin.getTime() - fechaInicio.getTime();
+    return diferencia / (1000 * 60);
 }

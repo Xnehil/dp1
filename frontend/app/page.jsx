@@ -29,11 +29,13 @@ export default function Home() {
                             size="220"
                         />
                     </Link>
-                    <IconoTarea
-                        icon={srcSimulacion}
-                        description="Simulación de envíos"
-                        size="220"
-                    />
+                    <Link href={"/simulacion"} className="h-full">
+                        <IconoTarea
+                            icon={srcSimulacion}
+                            description="Simulación de envíos"
+                            size="220"
+                        />
+                    </Link>
                     <IconoTarea icon={srcAjustes} description="Ajustes" />
                 </div>
 

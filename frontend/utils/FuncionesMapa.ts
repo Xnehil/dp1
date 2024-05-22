@@ -5,50 +5,74 @@ import { Point, LineString } from 'ol/geom';
 import { tiempoEntreAhoraYSalida } from './FuncionesTiempo';
 import { fromLonLat } from 'ol/proj';
 
-export function updateCoordinates(aeropuertos: Map<String, Aeropuerto>, vuelos: Vuelo[], pointFeatures: any[], lineFeatures: any[], velocidadParaSimulacion: number) {
+export function updateCoordinates(aeropuertos: Map<String, Aeropuerto>, vuelos: Vuelo[], pointFeatures: any[], lineFeatures: any[], simulationTime: Date) {
     for (let i = 0; i < pointFeatures.length; i++) {
         const vuelo = vuelos[i];
+        console.log("vuelo: ", vuelo);
         const pointFeature = pointFeatures[i];
         const lineFeature = lineFeatures[i];
 
 
         const line = lineFeature.getGeometry() as LineString;
         const coordinates = line.getCoordinates();
+        console.log("coordinates: ", coordinates);
         const totalDistance = vuelo.distanciaVuelo; //En km
-        const speed = totalDistance / vuelo.duracionVuelo; //En km/min
+        const speed = totalDistance / (vuelo.duracionVuelo); //En km/min
 
         const point = pointFeature.getGeometry() as Point;
         const currentCoordinate = point.getCoordinates();
-        const nextCoordinate = coordinates[1];
+        const destinationCoordinates = coordinates[1] as Coordinate;
+        const originCoordinates = coordinates[0] as Coordinate;
+        console.log("currentCoordinate: ", currentCoordinate);
 
-        const tiempoPasadoMinutos = tiempoEntreAhoraYSalida(vuelo, aeropuertos);
+        const tiempoPasadoMinutos = tiempoEntreAhoraYSalida(vuelo, aeropuertos, simulationTime);
 
         const distanciaRecorrida = speed * tiempoPasadoMinutos;
         const ratio = distanciaRecorrida / totalDistance;
-
+        console.log("distanciaRecorrida: ", distanciaRecorrida);
+        console.log("totalDistance: ", totalDistance);
+        console.log("ratio: ", ratio);
         const newCoordinates = [
-            currentCoordinate[0] + ratio * (nextCoordinate[0] - currentCoordinate[0]),
-            currentCoordinate[1] + ratio * (nextCoordinate[1] - currentCoordinate[1]),
+            originCoordinates[0] + ratio * (destinationCoordinates[0] - originCoordinates[0]),
+            originCoordinates[1] + ratio * (destinationCoordinates[1] - originCoordinates[1]),
         ] as Coordinate;
-        point.setCoordinates(newCoordinates);
+
+        if (distanciaRecorrida >= totalDistance) {
+            point.setCoordinates(destinationCoordinates);
+            line.setCoordinates([destinationCoordinates, destinationCoordinates]);
+        } else {
+            point.setCoordinates(newCoordinates);
+        }
+        console.log("newCoordinates: ", newCoordinates);
     }
 }
 
-export function coordenadasIniciales(vuelo: Vuelo, aeropuertos: Map<String, Aeropuerto>): Coordinate {
+export function coordenadasIniciales(vuelo: Vuelo, aeropuertos: Map<String, Aeropuerto>, simulationTime: Date): Point {
     const aeropuertoOrigen = aeropuertos.get(vuelo.origen);
     const aeropuertoDestino = aeropuertos.get(vuelo.destino);
+
+    // Get the longitude and latitude of the origin and destination
     const lonlatInicio = [aeropuertoOrigen?.longitud ?? 0, aeropuertoOrigen?.latitud ?? 0];
     const lonlatFin = [aeropuertoDestino?.longitud ?? 0, aeropuertoDestino?.latitud ?? 0];
 
-    const distanciaRecorrida = (vuelo.distanciaVuelo  / vuelo.duracionVuelo) * tiempoEntreAhoraYSalida(vuelo, aeropuertos); //Velocidad * tiempo transacurrido
-    const ratio = distanciaRecorrida / vuelo.distanciaVuelo;
+    // Calculate the elapsed time in minutes
+    const tiempoPasadoMinutos = tiempoEntreAhoraYSalida(vuelo, aeropuertos, simulationTime);
 
-    console.log(distanciaRecorrida);
-    console.log(vuelo);
+    // Qué tan avanzado está el vuelo
+    const ratio = tiempoPasadoMinutos / vuelo.duracionVuelo;
+
+    // Calculate the current position of the plane
     const newCoordinates = [
         lonlatInicio[0] + ratio * (lonlatFin[0] - lonlatInicio[0]),
         lonlatInicio[1] + ratio * (lonlatFin[1] - lonlatInicio[1]),
     ];
-    console.log(newCoordinates);
-    return newCoordinates;
+    // console.log("Vuelo: ", vuelo);
+    // console.log("lonlatInicio: ", lonlatInicio);
+    // console.log("lonlatFin: ", lonlatFin);
+    // console.log("tiempoPasadoMinutos: ", tiempoPasadoMinutos);
+    // console.log("ratio: ", ratio);
+    // console.log("newCoordinates: ", newCoordinates);
+    const punto = new Point(fromLonLat(newCoordinates));
+    // console.log("punto: ", punto);
+    return punto;
 }

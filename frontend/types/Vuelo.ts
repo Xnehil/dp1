@@ -2,8 +2,8 @@
 export type Vuelo = BaseModel & {
     origen: string;
     destino: string;
-    fechaHoraSalida: Date;
-    fechaHoraLlegada: Date;
+    fechaHoraSalida: string;
+    fechaHoraLlegada: string;
     capacidad: number;
     cambioDeDia: boolean;
     cargaPorDia: Map<string, number>;

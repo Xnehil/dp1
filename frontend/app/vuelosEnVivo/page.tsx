@@ -65,7 +65,7 @@ const Page = () => {
         <>
             {cargado && (
                 <div className="pb-4">
-                    <Mapa vuelos={vuelos} aeropuertos={aeropuertos} />
+                    <Mapa vuelos={vuelos.slice(0,50)} aeropuertos={aeropuertos} simulationInterval={10}/>
                     <div ref={bottomRef}></div>
                 </div>
             )}
