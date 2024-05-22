@@ -60,6 +60,22 @@ public class Vuelo extends BaseModel {
     }
 
 
+    public long getDuracionVuelo() {
+        return this.duracionVuelo;
+    }
+
+    public void setDuracionVuelo(long duracionVuelo) {
+        this.duracionVuelo = duracionVuelo;
+    }
+
+    public double getDistanciaVuelo() {
+        return this.distanciaVuelo;
+    }
+
+    public void setDistanciaVuelo(double distanciaVuelo) {
+        this.distanciaVuelo = distanciaVuelo;
+    }
+
     
 
     public Boolean isCambioDeDia() {

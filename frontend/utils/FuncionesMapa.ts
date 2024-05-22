@@ -14,8 +14,8 @@ export function updateCoordinates(aeropuertos: Map<String, Aeropuerto>, vuelos: 
 
         const line = lineFeature.getGeometry() as LineString;
         const coordinates = line.getCoordinates();
-        const totalDistance = vuelo.distancia; //En km
-        const speed = totalDistance / vuelo.duracion; //En km/min
+        const totalDistance = vuelo.distanciaVuelo; //En km
+        const speed = totalDistance / vuelo.duracionVuelo; //En km/min
 
         const point = pointFeature.getGeometry() as Point;
         const currentCoordinate = point.getCoordinates();
@@ -40,8 +40,8 @@ export function coordenadasIniciales(vuelo: Vuelo, aeropuertos: Map<String, Aero
     const lonlatInicio = [aeropuertoOrigen?.longitud ?? 0, aeropuertoOrigen?.latitud ?? 0];
     const lonlatFin = [aeropuertoDestino?.longitud ?? 0, aeropuertoDestino?.latitud ?? 0];
 
-    const distanciaRecorrida = (vuelo.distancia  / vuelo.duracion) * tiempoEntreAhoraYSalida(vuelo, aeropuertos); //Velocidad * tiempo transacurrido
-    const ratio = distanciaRecorrida / vuelo.distancia;
+    const distanciaRecorrida = (vuelo.distanciaVuelo  / vuelo.duracionVuelo) * tiempoEntreAhoraYSalida(vuelo, aeropuertos); //Velocidad * tiempo transacurrido
+    const ratio = distanciaRecorrida / vuelo.distanciaVuelo;
 
     console.log(distanciaRecorrida);
     console.log(vuelo);

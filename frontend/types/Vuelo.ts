@@ -7,6 +7,6 @@ export type Vuelo = BaseModel & {
     capacidad: number;
     cambioDeDia: boolean;
     cargaPorDia: Map<string, number>;
-    duracion: number;
-    distancia: number;
+    duracionVuelo: number;
+    distanciaVuelo: number;
 };
