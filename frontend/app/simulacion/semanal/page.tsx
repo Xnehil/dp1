@@ -14,6 +14,8 @@ const Page = () => {
     const [vuelos, setVuelos] = useState<Vuelo[]>([]);
     const [aeropuertos, setAeropuertos] = useState<Map<string, Aeropuerto>>(new Map());
     const [cargado, setCargado] = useState(false);
+    const [horaInicio, setHoraInicio] = useState(new Date());
+    const [websocket] = useState(conectarAWebsocket());
 
     useEffect(() => {
         bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -32,13 +34,13 @@ const Page = () => {
         };
         fetchActiveFlights();
     
-        let websocket: WebSocket = conectarAWebsocket();
-    
-        // Then fetch active flights every minute
-        const intervalId = setInterval(() => enviarMensaje("cocacola", "DP1 Front", websocket), 5 * 1000);
-    
-        // Clean up the interval on component unmount
-        return () => clearInterval(intervalId);
+        websocket.onmessage = (event: MessageEvent) => {
+            console.log("Mensaje recibido: ", event.data);
+            //Si el mensaje continene la palabra "vuelo" se actualiza la lista de vuelos
+            if (event.data.includes("vuelo")) {
+                fetchActiveFlights();
+            }
+        };
     }, []);
     
     useEffect(() => {
@@ -59,6 +61,19 @@ const Page = () => {
         if (vuelos && vuelos.length > 0 && aeropuertos.size > 0) {
             setCargado(true);
             // console.log("Aeropuertos cargados: ", aeropuertos);
+            if (typeof window !== 'undefined') {
+                const params = new URLSearchParams(window.location.search);
+                const startDate = params.get('startDate');
+                if (startDate !== null) {
+                    setHoraInicio(new Date(startDate));
+                }
+                else {
+                    setHoraInicio(new Date());
+                }
+                // Use startDate here
+                //Limpiar la URL del query string
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
         }
     }, [vuelos, aeropuertos]);
 
@@ -66,7 +81,8 @@ const Page = () => {
         <>
             {cargado && (
                 <div className="pb-4">
-                    <Mapa vuelos={vuelos} aeropuertos={aeropuertos} simulationInterval={1/60} setVuelos={setVuelos} />
+                    <Mapa vuelos={vuelos} aeropuertos={aeropuertos} simulationInterval={1/10} setVuelos={setVuelos} horaInicio={horaInicio}
+                        websocket={websocket}/>
                     <div ref={bottomRef}></div>
                 </div>
             )}

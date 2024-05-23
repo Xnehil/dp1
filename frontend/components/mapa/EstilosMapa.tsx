@@ -25,10 +25,15 @@ export const planeStyle = new Style({
     }),
 });
 
-export const lineStyle = new Style({
+// Invisible line style
+export const invisibleLineStyle = new Style({
+});
+
+// Visible line style for selected line
+export const selectedLineStyle = new Style({
     stroke: new Stroke({
-      color: '#ffcc33',
+      color: 'red', // Change color to make the selected line distinguishable
       lineDash: [4],
-      width: 2,
+      width: 2, // Increase width for the selected line
     }),
 });

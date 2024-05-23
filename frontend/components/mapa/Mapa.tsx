@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import "ol/ol.css";
-import {Map as OLMap} from "ol";
+import { Map as OLMap } from "ol";
 import View from "ol/View";
 import TileLayer from "ol/layer/Tile";
 import OSM from "ol/source/OSM";
@@ -13,7 +13,7 @@ import VectorLayer from "ol/layer/Vector";
 import { Coordinate } from "ol/coordinate";
 import { fromLonLat, toLonLat } from "ol/proj";
 
-import { planeStyle, airportStyle, lineStyle } from "./EstilosMapa";
+import { planeStyle, airportStyle, invisibleLineStyle } from "./EstilosMapa";
 import { Vuelo } from "@/types/Vuelo";
 import { Aeropuerto } from "@/types/Aeropuerto";
 import { coordenadasIniciales, updateCoordinates } from "@/utils/FuncionesMapa";
@@ -22,21 +22,23 @@ type MapaProps = {
     vuelos: Vuelo[];
     aeropuertos: Map<string, Aeropuerto>;
     simulationInterval: number;
+    setVuelos: React.Dispatch<React.SetStateAction<Vuelo[]>>;
+    horaInicio: Date;
+    websocket: WebSocket;
 };
 
-const Mapa = ({vuelos, aeropuertos, simulationInterval}: MapaProps)  => {
+const Mapa = ({
+    vuelos,
+    aeropuertos,
+    simulationInterval,
+    setVuelos,
+    horaInicio = new Date(),
+    websocket,
+}: MapaProps) => {
     const mapRef = useRef<OLMap | null>(null);
-    const [simulationTime, setSimulationTime] = useState(new Date());
-
-    useEffect(() => {
-        const intervalId = setInterval(() => {
-            // Advance simulation time by simulationInterval minutes every real-time second
-            setSimulationTime(new Date(simulationTime.getTime() + simulationInterval * 60 * 1000));
-        }, 1000);
-
-        // Clean up interval on unmount
-        return () => clearInterval(intervalId);
-    }, [simulationTime, simulationInterval]); // A
+    const [simulationTime, setSimulationTime] = useState(new Date(horaInicio));
+    const [pointFeatures, setPointFeatures] = useState<any[]>([]);
+    const [lineFeatures, setLineFeatures] = useState<any[]>([]);
 
     useEffect(() => {
         if (!mapRef.current) {
@@ -57,7 +59,7 @@ const Mapa = ({vuelos, aeropuertos, simulationInterval}: MapaProps)  => {
     }, []);
 
     useEffect(() => {
-        if (typeof window === "undefined" || !mapRef.current){
+        if (typeof window === "undefined" || !mapRef.current) {
             return;
         }
 
@@ -65,12 +67,18 @@ const Mapa = ({vuelos, aeropuertos, simulationInterval}: MapaProps)  => {
         if (mapRef.current.getLayers().getLength() > 1) {
             mapRef.current.getLayers().removeAt(1);
         }
-        
-        const lineFeatures = vuelos.map((vuelo) => {
+
+        const auxLineFeatures = vuelos.map((vuelo) => {
             const aeropuertoOrigen = aeropuertos.get(vuelo.origen);
             const aeropuertoDestino = aeropuertos.get(vuelo.destino);
-            const lonlatInicio= [aeropuertoOrigen?.longitud ?? 0, aeropuertoOrigen?.latitud ?? 0];
-            const lonlatFin = [aeropuertoDestino?.longitud ?? 0, aeropuertoDestino?.latitud ?? 0] ;
+            const lonlatInicio = [
+                aeropuertoOrigen?.longitud ?? 0,
+                aeropuertoOrigen?.latitud ?? 0,
+            ];
+            const lonlatFin = [
+                aeropuertoDestino?.longitud ?? 0,
+                aeropuertoDestino?.latitud ?? 0,
+            ];
 
             const line = new LineString([
                 fromLonLat(lonlatInicio),
@@ -79,12 +87,20 @@ const Mapa = ({vuelos, aeropuertos, simulationInterval}: MapaProps)  => {
             const feature = new Feature({
                 geometry: line,
             });
-            feature.setStyle(lineStyle);
+            feature.setStyle(invisibleLineStyle);
             return feature;
         });
 
-        const pointFeatures = vuelos.map((vuelo) => {
-            const point = coordenadasIniciales(vuelo, aeropuertos, simulationTime);
+        setLineFeatures(auxLineFeatures);
+
+        const auxPointFeatures = vuelos.map((vuelo, index) => {
+            const point = coordenadasIniciales(
+                vuelo,
+                aeropuertos,
+                auxLineFeatures,
+                simulationTime,
+                index
+            );
             const feature = new Feature({
                 geometry: point,
             });
@@ -92,17 +108,27 @@ const Mapa = ({vuelos, aeropuertos, simulationInterval}: MapaProps)  => {
             return feature;
         });
 
-        const aeropuertoFeatures = Array.from(aeropuertos.values()).map((aeropuerto) => {
-            const point = new Point(fromLonLat([aeropuerto.longitud, aeropuerto.latitud]));
-            const feature = new Feature({
-                geometry: point,
-            });
-            feature.setStyle(airportStyle);
-            return feature;
-        });
+        setPointFeatures(auxPointFeatures);
+
+        const aeropuertoFeatures = Array.from(aeropuertos.values()).map(
+            (aeropuerto) => {
+                const point = new Point(
+                    fromLonLat([aeropuerto.longitud, aeropuerto.latitud])
+                );
+                const feature = new Feature({
+                    geometry: point,
+                });
+                feature.setStyle(airportStyle);
+                return feature;
+            }
+        );
 
         const vectorSource = new VectorSource({
-            features: [...lineFeatures, ...pointFeatures, ...aeropuertoFeatures],
+            features: [
+                ...auxLineFeatures,
+                ...auxPointFeatures,
+                ...aeropuertoFeatures,
+            ],
         });
 
         const vectorLayer = new VectorLayer({
@@ -110,18 +136,35 @@ const Mapa = ({vuelos, aeropuertos, simulationInterval}: MapaProps)  => {
         });
 
         mapRef.current.addLayer(vectorLayer);
-
-        const intervalId: NodeJS.Timeout = setInterval(() => {
-            updateCoordinates(aeropuertos, vuelos, pointFeatures, lineFeatures,simulationTime);
-        }, 3000);
-
-        return () => {
-            clearInterval(intervalId);
-        };
     }, [vuelos, aeropuertos, mapRef]);
+
+    useEffect(() => {
+        const intervalId = setInterval(() => {
+            setSimulationTime(
+                (prevSimulationTime) =>new Date(prevSimulationTime.getTime() +simulationInterval * 60 * 1000)
+            );
+            // console.log("Simulation time: ", simulationTime);
+            if(websocket.readyState === 1)
+                websocket.send("tiempo: " + simulationTime.toISOString());
+        }, 700);
+
+        console.log("Updating coordinates con tiempo: ", simulationTime);
+
+        if (pointFeatures.length > 0 && lineFeatures.length > 0) {
+            const aBorrar = updateCoordinates(
+                aeropuertos,
+                vuelos,
+                pointFeatures,
+                lineFeatures,
+                simulationTime
+            );
+        }
+
+        // Clean up interval on unmount
+        return () => clearInterval(intervalId);
+    }, [simulationTime, simulationInterval]); // A
 
     return <div id="map" style={{ width: "100%", height: "900px" }}></div>;
 };
 
 export default Mapa;
-
