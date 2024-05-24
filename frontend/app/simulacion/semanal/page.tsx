@@ -15,34 +15,12 @@ const Page = () => {
     const [aeropuertos, setAeropuertos] = useState<Map<string, Aeropuerto>>(new Map());
     const [cargado, setCargado] = useState(false);
     const [horaInicio, setHoraInicio] = useState(new Date());
-    const [websocket] = useState(conectarAWebsocket());
+    const [websocket, setWebsocket] = useState<WebSocket | null>(null);
 
     useEffect(() => {
         bottomRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [cargado]);
 
-    useEffect(() => {
-        const fetchActiveFlights = () => {
-            axios.get(`${apiURL}/vuelo/enAire`)
-                .then((response) => {
-                    setVuelos(response.data);
-                    console.log("Vuelos cargados: ", response.data);
-                })
-                .catch((error) => {
-                    console.error(error);
-                });
-        };
-        fetchActiveFlights();
-    
-        websocket.onmessage = (event: MessageEvent) => {
-            console.log("Mensaje recibido: ", event.data);
-            //Si el mensaje continene la palabra "vuelo" se actualiza la lista de vuelos
-            if (event.data.includes("vuelo")) {
-                fetchActiveFlights();
-            }
-        };
-    }, []);
-    
     useEffect(() => {
         axios.get(`${apiURL}/aeropuerto`)
             .then((response) => {
@@ -55,7 +33,34 @@ const Page = () => {
             .catch((error) => {
                 console.error(error);
             });
+
+
+        const fetchActiveFlights = () => {
+            axios.get(`${apiURL}/vuelo/enAire`)
+                .then((response) => {
+                    setVuelos(response.data);
+                    console.log("Vuelos cargados: ", response.data);
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
+        };
+        fetchActiveFlights();
+        setWebsocket(conectarAWebsocket());
     }, []);
+
+    useEffect(() => {
+        if (websocket) {
+            websocket.onmessage = (event: MessageEvent) => {
+                console.log("Mensaje recibido: ", event.data);
+                //Si el mensaje continene la palabra "vuelo" se actualiza la lista de vuelos
+                if (event.data.includes("vuelo")) {
+                    fetchActiveFlights();
+                }
+            };
+        }
+            
+    }, [websocket]);
 
     useEffect(() => {
         if (vuelos && vuelos.length > 0 && aeropuertos.size > 0) {
@@ -77,6 +82,17 @@ const Page = () => {
         }
     }, [vuelos, aeropuertos]);
 
+    function  fetchActiveFlights () {
+        axios.get(`${apiURL}/vuelo/enAire`)
+            .then((response) => {
+                setVuelos(response.data);
+                console.log("Vuelos cargados: ", response.data);
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+    };
+
     return (
         <>
             {cargado && (
@@ -89,5 +105,7 @@ const Page = () => {
         </>
     );
 };
+
+
 
 export default Page;

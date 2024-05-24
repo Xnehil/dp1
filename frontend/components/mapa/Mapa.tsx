@@ -24,7 +24,7 @@ type MapaProps = {
     simulationInterval: number;
     setVuelos: React.Dispatch<React.SetStateAction<Vuelo[]>>;
     horaInicio: Date;
-    websocket: WebSocket;
+    websocket: WebSocket | null;
 };
 
 const Mapa = ({
@@ -144,7 +144,7 @@ const Mapa = ({
                 (prevSimulationTime) =>new Date(prevSimulationTime.getTime() +simulationInterval * 60 * 1000)
             );
             // console.log("Simulation time: ", simulationTime);
-            if(websocket.readyState === 1)
+            if(websocket?.readyState === 1)
                 websocket.send("tiempo: " + simulationTime.toISOString());
         }, 700);
 
