@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import com.dp1.backend.models.Aeropuerto;
@@ -17,11 +19,35 @@ import com.dp1.backend.utils.FuncionesLectura;
 public class DatosEnMemoriaService {
     private HashMap<String, Aeropuerto> aeropuertos = new HashMap<>();
     private HashMap<Integer, Vuelo> vuelos = new HashMap<>();
+    private HashMap<String, ArrayList<Integer>> salidasPorHora = new HashMap<>();
+    private final static Logger logger = LogManager.getLogger(DatosEnMemoriaService.class);
 
     public DatosEnMemoriaService() {
         aeropuertos.putAll(FuncionesLectura.leerAeropuertos("data/Aeropuerto.husos.v2.txt"));
         vuelos.putAll(FuncionesLectura.leerVuelos("data/planes_vuelo.v3.txt",aeropuertos));
+        for (Vuelo vuelo : vuelos.values()) {
+            ZonedDateTime horaDespegue = vuelo.getFechaHoraSalida();
+            horaDespegue = horaDespegue.withZoneSameInstant(ZoneId.of("GMT-5"));
+            String cadenaIndex = horaDespegue.getHour() + ":" + horaDespegue.getMinute();
+            if (salidasPorHora.containsKey(cadenaIndex)) {
+                salidasPorHora.get(cadenaIndex).add(vuelo.getId());
+            } else {
+                ArrayList<Integer> vuelosEnHora = new ArrayList<>();
+                vuelosEnHora.add(vuelo.getId());
+                salidasPorHora.put(cadenaIndex, vuelosEnHora);
+            }
+        }
     }
+
+
+    public HashMap<String,ArrayList<Integer>> getSalidasPorHora() {
+        return this.salidasPorHora;
+    }
+
+    public void setSalidasPorHora(HashMap<String,ArrayList<Integer>> salidasPorHora) {
+        this.salidasPorHora = salidasPorHora;
+    }
+
 
 
     public Map<String,Aeropuerto> getAeropuertos() {
@@ -48,10 +74,21 @@ public class DatosEnMemoriaService {
             ZonedDateTime horaDespegue = vuelo.getFechaHoraSalida();
             ZonedDateTime horaAterrizaje = vuelo.getFechaHoraLlegada();
 
+            horaDespegue = horaDespegue.with(horaActual.toLocalDate());
+            horaAterrizaje = horaAterrizaje.with(horaActual.toLocalDate());
+            if(vuelo.getCambioDeDia())
+            {
+                horaAterrizaje = horaAterrizaje.plusDays(1);
+            }
+            // logger.trace("Hora despegue: " + horaDespegue);
+            // logger.trace("Hora aterrizaje: " + horaAterrizaje);
+            // logger.trace("Hora actual: " + horaActual);
             if (horaActual.isAfter(horaDespegue) && horaActual.isBefore(horaAterrizaje)) {
+                // logger.trace("Decisión: Vuelo N°" + vuelo.getId() + " en el aire");
                 vuelosEnElAire.add(vuelo);
             }
         }
+        // logger.info("Vuelos en el aire: " + vuelosEnElAire.size());
         return vuelosEnElAire;
     } catch (Exception e) {
         System.out.println("Error: " + e.getLocalizedMessage());

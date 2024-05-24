@@ -13,7 +13,7 @@ import VectorLayer from "ol/layer/Vector";
 import { Coordinate } from "ol/coordinate";
 import { fromLonLat, toLonLat } from "ol/proj";
 
-import { planeStyle, airportStyle, invisibleLineStyle } from "./EstilosMapa";
+import { planeStyle, airportStyle, invisibleStyle } from "./EstilosMapa";
 import { Vuelo } from "@/types/Vuelo";
 import { Aeropuerto } from "@/types/Aeropuerto";
 import { coordenadasIniciales, updateCoordinates } from "@/utils/FuncionesMapa";
@@ -87,7 +87,7 @@ const Mapa = ({
             const feature = new Feature({
                 geometry: line,
             });
-            feature.setStyle(invisibleLineStyle);
+            feature.setStyle(invisibleStyle);
             return feature;
         });
 
@@ -148,7 +148,7 @@ const Mapa = ({
                 websocket.send("tiempo: " + simulationTime.toISOString());
         }, 700);
 
-        console.log("Updating coordinates con tiempo: ", simulationTime);
+        // console.log("Updating coordinates con tiempo: ", simulationTime);
 
         if (pointFeatures.length > 0 && lineFeatures.length > 0) {
             const aBorrar = updateCoordinates(

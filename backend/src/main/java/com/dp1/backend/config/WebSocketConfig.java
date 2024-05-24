@@ -10,16 +10,17 @@ import com.dp1.backend.handlers.SocketConnectionHandler;
   
 @Configuration
 @EnableWebSocket
-public class WebSocketConfig implements WebSocketConfigurer { 
+public class WebSocketConfig implements WebSocketConfigurer {
+
+    private final SocketConnectionHandler socketConnectionHandler;
+
+    public WebSocketConfig(SocketConnectionHandler socketConnectionHandler) {
+        this.socketConnectionHandler = socketConnectionHandler;
+    }
 
     @Override
-    public void registerWebSocketHandlers(@NonNull WebSocketHandlerRegistry webSocketHandlerRegistry) 
-    { 
-        // Para agregar un controlador, damos la clase de controlador que
-        // creamos antes. También estamos gestionando la política CORS para los controladores
-        // para que otros dominios también puedan acceder al socket
-        webSocketHandlerRegistry 
-            .addHandler(new SocketConnectionHandler(),"/socket") 
-            .setAllowedOrigins("*"); 
-    } 
+    public void registerWebSocketHandlers(@NonNull WebSocketHandlerRegistry webSocketHandlerRegistry) {
+        webSocketHandlerRegistry.addHandler(socketConnectionHandler, "/socket")
+            .setAllowedOrigins("*");
+    }
 }

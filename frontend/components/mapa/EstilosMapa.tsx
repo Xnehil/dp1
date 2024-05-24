@@ -26,7 +26,7 @@ export const planeStyle = new Style({
 });
 
 // Invisible line style
-export const invisibleLineStyle = new Style({
+export const invisibleStyle = new Style({
 });
 
 // Visible line style for selected line

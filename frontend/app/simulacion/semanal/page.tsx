@@ -52,10 +52,13 @@ const Page = () => {
     useEffect(() => {
         if (websocket) {
             websocket.onmessage = (event: MessageEvent) => {
-                console.log("Mensaje recibido: ", event.data);
-                //Si el mensaje continene la palabra "vuelo" se actualiza la lista de vuelos
-                if (event.data.includes("vuelo")) {
-                    fetchActiveFlights();
+                //Parsear el mensaje recibido
+                let message = JSON.parse(event.data);
+                console.log("Mensaje recibido: ", message);
+                if (message.metadata.includes("dataVuelos")) {
+                    console.log("Actualizando vuelos");
+                    console.log("Vuelos recibidos: ", message.data);
+                    setVuelos(vuelos.concat(message.data));
                 }
             };
         }
@@ -97,7 +100,7 @@ const Page = () => {
         <>
             {cargado && (
                 <div className="pb-4">
-                    <Mapa vuelos={vuelos} aeropuertos={aeropuertos} simulationInterval={1/10} setVuelos={setVuelos} horaInicio={horaInicio}
+                    <Mapa vuelos={vuelos} aeropuertos={aeropuertos} simulationInterval={4} setVuelos={setVuelos} horaInicio={horaInicio}
                         websocket={websocket}/>
                     <div ref={bottomRef}></div>
                 </div>

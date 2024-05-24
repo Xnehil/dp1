@@ -4,6 +4,7 @@ import { Coordinate } from 'ol/coordinate';
 import { Point, LineString } from 'ol/geom';
 import { tiempoEntreAhoraYSalida } from './FuncionesTiempo';
 import { fromLonLat } from 'ol/proj';
+import { invisibleStyle } from '@/components/mapa/EstilosMapa';
 
 export function updateCoordinates(aeropuertos: Map<String, Aeropuerto>, vuelos: Vuelo[], pointFeatures: any[], lineFeatures: any[], simulationTime: Date):
     number[]{
@@ -40,6 +41,8 @@ export function updateCoordinates(aeropuertos: Map<String, Aeropuerto>, vuelos: 
 
         if (distanciaRecorrida >= totalDistance) {
             point.setCoordinates(destinationCoordinates);
+            //Hacer el avión invisible
+            pointFeature.setStyle(invisibleStyle);
             line.setCoordinates([destinationCoordinates, destinationCoordinates]);
             aBorrar.push(i);
         } else {
