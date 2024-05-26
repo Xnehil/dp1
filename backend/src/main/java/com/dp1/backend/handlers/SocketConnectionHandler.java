@@ -43,7 +43,7 @@ public class SocketConnectionHandler extends TextWebSocketHandler {
     private List<WebSocketSession> webSocketSessions = Collections.synchronizedList(new ArrayList<>()); 
 
     //Por cada conexión, se guarda una lista paralela de vuelos en el aire
-    private Map<WebSocketSession, ArrayList<Vuelo>> vuelosEnElAire = new HashMap<>();
+    private HashMap<WebSocketSession, HashMap<Integer, Vuelo>> vuelosEnElAire = new HashMap<>();
 
     @Autowired
     private DatosEnMemoriaService datosEnMemoriaService;
@@ -75,6 +75,7 @@ public class SocketConnectionHandler extends TextWebSocketHandler {
     public void handleMessage(@NonNull WebSocketSession session, @NonNull WebSocketMessage<?> message) throws Exception 
     { 
         super.handleMessage(session, message); 
+        // logger.info("Mensaje recibido: " + message.getPayload().toString());
         // Si el mensaje contiene "tiempo", se imprimirá en el log
         if (message.getPayload().toString().contains("tiempo")) 
         { 
@@ -89,34 +90,40 @@ public class SocketConnectionHandler extends TextWebSocketHandler {
             // If this is the first received time, store it
             if (lastMessageTime == null) {
                 lastMessageTime = simulatedTime;
-                vuelosEnElAire.put(session, datosEnMemoriaService.getVuelosEnElAire(simulatedTime));
+                vuelosEnElAire.put(session, datosEnMemoriaService.getVuelosEnElAireMap(simulatedTime));
             }
             
             // System.out.println("Last message time: " + lastMessageTime+  " zona horaria: "+lastMessageTime.getZone());
             // System.out.println("Simulated time: " + simulatedTime + " zona horaria: "+simulatedTime.getZone());
             long difference = Duration.between(lastMessageTime, simulatedTime).toMinutes();
             // System.out.println("Difference: " + difference);
-            if (difference > 15) {
-                // session.sendMessage(new TextMessage("1 minute has passed since the last message"));
-                // logger.info("1 minute has passed since the last message");
-                ArrayList<Vuelo> nuevoFetchVuelos = datosEnMemoriaService.getVuelosEnElAire(simulatedTime);
-                //Vuelos nuevos que se han agregado
-                ArrayList<Vuelo> diferenciaVuelos = new ArrayList<>();
-                //Determinar los vuelos nuevos
-                for (Vuelo vuelo : nuevoFetchVuelos) {
-                    if (!vuelosEnElAire.get(session).contains(vuelo)) {
-                        diferenciaVuelos.add(vuelo);
+            try {
+                if (difference > 15) {
+                    // session.sendMessage(new TextMessage("15 minute has passed since the last message"));
+                    // logger.info("15 minute has passed since the last message");
+                    HashMap<Integer, Vuelo> nuevosVuelosMap = datosEnMemoriaService.getVuelosEnElAireMap(simulatedTime);
+                    //Vuelos nuevos que se han agregado
+                    ArrayList<Vuelo> diferenciaVuelos = new ArrayList<>();
+                    //Determinar los vuelos nuevos
+                    for (Vuelo vuelo :  nuevosVuelosMap.values()) {
+                        if(!vuelosEnElAire.get(session).containsKey(vuelo.getId()))
+                        {
+                            diferenciaVuelos.add(vuelo);
+                        }
                     }
-                }
-                vuelosEnElAire.put(session, nuevoFetchVuelos);
-                Map<String, Object> messageMap = new HashMap<>();
-                messageMap.put("metadata", "dataVuelos");
-                messageMap.put("data", diferenciaVuelos);
-                String messageJson = objectMapper.writeValueAsString(messageMap);
-                session.sendMessage(new TextMessage(messageJson));
+                    vuelosEnElAire.put(session, nuevosVuelosMap);
+                    Map<String, Object> messageMap = new HashMap<>();
+                    messageMap.put("metadata", "dataVuelos");
+                    messageMap.put("data", diferenciaVuelos);
+                    String messageJson = objectMapper.writeValueAsString(messageMap);
+                    session.sendMessage(new TextMessage(messageJson));
 
-                lastMessageTime = simulatedTime;
+                    lastMessageTime = simulatedTime;
+                }
+            } catch (Exception e) {
+                logger.error("Error: " + e.getLocalizedMessage());
             }
+            
         }
     } 
 }

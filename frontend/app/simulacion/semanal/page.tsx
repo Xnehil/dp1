@@ -11,7 +11,7 @@ import { conectarAWebsocket, enviarMensaje } from "@/utils/FuncionesWebsocket";
 const Page = () => {
     const bottomRef = useRef<HTMLDivElement>(null);
     const apiURL = process.env.REACT_APP_API_URL_BASE;
-    const [vuelos, setVuelos] = useState<Vuelo[]>([]);
+    const [vuelos, setVuelos] = useState<Map<number, { vuelo: Vuelo, pointFeature: any, lineFeature: any}>>(new Map());
     const [aeropuertos, setAeropuertos] = useState<Map<string, Aeropuerto>>(new Map());
     const [cargado, setCargado] = useState(false);
     const [horaInicio, setHoraInicio] = useState(new Date());
@@ -38,8 +38,12 @@ const Page = () => {
         const fetchActiveFlights = () => {
             axios.get(`${apiURL}/vuelo/enAire`)
                 .then((response) => {
-                    setVuelos(response.data);
+                    const recienVuelos= new Map<number, { vuelo: Vuelo, pointFeature: any, lineFeature: any}>();
+                    response.data.forEach((vuelo: Vuelo) => {
+                        recienVuelos.set(vuelo.id, { vuelo: vuelo, pointFeature: null, lineFeature: null });
+                    });
                     console.log("Vuelos cargados: ", response.data);
+                    setVuelos(recienVuelos);
                 })
                 .catch((error) => {
                     console.error(error);
@@ -58,7 +62,9 @@ const Page = () => {
                 if (message.metadata.includes("dataVuelos")) {
                     console.log("Actualizando vuelos");
                     console.log("Vuelos recibidos: ", message.data);
-                    setVuelos(vuelos.concat(message.data));
+                    message.data.forEach((vuelo: Vuelo) => {
+                        vuelos.set(vuelo.id, { vuelo: vuelo, pointFeature: null, lineFeature: null });
+                    });
                 }
             };
         }
@@ -66,7 +72,11 @@ const Page = () => {
     }, [websocket]);
 
     useEffect(() => {
-        if (vuelos && vuelos.length > 0 && aeropuertos.size > 0) {
+        if (vuelos && vuelos.size > 0 && aeropuertos.size > 0) {
+            console.log("Vuelos cargados: ", vuelos);
+            if(cargado) {
+                return;
+            }
             setCargado(true);
             // console.log("Aeropuertos cargados: ", aeropuertos);
             if (typeof window !== 'undefined') {
@@ -84,18 +94,6 @@ const Page = () => {
             }
         }
     }, [vuelos, aeropuertos]);
-
-    function  fetchActiveFlights () {
-        axios.get(`${apiURL}/vuelo/enAire`)
-            .then((response) => {
-                setVuelos(response.data);
-                console.log("Vuelos cargados: ", response.data);
-            })
-            .catch((error) => {
-                console.error(error);
-            });
-    };
-
     return (
         <>
             {cargado && (

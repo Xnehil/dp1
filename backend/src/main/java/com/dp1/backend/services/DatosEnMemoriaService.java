@@ -90,10 +90,41 @@ public class DatosEnMemoriaService {
         }
         // logger.info("Vuelos en el aire: " + vuelosEnElAire.size());
         return vuelosEnElAire;
-    } catch (Exception e) {
-        System.out.println("Error: " + e.getLocalizedMessage());
-        return null;
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getLocalizedMessage());
+            return null;
+        }
     }
-}
+
+    public HashMap<Integer,Vuelo> getVuelosEnElAireMap(ZonedDateTime horaActual) {
+        try {
+            // Keep only flights that have taken off and have not landed
+            HashMap<Integer,Vuelo> vuelosEnElAire = new HashMap<Integer,Vuelo>();
+            for (Vuelo vuelo : vuelos.values()) {
+                ZonedDateTime horaDespegue = vuelo.getFechaHoraSalida();
+                ZonedDateTime horaAterrizaje = vuelo.getFechaHoraLlegada();
+
+                horaDespegue = horaDespegue.with(horaActual.toLocalDate());
+                horaAterrizaje = horaAterrizaje.with(horaActual.toLocalDate());
+                if(vuelo.getCambioDeDia())
+                {
+                    horaAterrizaje = horaAterrizaje.plusDays(1);
+                }
+                // logger.trace("Hora despegue: " + horaDespegue);
+                // logger.trace("Hora aterrizaje: " + horaAterrizaje);
+                // logger.trace("Hora actual: " + horaActual);
+                if (horaActual.isAfter(horaDespegue) && horaActual.isBefore(horaAterrizaje)) {
+                    // logger.trace("Decisión: Vuelo N°" + vuelo.getId() + " en el aire");
+                    vuelosEnElAire.put(vuelo.getId(),vuelo);
+                }
+            }
+            // logger.info("Vuelos en el aire: " + vuelosEnElAire.size());
+            return vuelosEnElAire;
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getLocalizedMessage());
+            return null;
+        }
+    }
+
     
 }

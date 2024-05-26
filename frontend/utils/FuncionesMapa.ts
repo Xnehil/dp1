@@ -4,16 +4,18 @@ import { Coordinate } from 'ol/coordinate';
 import { Point, LineString } from 'ol/geom';
 import { tiempoEntreAhoraYSalida } from './FuncionesTiempo';
 import { fromLonLat } from 'ol/proj';
-import { invisibleStyle } from '@/components/mapa/EstilosMapa';
+import { invisibleStyle, planeStyle } from '@/components/mapa/EstilosMapa';
+import { Feature } from 'ol';
 
-export function updateCoordinates(aeropuertos: Map<String, Aeropuerto>, vuelos: Vuelo[], pointFeatures: any[], lineFeatures: any[], simulationTime: Date):
+export function updateCoordinates(aeropuertos: Map<String, Aeropuerto>, vuelos: Map<number, { vuelo: Vuelo, pointFeature: any, lineFeature: any}>, simulationTime: Date):
     number[]{
     let aBorrar:number[] = [];
-    for (let i = 0; i < pointFeatures.length; i++) {
-        const vuelo = vuelos[i];
+    //Iterar por cada vuelo
+    vuelos.forEach((item, i) => {
+        const vuelo = item.vuelo;
         // console.log("vuelo: ", vuelo);
-        const pointFeature = pointFeatures[i];
-        const lineFeature = lineFeatures[i];
+        const pointFeature = item.pointFeature;
+        const lineFeature = item.lineFeature;
 
 
         const line = lineFeature.getGeometry() as LineString;
@@ -49,22 +51,22 @@ export function updateCoordinates(aeropuertos: Map<String, Aeropuerto>, vuelos: 
             point.setCoordinates(newCoordinates);
         }
         // console.log("newCoordinates: ", newCoordinates);
-    }
+    });
     // console.log("aBorrar: ", aBorrar);
     return aBorrar;
 
 }
 
-export function coordenadasIniciales(vuelo: Vuelo, aeropuertos: Map<String, Aeropuerto>, lineFeatures: any[], simulationTime: Date, index:number): Point {
-    const lineFeature = lineFeatures[index];
+export function coordenadasIniciales(aeropuertos: Map<String, Aeropuerto>, item: any, simulationTime: Date): Point {
+    const lineFeature = item.lineFeature;
     const line = lineFeature.getGeometry() as LineString;
     const coordinates = line.getCoordinates();
 
     // Calculate the elapsed time in minutes
-    const tiempoPasadoMinutos = tiempoEntreAhoraYSalida(vuelo, aeropuertos, simulationTime);
+    const tiempoPasadoMinutos = tiempoEntreAhoraYSalida(item.vuelo, aeropuertos, simulationTime);
 
     // Qué tan avanzado está el vuelo
-    const ratio = tiempoPasadoMinutos / vuelo.duracionVuelo;
+    const ratio = tiempoPasadoMinutos / item.vuelo.duracionVuelo;
 
     const lonlatInicio = coordinates[0] as Coordinate;
     const lonlatFin = coordinates[1] as Coordinate;
@@ -83,4 +85,36 @@ export function coordenadasIniciales(vuelo: Vuelo, aeropuertos: Map<String, Aero
     const punto = new Point(fromLonLat(newCoordinates));
     // console.log("punto: ", punto);
     return punto;
+}
+
+export function crearLineaDeVuelo(aeropuertos: Map<String, Aeropuerto>, item: any): any {
+    const aeropuertoOrigen = aeropuertos.get(item.vuelo.origen);
+    const aeropuertoDestino = aeropuertos.get(item.vuelo.destino);
+    const lonlatInicio = [
+        aeropuertoOrigen?.longitud ?? 0,
+        aeropuertoOrigen?.latitud ?? 0,
+    ];
+    const lonlatFin = [
+        aeropuertoDestino?.longitud ?? 0,
+        aeropuertoDestino?.latitud ?? 0,
+    ];
+
+    const line = new LineString([
+        fromLonLat(lonlatInicio),
+        fromLonLat(lonlatFin),
+    ]);
+    const feature = new Feature({
+        geometry: line,
+    });
+    feature.setStyle(invisibleStyle);
+    return feature;
+}
+
+export function crearPuntoDeVuelo(aeropuertos: Map<String, Aeropuerto>, item: any, simulationTime: Date): any {
+    const point = coordenadasIniciales(aeropuertos, item, simulationTime);
+    const feature = new Feature({
+        geometry: point,
+    });
+    feature.setStyle(planeStyle);
+    return feature;
 }

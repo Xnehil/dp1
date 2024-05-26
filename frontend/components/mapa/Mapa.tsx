@@ -16,13 +16,13 @@ import { fromLonLat, toLonLat } from "ol/proj";
 import { planeStyle, airportStyle, invisibleStyle } from "./EstilosMapa";
 import { Vuelo } from "@/types/Vuelo";
 import { Aeropuerto } from "@/types/Aeropuerto";
-import { coordenadasIniciales, updateCoordinates } from "@/utils/FuncionesMapa";
+import { coordenadasIniciales, crearLineaDeVuelo, crearPuntoDeVuelo, updateCoordinates } from "@/utils/FuncionesMapa";
 
 type MapaProps = {
-    vuelos: Vuelo[];
+    vuelos: Map<number, { vuelo: Vuelo, pointFeature: any, lineFeature: any}>;
     aeropuertos: Map<string, Aeropuerto>;
     simulationInterval: number;
-    setVuelos: React.Dispatch<React.SetStateAction<Vuelo[]>>;
+    setVuelos: React.Dispatch<React.SetStateAction<Map<number, { vuelo: Vuelo, pointFeature: any, lineFeature: any}>>>;
     horaInicio: Date;
     websocket: WebSocket | null;
 };
@@ -36,6 +36,7 @@ const Mapa = ({
     websocket,
 }: MapaProps) => {
     const mapRef = useRef<OLMap | null>(null);
+    const vectorSourceRef = useRef(new VectorSource());
     const [simulationTime, setSimulationTime] = useState(new Date(horaInicio));
     const [pointFeatures, setPointFeatures] = useState<any[]>([]);
     const [lineFeatures, setLineFeatures] = useState<any[]>([]);
@@ -68,44 +69,20 @@ const Mapa = ({
             mapRef.current.getLayers().removeAt(1);
         }
 
-        const auxLineFeatures = vuelos.map((vuelo) => {
-            const aeropuertoOrigen = aeropuertos.get(vuelo.origen);
-            const aeropuertoDestino = aeropuertos.get(vuelo.destino);
-            const lonlatInicio = [
-                aeropuertoOrigen?.longitud ?? 0,
-                aeropuertoOrigen?.latitud ?? 0,
-            ];
-            const lonlatFin = [
-                aeropuertoDestino?.longitud ?? 0,
-                aeropuertoDestino?.latitud ?? 0,
-            ];
-
-            const line = new LineString([
-                fromLonLat(lonlatInicio),
-                fromLonLat(lonlatFin),
-            ]);
-            const feature = new Feature({
-                geometry: line,
-            });
-            feature.setStyle(invisibleStyle);
-            return feature;
+        let auxLineFeatures: any[] = [];
+        vuelos.forEach((item) => {
+            const feature = crearLineaDeVuelo(aeropuertos, item);
+            item.lineFeature = feature;
+            auxLineFeatures.push(feature);
         });
 
         setLineFeatures(auxLineFeatures);
 
-        const auxPointFeatures = vuelos.map((vuelo, index) => {
-            const point = coordenadasIniciales(
-                vuelo,
-                aeropuertos,
-                auxLineFeatures,
-                simulationTime,
-                index
-            );
-            const feature = new Feature({
-                geometry: point,
-            });
-            feature.setStyle(planeStyle);
-            return feature;
+        let auxPointFeatures: any[] = [];
+        vuelos.forEach((item) => {
+            const feature = crearPuntoDeVuelo(aeropuertos, item, simulationTime);
+            item.pointFeature = feature;
+            auxPointFeatures.push(feature);
         });
 
         setPointFeatures(auxPointFeatures);
@@ -123,16 +100,15 @@ const Mapa = ({
             }
         );
 
-        const vectorSource = new VectorSource({
-            features: [
-                ...auxLineFeatures,
-                ...auxPointFeatures,
-                ...aeropuertoFeatures,
-            ],
-        });
+        vectorSourceRef.current.clear(); // Clear the existing features
+        vectorSourceRef.current.addFeatures([
+            ...auxLineFeatures,
+            ...auxPointFeatures,
+            ...aeropuertoFeatures,
+        ]);
 
         const vectorLayer = new VectorLayer({
-            source: vectorSource,
+            source: vectorSourceRef.current,
         });
 
         mapRef.current.addLayer(vectorLayer);
@@ -146,7 +122,7 @@ const Mapa = ({
             // console.log("Simulation time: ", simulationTime);
             if(websocket?.readyState === 1)
                 websocket.send("tiempo: " + simulationTime.toISOString());
-        }, 700);
+        }, 1000);
 
         // console.log("Updating coordinates con tiempo: ", simulationTime);
 
@@ -154,8 +130,6 @@ const Mapa = ({
             const aBorrar = updateCoordinates(
                 aeropuertos,
                 vuelos,
-                pointFeatures,
-                lineFeatures,
                 simulationTime
             );
         }
