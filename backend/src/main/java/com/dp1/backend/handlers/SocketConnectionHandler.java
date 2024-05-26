@@ -65,7 +65,7 @@ public class SocketConnectionHandler extends TextWebSocketHandler {
         logger.info(session.getId() + "  desconectado del socket");
         // Removing the connection info from the list 
         webSocketSessions.remove(session); 
-        executorService.shutdown();
+        // executorService.shutdown();
     } 
   
     // Se encargará de intercambiar mensajes en la red

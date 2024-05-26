@@ -25,6 +25,7 @@ type MapaProps = {
     setVuelos: React.Dispatch<React.SetStateAction<Map<number, { vuelo: Vuelo, pointFeature: any, lineFeature: any}>>>;
     horaInicio: Date;
     websocket: WebSocket | null;
+    nuevosVuelos: number[];
 };
 
 const Mapa = ({
@@ -34,6 +35,7 @@ const Mapa = ({
     setVuelos,
     horaInicio = new Date(),
     websocket,
+    nuevosVuelos,
 }: MapaProps) => {
     const mapRef = useRef<OLMap | null>(null);
     const vectorSourceRef = useRef(new VectorSource());
@@ -132,11 +134,37 @@ const Mapa = ({
                 vuelos,
                 simulationTime
             );
+            for (let i = 0; i < aBorrar.length; i++) {
+                const idVuelo = aBorrar[i];
+                const item = vuelos.get(idVuelo);
+                if (item) {
+                    vectorSourceRef.current.removeFeature(item.pointFeature);
+                    vectorSourceRef.current.removeFeature(item.lineFeature);
+                    item.pointFeature = null;
+                    item.lineFeature = null;
+                    vuelos.delete(idVuelo);
+                }
+            }
         }
 
         // Clean up interval on unmount
         return () => clearInterval(intervalId);
-    }, [simulationTime, simulationInterval]); // A
+    }, [simulationTime, simulationInterval]); 
+
+    useEffect(() => {
+        if(nuevosVuelos.length > 0) {
+            for (let i = 0; i < nuevosVuelos.length; i++) {
+                const idVuelo = nuevosVuelos[i];
+                const item = vuelos.get(idVuelo);
+                if (item) {
+                    item.pointFeature = crearPuntoDeVuelo(aeropuertos, item, simulationTime);
+                    item.lineFeature = crearLineaDeVuelo(aeropuertos, item);
+                    vectorSourceRef.current.addFeature(item.pointFeature);
+                    vectorSourceRef.current.addFeature(item.lineFeature);
+                }
+            }
+        }
+    }), [nuevosVuelos];
 
     return <div id="map" style={{ width: "100%", height: "900px" }}></div>;
 };

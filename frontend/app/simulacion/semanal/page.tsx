@@ -16,6 +16,7 @@ const Page = () => {
     const [cargado, setCargado] = useState(false);
     const [horaInicio, setHoraInicio] = useState(new Date());
     const [websocket, setWebsocket] = useState<WebSocket | null>(null);
+    const [nuevosVuelos, setNuevosVuelos] = useState<number[]>([]);
 
     useEffect(() => {
         bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -59,12 +60,15 @@ const Page = () => {
                 //Parsear el mensaje recibido
                 let message = JSON.parse(event.data);
                 console.log("Mensaje recibido: ", message);
+                const auxNuevosVuelos: number[] = [];
                 if (message.metadata.includes("dataVuelos")) {
                     console.log("Actualizando vuelos");
                     console.log("Vuelos recibidos: ", message.data);
                     message.data.forEach((vuelo: Vuelo) => {
                         vuelos.set(vuelo.id, { vuelo: vuelo, pointFeature: null, lineFeature: null });
+                        auxNuevosVuelos.push(vuelo.id);
                     });
+                    setNuevosVuelos(auxNuevosVuelos);
                 }
             };
         }
@@ -99,7 +103,7 @@ const Page = () => {
             {cargado && (
                 <div className="pb-4">
                     <Mapa vuelos={vuelos} aeropuertos={aeropuertos} simulationInterval={4} setVuelos={setVuelos} horaInicio={horaInicio}
-                        websocket={websocket}/>
+                        websocket={websocket} nuevosVuelos={nuevosVuelos} />
                     <div ref={bottomRef}></div>
                 </div>
             )}
