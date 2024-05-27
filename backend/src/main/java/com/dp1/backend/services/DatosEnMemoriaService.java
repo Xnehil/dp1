@@ -21,10 +21,19 @@ public class DatosEnMemoriaService {
     private HashMap<Integer, Vuelo> vuelos = new HashMap<>();
     private HashMap<String, ArrayList<Integer>> salidasPorHora = new HashMap<>();
     private final static Logger logger = LogManager.getLogger(DatosEnMemoriaService.class);
+    private String workingDirectory = System.getProperty("user.dir");
 
     public DatosEnMemoriaService() {
-        aeropuertos.putAll(FuncionesLectura.leerAeropuertos("data/Aeropuerto.husos.v2.txt"));
-        vuelos.putAll(FuncionesLectura.leerVuelos("data/planes_vuelo.v3.txt",aeropuertos));
+        logger.info("Inicializando DatosEnMemoriaService con working directory: " + workingDirectory);
+        if(workingDirectory.trim().equals("/")){
+            workingDirectory = "/home/inf226.982.2b/";
+        } 
+        else{
+            workingDirectory = "";
+        }
+
+        aeropuertos.putAll(FuncionesLectura.leerAeropuertos(workingDirectory+"data/Aeropuerto.husos.v2.txt"));
+        vuelos.putAll(FuncionesLectura.leerVuelos(workingDirectory+"data/planes_vuelo.v3.txt",aeropuertos));
         for (Vuelo vuelo : vuelos.values()) {
             ZonedDateTime horaDespegue = vuelo.getFechaHoraSalida();
             horaDespegue = horaDespegue.withZoneSameInstant(ZoneId.of("GMT-5"));

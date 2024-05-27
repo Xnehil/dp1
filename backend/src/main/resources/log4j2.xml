@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="INFO" name="DP1Backend">
     <Properties>
-        <Property name="log-path">logs</Property>
+        <Property name="log-path">${sys:user.dir}/logs</Property>
     </Properties>
     <Appenders>
         <Console name="ConsoleAppender" target="SYSTEM_OUT">

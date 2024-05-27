@@ -29,6 +29,9 @@ spring:
             allowed-headers: "*"
             allow-credentials: true
 
+server:
+    port: 8081
+
 logging:
     level:
         org.hibernate.SQL: DEBUG
