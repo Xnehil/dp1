@@ -6,18 +6,21 @@ import { tiempoEntreAhoraYSalida } from './FuncionesTiempo';
 import { fromLonLat } from 'ol/proj';
 import { invisibleStyle, planeStyle } from '@/components/mapa/EstilosMapa';
 import { Feature } from 'ol';
+import { getVectorContext } from 'ol/render';
 
 export function updateCoordinates(aeropuertos: Map<String, Aeropuerto>, vuelos: Map<number, { vuelo: Vuelo, pointFeature: any, lineFeature: any}>, simulationTime: Date):
     number[]{
     let aBorrar:number[] = [];
     //Iterar por cada vuelo
+    let cuenta=0;
+    // let medirTiempo = new Date();
     vuelos.forEach((item, i) => {
         const vuelo = item.vuelo;
         // console.log("vuelo: ", vuelo);
         const pointFeature = item.pointFeature;
         const lineFeature = item.lineFeature;
 
-
+        // console.log("vuelo: ", vuelo);
         const line = lineFeature.getGeometry() as LineString;
         const coordinates = line.getCoordinates();
         // console.log("coordinates: ", coordinates);
@@ -27,9 +30,9 @@ export function updateCoordinates(aeropuertos: Map<String, Aeropuerto>, vuelos: 
         const point = pointFeature.getGeometry() as Point;
         const destinationCoordinates = coordinates[1] as Coordinate;
         const originCoordinates = coordinates[0] as Coordinate;
-        // console.log("currentCoordinate: ", currentCoordinate);
         // console.log("simulationTime: ", simulationTime);
         const tiempoPasadoMinutos = tiempoEntreAhoraYSalida(vuelo, aeropuertos, simulationTime);
+        // console.log("tiempoPasadoMinutos: ", tiempoPasadoMinutos);
 
         const distanciaRecorrida = speed * tiempoPasadoMinutos;
         const ratio = distanciaRecorrida / totalDistance;
@@ -50,9 +53,13 @@ export function updateCoordinates(aeropuertos: Map<String, Aeropuerto>, vuelos: 
         } else {
             point.setCoordinates(newCoordinates);
         }
+        cuenta++;
         // console.log("newCoordinates: ", newCoordinates);
     });
+    // let medirTiempo2 = new Date();
+    // console.log("Tiempo de updateCoordinates: ", medirTiempo2.getTime()-medirTiempo.getTime());
     // console.log("aBorrar: ", aBorrar);
+    console.log("Cuenta: ", cuenta, "Vuelos: ", vuelos.size);
     return aBorrar;
 
 }
@@ -118,3 +125,4 @@ export function crearPuntoDeVuelo(aeropuertos: Map<String, Aeropuerto>, item: an
     feature.setStyle(planeStyle);
     return feature;
 }
+

@@ -80,11 +80,11 @@ public class DatosEnMemoriaService {
             {
                 horaAterrizaje = horaAterrizaje.plusDays(1);
             }
-            // logger.trace("Hora despegue: " + horaDespegue);
-            // logger.trace("Hora aterrizaje: " + horaAterrizaje);
-            // logger.trace("Hora actual: " + horaActual);
+            logger.info("Hora despegue: " + horaDespegue);
+            logger.info("Hora aterrizaje: " + horaAterrizaje);
+            logger.info("Hora actual: " + horaActual);
             if (horaActual.isAfter(horaDespegue) && horaActual.isBefore(horaAterrizaje)) {
-                // logger.trace("Decisión: Vuelo N°" + vuelo.getId() + " en el aire");
+                logger.info("Decisión: Vuelo N°" + vuelo.getId() + " en el aire");
                 vuelosEnElAire.add(vuelo);
             }
         }
@@ -110,15 +110,15 @@ public class DatosEnMemoriaService {
                 {
                     horaAterrizaje = horaAterrizaje.plusDays(1);
                 }
-                // logger.trace("Hora despegue: " + horaDespegue);
-                // logger.trace("Hora aterrizaje: " + horaAterrizaje);
-                // logger.trace("Hora actual: " + horaActual);
+                logger.info("Hora despegue: " + horaDespegue);
+                logger.info("Hora aterrizaje: " + horaAterrizaje);
+                logger.info("Hora actual: " + horaActual);
                 if (horaActual.isAfter(horaDespegue) && horaActual.isBefore(horaAterrizaje)) {
-                    // logger.trace("Decisión: Vuelo N°" + vuelo.getId() + " en el aire");
+                    logger.info("Decisión: Vuelo N°" + vuelo.getId() + " en el aire");
                     vuelosEnElAire.put(vuelo.getId(),vuelo);
                 }
             }
-            // logger.info("Vuelos en el aire: " + vuelosEnElAire.size());
+            logger.info("Vuelos en el aire: " + vuelosEnElAire.size());
             return vuelosEnElAire;
         } catch (Exception e) {
             System.out.println("Error: " + e.getLocalizedMessage());

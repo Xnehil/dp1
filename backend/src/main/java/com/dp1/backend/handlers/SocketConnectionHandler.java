@@ -35,7 +35,8 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 public class SocketConnectionHandler extends TextWebSocketHandler { 
     private static final Logger logger = LogManager.getLogger(SocketConnectionHandler.class);
     private ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
-    private ZonedDateTime lastMessageTime = null;
+    private HashMap<WebSocketSession, ZonedDateTime> lastMessageTimes = new HashMap<>();
+    private HashMap<WebSocketSession, ZonedDateTime> simulatedTimes = new HashMap<>();
     private ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
 
 
@@ -55,6 +56,8 @@ public class SocketConnectionHandler extends TextWebSocketHandler {
         super.afterConnectionEstablished(session); 
         logger.info(session.getId() + "  conectado al socket");
         webSocketSessions.add(session); 
+        lastMessageTimes.put(session, null);
+        simulatedTimes.put(session, null);
     } 
   
     // Cuando el cliente se desconecta del WebSocket, se llama a este método
@@ -64,6 +67,8 @@ public class SocketConnectionHandler extends TextWebSocketHandler {
         super.afterConnectionClosed(session, status); ; 
         logger.info(session.getId() + "  desconectado del socket");
         // Removing the connection info from the list 
+        lastMessageTimes.remove(session);
+        simulatedTimes.remove(session);
         webSocketSessions.remove(session); 
         // executorService.shutdown();
     } 
@@ -86,11 +91,24 @@ public class SocketConnectionHandler extends TextWebSocketHandler {
             String tiempo = message.getPayload().toString().split(": ")[1]; // assuming the message is in the format "tiempo: <time>"
             ZonedDateTime simulatedTime = ZonedDateTime.parse(tiempo);
             simulatedTime= simulatedTime.withZoneSameLocal(ZoneId.of("GMT-5"));
-
+            // simulatedTimes.put(session, simulatedTime);
+            ArrayList<Vuelo> diferenciaVuelos;
+            ZonedDateTime lastMessageTime = lastMessageTimes.get(session);
             // If this is the first received time, store it
             if (lastMessageTime == null) {
                 lastMessageTime = simulatedTime;
                 vuelosEnElAire.put(session, datosEnMemoriaService.getVuelosEnElAireMap(simulatedTime));
+                lastMessageTimes.put(session, lastMessageTime);
+                diferenciaVuelos = new ArrayList<>();
+                for (Vuelo vuelo :  vuelosEnElAire.get(session).values()) {
+                    diferenciaVuelos.add(vuelo);
+                }
+                Map<String, Object> messageMap = new HashMap<>();
+                messageMap.put("metadata", "dataVuelos");
+                messageMap.put("data", diferenciaVuelos);
+                String messageJson = objectMapper.writeValueAsString(messageMap);
+                session.sendMessage(new TextMessage(messageJson));
+                return;
             }
             
             // System.out.println("Last message time: " + lastMessageTime+  " zona horaria: "+lastMessageTime.getZone());
@@ -103,7 +121,7 @@ public class SocketConnectionHandler extends TextWebSocketHandler {
                     // logger.info("15 minute has passed since the last message");
                     HashMap<Integer, Vuelo> nuevosVuelosMap = datosEnMemoriaService.getVuelosEnElAireMap(simulatedTime);
                     //Vuelos nuevos que se han agregado
-                    ArrayList<Vuelo> diferenciaVuelos = new ArrayList<>();
+                    diferenciaVuelos = new ArrayList<>();
                     //Determinar los vuelos nuevos
                     for (Vuelo vuelo :  nuevosVuelosMap.values()) {
                         if(!vuelosEnElAire.get(session).containsKey(vuelo.getId()))
@@ -118,7 +136,7 @@ public class SocketConnectionHandler extends TextWebSocketHandler {
                     String messageJson = objectMapper.writeValueAsString(messageMap);
                     session.sendMessage(new TextMessage(messageJson));
 
-                    lastMessageTime = simulatedTime;
+                    lastMessageTimes.put(session, simulatedTime);
                 }
             } catch (Exception e) {
                 logger.error("Error: " + e.getLocalizedMessage());

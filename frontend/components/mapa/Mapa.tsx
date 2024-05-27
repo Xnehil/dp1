@@ -19,29 +19,29 @@ import { Aeropuerto } from "@/types/Aeropuerto";
 import { coordenadasIniciales, crearLineaDeVuelo, crearPuntoDeVuelo, updateCoordinates } from "@/utils/FuncionesMapa";
 
 type MapaProps = {
-    vuelos: Map<number, { vuelo: Vuelo, pointFeature: any, lineFeature: any}>;
+    vuelos: Map<number, { vuelo: Vuelo, pointFeature: any, lineFeature: any, routeFeature: any }>;
     aeropuertos: Map<string, Aeropuerto>;
     simulationInterval: number;
-    setVuelos: React.Dispatch<React.SetStateAction<Map<number, { vuelo: Vuelo, pointFeature: any, lineFeature: any}>>>;
     horaInicio: Date;
-    websocket: WebSocket | null;
     nuevosVuelos: number[];
+    semaforo: number;
+    setSemaforo: React.Dispatch<React.SetStateAction<number>>;
+    sendMessage: (message: string, keep: boolean) => void;
 };
 
 const Mapa = ({
     vuelos,
     aeropuertos,
     simulationInterval,
-    setVuelos,
     horaInicio = new Date(),
-    websocket,
     nuevosVuelos,
+    semaforo,
+    setSemaforo,
+    sendMessage,
 }: MapaProps) => {
     const mapRef = useRef<OLMap | null>(null);
     const vectorSourceRef = useRef(new VectorSource());
     const [simulationTime, setSimulationTime] = useState(new Date(horaInicio));
-    const [pointFeatures, setPointFeatures] = useState<any[]>([]);
-    const [lineFeatures, setLineFeatures] = useState<any[]>([]);
 
     useEffect(() => {
         if (!mapRef.current) {
@@ -66,11 +66,6 @@ const Mapa = ({
             return;
         }
 
-        //Limpiar el mapa
-        if (mapRef.current.getLayers().getLength() > 1) {
-            mapRef.current.getLayers().removeAt(1);
-        }
-
         let auxLineFeatures: any[] = [];
         vuelos.forEach((item) => {
             const feature = crearLineaDeVuelo(aeropuertos, item);
@@ -78,7 +73,6 @@ const Mapa = ({
             auxLineFeatures.push(feature);
         });
 
-        setLineFeatures(auxLineFeatures);
 
         let auxPointFeatures: any[] = [];
         vuelos.forEach((item) => {
@@ -86,8 +80,6 @@ const Mapa = ({
             item.pointFeature = feature;
             auxPointFeatures.push(feature);
         });
-
-        setPointFeatures(auxPointFeatures);
 
         const aeropuertoFeatures = Array.from(aeropuertos.values()).map(
             (aeropuerto) => {
@@ -101,7 +93,7 @@ const Mapa = ({
                 return feature;
             }
         );
-
+        console.log("Adding # features: ", auxLineFeatures.length, auxPointFeatures.length, aeropuertoFeatures.length);
         vectorSourceRef.current.clear(); // Clear the existing features
         vectorSourceRef.current.addFeatures([
             ...auxLineFeatures,
@@ -114,7 +106,7 @@ const Mapa = ({
         });
 
         mapRef.current.addLayer(vectorLayer);
-    }, [vuelos, aeropuertos, mapRef]);
+    }, [mapRef]);
 
     useEffect(() => {
         const intervalId = setInterval(() => {
@@ -122,18 +114,21 @@ const Mapa = ({
                 (prevSimulationTime) =>new Date(prevSimulationTime.getTime() +simulationInterval * 60 * 1000)
             );
             // console.log("Simulation time: ", simulationTime);
-            if(websocket?.readyState === 1)
-                websocket.send("tiempo: " + simulationTime.toISOString());
+            if(sendMessage) {
+                // console.log("Enviando tiempo: ", simulationTime.toISOString());
+                sendMessage("tiempo: " + simulationTime.toISOString(), true);
+            }
         }, 1000);
 
         // console.log("Updating coordinates con tiempo: ", simulationTime);
 
-        if (pointFeatures.length > 0 && lineFeatures.length > 0) {
+        if (vectorSourceRef.current.getFeatures().length > 0){
             const aBorrar = updateCoordinates(
                 aeropuertos,
                 vuelos,
                 simulationTime
             );
+            console.log("aBorrar: ", aBorrar);
             for (let i = 0; i < aBorrar.length; i++) {
                 const idVuelo = aBorrar[i];
                 const item = vuelos.get(idVuelo);
@@ -142,6 +137,7 @@ const Mapa = ({
                     vectorSourceRef.current.removeFeature(item.lineFeature);
                     item.pointFeature = null;
                     item.lineFeature = null;
+                    item.routeFeature = null;
                     vuelos.delete(idVuelo);
                 }
             }
@@ -152,19 +148,21 @@ const Mapa = ({
     }, [simulationTime, simulationInterval]); 
 
     useEffect(() => {
-        if(nuevosVuelos.length > 0) {
+        if(nuevosVuelos.length > 0 && semaforo > 0) {
+            console.log("Nuevos vuelos: ", nuevosVuelos);
             for (let i = 0; i < nuevosVuelos.length; i++) {
                 const idVuelo = nuevosVuelos[i];
                 const item = vuelos.get(idVuelo);
                 if (item) {
-                    item.pointFeature = crearPuntoDeVuelo(aeropuertos, item, simulationTime);
                     item.lineFeature = crearLineaDeVuelo(aeropuertos, item);
+                    item.pointFeature = crearPuntoDeVuelo(aeropuertos, item, simulationTime);
                     vectorSourceRef.current.addFeature(item.pointFeature);
                     vectorSourceRef.current.addFeature(item.lineFeature);
                 }
             }
+            setSemaforo(semaforo - 1);
         }
-    }), [nuevosVuelos];
+    }), [nuevosVuelos, semaforo];
 
     return <div id="map" style={{ width: "100%", height: "900px" }}></div>;
 };
