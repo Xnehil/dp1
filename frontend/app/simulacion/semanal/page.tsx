@@ -24,7 +24,13 @@ const Page = () => {
     const {sendMessage, lastMessage, readyState, getWebSocket} = useWebSocket('ws://localhost:8080/socket',
     {
         onOpen: () => {
-            sendMessage("tiempo: " + horaInicio.toISOString(), true);
+            let auxHoraInicio :Date = new Date();
+            if (typeof window !== 'undefined') {
+                const params = new URLSearchParams(window.location.search);
+                auxHoraInicio = new Date(params.get('startDate') || new Date());
+            }
+            console.log("Conexión abierta con tiempo: ", auxHoraInicio);
+            sendMessage("tiempo: " + auxHoraInicio.toISOString(), true);
         },
         share: true,
     });
@@ -110,7 +116,7 @@ const Page = () => {
         <>
             {cargado && (
                 <div className="pb-4">
-                    <Mapa vuelos={vuelos} aeropuertos={aeropuertos} simulationInterval={1} horaInicio={horaInicio}
+                    <Mapa vuelos={vuelos} aeropuertos={aeropuertos} simulationInterval={4} horaInicio={horaInicio}
                         nuevosVuelos={nuevosVuelos} semaforo={semaforo} setSemaforo={setSemaforo} sendMessage={sendMessage} />
                     <div ref={bottomRef}></div>
                 </div>

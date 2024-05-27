@@ -84,7 +84,7 @@ public class SocketConnectionHandler extends TextWebSocketHandler {
         // Si el mensaje contiene "tiempo", se imprimirá en el log
         if (message.getPayload().toString().contains("tiempo")) 
         { 
-            logger.trace("Mensaje recibido: " + message.getPayload().toString()); 
+            logger.info("Mensaje recibido: " + message.getPayload().toString()); 
 
             // System.out.println("mensaje recibido: " + message.getPayload().toString());
             // Parse the simulated time from the message
@@ -108,6 +108,7 @@ public class SocketConnectionHandler extends TextWebSocketHandler {
                 messageMap.put("data", diferenciaVuelos);
                 String messageJson = objectMapper.writeValueAsString(messageMap);
                 session.sendMessage(new TextMessage(messageJson));
+                logger.info("Enviando # de vuelos en el aire: inicio" + diferenciaVuelos.size());
                 return;
             }
             
@@ -135,7 +136,7 @@ public class SocketConnectionHandler extends TextWebSocketHandler {
                     messageMap.put("data", diferenciaVuelos);
                     String messageJson = objectMapper.writeValueAsString(messageMap);
                     session.sendMessage(new TextMessage(messageJson));
-
+                    logger.info("Enviando # de vuelos en el aire: " + diferenciaVuelos.size());
                     lastMessageTimes.put(session, simulatedTime);
                 }
             } catch (Exception e) {
