@@ -21,7 +21,7 @@ const Page = () => {
     const [aeropuertos, setAeropuertos] = useState<Map<string, Aeropuerto>>(new Map());
     const [cargado, setCargado] = useState(false);
     const [horaInicio, setHoraInicio] = useState(new Date());
-    const {sendMessage, lastMessage, readyState, getWebSocket} = useWebSocket('ws://localhost:8080/socket',
+    const {sendMessage, lastMessage, readyState, getWebSocket} = useWebSocket(process.env.REACT_APP_WS_URL_BASE+"/socket",
     {
         onOpen: () => {
             let auxHoraInicio :Date = new Date();
