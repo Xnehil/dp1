@@ -28,10 +28,12 @@ jobs:
         echo "https://Xnehil:${GH_PAT}@github.com" > ~/.git-credentials
 
         # Pull latest changes
-        git pull origin main
+        # git pull origin main
+        git pull https://${{ secrets.GH_PAT }}:x-oauth-basic@github.com/Xnehil/dp1.git main
 
         # Build and deploy the backend
         cd backend
+        chmod +x mvnw
         ./mvnw clean package
 
         # Move backend-0.0.1-SNAPSHOT.jar from ~/dp1/backend/target to ~/app 
