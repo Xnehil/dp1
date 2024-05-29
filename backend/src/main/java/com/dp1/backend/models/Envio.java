@@ -39,7 +39,7 @@ public class Envio extends BaseModel {
 
     @Column(name = "cantidad_paquetes")
     private int cantidadPaquetes;
-
+    
     private ArrayList<Paquete> paquetes;
 
 
