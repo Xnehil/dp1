@@ -42,6 +42,7 @@ const Mapa = ({
     const mapRef = useRef<OLMap | null>(null);
     const vectorSourceRef = useRef(new VectorSource());
     const [simulationTime, setSimulationTime] = useState(new Date(horaInicio));
+    const [currentTime, setCurrentTime] = useState(new Date());
 
     useEffect(() => {
         if (!mapRef.current) {
@@ -108,6 +109,17 @@ const Mapa = ({
         mapRef.current.addLayer(vectorLayer);
     }, [mapRef]);
 
+
+    useEffect(() => {
+        const updateTime = () => {
+            setCurrentTime(new Date());
+        };
+
+        const intervalId = setInterval(updateTime, 1000); // Actualiza cada segundo
+
+        return () => clearInterval(intervalId); // Limpiar el intervalo cuando el componente se desmonte
+    }, []);
+
     useEffect(() => {
         const intervalId = setInterval(() => {
             setSimulationTime(
@@ -164,8 +176,15 @@ const Mapa = ({
         }
     }), [nuevosVuelos, semaforo];
 
+    const enviosEnElAire = 1420;
+
     return <div id="map" style={{ width: "100%", height: "900px" }}>  <div>
-    <Leyenda/>
+    <Leyenda
+    vuelosEnTransito= {vuelos.size}
+    enviosEnElAire={enviosEnElAire} 
+    fechaHoraActual={currentTime.toLocaleString()} 
+    fechaHoraSimulada={simulationTime.toLocaleString()}
+    />
     </div>  </div>;
 };
 
