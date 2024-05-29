@@ -28,6 +28,8 @@ spring:
             allowed-methods: "*"
             allowed-headers: "*"
             allow-credentials: true
+        servlet:
+            path: /api
 
 server:
     port: 8081
