@@ -1,0 +1,13 @@
+Iteración	Tiempo de ejecución (ms)	Paquetes entregados	Porcentaje de paquetes entregados
+0	11775	439	85.74%
+1	8687	439	85.74%
+2	9732	431	84.18%
+3	9573	424	82.81%
+4	9374	431	84.18%
+5	8361	425	83.01%
+6	9141	436	85.16%
+7	10739	427	83.40%
+8	10632	424	82.81%
+9	10049	411	80.27%
+
+Promedio			83.73046875%

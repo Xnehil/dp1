@@ -14,7 +14,7 @@ import com.dp1.backend.models.Vuelo;
 
 public class MPAv2 {
     //Marine predator algorithm
-    public static int[] run(HashMap<String, Aeropuerto> aeropuertos, HashMap<Integer, Vuelo> vuelos, HashMap<Integer, Envio> envios,
+    public static int[] run(HashMap<String, Aeropuerto> aeropuertos, HashMap<Integer, Vuelo> vuelos, HashMap<String, Envio> envios,
                                 ArrayList<Paquete> paquetes, int maxIter, int popSize, int tamanioUnaSolucion){
         //La dimensión de la solución
         int dim = paquetes.size()*tamanioUnaSolucion;
@@ -40,7 +40,7 @@ public class MPAv2 {
 
 
         int masApta=0;
-        double FADs =0.2;
+        double FADs =0.3;
 
         for (int i = 0; i < maxIter; i++) {
             // System.out.println("Iteración: " + i);
@@ -80,7 +80,7 @@ public class MPAv2 {
                         Presa[j][k] = (int)Math.round(Presa[j][k] + P*R*stepsize[j][k]);
                     }
                     // Phase 2 (Eqs. 13 & 14)
-                    else if (i > maxIter / 3 && i < 2 * maxIter / 3) {
+                    else if (i > maxIter / 3 && i < 2* maxIter / 3) {
                         if (j < Presa.length / 2) {
                             stepsize[j][k] = levy[k] * (Elite[j][k] - levy[k] * Presa[j][k]);
                             Presa[j][k] = (int)Math.round(Presa[j][k] + P * R * stepsize[j][k]);
@@ -115,7 +115,7 @@ public class MPAv2 {
         return Presa[masApta];
     }
 
-    public static int[] inicializar(int tamanioUnaSolucion, int paquetes, int numVuelos, ArrayList<Paquete> paquetesList, HashMap<Integer, Vuelo> vuelos, HashMap<Integer, Envio> envios, HashMap<String, Aeropuerto> aeropuertos){
+    public static int[] inicializar(int tamanioUnaSolucion, int paquetes, int numVuelos, ArrayList<Paquete> paquetesList, HashMap<Integer, Vuelo> vuelos, HashMap<String, Envio> envios, HashMap<String, Aeropuerto> aeropuertos){
         //Una solución inicial es un arreglo de n*numPaquetes elementos, donde n es el número de aeropuertos
         int max=numVuelos;
         int min=1;
@@ -124,7 +124,7 @@ public class MPAv2 {
             //Cada numAeropuertos elementos corresponden a la ruta de un paquete. El primer elemento de dicha ruta será un vuelo que salga de su ciudad
             //WIP
             // if(i%tamanioUnaSolucion==0){
-            //     inicial[i]=Vuelo.getVueloRandomDesde(vuelos, envios.get(paquetesList.get(i/tamanioUnaSolucion).getIdEnvío()).getOrigen());
+            //     inicial[i]=Vuelo.getVueloRandomDesde(vuelos, envios.get(paquetesList.get(i/tamanioUnaSolucion).getCodigoEnvio()));
             // } else {
             //     inicial[i]=(int)(Math.random()*(max-min+1)+min);
             // }
@@ -136,7 +136,7 @@ public class MPAv2 {
       1 2 4      2 5 1      3 2 1
      */
 
-    public static int solucionMasApta(int[][] poblacion, HashMap<String, Aeropuerto> aeropuertos, HashMap<Integer, Vuelo> vuelos, HashMap<Integer, Envio> envios,
+    public static int solucionMasApta(int[][] poblacion, HashMap<String, Aeropuerto> aeropuertos, HashMap<Integer, Vuelo> vuelos, HashMap<String, Envio> envios,
                                         ArrayList<Paquete> paquetes, double topPredatorFitness, double[][] fitness,int minVuelo, int maxVuelo){
         //Cada fila de población es una solución
         //Cada solución tiene las rutas de todos los paquetes

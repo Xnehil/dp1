@@ -3,15 +3,56 @@ package com.dp1.backend.models;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Random;
 
-public class Vuelo {
-    private int idVuelo;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
+import org.hibernate.annotations.Type;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Index;
+import jakarta.persistence.Table;
+
+
+@Entity
+@Table(name = "plan_vuelo", indexes = {
+    @Index(name = "idx_origen_vuelo", columnList = "origen"),
+})
+@SQLDelete(sql = "UPDATE plan_vuelo SET active = false WHERE id = ?")
+@SQLRestriction(value = "active = true")
+public class Vuelo extends BaseModel {
+    @Column(name="origen")
     private String origen;
+
+    @Column(name="destino")
     private String destino;
+
+    @Column(name="hora_salida")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "UTC")
     private ZonedDateTime fechaHoraSalida;
+    
+    @Column(name="hora_llegada")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "UTC")
     private ZonedDateTime fechaHoraLlegada;
+
+    @Column(name="capacidad")
     private int capacidad;
+
+    @Column(name="cambio_de_dia")
+    private Boolean cambioDeDia;
+
+    @Column(name="duracion_vuelo")
+    private long duracionVuelo;
+
+    @Column(name="distancia_vuelo")
+    private double distanciaVuelo;
+
     private HashMap<LocalDate, Integer> cargaPorDia;
 
     public HashMap<LocalDate,Integer> getCargaPorDia() {
@@ -23,7 +64,23 @@ public class Vuelo {
     }
 
 
-    private Boolean cambioDeDia;
+    public long getDuracionVuelo() {
+        return this.duracionVuelo;
+    }
+
+    public void setDuracionVuelo(long duracionVuelo) {
+        this.duracionVuelo = duracionVuelo;
+    }
+
+    public double getDistanciaVuelo() {
+        return this.distanciaVuelo;
+    }
+
+    public void setDistanciaVuelo(double distanciaVuelo) {
+        this.distanciaVuelo = distanciaVuelo;
+    }
+
+    
 
     public Boolean isCambioDeDia() {
         return this.cambioDeDia;
@@ -37,24 +94,27 @@ public class Vuelo {
         this.cambioDeDia = cambioDeDia;
     }
 
-    public Vuelo(String origen, String destino, ZonedDateTime fechaHoraSalida, ZonedDateTime fechaHoraLlegada, int capacidad) {
+    public Vuelo(String origen, String destino, ZonedDateTime fechaHoraSalida, ZonedDateTime fechaHoraLlegada, int capacidad, double distanciaVuelo) {
         this.origen = origen;
         this.destino = destino;
         this.fechaHoraSalida = fechaHoraSalida;
         this.fechaHoraLlegada = fechaHoraLlegada;
         this.capacidad = capacidad;
         this.cargaPorDia = new HashMap<LocalDate, Integer>();
+        this.distanciaVuelo = distanciaVuelo;
 
         ZonedDateTime auxInicio = fechaHoraSalida;
         ZonedDateTime auxFin = fechaHoraLlegada;
-
         // Cambio de día sucece si la hora de llegada es antes de la hora de salida. Ya se consideran las zonas horarias
-        auxInicio = auxInicio.withZoneSameInstant(auxFin.getZone());
+        // auxInicio = auxInicio.withZoneSameInstant(auxFin.getZone());
         if (auxFin.isBefore(auxInicio)) {
             this.cambioDeDia = true;
         } else {
             this.cambioDeDia = false;
         }
+
+        this.duracionVuelo = Duration.between(fechaHoraSalida, fechaHoraLlegada).toMinutes();
+        if(this.duracionVuelo < 0) this.duracionVuelo = 1440 - (this.duracionVuelo*-1);
     }
 
     public Vuelo() {
@@ -66,13 +126,12 @@ public class Vuelo {
     }
 
     public int getIdVuelo() {
-        return this.idVuelo;
+        return super.getId();
     }
 
     public void setIdVuelo(int idVuelo) {
-        this.idVuelo = idVuelo;
+        super.setId(idVuelo);
     }
-
 
     public String getOrigen() {
         return this.origen;
@@ -114,16 +173,29 @@ public class Vuelo {
         this.capacidad = capacidad;
     }
 
-    public static int getVueloRandomDesde(HashMap<Integer, Vuelo> vuelos, String origen) {
+    public static int getVueloRandomDesde(HashMap<Integer, Vuelo> vuelos, Envio envio) {
         //Devuelve un vuelo aleatorio desde el aeropuerto origen
-        int idVuelo = 0;
+        Random rand = new Random();
+        Vuelo closestFlight = null;
+        Duration smallestDifference = null;
+
         for (Vuelo vuelo : vuelos.values()) {
-            if (vuelo.getOrigen().equals(origen)) {
-                idVuelo = vuelo.getIdVuelo();
-                break;
+            if(vuelo.getOrigen().equals(envio.getOrigen()) && vuelo.getDestino().equals(envio.getDestino())){
+                if (vuelo.getFechaHoraSalida().with(envio.getFechaHoraSalida().toLocalDate()).isAfter(envio.getFechaHoraSalida())) {
+                    Duration difference = Duration.between(envio.getFechaHoraSalida(), vuelo.getFechaHoraSalida());
+                    if (smallestDifference == null || difference.compareTo(smallestDifference) < 0) {
+                        smallestDifference = difference;
+                        closestFlight = vuelo;
+                    }
+                }
             }
         }
-        return idVuelo;
+        int max = vuelos.size();
+        int min = 1;
+        if (closestFlight == null) {
+            return (int)(Math.random()*(max-min+1)+min);
+        }
+        return closestFlight.getIdVuelo();
     }
     public double calcularMinutosDeVuelo() {
         //Calcular la diferencia de tiempo entre la fecha y hora de salida y la fecha y hora de llegada

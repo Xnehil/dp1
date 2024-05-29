@@ -3,14 +3,43 @@ package com.dp1.backend.models;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 
-public class Envio {
-    private int idEnvio;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Index;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name = "envio", indexes = {
+    @Index(name = "idx_envio", columnList = "codigoEnvio"),
+})
+@SQLDelete(sql = "UPDATE envio SET active = false WHERE id = ?")
+@SQLRestriction(value = "active = true")
+public class Envio extends BaseModel {
+    @Column(name = "codigo_envio", nullable = false, unique = true)
+    private String codigoEnvio;
+
+    @Column(name = "origen")
     private String origen;
+
+    @Column(name = "destino")
     private String destino;
+
+    @Column(name = "hora_salida")
     private ZonedDateTime fechaHoraSalida;
+
+    @Column(name = "hora_llegada_prevista")
     private ZonedDateTime fechaHoraLlegadaPrevista;
+
+    @Column(name = "hora_llegada_real")
     private ZonedDateTime fechaHoraLlegadaReal;
+
+    @Column(name = "cantidad_paquetes")
     private int cantidadPaquetes;
+
     private ArrayList<Paquete> paquetes;
 
 
@@ -41,12 +70,22 @@ public class Envio {
     }
 
 
+    public String getCodigoEnvio() {
+        return this.codigoEnvio;
+    }
+
+    public void setCodigoEnvio(String codigoEnvio) {
+        this.codigoEnvio = codigoEnvio;
+    }
+
+
+
     public int getIdEnvio() {
-        return this.idEnvio;
+        return super.getId();
     }
 
     public void setIdEnvio(int idEnvio) {
-        this.idEnvio = idEnvio;
+        super.setId(idEnvio);
     }
 
     public String getOrigen() {
