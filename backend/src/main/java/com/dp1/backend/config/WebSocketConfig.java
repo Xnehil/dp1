@@ -20,7 +20,7 @@ public class WebSocketConfig implements WebSocketConfigurer {
 
     @Override
     public void registerWebSocketHandlers(@NonNull WebSocketHandlerRegistry webSocketHandlerRegistry) {
-        webSocketHandlerRegistry.addHandler(socketConnectionHandler, "/socket")
+        webSocketHandlerRegistry.addHandler(socketConnectionHandler, "/api/socket")
             .setAllowedOrigins("*");
     }
 }
