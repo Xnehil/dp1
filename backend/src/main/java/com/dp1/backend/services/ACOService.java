@@ -34,6 +34,8 @@ public class ACOService {
         logger.info("Vuelos: " + vuelos.size());
         logger.info("Envios: " + envios.size());
         logger.info("Paquetes: " + paquetes.size());
+        
+        
         try {
             // Medit tiempo de ejecución
             Long startTime = System.currentTimeMillis();
