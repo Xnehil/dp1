@@ -10,7 +10,7 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
 
     - name: Set up SSH
       uses: webfactory/ssh-agent@v0.5.3
@@ -18,21 +18,33 @@ jobs:
         ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
     - name: Deploy to server
+      env:
+        GH_PAT: ${{ secrets.GH_PAT }}
       run: |
         ssh -o StrictHostKeyChecking=no inf226.982.2b@inf226-982-2b.inf.pucp.edu.pe 'bash -s' << 'EOF'
-          cd ~/dp1
+        cd ~/dp1
 
-          # Pull latest changes
-          git pull origin main
+        git config --global credential.helper store
+        echo "https://Xnehil:${GH_PAT}@github.com" > ~/.git-credentials
 
-          # Build and deploy the backend
-          cd backend
-          ./mvnw clean package
-          sudo systemctl restart backend.service
+        # Pull latest changes
+        git pull origin main
 
-          # Build and deploy the frontend
-          cd ../frontend
-          npm install
-          npm run build
-          pm2 restart frontend
+        # Build and deploy the backend
+        cd backend
+        ./mvnw clean package
+
+        # Move backend-0.0.1-SNAPSHOT.jar from ~/dp1/backend/target to ~/app 
+        cp target/backend-0.0.1-SNAPSHOT.jar ~/app
+
+        #Rename it to app.jar
+        mv ~/app/backend-0.0.1-SNAPSHOT.jar ~/app/app.jar
+
+        echo "jdKJHWKy" | sudo -S systemctl restart app.service
+
+        # Build and deploy the frontend
+        cd ../frontend
+        npm install
+        npm run build
+        pm2 restart frontend
         EOF
