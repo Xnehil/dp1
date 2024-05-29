@@ -62,12 +62,17 @@ public class ACOService {
         return true;
     }
 
-    private void cargarDatos(HashMap<String, Aeropuerto> aeropuertos, HashMap<Integer, Vuelo> vuelos,
-            HashMap<String, Envio> envios, ArrayList<Paquete> paquetes) {
-        // Ahora mismo está leyendo datos de archivos, pero debería leer de la base de
-        // datos
-        aeropuertos.putAll(FuncionesLectura.leerAeropuertos("data/Aeropuerto.husos.v2.txt"));
-        vuelos.putAll(FuncionesLectura.leerVuelos("data/planes_vuelo.v3.txt", aeropuertos));
+    private void cargarDatos(HashMap<String, Aeropuerto> aeropuertos, HashMap<Integer, Vuelo> vuelos, HashMap<String, Envio> envios, ArrayList<Paquete> paquetes){
+        //Ahora mismo está leyendo datos de archivos, pero debería leer de la base de datos
+        String workingDirectory = System.getProperty("user.dir");
+        if(workingDirectory.trim().equals("/")){
+            workingDirectory = "/home/inf226.982.2b/";
+        } 
+        else{
+            workingDirectory = "";
+        }
+        aeropuertos.putAll(FuncionesLectura.leerAeropuertos(workingDirectory+"data/Aeropuerto.husos.v2.txt"));
+        vuelos.putAll(FuncionesLectura.leerVuelos(workingDirectory+"data/planes_vuelo.v3.txt", aeropuertos));
         String rutaArchivos = "data/pack_enviado_";
         String[] ciudades = { "SKBO", "SEQM", "SUAA", "SCEL", "SABE", "EBCI", "EHAM", "WMKK", "VIDP", "ZBAA" };
         for (int i = 0; i < ciudades.length; i++) {

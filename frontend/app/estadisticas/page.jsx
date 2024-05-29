@@ -1,7 +1,9 @@
-export default function Page (){
+import Leyenda from "@/components/mapa/Leyenda";
 
-
-    return (
-        <p>ESTADISTICAS</p>
-    );
+export default function Page() {
+  return (
+    <div>
+        <Leyenda/>
+    </div>
+  );
 }

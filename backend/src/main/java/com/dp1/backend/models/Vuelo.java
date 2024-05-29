@@ -11,6 +11,8 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.Type;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
@@ -32,9 +34,11 @@ public class Vuelo extends BaseModel {
     private String destino;
 
     @Column(name="hora_salida")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "UTC")
     private ZonedDateTime fechaHoraSalida;
     
     @Column(name="hora_llegada")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "UTC")
     private ZonedDateTime fechaHoraLlegada;
 
     @Column(name="capacidad")
