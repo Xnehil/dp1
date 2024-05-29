@@ -33,6 +33,7 @@ jobs:
 
         # Build and deploy the backend
         cd backend
+        chmod +x mvnw
         ./mvnw clean package
 
         # Move backend-0.0.1-SNAPSHOT.jar from ~/dp1/backend/target to ~/app 
