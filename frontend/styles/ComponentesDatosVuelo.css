@@ -1,0 +1,179 @@
+.datos-vuelo-contenedor {
+    background-color: white;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+    box-shadow: 0 0px 0px rgba(0, 0, 0, 0.1);
+    transition: transform 0.5s ease, opacity 0.5s ease;
+    transform: translateX(-100%);
+    opacity: 0;
+    display: flex;
+    flex: 1;
+  }
+
+.datos-vuelo-contenedor.visible {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.datos-vuelo-contenedor.hidden {
+    transform: translateY(100%);
+    opacity: 0;
+}
+
+.datos-vuelo-header {
+    display: flex;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid #ccc;
+}
+
+.icono-vuelo {
+    width: 50px;
+    height: 50px;
+    margin-right: 20px;
+}
+
+.datos-vuelo-info {
+    flex: 1;
+}
+
+.vuelo-codigo {
+    color: #59C3C3;
+    margin: 0;
+}
+
+.vuelo-horario {
+    margin: 5px 0;
+}
+
+.datos-vuelo-capacidad {
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.icono-paquete {
+    width: 30px;
+    height: 30px;
+    margin-top: 10px;
+}
+
+.datos-vuelo-busqueda {
+    display: flex;
+    padding: 10px 20px;
+    border-bottom: 1px solid #ccc;
+    
+}
+
+.input-busqueda {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-right: 10px;
+    font-size: 12px;
+    
+}
+
+.boton-busqueda {
+    background-color: #59C3C3;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    flex: 0;
+    
+}
+
+.datos-vuelo-tabla {
+    flex: 1;
+    overflow-y: auto;
+    padding-left: 4%;
+    padding-right: 4%;
+    
+}
+
+.datos-vuelo-tabla table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.datos-vuelo-tabla th {
+    background-color: #52489C;
+    color: white;
+    padding: 10px;
+    position: sticky;
+    top: 0;
+}
+
+.datos-vuelo-tabla td {
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+}
+
+.toggle-button-datos-vuelo {
+    background-color: #fff;
+    border-radius: 50% 50% 0 0;
+    width: 60px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: black;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    margin: 0px;
+}
+
+.toggle-button-datos-vuelo:hover{
+    transform: scale(1.1);
+}
+
+.datos-vuelo-contenedor.hidden + .toggle-button-datos-vuelo{
+    transform: translateX(-100%);
+    transition: transform 0.5s ease, opacity 0.5s ease;
+}
+
+.datos-vuelo-contenedor.hidden + .toggle-button-datos-vuelo:hover{
+    transform: translate(-100%) scale(1.1);
+    transition: transform 0.3s ease;
+}
+
+.datos-vuelo-contenedor.visible + .toggle-button-datos-vuelo{
+    margin-left: -1px; /**/
+    transform: translateX(0);
+    transition: transform 0.5s ease, opacity 0.5s ease;
+}
+
+.datos-vuelo-contenedor.visible + .toggle-button-datos-vuelo:hover{
+    transform: translateX(0) scale(1.1);
+    transition: transform 0.3s ease;
+}
+
+
+
+.datos-vuelo-content {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+
+.datos-vuelo-busqueda {
+    display: flex;
+    padding: 10px 20px;
+    border-bottom: 1px solid #ccc;
+    flex-shrink: 0;
+}
+
+.datos-vuelo-wrapper {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 10;
+}

@@ -1,20 +1,16 @@
-.info-vuelos-wrapper {
-    position: fixed;
-    top: 100px; /* Ajusta esto según la altura de tu navbar */
-    left: 20px;
-    display: flex;
-    align-items: center;
-}
-
 .info-vuelos-contenedor {
     width: 300px;
     background-color: white;
     padding: 20px;
-    border-radius: 10px;
+    border-bottom-right-radius: 15px;
+    border-top-right-radius: 15px;
     box-shadow: 0 0px 0px rgba(0, 0, 0, 0.1);
-    transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
+    transition: transform 0.5s ease, opacity 0.5s ease;
     transform: translateX(0);
     opacity: 0;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
 }
 
 .info-vuelos-contenedor.visible {
@@ -23,7 +19,7 @@
 }
 
 .info-vuelos-contenedor.hidden {
-    transform: translateX(1);
+    transform: translateX(-100%);
     opacity: 0;
   }
 
@@ -123,7 +119,6 @@
 
 .toggle-button {
     background-color: #fff;
-    border: 0px solid #ccc;
     border-radius: 0 50% 50% 0;
     width: 30px;
     height: 60px;
@@ -131,8 +126,9 @@
     align-items: center;
     justify-content: center;
     cursor: pointer;
+    color: black;
     box-shadow: 0 0px 0px rgba(0, 0, 0, 0.1);
-    margin-left: -20px; /**/
+    margin: 0px; /**/
     transition: transform 0.3s ease;
     z-index: 9;
 }
@@ -141,11 +137,6 @@
     transform: scale(1.1);
 }
 
-.info-vuelos-contenedor.visible + .toggle-button {
-    margin-left: 10px;
-}
-
-
 .info-vuelos-contenedor.hidden + .toggle-button {
     
     transform: translateX(-100%);
@@ -153,7 +144,7 @@
 }
 
 .info-vuelos-contenedor.hidden + .toggle-button:hover {
-    transform: translateX(-100%) scale(1.1);
+    transform: translate(-100%) scale(1.1);
     transition: transform 0.3s ease;
 }
 
@@ -175,4 +166,5 @@
     z-index: 10;
     display: flex;
     align-items: center;
+    flex-direction: row;
 }

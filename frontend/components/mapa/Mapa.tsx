@@ -1,5 +1,6 @@
 "use client";
 import Leyenda from "@/components/mapa/Leyenda";
+import DatosVuelo  from "@/components/mapa/DatosVuelo";
 import React, { useEffect, useRef, useState } from "react";
 import "ol/ol.css";
 import { Map as OLMap } from "ol";
@@ -180,11 +181,12 @@ const Mapa = ({
 
     return <div id="map" style={{ width: "100%", height: "900px" }}>  <div>
     <Leyenda
-    vuelosEnTransito= {vuelos.size}
-    enviosEnElAire={enviosEnElAire} 
-    fechaHoraActual={currentTime.toLocaleString()} 
-    fechaHoraSimulada={simulationTime.toLocaleString()}
+        vuelosEnTransito= {vuelos.size}
+        enviosEnElAire={enviosEnElAire} 
+        fechaHoraActual={currentTime.toLocaleString()} 
+        fechaHoraSimulada={simulationTime.toLocaleString()}
     />
+    <DatosVuelo />
     </div>  </div>;
 };
 
