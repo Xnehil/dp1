@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dp1.backend.services.ACOService;
+import java.time.ZonedDateTime;
 
 @RestController
 @RequestMapping("/aco")
@@ -15,5 +16,10 @@ public class ACOController {
 
     public ACOController(ACOService acoService) {
         this.acoService = acoService;
+    }
+
+    @GetMapping("/ejecutar")
+    public boolean ejecutarAco() {
+        return acoService.ejecutarAco(ZonedDateTime.now());
     }
 }

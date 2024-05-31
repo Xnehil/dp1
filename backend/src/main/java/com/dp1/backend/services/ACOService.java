@@ -23,13 +23,16 @@ public class ACOService {
     private static final Logger logger = LogManager.getLogger(ACOService.class);
     private ArrayList<Paquete> paquetes = new ArrayList<Paquete>();
 
+    @Autowired  
+    private DatosEnMemoriaService datosEnMemoriaService;
+
     public boolean ejecutarAco(ZonedDateTime horaActual) {
         paquetes.clear();
 
         HashMap<String, Aeropuerto> aeropuertos = new HashMap<String, Aeropuerto>();
         HashMap<Integer, Vuelo> vuelos = new HashMap<Integer, Vuelo>();
         HashMap<String, Envio> envios = new HashMap<String, Envio>();
-        cargarDatosV2(aeropuertos, vuelos, envios, paquetes, horaActual);
+        cargarDatos(aeropuertos, vuelos, envios, paquetes);
         // Imprimir datos
         logger.info("Ejecutando ACO para: ");
         logger.info("Aeropuertos: " + aeropuertos.size());
@@ -44,7 +47,11 @@ public class ACOService {
             Long endTime = System.currentTimeMillis();
             Long totalTime = endTime - startTime;
             logger.info("Tiempo de ejecución: " + totalTime + " ms");
-            int paquetesEntregados = Auxiliares.verificacionTotalPaquetes(aeropuertos, vuelos, envios, paquetes);
+            int rutasAntes = datosEnMemoriaService.getRutasPosiblesSet().size();
+            int paquetesEntregados = Auxiliares.verificacionTotalPaquetes(aeropuertos, vuelos, envios, paquetes, datosEnMemoriaService);
+            int rutasDespues = datosEnMemoriaService.getRutasPosiblesSet().size();
+            // logger.info("Rutas antes: " + rutasAntes);
+            // logger.info("Rutas después: " + rutasDespues);
             logger.info("Paquetes entregados con función André: " + paquetesEntregados);
 
         } catch (Exception e) {

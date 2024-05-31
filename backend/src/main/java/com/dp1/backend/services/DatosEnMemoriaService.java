@@ -34,6 +34,32 @@ public class DatosEnMemoriaService {
     private HashMap<String, ColeccionRuta> rutasPosibles = new HashMap<>();
     private HashSet<String> rutasPosiblesSet = new HashSet<>();
 
+
+    public HashSet<String> getRutasPosiblesSet() {
+        return this.rutasPosiblesSet;
+    }
+
+    public void setRutasPosiblesSet(HashSet<String> rutasPosiblesSet) {
+        this.rutasPosiblesSet = rutasPosiblesSet;
+    }
+
+    public String getWorkingDirectory() {
+        return this.workingDirectory;
+    }
+
+    public void setWorkingDirectory(String workingDirectory) {
+        this.workingDirectory = workingDirectory;
+    }
+
+    public ColeccionRutaService getColeccionRutaService() {
+        return this.coleccionRutaService;
+    }
+
+    public void setColeccionRutaService(ColeccionRutaService coleccionRutaService) {
+        this.coleccionRutaService = coleccionRutaService;
+    }
+
+
     private final static Logger logger = LogManager.getLogger(DatosEnMemoriaService.class);
     private String workingDirectory = System.getProperty("user.dir");
 
@@ -230,18 +256,20 @@ public class DatosEnMemoriaService {
             rp.setFlights(paquete.getRuta());
             cr.getRutasPosibles().add(rp);
             rutasPosibles.put(llave, cr);
+            // logger.info("Ruta creada: " + llave);
         }
         RutaPosible rp = new RutaPosible();
         rp.setColeccionRuta(cr);
         rp.setFlights(paquete.getRuta());
         cr.getRutasPosibles().add(rp);
+        // logger.info("Ruta agregada en: " + llave+ " con "+rp.getFlights().size()+" vuelos");
 
         String llave2 = envio.getOrigen()+envio.getDestino();
         for (int i: paquete.getRuta()) {
             llave2 += "-"+i;
         }
         rutasPosiblesSet.add(llave2);
-
+        // logger.info("Ruta agregada en set: " + llave2);
         //Guardado en base de datos
     }
 
