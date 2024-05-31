@@ -14,6 +14,7 @@ import com.dp1.backend.models.Aeropuerto;
 import com.dp1.backend.models.Envio;
 import com.dp1.backend.models.Paquete;
 import com.dp1.backend.models.Vuelo;
+import com.dp1.backend.models.Ruta;
 import com.dp1.backend.utils.ACO;
 import com.dp1.backend.utils.Auxiliares;
 import com.dp1.backend.utils.FuncionesLectura;
@@ -54,10 +55,12 @@ public class ACOService {
 
     }
 
-    public boolean guardarRutas() {
-        try {
-            // To do fátima
-        } catch (Exception e) {
+    public boolean guardarRutas(){
+        HashMap<String, Ruta> rutas = new HashMap<String, Ruta>();
+        try{
+            //To do fátima
+        }
+        catch(Exception e){
             logger.error("Error en guardarRutas: " + e.getMessage());
             return false;
         }
