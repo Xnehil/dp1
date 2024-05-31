@@ -2,6 +2,7 @@ package com.dp1.backend.utils;
 
 import org.apache.commons.math3.distribution.NormalDistribution;
 import org.apache.commons.math3.special.Gamma;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -14,8 +15,12 @@ import com.dp1.backend.models.Aeropuerto;
 import com.dp1.backend.models.Envio;
 import com.dp1.backend.models.Paquete;
 import com.dp1.backend.models.Vuelo;
+import com.dp1.backend.services.DatosEnMemoriaService;
 
 public class Auxiliares {
+    @Autowired
+    private static DatosEnMemoriaService datosEnMemoriaService;
+
     public static double[] levy(int n, double beta) {
         double num = Gamma.gamma(1 + beta) * Math.sin(Math.PI * beta / 2);
         double den = Gamma.gamma((1 + beta) / 2) * beta * Math.pow(2, (beta - 1) / 2);
@@ -446,6 +451,7 @@ public class Auxiliares {
             // Asignar solución a paquete
             Paquete paquete = paquetes.get(j);
             paquete.setRuta(solucionPaquete);
+            
             esSolucionValida = solucionValidav2(aeropuertos, vuelos, envios, paquete, false);
             if (esSolucionValida) {
                 paquetesEntregados++;
@@ -484,9 +490,17 @@ public class Auxiliares {
         // Verifico todos los paquetes
         for (int j = 0; j < n; j++) {
             // Asignar solución a paquete
-            Paquete paquete = paquetes.get(j);
+            Paquete paquete = paquetes.get(j);  
             esSolucionValida = solucionValidav2(aeropuertos, vuelos, envios, paquete, false);
             if (esSolucionValida) {
+                Envio envio = envios.get(paquete.getCodigoEnvio());
+                String cadenaABuscar=envio.getOrigen()+envio.getDestino();
+                for (int i: paquete.getRuta()){
+                    cadenaABuscar+=("-"+i);
+                }
+                if(!datosEnMemoriaService.seTieneruta(cadenaABuscar)){
+                    datosEnMemoriaService.insertarRuta(envio, paquete);
+                }
                 paquetesEntregados++;
             }
         }

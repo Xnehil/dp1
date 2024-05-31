@@ -16,9 +16,4 @@ public class ACOController {
     public ACOController(ACOService acoService) {
         this.acoService = acoService;
     }
-
-    @GetMapping("/ejecutar")
-    public boolean ejecutarAco() {
-        return acoService.ejecutarAco();
-    }
 }

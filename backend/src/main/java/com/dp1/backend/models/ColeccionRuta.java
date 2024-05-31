@@ -5,11 +5,13 @@ import com.dp1.backend.models.Aeropuerto;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Index;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.SQLDelete;
@@ -26,8 +28,8 @@ public class ColeccionRuta extends BaseModel  {
     //CodigoCiudadOrigen-CodigoCiudadDestino
 
     //Una ruta puede tener varias alternativas 
-    @OneToMany(mappedBy = "coleccionRuta",  cascade = CascadeType.ALL, orphanRemoval = true)
-    private ArrayList<RutaPosible> rutasPosibles;
+    @OneToMany(mappedBy = "coleccionRuta",  cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    private List<RutaPosible>  rutasPosibles;
 
 
     public String getCodigoRuta() {
@@ -38,11 +40,11 @@ public class ColeccionRuta extends BaseModel  {
         this.codigoRuta = codigoRuta;
     }
 
-    public ArrayList<RutaPosible> getRutasPosibles() {
+    public List<RutaPosible> getRutasPosibles() {
         return this.rutasPosibles;
     }
 
-    public void setRutasPosibles(ArrayList<RutaPosible> rutasPosibles) {
+    public void setRutasPosibles(List<RutaPosible> rutasPosibles) {
         this.rutasPosibles = rutasPosibles;
     }
 }

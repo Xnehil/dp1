@@ -4,6 +4,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -14,15 +15,25 @@ import org.springframework.stereotype.Service;
 
 import com.dp1.backend.models.Aeropuerto;
 import com.dp1.backend.models.ColeccionRuta;
+import com.dp1.backend.models.Envio;
+import com.dp1.backend.models.Paquete;
 import com.dp1.backend.models.RutaPosible;
 import com.dp1.backend.models.Vuelo;
 import com.dp1.backend.utils.FuncionesLectura;
+
+import jakarta.annotation.PostConstruct;
+import jakarta.transaction.Transactional;
 
 @Service
 public class DatosEnMemoriaService {
     private HashMap<String, Aeropuerto> aeropuertos = new HashMap<>();
     private HashMap<Integer, Vuelo> vuelos = new HashMap<>();
     private HashMap<String, ArrayList<Integer>> salidasPorHora = new HashMap<>();
+
+    //Mapas para rutas
+    private HashMap<String, ColeccionRuta> rutasPosibles = new HashMap<>();
+    private HashSet<String> rutasPosiblesSet = new HashSet<>();
+
     private final static Logger logger = LogManager.getLogger(DatosEnMemoriaService.class);
     private String workingDirectory = System.getProperty("user.dir");
 
@@ -52,23 +63,58 @@ public class DatosEnMemoriaService {
                 salidasPorHora.put(cadenaIndex, vuelosEnHora);
             }
         }
+    }
 
-        RutaPosible rt1 = new RutaPosible();
-        rt1.setFlights(new ArrayList<Integer>());
-        rt1.getFlights().add(2);
-        rt1.getFlights().add(3);
-        RutaPosible rt2 = new RutaPosible();
-        rt2.setFlights(new ArrayList<Integer>());
-        rt2.getFlights().add(4);
-        rt2.getFlights().add(5);
-        ColeccionRuta cr = new ColeccionRuta();
-        cr.setRutasPosibles(new ArrayList<RutaPosible>());
-        cr.getRutasPosibles().add(rt1);
-        cr.getRutasPosibles().add(rt2);
-        cr.setCodigoRuta("SKBO-SKDI");
-        logger.info("Rutas posibles: " + cr.getRutasPosibles().size());
+    @PostConstruct
+    @Transactional
+    public void init(){
+        // RutaPosible rt1 = new RutaPosible();
+        // rt1.setFlights(new ArrayList<Integer>());
+        // rt1.getFlights().add(2);
+        // rt1.getFlights().add(3);
+        // RutaPosible rt2 = new RutaPosible();
+        // rt2.setFlights(new ArrayList<Integer>());
+        // rt2.getFlights().add(4);
+        // rt2.getFlights().add(5);
+        // ColeccionRuta cr = new ColeccionRuta();
+        // cr.setRutasPosibles(new ArrayList<RutaPosible>());
+        // cr.getRutasPosibles().add(rt1);
+        // cr.getRutasPosibles().add(rt2);
+        // cr.setCodigoRuta("SKBOSKDI");
+        // rt1.setColeccionRuta(cr);
+        // rt2.setColeccionRuta(cr);
+        // logger.info("Rutas posibles: " + cr.getRutasPosibles().size());
+        // try {
+        //     coleccionRutaService.createColeccionRuta(cr);
+        // } catch (Exception e) {
+        //     logger.error("Error al crear la colección de rutas: " + e.getLocalizedMessage());
+        // }
+        coleccionRutaService.getAllColeccionRutas().forEach(cr -> {
+            rutasPosibles.put(cr.getCodigoRuta(), cr);
+            String ruta = cr.getCodigoRuta();
+            for (RutaPosible rp : cr.getRutasPosibles()) {
+                String sucesionVuelos = "";
+                for (Integer vueloId : rp.getFlights()) {
+                    sucesionVuelos += ("-"+vueloId);
+                }
+                ruta += sucesionVuelos;
+                if (!rutasPosiblesSet.contains(ruta)) {
+                    rutasPosiblesSet.add(ruta);
+                }
+            }
+        });
 
-        coleccionRutaService.createColeccionRuta(cr);
+        logger.info("Rutas posibles: " + rutasPosibles.size());
+        logger.info("Rutas posibles set: " + rutasPosiblesSet.size());
+        // for (ColeccionRuta cr : rutasPosibles.values()) {
+        //     logger.info("Ruta: " + cr.getCodigoRuta());
+        //     for (RutaPosible rp : cr.getRutasPosibles()) {
+        //         logger.info("Ruta posible: " + rp.getFlights().size());
+        //         for (Integer vueloId : rp.getFlights()) {
+        //             logger.info("Vuelo: " + vueloId);
+        //         }
+        //     }
+        // }
     }
 
 
@@ -158,6 +204,48 @@ public class DatosEnMemoriaService {
             return null;
         }
     }
+
+
+    public HashMap<String,ColeccionRuta> getRutasPosibles() {
+        return this.rutasPosibles;
+    }
+
+    public void setRutasPosibles(HashMap<String,ColeccionRuta> rutasPosibles) {
+        this.rutasPosibles = rutasPosibles;
+    }
+
+    public boolean seTieneruta(String ruta){
+        return rutasPosiblesSet.contains(ruta);
+    }
+
+    public void insertarRuta(Envio envio, Paquete paquete){
+        String llave = envio.getOrigen()+envio.getDestino();
+        ColeccionRuta cr = rutasPosibles.get(llave);
+        if(cr == null){
+            cr = new ColeccionRuta();
+            cr.setCodigoRuta(llave);
+            cr.setRutasPosibles(new ArrayList<RutaPosible>());
+            RutaPosible rp = new RutaPosible();
+            rp.setColeccionRuta(cr);
+            rp.setFlights(paquete.getRuta());
+            cr.getRutasPosibles().add(rp);
+            rutasPosibles.put(llave, cr);
+        }
+        RutaPosible rp = new RutaPosible();
+        rp.setColeccionRuta(cr);
+        rp.setFlights(paquete.getRuta());
+        cr.getRutasPosibles().add(rp);
+
+        String llave2 = envio.getOrigen()+envio.getDestino();
+        for (int i: paquete.getRuta()) {
+            llave2 += "-"+i;
+        }
+        rutasPosiblesSet.add(llave2);
+
+        //Guardado en base de datos
+    }
+
+
 
     
 }

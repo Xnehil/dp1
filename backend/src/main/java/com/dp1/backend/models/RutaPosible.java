@@ -1,6 +1,7 @@
 package com.dp1.backend.models;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
@@ -9,19 +10,21 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OrderColumn;
 import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "ruta_posible")
 public class RutaPosible extends BaseModel{
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "id_coleccion_ruta")
     private ColeccionRuta coleccionRuta;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "ruta_vuelos", joinColumns = @JoinColumn(name = "ruta_posible_id"))
     @Column(name = "id_vuelo")
-    private ArrayList<Integer> flights;
+    @OrderColumn(name = "vuelo_index")
+    private List<Integer> flights;
 
 
     public ColeccionRuta getColeccionRuta() {
@@ -32,7 +35,7 @@ public class RutaPosible extends BaseModel{
         this.coleccionRuta = coleccionRuta;
     }
 
-    public ArrayList<Integer> getFlights() {
+    public List<Integer> getFlights() {
         return this.flights;
     }
 

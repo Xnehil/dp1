@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 
 @RestController
-@RequestMapping("/aeropuerto")
+@RequestMapping("/coleccionRuta")
 public class ColeccionRutaController {
     @Autowired
     private ColeccionRutaService rutaService;

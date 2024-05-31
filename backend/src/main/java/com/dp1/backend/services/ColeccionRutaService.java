@@ -2,6 +2,8 @@ package com.dp1.backend.services;
 
 import java.util.ArrayList;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -10,14 +12,18 @@ import com.dp1.backend.repository.ColeccionRutaRepository;
 
 @Service
 public class ColeccionRutaService {
+    private static final Logger logger = LogManager.getLogger(ColeccionRutaService.class);
+
     @Autowired
     private ColeccionRutaRepository rutaRepository;
 
     public ColeccionRuta createColeccionRuta(ColeccionRuta ruta)
     {
         try {
+
             return rutaRepository.save(ruta);
         } catch (Exception e) {
+            logger.error(e.getLocalizedMessage());
             return null;
         }
     }
