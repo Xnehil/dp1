@@ -9,9 +9,12 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.dp1.backend.models.Aeropuerto;
+import com.dp1.backend.models.ColeccionRuta;
+import com.dp1.backend.models.RutaPosible;
 import com.dp1.backend.models.Vuelo;
 import com.dp1.backend.utils.FuncionesLectura;
 
@@ -22,6 +25,9 @@ public class DatosEnMemoriaService {
     private HashMap<String, ArrayList<Integer>> salidasPorHora = new HashMap<>();
     private final static Logger logger = LogManager.getLogger(DatosEnMemoriaService.class);
     private String workingDirectory = System.getProperty("user.dir");
+
+    @Autowired 
+    private ColeccionRutaService coleccionRutaService;
 
     public DatosEnMemoriaService() {
         logger.info("Inicializando DatosEnMemoriaService con working directory: " + workingDirectory);
@@ -46,6 +52,23 @@ public class DatosEnMemoriaService {
                 salidasPorHora.put(cadenaIndex, vuelosEnHora);
             }
         }
+
+        RutaPosible rt1 = new RutaPosible();
+        rt1.setFlights(new ArrayList<Integer>());
+        rt1.getFlights().add(2);
+        rt1.getFlights().add(3);
+        RutaPosible rt2 = new RutaPosible();
+        rt2.setFlights(new ArrayList<Integer>());
+        rt2.getFlights().add(4);
+        rt2.getFlights().add(5);
+        ColeccionRuta cr = new ColeccionRuta();
+        cr.setRutasPosibles(new ArrayList<RutaPosible>());
+        cr.getRutasPosibles().add(rt1);
+        cr.getRutasPosibles().add(rt2);
+        cr.setCodigoRuta("SKBO-SKDI");
+        logger.info("Rutas posibles: " + cr.getRutasPosibles().size());
+
+        coleccionRutaService.createColeccionRuta(cr);
     }
 
 

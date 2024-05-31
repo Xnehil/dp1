@@ -14,6 +14,7 @@ import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.OrderColumn;
 import jakarta.persistence.Table;
 
@@ -41,6 +42,9 @@ public class Paquete extends BaseModel{
     @Column(name = "ruta_point")
     @OrderColumn(name = "ruta_index")  // Changed from "index" to "ruta_index"
     private ArrayList<Integer> ruta;
+
+    @Column(name = "id_ruta")
+    private int idRutaPosible;
 
     //Tiempo restante para que el paquete llegue a su destino
     private Duration tiempoRestanteDinamico;

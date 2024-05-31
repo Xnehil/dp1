@@ -33,7 +33,7 @@ public class ColeccionRutaController {
 
     @GetMapping("/{id}")
     public ColeccionRuta getRuta(@PathVariable(name = "id", required = true) int id) {
-        return rutaService.getRuta(id);
+        return rutaService.getColeccionRuta(id);
     }
 
     @GetMapping()
@@ -43,17 +43,17 @@ public class ColeccionRutaController {
 
     @PostMapping
     public ColeccionRuta createRuta(@RequestBody ColeccionRuta ruta) {
-        return rutaService.createRuta(ruta);
+        return rutaService.createColeccionRuta(ruta);
     }
 
     @PutMapping
     public ColeccionRuta updateRuta(@RequestBody ColeccionRuta ruta) {
-        return rutaService.updateRuta(ruta);
+        return rutaService.updateColeccionRuta(ruta);
     }
 
     @DeleteMapping("/{id}")
     public String deleteRuta(@PathVariable(name = "id", required = true) int id) {
-        return rutaService.deleteRuta(id);
+        return rutaService.deleteColeccionRuta(id);
     }
     
     
