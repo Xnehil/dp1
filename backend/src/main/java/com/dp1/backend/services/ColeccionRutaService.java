@@ -13,7 +13,7 @@ public class ColeccionRutaService {
     @Autowired
     private ColeccionRutaRepository rutaRepository;
 
-    public ColeccionRuta createRuta(ColeccionRuta ruta)
+    public ColeccionRuta createColeccionRuta(ColeccionRuta ruta)
     {
         try {
             return rutaRepository.save(ruta);
@@ -22,7 +22,7 @@ public class ColeccionRutaService {
         }
     }
 
-    public ColeccionRuta getRuta(int id)
+    public ColeccionRuta getColeccionRuta(int id)
     {
         try {
             return rutaRepository.findById(id).get();
@@ -31,7 +31,7 @@ public class ColeccionRutaService {
         }
     }
 
-    public ColeccionRuta updateRuta(ColeccionRuta ruta){
+    public ColeccionRuta updateColeccionRuta(ColeccionRuta ruta){
         try {
             if (ruta == null)
             {
@@ -43,7 +43,7 @@ public class ColeccionRutaService {
         }
     }
 
-    public String deleteRuta(int id){
+    public String deleteColeccionRuta(int id){
         try {
             ColeccionRuta ruta = rutaRepository.findById(id).get();
             if (ruta != null) {
