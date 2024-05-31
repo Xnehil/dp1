@@ -257,12 +257,14 @@ public class DatosEnMemoriaService {
             cr.getRutasPosibles().add(rp);
             rutasPosibles.put(llave, cr);
             // logger.info("Ruta creada: " + llave);
+            //Guardar cr en bd
         }
         RutaPosible rp = new RutaPosible();
         rp.setColeccionRuta(cr);
         rp.setFlights(paquete.getRuta());
         cr.getRutasPosibles().add(rp);
-        // logger.info("Ruta agregada en: " + llave+ " con "+rp.getFlights().size()+" vuelos");
+        //Guardarías rp en bd
+
 
         String llave2 = envio.getOrigen()+envio.getDestino();
         for (int i: paquete.getRuta()) {
@@ -270,7 +272,8 @@ public class DatosEnMemoriaService {
         }
         rutasPosiblesSet.add(llave2);
         // logger.info("Ruta agregada en set: " + llave2);
-        //Guardado en base de datos
+
+        //
     }
 
 
