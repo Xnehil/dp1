@@ -14,7 +14,7 @@ import com.dp1.backend.models.Aeropuerto;
 import com.dp1.backend.models.Envio;
 import com.dp1.backend.models.Paquete;
 import com.dp1.backend.models.Vuelo;
-import com.dp1.backend.models.Ruta;
+import com.dp1.backend.models.ColeccionRuta;
 import com.dp1.backend.utils.ACO;
 import com.dp1.backend.utils.Auxiliares;
 import com.dp1.backend.utils.FuncionesLectura;
@@ -56,7 +56,7 @@ public class ACOService {
     }
 
     public boolean guardarRutas(){
-        HashMap<String, Ruta> rutas = new HashMap<String, Ruta>();
+        HashMap<String, ColeccionRuta> rutas = new HashMap<String, ColeccionRuta>();
         try{
             //To do fátima
         }

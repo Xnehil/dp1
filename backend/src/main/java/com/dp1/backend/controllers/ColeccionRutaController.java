@@ -2,8 +2,8 @@ package com.dp1.backend.controllers;
 
 import org.springframework.web.bind.annotation.RestController;
 
-import com.dp1.backend.models.Ruta;
-import com.dp1.backend.services.RutaService;
+import com.dp1.backend.models.ColeccionRuta;
+import com.dp1.backend.services.ColeccionRutaService;
 
 import java.util.ArrayList;
 
@@ -23,31 +23,31 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 @RequestMapping("/aeropuerto")
-public class RutaController {
+public class ColeccionRutaController {
     @Autowired
-    private RutaService rutaService;
+    private ColeccionRutaService rutaService;
     
-    public RutaController(RutaService rutaService) {
+    public ColeccionRutaController(ColeccionRutaService rutaService) {
         this.rutaService = rutaService;
     }
 
     @GetMapping("/{id}")
-    public Ruta getRuta(@PathVariable(name = "id", required = true) int id) {
+    public ColeccionRuta getRuta(@PathVariable(name = "id", required = true) int id) {
         return rutaService.getRuta(id);
     }
 
     @GetMapping()
-    public ArrayList<Ruta> getRutas() {
-        return rutaService.getRutas();
+    public ArrayList<ColeccionRuta> getRutas() {
+        return rutaService.getAllColeccionRutas();
     }
 
     @PostMapping
-    public Ruta createRuta(@RequestBody Ruta ruta) {
+    public ColeccionRuta createRuta(@RequestBody ColeccionRuta ruta) {
         return rutaService.createRuta(ruta);
     }
 
     @PutMapping
-    public Ruta updateRuta(@RequestBody Ruta ruta) {
+    public ColeccionRuta updateRuta(@RequestBody ColeccionRuta ruta) {
         return rutaService.updateRuta(ruta);
     }
 

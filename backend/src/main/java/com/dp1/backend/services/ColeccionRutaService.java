@@ -5,15 +5,15 @@ import java.util.ArrayList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.dp1.backend.models.Ruta;
-import com.dp1.backend.repository.RutaRepository;
+import com.dp1.backend.models.ColeccionRuta;
+import com.dp1.backend.repository.ColeccionRutaRepository;
 
 @Service
-public class RutaService {
+public class ColeccionRutaService {
     @Autowired
-    private RutaRepository rutaRepository;
+    private ColeccionRutaRepository rutaRepository;
 
-    public Ruta createRuta(Ruta ruta)
+    public ColeccionRuta createRuta(ColeccionRuta ruta)
     {
         try {
             return rutaRepository.save(ruta);
@@ -22,7 +22,7 @@ public class RutaService {
         }
     }
 
-    public Ruta getRuta(int id)
+    public ColeccionRuta getRuta(int id)
     {
         try {
             return rutaRepository.findById(id).get();
@@ -31,7 +31,7 @@ public class RutaService {
         }
     }
 
-    public Ruta updateRuta(Ruta ruta){
+    public ColeccionRuta updateRuta(ColeccionRuta ruta){
         try {
             if (ruta == null)
             {
@@ -45,7 +45,7 @@ public class RutaService {
 
     public String deleteRuta(int id){
         try {
-            Ruta ruta = rutaRepository.findById(id).get();
+            ColeccionRuta ruta = rutaRepository.findById(id).get();
             if (ruta != null) {
                 rutaRepository.delete(ruta);
             }
@@ -58,8 +58,8 @@ public class RutaService {
         }
     }
 
-    public ArrayList<Ruta> getAeropuertos()
+    public ArrayList<ColeccionRuta> getAllColeccionRutas()
     {
-        return (ArrayList<Ruta>) rutaRepository.findAll();
+        return (ArrayList<ColeccionRuta>) rutaRepository.findAll();
     }
 }
