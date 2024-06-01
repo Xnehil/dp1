@@ -37,10 +37,10 @@ public class Paquete extends BaseModel{
     private boolean llegoDestino;
     //Se almacena la lista de ids de los vuelos a seguir
 
-    @ElementCollection
-    @CollectionTable(name = "ruta", joinColumns = @JoinColumn(name = "id"))
-    @Column(name = "ruta_point")
-    @OrderColumn(name = "ruta_index")  // Changed from "index" to "ruta_index"
+    // @ElementCollection
+    // @CollectionTable(name = "ruta", joinColumns = @JoinColumn(name = "id"))
+    // @Column(name = "ruta_point")
+    // @OrderColumn(name = "ruta_index")  // Changed from "index" to "ruta_index"
     private ArrayList<Integer> ruta;
 
     @Column(name = "id_ruta")
