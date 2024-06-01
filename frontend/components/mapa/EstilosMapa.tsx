@@ -6,6 +6,8 @@ import Style from 'ol/style/Style';
 
 let airportStyle: Style;
 let planeStyle: Style;
+let selectedPlaneStyle: Style;
+
 if(typeof window !== 'undefined') {
     airportStyle = new Style({
         image: new Icon({
@@ -23,13 +25,25 @@ if(typeof window !== 'undefined') {
             anchorXUnits: 'fraction',
             anchorYUnits: 'fraction',
             src: '/logos/vuelo.png',
-            scale: 0.12,
+            scale: 0.20,
             color: 'red',
+        }),
+    });
+
+    selectedPlaneStyle = new Style({
+        image: new Icon({
+            anchor: [0.5, 0.5],
+            anchorXUnits: 'fraction',
+            anchorYUnits: 'fraction',
+            src: '/logos/vuelo.png',
+            scale: 0.30,
+            color: 'blue',
         }),
     });
 }
 
-export { airportStyle, planeStyle };
+
+export { airportStyle, planeStyle, selectedPlaneStyle};
 
 // Invisible line style
 export const invisibleStyle = new Style({

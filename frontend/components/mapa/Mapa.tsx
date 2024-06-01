@@ -44,6 +44,7 @@ const Mapa = ({
     const vectorSourceRef = useRef(new VectorSource());
     const [simulationTime, setSimulationTime] = useState(new Date(horaInicio));
     const [currentTime, setCurrentTime] = useState(new Date());
+    const [selectedVuelo, setSelectedVuelo] = useState<Vuelo | null>(null);
 
     useEffect(() => {
         if (!mapRef.current) {
@@ -108,6 +109,23 @@ const Mapa = ({
         });
 
         mapRef.current.addLayer(vectorLayer);
+
+        if (mapRef.current) {
+          mapRef.current.on("click", (event) => {
+            mapRef.current?.forEachFeatureAtPixel(event.pixel, (feature) => {
+              const vueloId = feature.get("vueloId");
+              if (vueloId) {
+                console.log(`Feature clickeado: Vuelo ID ${vueloId}`);
+                const vuelo = vuelos.get(vueloId)?.vuelo;
+                if (vuelo) {
+                  setSelectedVuelo(vuelo);
+                  console.log(`Vuelo seleccionado setteado: Vuelo ID${vuelo.id}`);
+                }
+              }
+            });
+          });
+        }
+
     }, [mapRef]);
 
 
@@ -186,7 +204,7 @@ const Mapa = ({
         fechaHoraActual={currentTime.toLocaleString()} 
         fechaHoraSimulada={simulationTime.toLocaleString()}
     />
-    <DatosVuelo />
+    <DatosVuelo vuelo={selectedVuelo}/>
     </div>  </div>;
 };
 

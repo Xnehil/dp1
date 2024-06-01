@@ -114,6 +114,7 @@ export function crearLineaDeVuelo(aeropuertos: Map<String, Aeropuerto>, item: an
         geometry: line,
     });
     feature.setStyle(invisibleStyle);
+    feature.set('vueloId', item.vuelo.id);
     return feature;
 }
 
@@ -123,6 +124,7 @@ export function crearPuntoDeVuelo(aeropuertos: Map<String, Aeropuerto>, item: an
         geometry: point,
     });
     feature.setStyle(planeStyle);
+    feature.set('vueloId', item.vuelo.id); // Agregar el ID del vuelo
     return feature;
 }
 
