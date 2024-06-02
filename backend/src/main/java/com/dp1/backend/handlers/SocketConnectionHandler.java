@@ -144,5 +144,15 @@ public class SocketConnectionHandler extends TextWebSocketHandler {
             }
             
         }
+        if (message.getPayload().toString().contains("tiempo")) 
+        {
+            //Puede que no sea necesario que envie mensajes desde el front para poder recien ejecutar el algoritmo,
+            //sino que esto se hace de manera automatica y es envia al front cuando se defina.
+            //La estructura de la información que se enviará de los paquetes la debo definir en el front tal como
+            //hace para los vuelos. 
+            //Luego tengo que resolver el cómo guardaré esto en al bbdd
+            //Y con eso iriamos god
+            
+        }
     } 
 }
