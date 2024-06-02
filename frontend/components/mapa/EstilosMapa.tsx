@@ -24,9 +24,9 @@ if(typeof window !== 'undefined') {
             anchor: [0.5, 0.5],
             anchorXUnits: 'fraction',
             anchorYUnits: 'fraction',
-            src: '/logos/vuelo.png',
+            src: '/logos/vueloEnhanced.png', //mas grande para aumentar el area de click
             scale: 0.20,
-            color: 'red',
+            //color: 'red', //por alguna razon, si asignas un color cualquiera, mostrara solo en negro
         }),
     });
 
@@ -35,9 +35,8 @@ if(typeof window !== 'undefined') {
             anchor: [0.5, 0.5],
             anchorXUnits: 'fraction',
             anchorYUnits: 'fraction',
-            src: '/logos/vuelo.png',
+            src: '/logos/vueloEnhancedBlue.png',
             scale: 0.30,
-            color: 'blue',
         }),
     });
 }
