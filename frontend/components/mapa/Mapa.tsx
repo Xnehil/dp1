@@ -120,7 +120,9 @@ const Mapa = ({
                 if (vuelo) {
                   setSelectedVuelo(vuelo);
                   console.log(`Vuelo seleccionado setteado: Vuelo ID${vuelo.id}`);
-                }
+                } else {
+                    console.error(`Vuelo con ID ${vueloId} no encontrado`);
+                    }
               }
             });
           });
@@ -159,7 +161,7 @@ const Mapa = ({
                 vuelos,
                 simulationTime
             );
-            console.log("aBorrar: ", aBorrar);
+            // console.log("aBorrar: ", aBorrar);
             for (let i = 0; i < aBorrar.length; i++) {
                 const idVuelo = aBorrar[i];
                 const item = vuelos.get(idVuelo);
@@ -180,7 +182,7 @@ const Mapa = ({
 
     useEffect(() => {
         if(nuevosVuelos.length > 0 && semaforo > 0) {
-            console.log("Nuevos vuelos: ", nuevosVuelos);
+            // console.log("Nuevos vuelos: ", nuevosVuelos);
             for (let i = 0; i < nuevosVuelos.length; i++) {
                 const idVuelo = nuevosVuelos[i];
                 const item = vuelos.get(idVuelo);

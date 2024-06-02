@@ -59,7 +59,7 @@ export function updateCoordinates(aeropuertos: Map<String, Aeropuerto>, vuelos: 
     // let medirTiempo2 = new Date();
     // console.log("Tiempo de updateCoordinates: ", medirTiempo2.getTime()-medirTiempo.getTime());
     // console.log("aBorrar: ", aBorrar);
-    console.log("Cuenta: ", cuenta, "Vuelos: ", vuelos.size);
+    // console.log("Cuenta: ", cuenta, "Vuelos: ", vuelos.size);
     return aBorrar;
 
 }

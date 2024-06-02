@@ -83,12 +83,12 @@ const Page = () => {
             // console.log("Mensaje recibido: ", lastMessage);
             //Parsear el mensaje recibido
             let message = JSON.parse(lastMessage.data) as MessageData;
-            console.log("Mensaje recibido: ", message);
+            // console.log("Mensaje recibido: ", message);
             const auxNuevosVuelos: number[] = [];
             if (message.metadata.includes("dataVuelos")) {
-                console.log("Actualizando vuelos");
-                console.log("Vuelos recibidos: ", message.data);
-                console.log("Vuelos actuales tamaño: ", vuelos.size);
+                // console.log("Actualizando vuelos");
+                // console.log("Vuelos recibidos: ", message.data);
+                // console.log("Vuelos actuales tamaño: ", vuelos.size);
                 if(cargado) {
                     const newVuelos = new Map(vuelos);
                     message.data.forEach((vuelo: Vuelo) => {
@@ -96,10 +96,10 @@ const Page = () => {
                         auxNuevosVuelos.push(vuelo.id);
                     });
                     setVuelos(newVuelos);
-                    console.log("Vuelos luego tamaño: ", vuelos.size);
+                    // console.log("Vuelos luego tamaño: ", vuelos.size);
                     setNuevosVuelos(auxNuevosVuelos);
                     setSemaforo(semaforo + 1);
-                    console.log("Vuelos actualizados: ", vuelos);
+                    // console.log("Vuelos actualizados: ", vuelos);
                 }
                 else{
                     const newVuelos = new Map(vuelos);
@@ -107,7 +107,7 @@ const Page = () => {
                         newVuelos.set(vuelo.id, { vuelo: vuelo, pointFeature: null, lineFeature: null , routeFeature: null});
                     });
                     setVuelos(newVuelos);
-                    console.log("Vuelos cargados: ", newVuelos);
+                    // console.log("Vuelos cargados: ", newVuelos);
                 }
             }
         }
