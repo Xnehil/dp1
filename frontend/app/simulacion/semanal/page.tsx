@@ -30,7 +30,7 @@ const Page = () => {
                 auxHoraInicio = new Date(params.get('startDate') || new Date());
             }
             console.log("Conexión abierta con tiempo: ", auxHoraInicio);
-            sendMessage("tiempo: " + auxHoraInicio.toISOString(), true);
+            sendMessage("tiempo: " + auxHoraInicio.toLocaleString("en-US", {timeZone: "America/Lima"}), true);
         },
         share: true,
     });

@@ -163,8 +163,9 @@ const Mapa = ({
             );
             // console.log("Simulation time: ", simulationTime);
             if(sendMessage) {
-                // console.log("Enviando tiempo: ", simulationTime.toISOString());
-                sendMessage("tiempo: " + simulationTime.toISOString(), true);
+                // console.log("Enviando tiempo: ", simulationTime.toDateString());
+                const limaTime = simulationTime.toLocaleString("en-US", {timeZone: "America/Lima"});
+                sendMessage("tiempo: " + limaTime, true);
             }
         }, 1000);
 

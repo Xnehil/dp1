@@ -432,9 +432,7 @@ public class ACO {
                     ZonedDateTime fechaHoraSalida = vuelo.getFechaHoraSalida().with(ld);
                     numeroVuelos++;
                     ZonedDateTime fechaHoraLlegada = vuelo.getFechaHoraLlegada().with(ld);
-                    if(vuelo.getCambioDeDia()) {
-                        fechaHoraLlegada = fechaHoraLlegada.plusDays(1);
-                    }
+                    fechaHoraLlegada = fechaHoraLlegada.plusDays(vuelo.getCambioDeDia());
 
                     ProgramacionVuelo pv = new ProgramacionVuelo(numeroVuelos, idVuelo, fechaHoraSalida, fechaHoraLlegada);
                     // tabla: guardará para cada vuelo su información

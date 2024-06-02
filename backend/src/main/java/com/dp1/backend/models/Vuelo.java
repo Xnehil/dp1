@@ -45,7 +45,7 @@ public class Vuelo extends BaseModel {
     private int capacidad;
 
     @Column(name="cambio_de_dia")
-    private Boolean cambioDeDia;
+    private int cambioDeDia;
 
     @Column(name="duracion_vuelo")
     private long duracionVuelo;
@@ -80,17 +80,11 @@ public class Vuelo extends BaseModel {
         this.distanciaVuelo = distanciaVuelo;
     }
 
-    
-
-    public Boolean isCambioDeDia() {
+    public int getCambioDeDia() {
         return this.cambioDeDia;
     }
 
-    public Boolean getCambioDeDia() {
-        return this.cambioDeDia;
-    }
-
-    public void setCambioDeDia(Boolean cambioDeDia) {
+    public void setCambioDeDia(int cambioDeDia) {
         this.cambioDeDia = cambioDeDia;
     }
 
@@ -102,20 +96,26 @@ public class Vuelo extends BaseModel {
         this.capacidad = capacidad;
         this.cargaPorDia = new HashMap<LocalDate, Integer>();
         this.distanciaVuelo = distanciaVuelo;
+        this.cambioDeDia = 0;
 
         ZonedDateTime auxInicio = fechaHoraSalida;
         ZonedDateTime auxFin = fechaHoraLlegada;
         // Cambio de día sucece si la hora de llegada es antes de la hora de salida. Ya se consideran las zonas horarias
         // auxInicio = auxInicio.withZoneSameInstant(auxFin.getZone());
         if (auxFin.isBefore(auxInicio)) {
-            this.cambioDeDia = true;
-            auxFin = auxFin.plusDays(1);
-        } else {
-            this.cambioDeDia = false;
-        }
+            // System.out.println("Hora de llegada antes de la hora de salida detectado en vuelo: " + this.getIdVuelo() + "de " + this.origen + " a las " + this.fechaHoraSalida + " a " + this.destino + " a las " + this.fechaHoraLlegada);
+            while (auxFin.isBefore(auxInicio)) {
+                // System.out.println("Cambio de día de " + auxFin + " a " + auxInicio);
+                auxFin = auxFin.plusDays(1);
+                this.cambioDeDia++;
+            }            
+        } 
 
         this.duracionVuelo = Duration.between(auxInicio, auxFin).toMinutes();
-        if(this.duracionVuelo < 0) this.duracionVuelo = 1440 - (this.duracionVuelo*-1);
+        if(this.duracionVuelo < 0) {
+            System.out.println("Duracion vuelo negativa: " + this.duracionVuelo);
+            this.duracionVuelo = 1440 - (this.duracionVuelo*-1);
+        }
     }
 
     public Vuelo() {

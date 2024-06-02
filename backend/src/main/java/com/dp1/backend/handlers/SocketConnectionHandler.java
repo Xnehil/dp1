@@ -2,13 +2,16 @@ package com.dp1.backend.handlers;
 
 import java.io.IOException;
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList; 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -38,7 +41,7 @@ public class SocketConnectionHandler extends TextWebSocketHandler {
     private HashMap<WebSocketSession, ZonedDateTime> lastMessageTimes = new HashMap<>();
     private HashMap<WebSocketSession, ZonedDateTime> simulatedTimes = new HashMap<>();
     private ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
-
+    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy, h:mm:ss a", Locale.ENGLISH);
 
     //En esta lista se almacenarán todas las conexiones. Luego se usará para transmitir el mensaje
     private List<WebSocketSession> webSocketSessions = Collections.synchronizedList(new ArrayList<>()); 
@@ -84,14 +87,10 @@ public class SocketConnectionHandler extends TextWebSocketHandler {
         // Si el mensaje contiene "tiempo", se imprimirá en el log
         if (message.getPayload().toString().contains("tiempo")) 
         { 
-            logger.info("Mensaje recibido: " + message.getPayload().toString()); 
-
-            // System.out.println("mensaje recibido: " + message.getPayload().toString());
-            // Parse the simulated time from the message
+            // logger.info("Mensaje recibido: " + message.getPayload().toString()); 
             String tiempo = message.getPayload().toString().split(": ")[1]; // assuming the message is in the format "tiempo: <time>"
-            ZonedDateTime simulatedTime = ZonedDateTime.parse(tiempo);
-            simulatedTime= simulatedTime.withZoneSameLocal(ZoneId.of("GMT-5"));
-            // simulatedTimes.put(session, simulatedTime);
+            //Parsear tiempo que llega en el formato "6/2/2024, 3:57:01 PM
+            ZonedDateTime simulatedTime = LocalDateTime.parse(tiempo, formatter).atZone(ZoneId.of("America/Lima"));
             ArrayList<Vuelo> diferenciaVuelos;
             ZonedDateTime lastMessageTime = lastMessageTimes.get(session);
             // If this is the first received time, store it

@@ -141,10 +141,7 @@ public class DatosEnMemoriaService {
 
             horaDespegue = horaDespegue.with(horaActual.toLocalDate());
             horaAterrizaje = horaAterrizaje.with(horaActual.toLocalDate());
-            if(vuelo.getCambioDeDia())
-            {
-                horaAterrizaje = horaAterrizaje.plusDays(1);
-            }
+            horaAterrizaje = horaAterrizaje.plusDays(vuelo.getCambioDeDia());
             if (horaActual.isAfter(horaDespegue) && horaActual.isBefore(horaAterrizaje)) {
                 // logger.info("Hora despegue: " + horaDespegue+ " zona horaria: "+horaDespegue.getZone());
                 // logger.info("Hora aterrizaje: " + horaAterrizaje+ " zona horaria: "+horaAterrizaje.getZone());
@@ -171,14 +168,12 @@ public class DatosEnMemoriaService {
 
                 horaDespegue = horaDespegue.with(horaActual.toLocalDate());
                 horaAterrizaje = horaAterrizaje.with(horaActual.toLocalDate());
-                if(vuelo.getCambioDeDia())
-                {
-                    horaAterrizaje = horaAterrizaje.plusDays(1);
-                }
+                horaAterrizaje = horaAterrizaje.plusDays(vuelo.getCambioDeDia());
+
     
                 if (horaActual.isAfter(horaDespegue) && horaActual.isBefore(horaAterrizaje)) {
-                    // logger.info("Hora despegue: " + horaDespegue+ " zona horaria: "+horaDespegue.getZone());
-                    // logger.info("Hora aterrizaje: " + horaAterrizaje+ " zona horaria: "+horaAterrizaje.getZone());
+                    // logger.info("Hora despegue en hora local: " + horaDespegue.withZoneSameInstant(ZoneId.of("America/Lima")));
+                    // logger.info("Hora aterrizaje en hora local: " + horaAterrizaje.withZoneSameInstant(ZoneId.of("America/Lima")));
                     // logger.info("Hora actual: " + horaActual+ " zona horaria: "+horaActual.getZone());
                     // logger.info("Decisión: Vuelo N°" + vuelo.getId() + " en el aire");
                     vuelosEnElAire.put(vuelo.getId(),vuelo);
