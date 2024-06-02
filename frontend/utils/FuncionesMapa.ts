@@ -4,17 +4,17 @@ import { Coordinate } from 'ol/coordinate';
 import { Point, LineString } from 'ol/geom';
 import { tiempoEntreAhoraYSalida } from './FuncionesTiempo';
 import { fromLonLat } from 'ol/proj';
-import { invisibleStyle, planeStyle } from '@/components/mapa/EstilosMapa';
+import { invisibleStyle, planeStyle, selectedPlaneStyle } from '@/components/mapa/EstilosMapa';
 import { Feature } from 'ol';
 import { getVectorContext } from 'ol/render';
 
-export function updateCoordinates(aeropuertos: Map<String, Aeropuerto>, vuelos: Map<number, { vuelo: Vuelo, pointFeature: any, lineFeature: any}>, simulationTime: Date):
+export function updateCoordinates(aeropuertos: Map<String, Aeropuerto>, vuelos: Map<number, { vuelo: Vuelo, pointFeature: any, lineFeature: any}> | null, simulationTime: Date):
     number[]{
     let aBorrar:number[] = [];
     //Iterar por cada vuelo
     let cuenta=0;
     // let medirTiempo = new Date();
-    vuelos.forEach((item, i) => {
+    vuelos?.forEach((item, i) => {
         const vuelo = item.vuelo;
         // console.log("vuelo: ", vuelo);
         const pointFeature = item.pointFeature;
@@ -59,7 +59,7 @@ export function updateCoordinates(aeropuertos: Map<String, Aeropuerto>, vuelos: 
     // let medirTiempo2 = new Date();
     // console.log("Tiempo de updateCoordinates: ", medirTiempo2.getTime()-medirTiempo.getTime());
     // console.log("aBorrar: ", aBorrar);
-    console.log("Cuenta: ", cuenta, "Vuelos: ", vuelos.size);
+    // console.log("Cuenta: ", cuenta, "Vuelos: ", vuelos.size);
     return aBorrar;
 
 }
@@ -114,6 +114,7 @@ export function crearLineaDeVuelo(aeropuertos: Map<String, Aeropuerto>, item: an
         geometry: line,
     });
     feature.setStyle(invisibleStyle);
+    feature.set('vueloId', item.vuelo.id);
     return feature;
 }
 
@@ -123,6 +124,7 @@ export function crearPuntoDeVuelo(aeropuertos: Map<String, Aeropuerto>, item: an
         geometry: point,
     });
     feature.setStyle(planeStyle);
+    feature.set('vueloId', item.vuelo.id); // Agregar el ID del vuelo
     return feature;
 }
 

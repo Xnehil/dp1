@@ -8,19 +8,20 @@ import View from "ol/View";
 import TileLayer from "ol/layer/Tile";
 import OSM from "ol/source/OSM";
 import { Feature } from "ol";
+import { Geometry } from 'ol/geom';
 import { LineString, Point } from "ol/geom";
 import VectorSource from "ol/source/Vector";
 import VectorLayer from "ol/layer/Vector";
 import { Coordinate } from "ol/coordinate";
 import { fromLonLat, toLonLat } from "ol/proj";
 
-import { planeStyle, airportStyle, invisibleStyle } from "./EstilosMapa";
+import { planeStyle, airportStyle, selectedPlaneStyle ,invisibleStyle } from "./EstilosMapa";
 import { Vuelo } from "@/types/Vuelo";
 import { Aeropuerto } from "@/types/Aeropuerto";
 import { coordenadasIniciales, crearLineaDeVuelo, crearPuntoDeVuelo, updateCoordinates } from "@/utils/FuncionesMapa";
 
 type MapaProps = {
-    vuelos: Map<number, { vuelo: Vuelo, pointFeature: any, lineFeature: any, routeFeature: any }>;
+    vuelos: React.RefObject<Map<number, { vuelo: Vuelo, pointFeature: any, lineFeature: any, routeFeature: any }>>;
     aeropuertos: Map<string, Aeropuerto>;
     simulationInterval: number;
     horaInicio: Date;
@@ -44,6 +45,8 @@ const Mapa = ({
     const vectorSourceRef = useRef(new VectorSource());
     const [simulationTime, setSimulationTime] = useState(new Date(horaInicio));
     const [currentTime, setCurrentTime] = useState(new Date());
+    const [selectedVuelo, setSelectedVuelo] = useState<Vuelo | null>(null);
+    const selectedFeature = useRef<Feature | null>(null);
 
     useEffect(() => {
         if (!mapRef.current) {
@@ -69,7 +72,7 @@ const Mapa = ({
         }
 
         let auxLineFeatures: any[] = [];
-        vuelos.forEach((item) => {
+        vuelos.current?.forEach((item) => {
             const feature = crearLineaDeVuelo(aeropuertos, item);
             item.lineFeature = feature;
             auxLineFeatures.push(feature);
@@ -77,7 +80,8 @@ const Mapa = ({
 
 
         let auxPointFeatures: any[] = [];
-        vuelos.forEach((item) => {
+        vuelos.current?.forEach((item) => {
+            //const isSelected = selectedFeature != null && selectedFeature.get("vueloId") === item.vuelo.id;
             const feature = crearPuntoDeVuelo(aeropuertos, item, simulationTime);
             item.pointFeature = feature;
             auxPointFeatures.push(feature);
@@ -108,6 +112,32 @@ const Mapa = ({
         });
 
         mapRef.current.addLayer(vectorLayer);
+
+        if (mapRef.current) {
+          mapRef.current.on("click", (event) => {
+            mapRef.current?.forEachFeatureAtPixel(event.pixel, (feature) => {
+              const vueloId = feature.get("vueloId");
+              if (vueloId) {
+                console.log(`Feature clickeado: Vuelo ID ${vueloId}`);
+                const vuelo = vuelos.current?.get(vueloId)?.vuelo;
+                if (vuelo) {
+                  setSelectedVuelo(vuelo);
+                  console.log(`Vuelo seleccionado setteado: Vuelo ID${vuelo.id}`);
+                  if (selectedFeature.current != null) {
+                    selectedFeature.current.setStyle(planeStyle);
+                  }
+                  (feature as Feature).setStyle(selectedPlaneStyle);
+                   selectedFeature.current = (feature as Feature);
+                }
+                else {
+                    console.error(`Vuelo no encontrado: Vuelo ID ${vueloId}`);
+                }
+              }
+    
+            });
+          });
+        }
+
     }, [mapRef]);
 
 
@@ -138,20 +168,20 @@ const Mapa = ({
         if (vectorSourceRef.current.getFeatures().length > 0){
             const aBorrar = updateCoordinates(
                 aeropuertos,
-                vuelos,
+                vuelos.current,
                 simulationTime
             );
-            console.log("aBorrar: ", aBorrar);
+            // console.log("aBorrar: ", aBorrar);
             for (let i = 0; i < aBorrar.length; i++) {
                 const idVuelo = aBorrar[i];
-                const item = vuelos.get(idVuelo);
+                const item = vuelos.current?.get(idVuelo);
                 if (item) {
                     vectorSourceRef.current.removeFeature(item.pointFeature);
                     vectorSourceRef.current.removeFeature(item.lineFeature);
                     item.pointFeature = null;
                     item.lineFeature = null;
                     item.routeFeature = null;
-                    vuelos.delete(idVuelo);
+                    vuelos.current?.delete(idVuelo);
                 }
             }
         }
@@ -162,10 +192,10 @@ const Mapa = ({
 
     useEffect(() => {
         if(nuevosVuelos.length > 0 && semaforo > 0) {
-            console.log("Nuevos vuelos: ", nuevosVuelos);
+            // console.log("Nuevos vuelos: ", nuevosVuelos);
             for (let i = 0; i < nuevosVuelos.length; i++) {
                 const idVuelo = nuevosVuelos[i];
-                const item = vuelos.get(idVuelo);
+                const item = vuelos.current?.get(idVuelo);
                 if (item) {
                     item.lineFeature = crearLineaDeVuelo(aeropuertos, item);
                     item.pointFeature = crearPuntoDeVuelo(aeropuertos, item, simulationTime);
@@ -181,12 +211,12 @@ const Mapa = ({
 
     return <div id="map" style={{ width: "100%", height: "900px" }}>  <div>
     <Leyenda
-        vuelosEnTransito= {vuelos.size}
+        vuelosEnTransito= {vuelos.current?.size ?? 0}
         enviosEnElAire={enviosEnElAire} 
         fechaHoraActual={currentTime.toLocaleString()} 
         fechaHoraSimulada={simulationTime.toLocaleString()}
     />
-    <DatosVuelo />
+    <DatosVuelo vuelo={selectedVuelo}/>
     </div>  </div>;
 };
 
