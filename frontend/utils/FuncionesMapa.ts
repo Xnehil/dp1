@@ -4,7 +4,7 @@ import { Coordinate } from 'ol/coordinate';
 import { Point, LineString } from 'ol/geom';
 import { tiempoEntreAhoraYSalida } from './FuncionesTiempo';
 import { fromLonLat } from 'ol/proj';
-import { invisibleStyle, planeStyle } from '@/components/mapa/EstilosMapa';
+import { invisibleStyle, planeStyle, selectedPlaneStyle } from '@/components/mapa/EstilosMapa';
 import { Feature } from 'ol';
 import { getVectorContext } from 'ol/render';
 

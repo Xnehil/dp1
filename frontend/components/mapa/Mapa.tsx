@@ -8,13 +8,14 @@ import View from "ol/View";
 import TileLayer from "ol/layer/Tile";
 import OSM from "ol/source/OSM";
 import { Feature } from "ol";
+import { Geometry } from 'ol/geom';
 import { LineString, Point } from "ol/geom";
 import VectorSource from "ol/source/Vector";
 import VectorLayer from "ol/layer/Vector";
 import { Coordinate } from "ol/coordinate";
 import { fromLonLat, toLonLat } from "ol/proj";
 
-import { planeStyle, airportStyle, invisibleStyle } from "./EstilosMapa";
+import { planeStyle, airportStyle, selectedPlaneStyle ,invisibleStyle } from "./EstilosMapa";
 import { Vuelo } from "@/types/Vuelo";
 import { Aeropuerto } from "@/types/Aeropuerto";
 import { coordenadasIniciales, crearLineaDeVuelo, crearPuntoDeVuelo, updateCoordinates } from "@/utils/FuncionesMapa";
@@ -45,6 +46,7 @@ const Mapa = ({
     const [simulationTime, setSimulationTime] = useState(new Date(horaInicio));
     const [currentTime, setCurrentTime] = useState(new Date());
     const [selectedVuelo, setSelectedVuelo] = useState<Vuelo | null>(null);
+    const selectedFeature = useRef<Feature | null>(null);
 
     useEffect(() => {
         if (!mapRef.current) {
@@ -79,6 +81,7 @@ const Mapa = ({
 
         let auxPointFeatures: any[] = [];
         vuelos.forEach((item) => {
+            //const isSelected = selectedFeature != null && selectedFeature.get("vueloId") === item.vuelo.id;
             const feature = crearPuntoDeVuelo(aeropuertos, item, simulationTime);
             item.pointFeature = feature;
             auxPointFeatures.push(feature);
@@ -120,9 +123,12 @@ const Mapa = ({
                 if (vuelo) {
                   setSelectedVuelo(vuelo);
                   console.log(`Vuelo seleccionado setteado: Vuelo ID${vuelo.id}`);
-                } else {
-                    console.error(`Vuelo con ID ${vueloId} no encontrado`);
-                    }
+                  if (selectedFeature.current != null) {
+                    selectedFeature.current.setStyle(planeStyle);
+                  }
+                  (feature as Feature).setStyle(selectedPlaneStyle);
+                   selectedFeature.current = (feature as Feature);
+                }
               }
             });
           });
