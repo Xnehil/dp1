@@ -8,13 +8,13 @@ import { invisibleStyle, planeStyle, selectedPlaneStyle } from '@/components/map
 import { Feature } from 'ol';
 import { getVectorContext } from 'ol/render';
 
-export function updateCoordinates(aeropuertos: Map<String, Aeropuerto>, vuelos: Map<number, { vuelo: Vuelo, pointFeature: any, lineFeature: any}>, simulationTime: Date):
+export function updateCoordinates(aeropuertos: Map<String, Aeropuerto>, vuelos: Map<number, { vuelo: Vuelo, pointFeature: any, lineFeature: any}> | null, simulationTime: Date):
     number[]{
     let aBorrar:number[] = [];
     //Iterar por cada vuelo
     let cuenta=0;
     // let medirTiempo = new Date();
-    vuelos.forEach((item, i) => {
+    vuelos?.forEach((item, i) => {
         const vuelo = item.vuelo;
         // console.log("vuelo: ", vuelo);
         const pointFeature = item.pointFeature;

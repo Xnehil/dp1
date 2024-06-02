@@ -17,7 +17,7 @@ type MessageData = {
 const Page = () => {
     const bottomRef = useRef<HTMLDivElement>(null);
     const apiURL = process.env.REACT_APP_API_URL_BASE;
-    const [vuelos, setVuelos] = useState<Map<number, { vuelo: Vuelo, pointFeature: any, lineFeature: any, routeFeature: any }>>(new Map());
+    const vuelos = useRef<Map<number, { vuelo: Vuelo, pointFeature: any, lineFeature: any, routeFeature: any }>>(new Map());
     const [aeropuertos, setAeropuertos] = useState<Map<string, Aeropuerto>>(new Map());
     const [cargado, setCargado] = useState(false);
     const [horaInicio, setHoraInicio] = useState(new Date());
@@ -56,7 +56,7 @@ const Page = () => {
     }, []);
 
     useEffect(() => {
-        if (vuelos && vuelos.size > 0 && aeropuertos.size > 0 && readyState === ReadyState.OPEN) {
+        if (vuelos.current && vuelos.current.size > 0 && aeropuertos.size > 0 && readyState === ReadyState.OPEN) {
             if(cargado) {
                 return;
             }
@@ -88,26 +88,22 @@ const Page = () => {
             if (message.metadata.includes("dataVuelos")) {
                 // console.log("Actualizando vuelos");
                 // console.log("Vuelos recibidos: ", message.data);
-                // console.log("Vuelos actuales tamaño: ", vuelos.size);
+                console.log("Vuelos actuales tamaño: ", vuelos.current.size);
                 if(cargado) {
-                    const newVuelos = new Map(vuelos);
                     message.data.forEach((vuelo: Vuelo) => {
-                        newVuelos.set(vuelo.id, { vuelo: vuelo, pointFeature: null, lineFeature: null , routeFeature: null});
+                        vuelos.current.set(vuelo.id, { vuelo: vuelo, pointFeature: null, lineFeature: null , routeFeature: null});
                         auxNuevosVuelos.push(vuelo.id);
                     });
-                    setVuelos(newVuelos);
-                    // console.log("Vuelos luego tamaño: ", vuelos.size);
+                    console.log("Vuelos luego tamaño: ", vuelos.current.size);
                     setNuevosVuelos(auxNuevosVuelos);
                     setSemaforo(semaforo + 1);
                     // console.log("Vuelos actualizados: ", vuelos);
                 }
                 else{
-                    const newVuelos = new Map(vuelos);
                     message.data.forEach((vuelo: Vuelo) => {
-                        newVuelos.set(vuelo.id, { vuelo: vuelo, pointFeature: null, lineFeature: null , routeFeature: null});
+                        vuelos.current.set(vuelo.id, { vuelo: vuelo, pointFeature: null, lineFeature: null , routeFeature: null});
                     });
-                    setVuelos(newVuelos);
-                    // console.log("Vuelos cargados: ", newVuelos);
+                    console.log("Vuelos cargados: ", vuelos.current.size);
                 }
             }
         }
