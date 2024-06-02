@@ -28,7 +28,6 @@ import jakarta.transaction.Transactional;
 public class DatosEnMemoriaService {
     private HashMap<String, Aeropuerto> aeropuertos = new HashMap<>();
     private HashMap<Integer, Vuelo> vuelos = new HashMap<>();
-    private HashMap<String, ArrayList<Integer>> salidasPorHora = new HashMap<>();
 
     //Mapas para rutas
     private HashMap<String, ColeccionRuta> rutasPosibles = new HashMap<>();
@@ -78,15 +77,8 @@ public class DatosEnMemoriaService {
         aeropuertos.putAll(FuncionesLectura.leerAeropuertos(workingDirectory+"data/Aeropuerto.husos.v2.txt"));
         vuelos.putAll(FuncionesLectura.leerVuelos(workingDirectory+"data/planes_vuelo.v3.txt",aeropuertos));
         for (Vuelo vuelo : vuelos.values()) {
-            ZonedDateTime horaDespegue = vuelo.getFechaHoraSalida();
-            horaDespegue = horaDespegue.withZoneSameInstant(ZoneId.of("GMT-5"));
-            String cadenaIndex = horaDespegue.getHour() + ":" + horaDespegue.getMinute();
-            if (salidasPorHora.containsKey(cadenaIndex)) {
-                salidasPorHora.get(cadenaIndex).add(vuelo.getId());
-            } else {
-                ArrayList<Integer> vuelosEnHora = new ArrayList<>();
-                vuelosEnHora.add(vuelo.getId());
-                salidasPorHora.put(cadenaIndex, vuelosEnHora);
+            if(vuelo.getDistanciaVuelo()<0 || vuelo.getDuracionVuelo()<0){
+                logger.info("Vuelo: " + vuelo.getId() + " Origen: " + vuelo.getOrigen() + " Destino: " + vuelo.getDestino() + " Fecha salida: " + vuelo.getFechaHoraSalida() + " Fecha llegada: " + vuelo.getFechaHoraLlegada() + " Duración: " + vuelo.getDuracionVuelo() + " Distancia: " + vuelo.getDistanciaVuelo());
             }
         }
     }
@@ -94,27 +86,6 @@ public class DatosEnMemoriaService {
     @PostConstruct
     @Transactional
     public void init(){
-        // RutaPosible rt1 = new RutaPosible();
-        // rt1.setFlights(new ArrayList<Integer>());
-        // rt1.getFlights().add(2);
-        // rt1.getFlights().add(3);
-        // RutaPosible rt2 = new RutaPosible();
-        // rt2.setFlights(new ArrayList<Integer>());
-        // rt2.getFlights().add(4);
-        // rt2.getFlights().add(5);
-        // ColeccionRuta cr = new ColeccionRuta();
-        // cr.setRutasPosibles(new ArrayList<RutaPosible>());
-        // cr.getRutasPosibles().add(rt1);
-        // cr.getRutasPosibles().add(rt2);
-        // cr.setCodigoRuta("SKBOSKDI");
-        // rt1.setColeccionRuta(cr);
-        // rt2.setColeccionRuta(cr);
-        // logger.info("Rutas posibles: " + cr.getRutasPosibles().size());
-        // try {
-        //     coleccionRutaService.createColeccionRuta(cr);
-        // } catch (Exception e) {
-        //     logger.error("Error al crear la colección de rutas: " + e.getLocalizedMessage());
-        // }
         coleccionRutaService.getAllColeccionRutas().forEach(cr -> {
             rutasPosibles.put(cr.getCodigoRuta(), cr);
             String ruta = cr.getCodigoRuta();
@@ -142,16 +113,6 @@ public class DatosEnMemoriaService {
         //     }
         // }
     }
-
-
-    public HashMap<String,ArrayList<Integer>> getSalidasPorHora() {
-        return this.salidasPorHora;
-    }
-
-    public void setSalidasPorHora(HashMap<String,ArrayList<Integer>> salidasPorHora) {
-        this.salidasPorHora = salidasPorHora;
-    }
-
 
 
     public Map<String,Aeropuerto> getAeropuertos() {

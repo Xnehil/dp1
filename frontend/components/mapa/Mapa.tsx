@@ -15,7 +15,7 @@ import VectorLayer from "ol/layer/Vector";
 import { Coordinate } from "ol/coordinate";
 import { fromLonLat, toLonLat } from "ol/proj";
 
-import { planeStyle, airportStyle, selectedPlaneStyle ,invisibleStyle } from "./EstilosMapa";
+import { planeStyle, airportStyle, selectedPlaneStyle ,invisibleStyle, selectedLineStyle } from "./EstilosMapa";
 import { Vuelo } from "@/types/Vuelo";
 import { Aeropuerto } from "@/types/Aeropuerto";
 import { coordenadasIniciales, crearLineaDeVuelo, crearPuntoDeVuelo, updateCoordinates } from "@/utils/FuncionesMapa";
@@ -125,13 +125,18 @@ const Mapa = ({
                   console.log(`Vuelo seleccionado setteado: Vuelo ID${vuelo.id}`);
                   if (selectedFeature.current != null) {
                     selectedFeature.current.setStyle(planeStyle);
+                    vuelos.current?.get(selectedFeature.current.get("vueloId"))?.lineFeature.setStyle(invisibleStyle);
                   }
                   (feature as Feature).setStyle(selectedPlaneStyle);
                    selectedFeature.current = (feature as Feature);
+
+                   vuelos.current?.get(vueloId)?.lineFeature.setStyle(selectedLineStyle);
                 }
                 else {
                     console.error(`Vuelo no encontrado: Vuelo ID ${vueloId}`);
                 }
+
+
               }
     
             });

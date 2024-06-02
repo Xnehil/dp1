@@ -109,11 +109,12 @@ public class Vuelo extends BaseModel {
         // auxInicio = auxInicio.withZoneSameInstant(auxFin.getZone());
         if (auxFin.isBefore(auxInicio)) {
             this.cambioDeDia = true;
+            auxFin = auxFin.plusDays(1);
         } else {
             this.cambioDeDia = false;
         }
 
-        this.duracionVuelo = Duration.between(fechaHoraSalida, fechaHoraLlegada).toMinutes();
+        this.duracionVuelo = Duration.between(auxInicio, auxFin).toMinutes();
         if(this.duracionVuelo < 0) this.duracionVuelo = 1440 - (this.duracionVuelo*-1);
     }
 
