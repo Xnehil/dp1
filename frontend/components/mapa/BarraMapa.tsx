@@ -1,14 +1,17 @@
 import { TextField, InputAdornment } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
-import React from "react";
+import React, { useState } from "react";
 import { Feature, View } from "ol";
 import { Aeropuerto } from "@/types/Aeropuerto";
 import { Vuelo } from "@/types/Vuelo";
+import { seleccionarVuelo } from "@/utils/FuncionesMapa";
+import { Map as OLMap } from "ol";
+import { fromLonLat } from "ol/proj";
 
 type BarraMapaProps = {
     setSelectedVuelo: (value: Vuelo | null) => void,
     setSelectedAeropuerto: (value: Aeropuerto | null) => void,
-    vistaActual: React.RefObject<View>,
+    mapRef: React.RefObject<OLMap>,
     selectedFeature: React.RefObject<Feature>,
     vuelos: React.RefObject<
         Map<
@@ -26,16 +29,22 @@ type BarraMapaProps = {
 const BarraMapa = ({
     setSelectedVuelo,
     setSelectedAeropuerto,
-    vistaActual,
+    mapRef,
     selectedFeature,
     vuelos,
     aeropuertos
 }: BarraMapaProps) => {
     const [aBuscar, setABuscar] = React.useState<string>(""); 
+    const [error, setError] = useState(false);
+    const [helperText, setHelperText] = useState('');
+
     const handleKeyPress = (event: React.KeyboardEvent) => {
-        if (event.key === "Enter") {
-            console.log("Enter key pressed, se va a buscar: ", aBuscar);
+        if (event.key === "Enter") {   
             buscarData();
+        }
+        else{
+            setError(false);
+            setHelperText('');
         }
     };
 
@@ -49,14 +58,42 @@ const BarraMapa = ({
         if (!isNaN(Number(aBuscar))) {
             console.log("Buscando por código de vuelo: ", aBuscar);
             if(vuelos.current?.has(Number(aBuscar))){
-                setSelectedVuelo(vuelos.current.get(Number(aBuscar))?.vuelo ?? null);
+                seleccionarVuelo(Number(aBuscar), setSelectedVuelo, selectedFeature, vuelos, vuelos.current?.get(Number(aBuscar))?.pointFeature);
+                const item = vuelos.current?.get(Number(aBuscar));
+                if (item && mapRef.current) {
+                    const view = mapRef.current.getView();
+                    if (view) {
+                        view.animate({
+                            center: item.pointFeature.getGeometry().getCoordinates(),
+                            zoom: 4,
+                            duration: 1000,
+                        });
+                    }
+                }
             }
             else{
-                console.log("No se encontró el vuelo con código: ", aBuscar);
+                setError(true);
+                setHelperText("No se encontró el vuelo con código: " + aBuscar);
             }
         } else {
             console.log("Buscando por nombre de aeropuerto: ", aBuscar);
-            setSelectedAeropuerto(aeropuertos.get(aBuscar) ?? null);
+            let aeropuerto = aeropuertos.get(aBuscar.toUpperCase());
+            if (aeropuerto) {
+                setSelectedAeropuerto(aeropuerto);
+                if (mapRef.current) {
+                    const view = mapRef.current.getView();
+                    if (view) {
+                        view.animate({
+                            center: fromLonLat  ([aeropuerto.longitud, aeropuerto.latitud]),
+                            zoom: 6,
+                            duration: 1000,
+                        });
+                    }
+                }
+            } else {
+                setError(true);
+                setHelperText("No se encontró el aeropuerto: " + aBuscar);
+            }
         }
     }
 
@@ -109,6 +146,8 @@ const BarraMapa = ({
                         },
                     },
                 }}
+                error={error}
+                helperText={helperText}
             />
         </div>
     );

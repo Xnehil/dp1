@@ -30,6 +30,7 @@ import {
     coordenadasIniciales,
     crearLineaDeVuelo,
     crearPuntoDeVuelo,
+    seleccionarVuelo,
     updateCoordinates,
 } from "@/utils/FuncionesMapa";
 import BarraMapa from "./BarraMapa";
@@ -155,49 +156,13 @@ const Mapa = ({
                     (feature) => {
                         const vueloId = feature.get("vueloId");
                         if (vueloId) {
-                            console.log(
-                                `Feature clickeado: Vuelo ID ${vueloId}`
+                            seleccionarVuelo(
+                                vueloId,
+                                setSelectedVuelo,
+                                selectedFeature,
+                                vuelos,
+                                feature
                             );
-                            const vuelo = vuelos.current?.get(vueloId)?.vuelo;
-                            if (vuelo) {
-                                setSelectedVuelo(vuelo);
-                                console.log(
-                                    `Vuelo seleccionado setteado: Vuelo ID${vuelo.id}`
-                                );
-                                if (selectedFeature.current != null) {
-                                    selectedFeature.current.setStyle(
-                                        dinamicPlaneStyle(
-                                            vuelos.current?.get(
-                                                selectedFeature.current.get(
-                                                    "vueloId"
-                                                )
-                                            )
-                                        )
-                                    );
-                                    vuelos.current
-                                        ?.get(
-                                            selectedFeature.current.get(
-                                                "vueloId"
-                                            )
-                                        )
-                                        ?.lineFeature.setStyle(invisibleStyle);
-                                }
-
-                                (feature as Feature).setStyle(
-                                    dinamicSelectedPlaneStle(
-                                        vuelos.current?.get(vueloId)
-                                    )
-                                );
-                                selectedFeature.current = feature as Feature;
-
-                                vuelos.current
-                                    ?.get(vueloId)
-                                    ?.lineFeature.setStyle(selectedLineStyle);
-                            } else {
-                                console.error(
-                                    `Vuelo no encontrado: Vuelo ID ${vueloId}`
-                                );
-                            }
                         }
                     }
                 );
@@ -292,7 +257,7 @@ const Mapa = ({
                 <BarraMapa
                     setSelectedVuelo={setSelectedVuelo}
                     setSelectedAeropuerto={setSelectedAeropuerto}
-                    vistaActual={vistaActual}
+                    mapRef={mapRef}
                     selectedFeature={selectedFeature}
                     vuelos={vuelos}
                     aeropuertos={aeropuertos}
