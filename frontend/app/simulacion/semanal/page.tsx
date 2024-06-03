@@ -108,9 +108,9 @@ const Page = () => {
           console.log("Vuelos cargados: ", vuelos.current.size);
         }
       }
-      // if (message.metadata.includes("correrAlgoritmo")) {
-      //   console.log("El algoritmo se está ejecutando...");
-      // }
+      if (message.metadata.includes("correrAlgoritmo")) {
+        console.log("El algoritmo se está ejecutando...");
+      }
 
     }
   }, [lastMessage]);

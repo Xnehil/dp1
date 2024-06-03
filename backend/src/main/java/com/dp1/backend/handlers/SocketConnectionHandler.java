@@ -36,7 +36,7 @@ public class SocketConnectionHandler extends TextWebSocketHandler {
     private static final Logger logger = LogManager.getLogger(SocketConnectionHandler.class);
     private ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
     private HashMap<WebSocketSession, ZonedDateTime> lastMessageTimes = new HashMap<>();
-    private ZonedDateTime algorLastTime = ZonedDateTime.now();
+    private ZonedDateTime algorLastTime = null;
     private HashMap<WebSocketSession, ZonedDateTime> simulatedTimes = new HashMap<>();
     private ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
 
@@ -94,7 +94,8 @@ public class SocketConnectionHandler extends TextWebSocketHandler {
             // simulatedTimes.put(session, simulatedTime);
             ArrayList<Vuelo> diferenciaVuelos;
             ZonedDateTime lastMessageTime = lastMessageTimes.get(session);
-            ZonedDateTime algorLastTime = lastMessageTimes.get(session);
+            //Agregado por MLAA
+            //ZonedDateTime algorLastTime = lastMessageTimes.get(session);
             // If this is the first received time, store it
             if (lastMessageTime == null) {
                 lastMessageTime = simulatedTime;
@@ -146,50 +147,52 @@ public class SocketConnectionHandler extends TextWebSocketHandler {
             } catch (Exception e) {
                 logger.error("Error en diferencia de vuelos: " + e.getLocalizedMessage());
             }
-            // System.out.println("Ejecutando sección del algoritmo");
-            // difference = Duration.between(algorLastTime, simulatedTime).toMinutes();
-            // try {
-            //     if (difference > 30) {
-            //         Map<String, Object> messageAlgoritmo = new HashMap<>();
-            //         messageAlgoritmo.put("metadata", "correrAlgoritmo");
+            System.out.println("Ejecutando sección del algoritmo");
+            logger.info("Entrando en sección algoritmo");
+            logger.info("Tiempos: " + algorLastTime);
+            difference = Duration.between(algorLastTime, simulatedTime).toMinutes();
+            try {
+                if (difference > 30) {
+                    Map<String, Object> messageAlgoritmo = new HashMap<>();
+                    messageAlgoritmo.put("metadata", "correrAlgoritmo");
 
-            //         // Adding random information to the new Object
-            //         Object dataObject = new Object() {
-            //             String randomString = "infoAleatoria";
-            //             int randomInt = 42;
-            //             boolean randomBoolean = true;
-            //             List<String> randomList = Arrays.asList("elemento1", "elemento2", "elemento3");
-            //             Map<String, Object> randomMap = new HashMap<>() {
-            //                 {
-            //                     put("clave1", "valor1");
-            //                     put("clave2", 123);
-            //                     put("clave3", Arrays.asList("subElemento1", "subElemento2"));
-            //                 }
-            //             };
-            //         };
+                    // Adding random information to the new Object
+                    Object dataObject = new Object() {
+                        String randomString = "infoAleatoria";
+                        int randomInt = 42;
+                        boolean randomBoolean = true;
+                        List<String> randomList = Arrays.asList("elemento1", "elemento2", "elemento3");
+                        Map<String, Object> randomMap = new HashMap<>() {
+                            {
+                                put("clave1", "valor1");
+                                put("clave2", 123);
+                                put("clave3", Arrays.asList("subElemento1", "subElemento2"));
+                            }
+                        };
+                    };
 
-            //         messageAlgoritmo.put("data", dataObject);
-            //         String messageJson = objectMapper.writeValueAsString(messageAlgoritmo);
-            //         session.sendMessage(new TextMessage(messageJson));
-            //         logger.info("Enviando resultado del algoritmo para los vuelos en el aire");
-            //     }
-            //     algorLastTime = simulatedTime;
-            // } catch (Exception e) {
-            //     logger.error("Error en ejecución del algoritmo: " + e.getLocalizedMessage());
-            // }
-
-        }
-        if (message.getPayload().toString().contains("tiempo")) {
-            // Puede que no sea necesario que envie mensajes desde el front para poder
-            // recien ejecutar el algoritmo,
-            // sino que esto se hace de manera automatica y es envia al front cuando se
-            // defina.
-            // La estructura de la información que se enviará de los paquetes la debo
-            // definir en el front tal como
-            // hace para los vuelos.
-            // Luego tengo que resolver el cómo guardaré esto en al bbdd
-            // Y con eso iriamos god
+                    messageAlgoritmo.put("data", "cadenarandom");
+                    String messageJson = objectMapper.writeValueAsString(messageAlgoritmo);
+                    session.sendMessage(new TextMessage(messageJson));
+                    logger.info("Enviando resultado del algoritmo para los vuelos en el aire");
+                    algorLastTime = simulatedTime;
+                }
+            } catch (Exception e) {
+                logger.error("Error en ejecución del algoritmo: " + e.getLocalizedMessage());
+            }
 
         }
+        // if (message.getPayload().toString().contains("tiempo")) {
+        //     // Puede que no sea necesario que envie mensajes desde el front para poder
+        //     // recien ejecutar el algoritmo,
+        //     // sino que esto se hace de manera automatica y es envia al front cuando se
+        //     // defina.
+        //     // La estructura de la información que se enviará de los paquetes la debo
+        //     // definir en el front tal como
+        //     // hace para los vuelos.
+        //     // Luego tengo que resolver el cómo guardaré esto en al bbdd
+        //     // Y con eso iriamos god
+
+        // }
     }
 }
