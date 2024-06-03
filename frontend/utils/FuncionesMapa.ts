@@ -4,9 +4,11 @@ import { Coordinate } from 'ol/coordinate';
 import { Point, LineString } from 'ol/geom';
 import { tiempoEntreAhoraYSalida } from './FuncionesTiempo';
 import { fromLonLat } from 'ol/proj';
-import { invisibleStyle, planeStyle, selectedPlaneStyle } from '@/components/mapa/EstilosMapa';
+import { dinamicPlaneStyle, invisibleStyle, planeStyle, selectedPlaneStyle } from '@/components/mapa/EstilosMapa';
 import { Feature } from 'ol';
 import { getVectorContext } from 'ol/render';
+import Icon from 'ol/style/Icon';
+import Style from 'ol/style/Style';
 
 export function updateCoordinates(aeropuertos: Map<String, Aeropuerto>, vuelos: Map<number, { vuelo: Vuelo, pointFeature: any, lineFeature: any}> | null, simulationTime: Date):
     number[]{
@@ -123,8 +125,9 @@ export function crearPuntoDeVuelo(aeropuertos: Map<String, Aeropuerto>, item: an
     const feature = new Feature({
         geometry: point,
     });
-    feature.setStyle(planeStyle);
+    feature.setStyle(dinamicPlaneStyle(item));
     feature.set('vueloId', item.vuelo.id); // Agregar el ID del vuelo
     return feature;
 }
 
+    

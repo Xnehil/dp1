@@ -177,6 +177,7 @@ public class DatosEnMemoriaService {
                     // logger.info("Hora actual: " + horaActual+ " zona horaria: "+horaActual.getZone());
                     // logger.info("Decisión: Vuelo N°" + vuelo.getId() + " en el aire");
                     vuelosEnElAire.put(vuelo.getId(),vuelo);
+                    
                 }
             }
             // logger.info("Vuelos en el aire: " + vuelosEnElAire.size());
