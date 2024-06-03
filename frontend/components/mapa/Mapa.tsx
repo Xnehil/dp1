@@ -1,6 +1,6 @@
 "use client";
 import Leyenda from "@/components/mapa/Leyenda";
-import DatosVuelo  from "@/components/mapa/DatosVuelo";
+import DatosVuelo from "@/components/mapa/DatosVuelo";
 import React, { useEffect, useRef, useState } from "react";
 import "ol/ol.css";
 import { Map as OLMap } from "ol";
@@ -8,20 +8,44 @@ import View from "ol/View";
 import TileLayer from "ol/layer/Tile";
 import OSM from "ol/source/OSM";
 import { Feature } from "ol";
-import { Geometry } from 'ol/geom';
+import { Geometry } from "ol/geom";
 import { LineString, Point } from "ol/geom";
 import VectorSource from "ol/source/Vector";
 import VectorLayer from "ol/layer/Vector";
 import { Coordinate } from "ol/coordinate";
 import { fromLonLat, toLonLat } from "ol/proj";
 
-import { planeStyle, airportStyle, selectedPlaneStyle ,invisibleStyle, selectedLineStyle, dinamicPlaneStyle, dinamicSelectedPlaneStle } from "./EstilosMapa";
+import {
+    planeStyle,
+    airportStyle,
+    selectedPlaneStyle,
+    invisibleStyle,
+    selectedLineStyle,
+    dinamicPlaneStyle,
+    dinamicSelectedPlaneStle,
+} from "./EstilosMapa";
 import { Vuelo } from "@/types/Vuelo";
 import { Aeropuerto } from "@/types/Aeropuerto";
-import { coordenadasIniciales, crearLineaDeVuelo, crearPuntoDeVuelo, updateCoordinates } from "@/utils/FuncionesMapa";
+import {
+    coordenadasIniciales,
+    crearLineaDeVuelo,
+    crearPuntoDeVuelo,
+    updateCoordinates,
+} from "@/utils/FuncionesMapa";
+import BarraMapa from "./BarraMapa";
 
 type MapaProps = {
-    vuelos: React.RefObject<Map<number, { vuelo: Vuelo, pointFeature: any, lineFeature: any, routeFeature: any }>>;
+    vuelos: React.RefObject<
+        Map<
+            number,
+            {
+                vuelo: Vuelo;
+                pointFeature: any;
+                lineFeature: any;
+                routeFeature: any;
+            }
+        >
+    >;
     aeropuertos: Map<string, Aeropuerto>;
     simulationInterval: number;
     horaInicio: Date;
@@ -78,11 +102,14 @@ const Mapa = ({
             auxLineFeatures.push(feature);
         });
 
-
         let auxPointFeatures: any[] = [];
         vuelos.current?.forEach((item) => {
             //const isSelected = selectedFeature != null && selectedFeature.get("vueloId") === item.vuelo.id;
-            const feature = crearPuntoDeVuelo(aeropuertos, item, simulationTime);
+            const feature = crearPuntoDeVuelo(
+                aeropuertos,
+                item,
+                simulationTime
+            );
             item.pointFeature = feature;
             auxPointFeatures.push(feature);
         });
@@ -99,7 +126,12 @@ const Mapa = ({
                 return feature;
             }
         );
-        console.log("Adding # features: ", auxLineFeatures.length, auxPointFeatures.length, aeropuertoFeatures.length);
+        console.log(
+            "Adding # features: ",
+            auxLineFeatures.length,
+            auxPointFeatures.length,
+            aeropuertoFeatures.length
+        );
         vectorSourceRef.current.clear(); // Clear the existing features
         vectorSourceRef.current.addFeatures([
             ...auxLineFeatures,
@@ -114,38 +146,61 @@ const Mapa = ({
         mapRef.current.addLayer(vectorLayer);
 
         if (mapRef.current) {
-          mapRef.current.on("click", (event) => {
-            mapRef.current?.forEachFeatureAtPixel(event.pixel, (feature) => {
-              const vueloId = feature.get("vueloId");
-              if (vueloId) {
-                console.log(`Feature clickeado: Vuelo ID ${vueloId}`);
-                const vuelo = vuelos.current?.get(vueloId)?.vuelo;
-                if (vuelo) {
-                  setSelectedVuelo(vuelo);
-                  console.log(`Vuelo seleccionado setteado: Vuelo ID${vuelo.id}`);
-                  if (selectedFeature.current != null) {
-                    selectedFeature.current.setStyle(dinamicPlaneStyle(vuelos.current?.get(selectedFeature.current.get("vueloId"))))
-                    vuelos.current?.get(selectedFeature.current.get("vueloId"))?.lineFeature.setStyle(invisibleStyle);
-                  }
+            mapRef.current.on("click", (event) => {
+                mapRef.current?.forEachFeatureAtPixel(
+                    event.pixel,
+                    (feature) => {
+                        const vueloId = feature.get("vueloId");
+                        if (vueloId) {
+                            console.log(
+                                `Feature clickeado: Vuelo ID ${vueloId}`
+                            );
+                            const vuelo = vuelos.current?.get(vueloId)?.vuelo;
+                            if (vuelo) {
+                                setSelectedVuelo(vuelo);
+                                console.log(
+                                    `Vuelo seleccionado setteado: Vuelo ID${vuelo.id}`
+                                );
+                                if (selectedFeature.current != null) {
+                                    selectedFeature.current.setStyle(
+                                        dinamicPlaneStyle(
+                                            vuelos.current?.get(
+                                                selectedFeature.current.get(
+                                                    "vueloId"
+                                                )
+                                            )
+                                        )
+                                    );
+                                    vuelos.current
+                                        ?.get(
+                                            selectedFeature.current.get(
+                                                "vueloId"
+                                            )
+                                        )
+                                        ?.lineFeature.setStyle(invisibleStyle);
+                                }
 
-                  (feature as Feature).setStyle(dinamicSelectedPlaneStle(vuelos.current?.get(vueloId)));
-                   selectedFeature.current = (feature as Feature);
+                                (feature as Feature).setStyle(
+                                    dinamicSelectedPlaneStle(
+                                        vuelos.current?.get(vueloId)
+                                    )
+                                );
+                                selectedFeature.current = feature as Feature;
 
-                   vuelos.current?.get(vueloId)?.lineFeature.setStyle(selectedLineStyle);
-                }
-                else {
-                    console.error(`Vuelo no encontrado: Vuelo ID ${vueloId}`);
-                }
-
-
-              }
-    
+                                vuelos.current
+                                    ?.get(vueloId)
+                                    ?.lineFeature.setStyle(selectedLineStyle);
+                            } else {
+                                console.error(
+                                    `Vuelo no encontrado: Vuelo ID ${vueloId}`
+                                );
+                            }
+                        }
+                    }
+                );
             });
-          });
         }
-
     }, [mapRef]);
-
 
     useEffect(() => {
         const updateTime = () => {
@@ -160,19 +215,25 @@ const Mapa = ({
     useEffect(() => {
         const intervalId = setInterval(() => {
             setSimulationTime(
-                (prevSimulationTime) =>new Date(prevSimulationTime.getTime() +simulationInterval * 60 * 1000)
+                (prevSimulationTime) =>
+                    new Date(
+                        prevSimulationTime.getTime() +
+                            simulationInterval * 60 * 1000
+                    )
             );
             // console.log("Simulation time: ", simulationTime);
-            if(sendMessage) {
+            if (sendMessage) {
                 // console.log("Enviando tiempo: ", simulationTime.toDateString());
-                const limaTime = simulationTime.toLocaleString("en-US", {timeZone: "America/Lima"});
+                const limaTime = simulationTime.toLocaleString("en-US", {
+                    timeZone: "America/Lima",
+                });
                 sendMessage("tiempo: " + limaTime, true);
             }
         }, 1000);
 
         // console.log("Updating coordinates con tiempo: ", simulationTime);
 
-        if (vectorSourceRef.current.getFeatures().length > 0){
+        if (vectorSourceRef.current.getFeatures().length > 0) {
             const aBorrar = updateCoordinates(
                 aeropuertos,
                 vuelos.current,
@@ -195,36 +256,47 @@ const Mapa = ({
 
         // Clean up interval on unmount
         return () => clearInterval(intervalId);
-    }, [simulationTime, simulationInterval]); 
+    }, [simulationTime, simulationInterval]);
 
     useEffect(() => {
-        if(nuevosVuelos.length > 0 && semaforo > 0) {
+        if (nuevosVuelos.length > 0 && semaforo > 0) {
             // console.log("Nuevos vuelos: ", nuevosVuelos);
             for (let i = 0; i < nuevosVuelos.length; i++) {
                 const idVuelo = nuevosVuelos[i];
                 const item = vuelos.current?.get(idVuelo);
                 if (item) {
                     item.lineFeature = crearLineaDeVuelo(aeropuertos, item);
-                    item.pointFeature = crearPuntoDeVuelo(aeropuertos, item, simulationTime);
+                    item.pointFeature = crearPuntoDeVuelo(
+                        aeropuertos,
+                        item,
+                        simulationTime
+                    );
                     vectorSourceRef.current.addFeature(item.pointFeature);
                     vectorSourceRef.current.addFeature(item.lineFeature);
                 }
             }
             setSemaforo(semaforo - 1);
         }
-    }), [nuevosVuelos, semaforo];
+    }),
+        [nuevosVuelos, semaforo];
 
     const enviosEnElAire = 1420;
 
-    return <div id="map" style={{ width: "100%", height: "900px" }}>  <div>
-    <Leyenda
-        vuelosEnTransito= {vuelos.current?.size ?? 0}
-        enviosEnElAire={enviosEnElAire} 
-        fechaHoraActual={currentTime.toLocaleString()} 
-        fechaHoraSimulada={simulationTime.toLocaleString()}
-    />
-    <DatosVuelo vuelo={selectedVuelo}/>
-    </div>  </div>;
+    return (
+        <div id="map" style={{ width: "100%", height: "900px" }}>
+            {" "}
+            <div>
+                <BarraMapa />
+                <Leyenda
+                    vuelosEnTransito={vuelos.current?.size ?? 0}
+                    enviosEnElAire={enviosEnElAire}
+                    fechaHoraActual={currentTime.toLocaleString()}
+                    fechaHoraSimulada={simulationTime.toLocaleString()}
+                />
+                <DatosVuelo vuelo={selectedVuelo} />
+            </div>{" "}
+        </div>
+    );
 };
 
 export default Mapa;
