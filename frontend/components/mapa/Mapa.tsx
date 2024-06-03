@@ -70,7 +70,9 @@ const Mapa = ({
     const [simulationTime, setSimulationTime] = useState(new Date(horaInicio));
     const [currentTime, setCurrentTime] = useState(new Date());
     const [selectedVuelo, setSelectedVuelo] = useState<Vuelo | null>(null);
+    const [selectedAeropuerto, setSelectedAeropuerto] = useState<Aeropuerto | null>(null);
     const selectedFeature = useRef<Feature | null>(null);
+    const vistaActual = useRef<View | null>(null);
 
     useEffect(() => {
         if (!mapRef.current) {
@@ -87,6 +89,7 @@ const Mapa = ({
                     zoom: 5,
                 }),
             });
+            vistaActual.current = mapRef.current.getView();
         }
     }, []);
 
@@ -286,7 +289,14 @@ const Mapa = ({
         <div id="map" style={{ width: "100%", height: "900px" }}>
             {" "}
             <div>
-                <BarraMapa />
+                <BarraMapa
+                    setSelectedVuelo={setSelectedVuelo}
+                    setSelectedAeropuerto={setSelectedAeropuerto}
+                    vistaActual={vistaActual}
+                    selectedFeature={selectedFeature}
+                    vuelos={vuelos}
+                    aeropuertos={aeropuertos}
+                />
                 <Leyenda
                     vuelosEnTransito={vuelos.current?.size ?? 0}
                     enviosEnElAire={enviosEnElAire}

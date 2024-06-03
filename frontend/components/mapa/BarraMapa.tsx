@@ -1,8 +1,36 @@
 import { TextField, InputAdornment } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import React from "react";
+import { Feature, View } from "ol";
+import { Aeropuerto } from "@/types/Aeropuerto";
+import { Vuelo } from "@/types/Vuelo";
 
-const BarraMapa = () => {
+type BarraMapaProps = {
+    setSelectedVuelo: (value: Vuelo | null) => void,
+    setSelectedAeropuerto: (value: Aeropuerto | null) => void,
+    vistaActual: React.RefObject<View>,
+    selectedFeature: React.RefObject<Feature>,
+    vuelos: React.RefObject<
+        Map<
+            number,
+            {
+                vuelo: Vuelo;
+                pointFeature: any;
+                lineFeature: any;
+                routeFeature: any;
+            }
+        >
+    >;
+    aeropuertos: Map<string, Aeropuerto>;
+};
+const BarraMapa = ({
+    setSelectedVuelo,
+    setSelectedAeropuerto,
+    vistaActual,
+    selectedFeature,
+    vuelos,
+    aeropuertos
+}: BarraMapaProps) => {
     const [aBuscar, setABuscar] = React.useState<string>(""); 
     const handleKeyPress = (event: React.KeyboardEvent) => {
         if (event.key === "Enter") {
@@ -16,7 +44,21 @@ const BarraMapa = () => {
         buscarData();
     };
 
-    function buscarData() {}
+    function buscarData() {
+        //Si se puede parsear a un número, se busca por código de vuelo
+        if (!isNaN(Number(aBuscar))) {
+            console.log("Buscando por código de vuelo: ", aBuscar);
+            if(vuelos.current?.has(Number(aBuscar))){
+                setSelectedVuelo(vuelos.current.get(Number(aBuscar))?.vuelo ?? null);
+            }
+            else{
+                console.log("No se encontró el vuelo con código: ", aBuscar);
+            }
+        } else {
+            console.log("Buscando por nombre de aeropuerto: ", aBuscar);
+            setSelectedAeropuerto(aeropuertos.get(aBuscar) ?? null);
+        }
+    }
 
     return (
         <div
