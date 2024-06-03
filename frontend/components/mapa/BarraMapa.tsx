@@ -22,14 +22,16 @@ const BarraMapa = () => {
         <div
             style={{
                 position: "relative",
-                top: "80px",
-                left: "380px",
+                top: "75px",
+                left: "50%",
+                transform: "translateX(-50%)",
                 right: "10px",
                 zIndex: 10,
                 backgroundColor: "rgba(255, 255, 255,1)",
                 color: "black",
                 borderRadius: "20px",
                 width: "calc(50%)",
+                display: "flex",
                 justifySelf: "center",
                 alignSelf: "center",
             }}
@@ -50,6 +52,20 @@ const BarraMapa = () => {
                             <SearchIcon />
                         </InputAdornment>
                     ),
+                    style: {
+                        borderRadius: "20px",
+                        border: "none",
+                    },
+                }}
+                sx={{
+                    '& .MuiOutlinedInput-root':{
+                        '&:hover fieldset': {
+                            borderColor: 'transparent',
+                        },
+                        '&.Mui-focused fieldset': {
+                            borderColor: 'transparent',
+                        },
+                    },
                 }}
             />
         </div>
