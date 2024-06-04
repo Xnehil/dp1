@@ -2,14 +2,17 @@ package com.dp1.backend.handlers;
 
 import java.io.IOException;
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -27,6 +30,7 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import com.dp1.backend.models.Vuelo;
+import com.dp1.backend.services.ACOService;
 import com.dp1.backend.services.DatosEnMemoriaService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -39,6 +43,7 @@ public class SocketConnectionHandler extends TextWebSocketHandler {
     private ZonedDateTime algorLastTime = null;
     private HashMap<WebSocketSession, ZonedDateTime> simulatedTimes = new HashMap<>();
     private ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
+    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy, h:mm:ss a", Locale.ENGLISH);
 
     // En esta lista se almacenarán todas las conexiones. Luego se usará para
     // transmitir el mensaje
@@ -49,7 +54,10 @@ public class SocketConnectionHandler extends TextWebSocketHandler {
 
     @Autowired
     private DatosEnMemoriaService datosEnMemoriaService;
-
+    
+    @Autowired
+    private ACOService acoService;
+    
     // Este método se ejecuta cuando el cliente intenta conectarse a los sockets
     @Override
     public void afterConnectionEstablished(@NonNull WebSocketSession session) throws Exception {
@@ -82,20 +90,14 @@ public class SocketConnectionHandler extends TextWebSocketHandler {
         super.handleMessage(session, message);
         // logger.info("Mensaje recibido: " + message.getPayload().toString());
         // Si el mensaje contiene "tiempo", se imprimirá en el log
-        if (message.getPayload().toString().contains("tiempo")) {
-            logger.info("Mensaje recibido: " + message.getPayload().toString());
-
-            // System.out.println("mensaje recibido: " + message.getPayload().toString());
-            // Parse the simulated time from the message
-            String tiempo = message.getPayload().toString().split(": ")[1]; // assuming the message is in the format
-                                                                            // "tiempo: <time>"
-            ZonedDateTime simulatedTime = ZonedDateTime.parse(tiempo);
-            simulatedTime = simulatedTime.withZoneSameLocal(ZoneId.of("GMT-5"));
-            // simulatedTimes.put(session, simulatedTime);
+        if (message.getPayload().toString().contains("tiempo")) 
+        { 
+            // logger.info("Mensaje recibido: " + message.getPayload().toString()); 
+            String tiempo = message.getPayload().toString().split(": ")[1]; // assuming the message is in the format "tiempo: <time>"
+            //Parsear tiempo que llega en el formato "6/2/2024, 3:57:01 PM
+            ZonedDateTime simulatedTime = LocalDateTime.parse(tiempo, formatter).atZone(ZoneId.of("America/Lima"));
             ArrayList<Vuelo> diferenciaVuelos;
             ZonedDateTime lastMessageTime = lastMessageTimes.get(session);
-            //Agregado por MLAA
-            //ZonedDateTime algorLastTime = lastMessageTimes.get(session);
             // If this is the first received time, store it
             if (lastMessageTime == null) {
                 lastMessageTime = simulatedTime;
@@ -148,33 +150,22 @@ public class SocketConnectionHandler extends TextWebSocketHandler {
                 logger.error("Error en diferencia de vuelos: " + e.getLocalizedMessage());
             }
             System.out.println("Ejecutando sección del algoritmo");
-            logger.info("Entrando en sección algoritmo");
-            logger.info("Tiempos: " + algorLastTime);
             difference = Duration.between(algorLastTime, simulatedTime).toMinutes();
             try {
-                if (difference > 30) {
-                    Map<String, Object> messageAlgoritmo = new HashMap<>();
-                    messageAlgoritmo.put("metadata", "correrAlgoritmo");
+                if (difference > 50) {
+                    //Map<String, Object> messageAlgoritmo = new HashMap<>();
+                    //messageAlgoritmo.put("metadata", "correrAlgoritmo");
+                    String paquetesConRutas = acoService.ejecutarAco(lastMessageTime);
+                    System.out.println(paquetesConRutas);
+                    // ArrayList<Integer> arrNumeros = new ArrayList<>();
+                    // arrNumeros.add(5);
+                    // arrNumeros.add(6);
+                    // arrNumeros.add(7);
 
-                    // Adding random information to the new Object
-                    Object dataObject = new Object() {
-                        String randomString = "infoAleatoria";
-                        int randomInt = 42;
-                        boolean randomBoolean = true;
-                        List<String> randomList = Arrays.asList("elemento1", "elemento2", "elemento3");
-                        Map<String, Object> randomMap = new HashMap<>() {
-                            {
-                                put("clave1", "valor1");
-                                put("clave2", 123);
-                                put("clave3", Arrays.asList("subElemento1", "subElemento2"));
-                            }
-                        };
-                    };
-
-                    messageAlgoritmo.put("data", "cadenarandom");
-                    String messageJson = objectMapper.writeValueAsString(messageAlgoritmo);
-                    session.sendMessage(new TextMessage(messageJson));
-                    logger.info("Enviando resultado del algoritmo para los vuelos en el aire");
+                    //messageAlgoritmo.put("data", paquetesConRutas);
+                    //String messageJson = objectMapper.writeValueAsString(messageAlgoritmo);
+                    session.sendMessage(new TextMessage(paquetesConRutas));
+                    logger.info("Enviando resultado del algoritmo 'para los vuelos en el aire'");
                     algorLastTime = simulatedTime;
                 }
             } catch (Exception e) {

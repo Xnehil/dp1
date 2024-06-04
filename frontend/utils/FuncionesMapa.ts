@@ -4,9 +4,11 @@ import { Coordinate } from 'ol/coordinate';
 import { Point, LineString } from 'ol/geom';
 import { tiempoEntreAhoraYSalida } from './FuncionesTiempo';
 import { fromLonLat } from 'ol/proj';
-import { invisibleStyle, planeStyle, selectedPlaneStyle } from '@/components/mapa/EstilosMapa';
+import { dinamicPlaneStyle, dinamicSelectedPlaneStle, invisibleStyle, planeStyle, selectedLineStyle, selectedPlaneStyle } from '@/components/mapa/EstilosMapa';
 import { Feature } from 'ol';
 import { getVectorContext } from 'ol/render';
+import Icon from 'ol/style/Icon';
+import Style from 'ol/style/Style';
 
 export function updateCoordinates(aeropuertos: Map<String, Aeropuerto>, vuelos: Map<number, { vuelo: Vuelo, pointFeature: any, lineFeature: any}> | null, simulationTime: Date):
     number[]{
@@ -123,8 +125,36 @@ export function crearPuntoDeVuelo(aeropuertos: Map<String, Aeropuerto>, item: an
     const feature = new Feature({
         geometry: point,
     });
-    feature.setStyle(planeStyle);
+    feature.setStyle(dinamicPlaneStyle(item));
     feature.set('vueloId', item.vuelo.id); // Agregar el ID del vuelo
     return feature;
 }
 
+export function seleccionarVuelo(vueloId:number, setSelectedVuelo: any ,selectedFeature: any, vuelos: React.RefObject<Map<number, { vuelo: Vuelo, pointFeature: any, lineFeature: any}>>, feature: any){
+    // console.log("vueloId: ", vueloId);
+    // console.log("vuelos: ", vuelos.current);
+    const vuelo = vuelos.current?.get(vueloId)?.vuelo;
+    if (vuelo) {
+        setSelectedVuelo(vuelo);
+        console.log(
+            `Vuelo seleccionado setteado: Vuelo ID${vuelo.id}`
+        );
+        if (selectedFeature.current != null) {
+            selectedFeature.current.setStyle(dinamicPlaneStyle(vuelos.current?.get(selectedFeature.current.get("vueloId"))));
+            vuelos.current?.get(selectedFeature.current.get("vueloId"))?.lineFeature.setStyle(invisibleStyle);
+        }
+
+        (feature as Feature).setStyle(
+            dinamicSelectedPlaneStle(
+                vuelos.current?.get(vueloId)
+            )
+        );
+        selectedFeature.current = feature as Feature;
+
+        vuelos.current?.get(vueloId)?.lineFeature.setStyle(selectedLineStyle);
+    } else {
+        console.error(
+            `Vuelo no encontrado: Vuelo ID ${vueloId}`
+        );
+    }
+}

@@ -24,7 +24,9 @@ export default function PlaneamientoYGestion() {
           </Link>
         </div>
         <div className='flex flex-row justify-around p-0'>
-          <IconoTarea icon={srcPaquete} description="Paquetes" />
+          <Link href={"planeamientoGestion/registrarEnvio"}>
+            <IconoTarea icon={srcPaquete} description="Envíos" />
+          </Link>
           <IconoTarea icon={srcCliente} description="Clientes" />
         </div>
       </div>

@@ -102,9 +102,7 @@ public class VueloService {
                     horaDespegue = horaDespegue.with(vuelo.getFechaHoraSalida().toLocalTime());
                     horaAterrizaje = horaAterrizaje.with(vuelo.getFechaHoraLlegada().toLocalTime());
 
-                    if (vuelo.getCambioDeDia()) {
-                        horaAterrizaje = horaAterrizaje.plusDays(1);
-                    }
+                    horaAterrizaje = horaAterrizaje.plusDays(vuelo.getCambioDeDia());
 
                     if (horaActual.isAfter(horaDespegue) && horaActual.isBefore(horaAterrizaje)) {
                         vuelosEnElAire.add(vuelo);

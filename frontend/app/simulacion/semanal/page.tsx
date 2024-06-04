@@ -23,16 +23,16 @@ const Page = () => {
   const [horaInicio, setHoraInicio] = useState(new Date());
   const { sendMessage, lastMessage, readyState, getWebSocket } = useWebSocket(process.env.REACT_APP_WS_URL_BASE + "/socket",
     {
-      onOpen: () => {
-        let auxHoraInicio: Date = new Date();
-        if (typeof window !== 'undefined') {
-          const params = new URLSearchParams(window.location.search);
-          auxHoraInicio = new Date(params.get('startDate') || new Date());
-        }
-        console.log("Conexión abierta con tiempo: ", auxHoraInicio);
-        sendMessage("tiempo: " + auxHoraInicio.toISOString(), true);
-      },
-      share: true,
+        onOpen: () => {
+            let auxHoraInicio :Date = new Date();
+            if (typeof window !== 'undefined') {
+                const params = new URLSearchParams(window.location.search);
+                auxHoraInicio = new Date(params.get('startDate') || new Date());
+            }
+            console.log("Conexión abierta con tiempo: ", auxHoraInicio);
+            sendMessage("tiempo: " + auxHoraInicio.toLocaleString("en-US", {timeZone: "America/Lima"}), true);
+        },
+        share: true,
     });
   const [nuevosVuelos, setNuevosVuelos] = useState<number[]>([]);
   const [semaforo, setSemaforo] = useState(0);
@@ -109,7 +109,7 @@ const Page = () => {
         }
       }
       if (message.metadata.includes("correrAlgoritmo")) {
-        console.log("El algoritmo se está ejecutando...");
+        console.log(message.data);
       }
 
     }

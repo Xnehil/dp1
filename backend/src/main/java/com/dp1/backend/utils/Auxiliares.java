@@ -151,9 +151,7 @@ public class Auxiliares {
             }
             LocalDate fechaAuxiliar = fechaHoraSiguienteSalida.toLocalDate();
             fechaHoraSiguienteLlegada = vuelo.getFechaHoraLlegada().with(fechaAuxiliar);
-            fechaHoraSiguienteLlegada = vuelo.getCambioDeDia() ? fechaHoraSiguienteLlegada.plusDays(1)
-                    : fechaHoraSiguienteLlegada;
-
+            fechaHoraSiguienteLlegada = fechaHoraSiguienteLlegada.plusDays(vuelo.getCambioDeDia());
             //Penalización por tiempo de espera
             Duration espera = Duration.between(fechaHoraActual, fechaHoraSiguienteSalida);
             fitness -= espera.toHours() / 12;
@@ -309,7 +307,7 @@ public class Auxiliares {
             // vuelo.getFechaHoraSalida().withZoneSameInstant(aeropuertos.get(ciudadActual).getZonaHoraria().toZoneId());
             ZonedDateTime fechaHoraVuelo = vuelo.getFechaHoraSalida().with(fechaHoraActual.toLocalDate());
             ZonedDateTime fechaHoraLlegada = vuelo.getFechaHoraLlegada().with(fechaHoraActual.toLocalDate());
-            fechaHoraLlegada = vuelo.getCambioDeDia() ? fechaHoraLlegada.plusDays(1) : fechaHoraLlegada;
+            fechaHoraLlegada.plusDays(vuelo.getCambioDeDia());
             if (verbose){
                 System.out.println("Vuelo " + codVuelo + " de " + vuelo.getOrigen() + " a " + vuelo.getDestino()
                         + " a las " + fechaHoraVuelo.toLocalTime() + " del día " + fechaHoraVuelo.toLocalDate()+
@@ -368,10 +366,7 @@ public class Auxiliares {
             // fechaHoraActual =
             // vuelo.getFechaHoraLlegada().withZoneSameInstant(aeropuertos.get(ciudadActual).getZonaHoraria().toZoneId());
             fechaHoraActual = vuelo.getFechaHoraLlegada().with(fechaHoraVuelo.toLocalDate());
-            if (vuelo.getCambioDeDia()) {
-                fechaHoraActual = fechaHoraActual.plusDays(1);
-            }
-
+            fechaHoraActual = fechaHoraActual.plusDays(vuelo.getCambioDeDia());
             // Verificar llegada a destino
             if (ciudadActual.equals(ciudadDestino)) {
                 if (fechaHoraActual.isAfter(fechaHoraLimite)) {

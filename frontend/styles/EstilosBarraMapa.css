@@ -1,0 +1,13 @@
+.barra-mapa-contenedor {
+    position: relative;
+    top: 80px;
+    left: 380px;
+    right: 10px;
+    z-index: 10;
+    background-color: rgba(255, 255, 255, 0.8);
+    color: black;
+    border-radius: 20px;
+    width: calc(50%);
+    justify-self: center;
+    align-self: center;
+}
