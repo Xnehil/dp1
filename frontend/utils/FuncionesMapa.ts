@@ -4,7 +4,7 @@ import { Coordinate } from 'ol/coordinate';
 import { Point, LineString } from 'ol/geom';
 import { tiempoEntreAhoraYSalida } from './FuncionesTiempo';
 import { fromLonLat } from 'ol/proj';
-import { dinamicPlaneStyle, dinamicSelectedPlaneStle, invisibleStyle, planeStyle, selectedLineStyle, selectedPlaneStyle } from '@/components/mapa/EstilosMapa';
+import { dinamicPlaneStyle, dinamicSelectedPlaneStle, invisibleStyle, planeStyle, selectedLineStyle, selectedPlaneStyle, selectedAirportStyle, airportStyle } from '@/components/mapa/EstilosMapa';
 import { Feature } from 'ol';
 import { getVectorContext } from 'ol/render';
 import Icon from 'ol/style/Icon';
@@ -156,5 +156,77 @@ export function seleccionarVuelo(vueloId:number, setSelectedVuelo: any ,selected
         console.error(
             `Vuelo no encontrado: Vuelo ID ${vueloId}`
         );
+    }
+}
+
+export function seleccionarAeropuerto(aeropuertoId: string, setSelectedAeropuerto: any, selectedFeature: any, aeropuertos: Map<string, Aeropuerto>, feature: any) {
+    const aeropuerto = aeropuertos.get(aeropuertoId);
+    if (aeropuerto) {
+        setSelectedAeropuerto(aeropuerto);
+        console.log(
+            `Aeropuerto seleccionado setteado: Aeropuerto ID ${aeropuerto.id}`
+        );
+        if (selectedFeature.current != null) {
+            selectedFeature.current.setStyle(airportStyle);
+        }
+
+        (feature as Feature).setStyle(selectedAirportStyle);
+        selectedFeature.current = feature as Feature;
+    } else {
+        console.error(
+            `Aeropuerto no encontrado: Aeropuerto ID ${aeropuertoId}`
+        );
+    }
+}
+
+export function seleccionarElemento(
+    vueloId: number | null,
+    aeropuertoId: string | null,
+    setSelectedVuelo: any,
+    setSelectedAeropuerto: any,
+    selectedFeature: any,
+    vuelos: React.RefObject<Map<number, { vuelo: Vuelo, pointFeature: any, lineFeature: any }>>,
+    aeropuertos: Map<string, Aeropuerto>,
+    feature: any
+) {
+    if (vueloId) {
+        const vuelo = vuelos.current?.get(vueloId)?.vuelo;
+        if (vuelo) {
+            setSelectedVuelo(vuelo);
+            setSelectedAeropuerto(null);
+            console.log(`Vuelo seleccionado setteado: Vuelo ID${vuelo.id}`);
+            if (selectedFeature.current != null) {
+                if (selectedFeature.current.get("vueloId")) {
+                    selectedFeature.current.setStyle(dinamicPlaneStyle(vuelos.current?.get(selectedFeature.current.get("vueloId"))));
+                    vuelos.current?.get(selectedFeature.current.get("vueloId"))?.lineFeature.setStyle(invisibleStyle);
+                } else if (selectedFeature.current.get("aeropuertoId")) {
+                    selectedFeature.current.setStyle(airportStyle);
+                }
+            }
+            (feature as Feature).setStyle(dinamicSelectedPlaneStle(vuelos.current?.get(vueloId)));
+            selectedFeature.current = feature as Feature;
+            vuelos.current?.get(vueloId)?.lineFeature.setStyle(selectedLineStyle);
+        } else {
+            console.error(`Vuelo no encontrado: Vuelo ID ${vueloId}`);
+        }
+    } else if (aeropuertoId) {
+        const aeropuerto = aeropuertos.get(aeropuertoId);
+        if (aeropuerto) {
+            setSelectedAeropuerto(aeropuerto);
+            setSelectedVuelo(null);
+            console.log(`Aeropuerto seleccionado setteado: Aeropuerto ID ${aeropuerto.id}`);
+            if (selectedFeature.current != null) {
+                if (selectedFeature.current.get("vueloId")) {
+                    selectedFeature.current.setStyle(dinamicPlaneStyle(vuelos.current?.get(selectedFeature.current.get("vueloId"))));
+                    vuelos.current?.get(selectedFeature.current.get("vueloId"))?.lineFeature.setStyle(invisibleStyle);
+                } else if (selectedFeature.current.get("aeropuertoId")) {
+                    selectedFeature.current.setStyle(airportStyle);
+                }
+            }
+            (feature as Feature).setStyle(selectedAirportStyle);
+            selectedFeature.current = feature as Feature;
+        } else {
+            console.error(`Aeropuerto no encontrado: Aeropuerto ID ${aeropuertoId}`);
+        }
     }
 }

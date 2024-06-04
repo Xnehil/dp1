@@ -34,10 +34,12 @@ public class ACOService {
     public String ejecutarAco(ZonedDateTime horaActual) {
         paquetes.clear();
 
-        HashMap<String, Aeropuerto> aeropuertos = new HashMap<String, Aeropuerto>();
-        HashMap<Integer, Vuelo> vuelos = new HashMap<Integer, Vuelo>();
-        HashMap<String, Envio> envios = new HashMap<String, Envio>();
-        cargarDatos(aeropuertos, vuelos, envios, paquetes);
+        HashMap<String, Aeropuerto> aeropuertos = datosEnMemoriaService.getAeropuertos();
+        HashMap<Integer, Vuelo> vuelos = datosEnMemoriaService.getVuelos();
+        HashMap<String, Envio> envios = datosEnMemoriaService.devolverEnviosDesdeHasta(horaActual, horaActual.plusHours(3));
+        for (Envio e : envios.values()) {
+            paquetes.addAll(e.getPaquetes());
+        }
         // Imprimir datos
         logger.info("Ejecutando ACO para: ");
         logger.info("Aeropuertos: " + aeropuertos.size());
@@ -61,7 +63,7 @@ public class ACOService {
             logger.info("Paquetes entregados con función André: " + paquetesEntregados);
 
         } catch (Exception e) {
-            logger.error("Error en ejecutarAco: " + e.getMessage());
+            logger.error("Error en ejecutarAco: " + e.getLocalizedMessage());
             return null;
         }
         //Enviar data en formato JSON (String)

@@ -6,6 +6,7 @@ import Stroke from 'ol/style/Stroke';
 import Style from 'ol/style/Style';
 
 let airportStyle: Style;
+let selectedAirportStyle: Style;
 let planeStyle: Style;
 let selectedPlaneStyle: Style;
 
@@ -15,8 +16,18 @@ if(typeof window !== 'undefined') {
             anchor: [0.5, 1],
             anchorXUnits: 'fraction',
             anchorYUnits: 'fraction',
-            src: '/logos/oficinas.png',
+            src: '/logos/oficinasEnhanced.png',
             scale: 0.15,
+        }),
+    });
+
+    selectedAirportStyle = new Style({
+        image: new Icon({
+            anchor: [0.5, 1],
+            anchorXUnits: 'fraction',
+            anchorYUnits: 'fraction',
+            src: '/logos/oficinasEnhancedBlue.png',
+            scale: 0.20,
         }),
     });
 
@@ -84,7 +95,7 @@ function calcularAngulo(item: {vuelo:Vuelo, pointFeature:any, lineFeature:any} ,
 }
 
 
-export { airportStyle, planeStyle, selectedPlaneStyle};
+export { airportStyle, selectedAirportStyle, planeStyle, selectedPlaneStyle};
 
 // Invisible line style
 export const invisibleStyle = new Style({

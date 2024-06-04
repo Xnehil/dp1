@@ -113,6 +113,7 @@ public class SocketConnectionHandler extends TextWebSocketHandler {
                 messageMap.put("data", diferenciaVuelos);
                 String messageJson = objectMapper.writeValueAsString(messageMap);
                 session.sendMessage(new TextMessage(messageJson));
+                datosEnMemoriaService.cargarEnviosDesdeHasta(lastMessageTime);
                 logger.info("Enviando # de vuelos en el aire: inicio" + diferenciaVuelos.size());
                 return;
             }
@@ -149,13 +150,13 @@ public class SocketConnectionHandler extends TextWebSocketHandler {
             } catch (Exception e) {
                 logger.error("Error en diferencia de vuelos: " + e.getLocalizedMessage());
             }
-            System.out.println("Ejecutando sección del algoritmo");
+            // System.out.println("Ejecutando sección del algoritmo");
             difference = Duration.between(algorLastTime, simulatedTime).toMinutes();
             try {
-                if (difference > 50) {
+                if (difference > 180) {
                     //Map<String, Object> messageAlgoritmo = new HashMap<>();
                     //messageAlgoritmo.put("metadata", "correrAlgoritmo");
-                    String paquetesConRutas = acoService.ejecutarAco(lastMessageTime);
+                    String paquetesConRutas = acoService.ejecutarAco(simulatedTime);
                     System.out.println(paquetesConRutas);
                     // ArrayList<Integer> arrNumeros = new ArrayList<>();
                     // arrNumeros.add(5);

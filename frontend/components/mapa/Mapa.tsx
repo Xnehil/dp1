@@ -31,7 +31,9 @@ import {
     crearLineaDeVuelo,
     crearPuntoDeVuelo,
     seleccionarVuelo,
+    seleccionarAeropuerto,
     updateCoordinates,
+    seleccionarElemento,
 } from "@/utils/FuncionesMapa";
 import BarraMapa from "./BarraMapa";
 
@@ -127,9 +129,11 @@ const Mapa = ({
                     geometry: point,
                 });
                 feature.setStyle(airportStyle);
+                feature.set('aeropuertoId', aeropuerto.codigoOACI);// era OACI y no id, 1h para darme cuenta
                 return feature;
             }
         );
+
         console.log(
             "Adding # features: ",
             auxLineFeatures.length,
@@ -155,7 +159,8 @@ const Mapa = ({
                     event.pixel,
                     (feature) => {
                         const vueloId = feature.get("vueloId");
-                        if (vueloId) {
+                        const aeropuertoId = feature.get("aeropuertoId");
+                        /*if (vueloId) {
                             seleccionarVuelo(
                                 vueloId,
                                 setSelectedVuelo,
@@ -164,6 +169,25 @@ const Mapa = ({
                                 feature
                             );
                         }
+                        else if (aeropuertoId) {
+                            seleccionarAeropuerto(
+                                aeropuertoId,
+                                setSelectedAeropuerto,
+                                selectedFeature2,
+                                aeropuertos,
+                                feature
+                            );
+                        }*/
+                        seleccionarElemento(
+                            vueloId,
+                            aeropuertoId,
+                            setSelectedVuelo,
+                            setSelectedAeropuerto,
+                            selectedFeature,
+                            vuelos,
+                            aeropuertos,
+                            feature
+                        );
                     }
                 );
             });
@@ -268,7 +292,7 @@ const Mapa = ({
                     fechaHoraActual={currentTime.toLocaleString()}
                     fechaHoraSimulada={simulationTime.toLocaleString()}
                 />
-                <DatosVuelo vuelo={selectedVuelo} />
+                <DatosVuelo vuelo={selectedVuelo} aeropuerto={selectedAeropuerto}/>
             </div>{" "}
         </div>
     );
