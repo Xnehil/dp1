@@ -18,15 +18,20 @@ import com.dp1.backend.models.ColeccionRuta;
 import com.dp1.backend.utils.ACO;
 import com.dp1.backend.utils.Auxiliares;
 import com.dp1.backend.utils.FuncionesLectura;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+
 @Service
 public class ACOService {
+    private ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
+
     private static final Logger logger = LogManager.getLogger(ACOService.class);
     private ArrayList<Paquete> paquetes = new ArrayList<Paquete>();
 
-    @Autowired  
+    @Autowired
     private DatosEnMemoriaService datosEnMemoriaService;
 
-    public boolean ejecutarAco(ZonedDateTime horaActual) {
+    public String ejecutarAco(ZonedDateTime horaActual) {
         paquetes.clear();
 
         HashMap<String, Aeropuerto> aeropuertos = new HashMap<String, Aeropuerto>();
@@ -43,12 +48,13 @@ public class ACOService {
         try {
             // Medit tiempo de ejecución
             Long startTime = System.currentTimeMillis();
-            ACO.run_v2(aeropuertos, vuelos, envios, paquetes, 20);
+            paquetes = ACO.run_v2(aeropuertos, vuelos, envios, paquetes, 20);
             Long endTime = System.currentTimeMillis();
             Long totalTime = endTime - startTime;
             logger.info("Tiempo de ejecución: " + totalTime + " ms");
             int rutasAntes = datosEnMemoriaService.getRutasPosiblesSet().size();
-            int paquetesEntregados = Auxiliares.verificacionTotalPaquetes(aeropuertos, vuelos, envios, paquetes, datosEnMemoriaService);
+            int paquetesEntregados = Auxiliares.verificacionTotalPaquetes(aeropuertos, vuelos, envios, paquetes,
+                    datosEnMemoriaService);
             int rutasDespues = datosEnMemoriaService.getRutasPosiblesSet().size();
             // logger.info("Rutas antes: " + rutasAntes);
             // logger.info("Rutas después: " + rutasDespues);
@@ -56,18 +62,31 @@ public class ACOService {
 
         } catch (Exception e) {
             logger.error("Error en ejecutarAco: " + e.getMessage());
-            return false;
+            return null;
         }
-        return true;
+        //Enviar data en formato JSON (String)
+        try {
+            //ArrayList<Vuelo> auxVuelos = new ArrayList<>();
+            //for(Vuelo v: vuelos.values())
+            //    auxVuelos.add(v);   
+            Map<String, Object> messageMap = new HashMap<>();
+            messageMap.put("metadata", "correrAlgoritmo");
+            messageMap.put("data", paquetes);
+            String paquetesRutasJSON = objectMapper.writeValueAsString(messageMap);
+
+            return paquetesRutasJSON;
+        } catch (Exception e) {
+            logger.error("Error en enviar los vuelos de prueba en formato JSON: " + e.getMessage());
+            return null;
+        }
 
     }
 
-    public boolean guardarRutas(){
+    public boolean guardarRutas() {
         HashMap<String, ColeccionRuta> rutas = new HashMap<String, ColeccionRuta>();
-        try{
-            //To do fátima
-        }
-        catch(Exception e){
+        try {
+            // To do fátima
+        } catch (Exception e) {
             logger.error("Error en guardarRutas: " + e.getMessage());
             return false;
         }
@@ -117,7 +136,7 @@ public class ACOService {
         }
 
         HashMap<String, Envio> enviosActual = new HashMap<>();
-        
+
         for (Map.Entry<String, Envio> entry : envios.entrySet()) {
             Envio envio = entry.getValue();
             // Verificar si la hora del envío es posterior a la hora actual

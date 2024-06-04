@@ -30,6 +30,7 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import com.dp1.backend.models.Vuelo;
+import com.dp1.backend.services.ACOService;
 import com.dp1.backend.services.DatosEnMemoriaService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -39,7 +40,7 @@ public class SocketConnectionHandler extends TextWebSocketHandler {
     private static final Logger logger = LogManager.getLogger(SocketConnectionHandler.class);
     private ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
     private HashMap<WebSocketSession, ZonedDateTime> lastMessageTimes = new HashMap<>();
-    private ZonedDateTime algorLastTime = ZonedDateTime.now();
+    private ZonedDateTime algorLastTime = null;
     private HashMap<WebSocketSession, ZonedDateTime> simulatedTimes = new HashMap<>();
     private ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy, h:mm:ss a", Locale.ENGLISH);
@@ -53,7 +54,10 @@ public class SocketConnectionHandler extends TextWebSocketHandler {
 
     @Autowired
     private DatosEnMemoriaService datosEnMemoriaService;
-
+    
+    @Autowired
+    private ACOService acoService;
+    
     // Este método se ejecuta cuando el cliente intenta conectarse a los sockets
     @Override
     public void afterConnectionEstablished(@NonNull WebSocketSession session) throws Exception {
@@ -94,7 +98,6 @@ public class SocketConnectionHandler extends TextWebSocketHandler {
             ZonedDateTime simulatedTime = LocalDateTime.parse(tiempo, formatter).atZone(ZoneId.of("America/Lima"));
             ArrayList<Vuelo> diferenciaVuelos;
             ZonedDateTime lastMessageTime = lastMessageTimes.get(session);
-            ZonedDateTime algorLastTime = lastMessageTimes.get(session);
             // If this is the first received time, store it
             if (lastMessageTime == null) {
                 lastMessageTime = simulatedTime;
@@ -146,37 +149,28 @@ public class SocketConnectionHandler extends TextWebSocketHandler {
             } catch (Exception e) {
                 logger.error("Error en diferencia de vuelos: " + e.getLocalizedMessage());
             }
-            // System.out.println("Ejecutando sección del algoritmo");
-            // difference = Duration.between(algorLastTime, simulatedTime).toMinutes();
-            // try {
-            //     if (difference > 30) {
-            //         Map<String, Object> messageAlgoritmo = new HashMap<>();
-            //         messageAlgoritmo.put("metadata", "correrAlgoritmo");
+            System.out.println("Ejecutando sección del algoritmo");
+            difference = Duration.between(algorLastTime, simulatedTime).toMinutes();
+            try {
+                if (difference > 50) {
+                    //Map<String, Object> messageAlgoritmo = new HashMap<>();
+                    //messageAlgoritmo.put("metadata", "correrAlgoritmo");
+                    String paquetesConRutas = acoService.ejecutarAco(lastMessageTime);
+                    System.out.println(paquetesConRutas);
+                    // ArrayList<Integer> arrNumeros = new ArrayList<>();
+                    // arrNumeros.add(5);
+                    // arrNumeros.add(6);
+                    // arrNumeros.add(7);
 
-            //         // Adding random information to the new Object
-            //         Object dataObject = new Object() {
-            //             String randomString = "infoAleatoria";
-            //             int randomInt = 42;
-            //             boolean randomBoolean = true;
-            //             List<String> randomList = Arrays.asList("elemento1", "elemento2", "elemento3");
-            //             Map<String, Object> randomMap = new HashMap<>() {
-            //                 {
-            //                     put("clave1", "valor1");
-            //                     put("clave2", 123);
-            //                     put("clave3", Arrays.asList("subElemento1", "subElemento2"));
-            //                 }
-            //             };
-            //         };
-
-            //         messageAlgoritmo.put("data", dataObject);
-            //         String messageJson = objectMapper.writeValueAsString(messageAlgoritmo);
-            //         session.sendMessage(new TextMessage(messageJson));
-            //         logger.info("Enviando resultado del algoritmo para los vuelos en el aire");
-            //     }
-            //     algorLastTime = simulatedTime;
-            // } catch (Exception e) {
-            //     logger.error("Error en ejecución del algoritmo: " + e.getLocalizedMessage());
-            // }
+                    //messageAlgoritmo.put("data", paquetesConRutas);
+                    //String messageJson = objectMapper.writeValueAsString(messageAlgoritmo);
+                    session.sendMessage(new TextMessage(paquetesConRutas));
+                    logger.info("Enviando resultado del algoritmo 'para los vuelos en el aire'");
+                    algorLastTime = simulatedTime;
+                }
+            } catch (Exception e) {
+                logger.error("Error en ejecución del algoritmo: " + e.getLocalizedMessage());
+            }
 
         }
         if (message.getPayload().toString().contains("tiempo")) {
