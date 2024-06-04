@@ -243,8 +243,10 @@ public class ACO {
                 // validar que no vuelva a una ciudad ya visitada
                 if (paq.getRuta().isEmpty()) {
                     // de acuerdo a su aeropuerto de origen
+                    System.out.println("Paquete " + paq.getCodigoEnvio());
                     ciudadActualPaquete = envios.get(paq.getCodigoEnvio()).getOrigen();
                     fechaActualPaquete = envios.get(paq.getCodigoEnvio()).getFechaHoraSalida();
+                    System.out.println("Fecha de salida: " + fechaActualPaquete);
                 } else {
                     // de acuerdo al aeropuerto destino de su último vuelo
                     ArrayList<Integer> rutaPaquete = paq.getRuta();
