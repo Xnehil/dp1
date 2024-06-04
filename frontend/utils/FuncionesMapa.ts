@@ -178,3 +178,55 @@ export function seleccionarAeropuerto(aeropuertoId: string, setSelectedAeropuert
         );
     }
 }
+
+export function seleccionarElemento(
+    vueloId: number | null,
+    aeropuertoId: string | null,
+    setSelectedVuelo: any,
+    setSelectedAeropuerto: any,
+    selectedFeature: any,
+    vuelos: React.RefObject<Map<number, { vuelo: Vuelo, pointFeature: any, lineFeature: any }>>,
+    aeropuertos: Map<string, Aeropuerto>,
+    feature: any
+) {
+    if (vueloId) {
+        const vuelo = vuelos.current?.get(vueloId)?.vuelo;
+        if (vuelo) {
+            setSelectedVuelo(vuelo);
+            setSelectedAeropuerto(null);
+            console.log(`Vuelo seleccionado setteado: Vuelo ID${vuelo.id}`);
+            if (selectedFeature.current != null) {
+                if (selectedFeature.current.get("vueloId")) {
+                    selectedFeature.current.setStyle(dinamicPlaneStyle(vuelos.current?.get(selectedFeature.current.get("vueloId"))));
+                    vuelos.current?.get(selectedFeature.current.get("vueloId"))?.lineFeature.setStyle(invisibleStyle);
+                } else if (selectedFeature.current.get("aeropuertoId")) {
+                    selectedFeature.current.setStyle(airportStyle);
+                }
+            }
+            (feature as Feature).setStyle(dinamicSelectedPlaneStle(vuelos.current?.get(vueloId)));
+            selectedFeature.current = feature as Feature;
+            vuelos.current?.get(vueloId)?.lineFeature.setStyle(selectedLineStyle);
+        } else {
+            console.error(`Vuelo no encontrado: Vuelo ID ${vueloId}`);
+        }
+    } else if (aeropuertoId) {
+        const aeropuerto = aeropuertos.get(aeropuertoId);
+        if (aeropuerto) {
+            setSelectedAeropuerto(aeropuerto);
+            setSelectedVuelo(null);
+            console.log(`Aeropuerto seleccionado setteado: Aeropuerto ID ${aeropuerto.id}`);
+            if (selectedFeature.current != null) {
+                if (selectedFeature.current.get("vueloId")) {
+                    selectedFeature.current.setStyle(dinamicPlaneStyle(vuelos.current?.get(selectedFeature.current.get("vueloId"))));
+                    vuelos.current?.get(selectedFeature.current.get("vueloId"))?.lineFeature.setStyle(invisibleStyle);
+                } else if (selectedFeature.current.get("aeropuertoId")) {
+                    selectedFeature.current.setStyle(airportStyle);
+                }
+            }
+            (feature as Feature).setStyle(selectedAirportStyle);
+            selectedFeature.current = feature as Feature;
+        } else {
+            console.error(`Aeropuerto no encontrado: Aeropuerto ID ${aeropuertoId}`);
+        }
+    }
+}

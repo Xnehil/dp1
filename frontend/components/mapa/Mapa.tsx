@@ -33,6 +33,7 @@ import {
     seleccionarVuelo,
     seleccionarAeropuerto,
     updateCoordinates,
+    seleccionarElemento,
 } from "@/utils/FuncionesMapa";
 import BarraMapa from "./BarraMapa";
 
@@ -74,7 +75,6 @@ const Mapa = ({
     const [selectedVuelo, setSelectedVuelo] = useState<Vuelo | null>(null);
     const [selectedAeropuerto, setSelectedAeropuerto] = useState<Aeropuerto | null>(null);
     const selectedFeature = useRef<Feature | null>(null);
-    const selectedFeature2 = useRef<Feature | null>(null);
     const vistaActual = useRef<View | null>(null);
 
     useEffect(() => {
@@ -160,7 +160,7 @@ const Mapa = ({
                     (feature) => {
                         const vueloId = feature.get("vueloId");
                         const aeropuertoId = feature.get("aeropuertoId");
-                        if (vueloId) {
+                        /*if (vueloId) {
                             seleccionarVuelo(
                                 vueloId,
                                 setSelectedVuelo,
@@ -177,7 +177,17 @@ const Mapa = ({
                                 aeropuertos,
                                 feature
                             );
-                        }
+                        }*/
+                        seleccionarElemento(
+                            vueloId,
+                            aeropuertoId,
+                            setSelectedVuelo,
+                            setSelectedAeropuerto,
+                            selectedFeature,
+                            vuelos,
+                            aeropuertos,
+                            feature
+                        );
                     }
                 );
             });
