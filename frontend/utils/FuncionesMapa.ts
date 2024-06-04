@@ -4,7 +4,7 @@ import { Coordinate } from 'ol/coordinate';
 import { Point, LineString } from 'ol/geom';
 import { tiempoEntreAhoraYSalida } from './FuncionesTiempo';
 import { fromLonLat } from 'ol/proj';
-import { dinamicPlaneStyle, dinamicSelectedPlaneStle, invisibleStyle, planeStyle, selectedLineStyle, selectedPlaneStyle } from '@/components/mapa/EstilosMapa';
+import { dinamicPlaneStyle, dinamicSelectedPlaneStle, invisibleStyle, planeStyle, selectedLineStyle, selectedPlaneStyle, selectedAirportStyle, airportStyle } from '@/components/mapa/EstilosMapa';
 import { Feature } from 'ol';
 import { getVectorContext } from 'ol/render';
 import Icon from 'ol/style/Icon';
@@ -155,6 +155,26 @@ export function seleccionarVuelo(vueloId:number, setSelectedVuelo: any ,selected
     } else {
         console.error(
             `Vuelo no encontrado: Vuelo ID ${vueloId}`
+        );
+    }
+}
+
+export function seleccionarAeropuerto(aeropuertoId: string, setSelectedAeropuerto: any, selectedFeature: any, aeropuertos: Map<string, Aeropuerto>, feature: any) {
+    const aeropuerto = aeropuertos.get(aeropuertoId);
+    if (aeropuerto) {
+        setSelectedAeropuerto(aeropuerto);
+        console.log(
+            `Aeropuerto seleccionado setteado: Aeropuerto ID ${aeropuerto.id}`
+        );
+        if (selectedFeature.current != null) {
+            selectedFeature.current.setStyle(airportStyle);
+        }
+
+        (feature as Feature).setStyle(selectedAirportStyle);
+        selectedFeature.current = feature as Feature;
+    } else {
+        console.error(
+            `Aeropuerto no encontrado: Aeropuerto ID ${aeropuertoId}`
         );
     }
 }
