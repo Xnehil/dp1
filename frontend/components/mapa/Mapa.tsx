@@ -74,6 +74,7 @@ const Mapa = ({
     const [selectedVuelo, setSelectedVuelo] = useState<Vuelo | null>(null);
     const [selectedAeropuerto, setSelectedAeropuerto] = useState<Aeropuerto | null>(null);
     const selectedFeature = useRef<Feature | null>(null);
+    const selectedFeature2 = useRef<Feature | null>(null);
     const vistaActual = useRef<View | null>(null);
 
     useEffect(() => {
@@ -158,6 +159,7 @@ const Mapa = ({
                     event.pixel,
                     (feature) => {
                         const vueloId = feature.get("vueloId");
+                        const aeropuertoId = feature.get("aeropuertoId");
                         if (vueloId) {
                             seleccionarVuelo(
                                 vueloId,
@@ -167,12 +169,11 @@ const Mapa = ({
                                 feature
                             );
                         }
-                        const aeropuertoId = feature.get("aeropuertoId");
-                        if (aeropuertoId) {
+                        else if (aeropuertoId) {
                             seleccionarAeropuerto(
                                 aeropuertoId,
                                 setSelectedAeropuerto,
-                                selectedFeature,
+                                selectedFeature2,
                                 aeropuertos,
                                 feature
                             );
@@ -281,7 +282,7 @@ const Mapa = ({
                     fechaHoraActual={currentTime.toLocaleString()}
                     fechaHoraSimulada={simulationTime.toLocaleString()}
                 />
-                <DatosVuelo vuelo={selectedVuelo} />
+                <DatosVuelo vuelo={selectedVuelo} aeropuerto={selectedAeropuerto}/>
             </div>{" "}
         </div>
     );
