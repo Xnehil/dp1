@@ -7,6 +7,7 @@ import IconoTarea from "@/components/IconoTarea";
 
 import srcAjustes from "@/public/logos/ajustes.png";
 import srcEstadisticas from "@/public/logos/estadisticas.png";
+import srcRegistroEnvio from "@/public/logos/registroEnvio.png";
 import srcPlaneamiento from "@/public/logos/planeamientoGestion.png";
 import srcSimulacion from "@/public/logos/simulacionEnvios.png";
 import srcVuelosEnVivo from "@/public/logos/vuelosEnVivo.png";
@@ -46,10 +47,14 @@ export default function Home() {
                             description="Planeamiento y gestión"
                         />
                     </Link>
-                    <IconoTarea
-                        icon={srcEstadisticas}
-                        description="Estadísticas"
-                    />
+                    <Link href={"/registroEnvios"} className="h-full">
+                        <IconoTarea
+                            icon={srcRegistroEnvio}
+                            description="Registrar envío"
+                            size="220"
+                        />
+                    </Link>
+                    
                 </div>
             </section>
         </main>

@@ -10,6 +10,7 @@ import LogoHome from '@/public/icons/LogoHome'
 import LogoGest from '@/public/icons/LogoGest'
 import LogoStats from '@/public/icons/LogoStats'
 import LogoConfig from '@/public/icons/LogoConfig'
+import LogoRegEnv from '@/public/icons/LogoRegEnv'
 
 const Navbar = () => {
 	const navbarItems = [
@@ -17,7 +18,7 @@ const Navbar = () => {
 		{ name: 'En vivo', route: '/vuelosEnVivo', Icon: LogoPlane},
 		{ name: 'Gestión', route: '/gestion', Icon: LogoGest},
 		{ name: 'Simulación', route: '/simulacion', Icon: LogoSimu},
-		{ name: 'Estadísticas', route: '/estadisticas', Icon: LogoStats},
+		{ name: 'Registro de envíos', route: '/registroEnvios', Icon: LogoRegEnv},
 		{ name: '', route: '/configuracion', Icon: LogoConfig},
 	]
 	const pathname = usePathname()
