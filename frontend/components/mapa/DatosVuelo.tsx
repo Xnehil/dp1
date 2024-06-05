@@ -3,15 +3,21 @@ import React, { useState, useRef, useEffect } from "react";
 import "@/styles/ComponentesDatosVuelo.css";
 import { Vuelo } from "@/types/Vuelo";
 import { Aeropuerto } from "@/types/Aeropuerto";
+import { ProgramacionVuelo } from "@/types/ProgramacionVuelo";
+import { Envio } from "@/types/Envio";
 
 type DatosVueloProps = {
   vuelo: Vuelo | null;
   aeropuerto: Aeropuerto | null;
+  programacionVuelos: React.MutableRefObject<Map<string, ProgramacionVuelo>>;
+  simulationTime: Date;
+  envios: React.MutableRefObject<Map<string, Envio>>;
 };
 
-const DatosVuelo: React.FC<DatosVueloProps> = ({ vuelo, aeropuerto }) => {
+const DatosVuelo: React.FC<DatosVueloProps> = ({ vuelo, aeropuerto, programacionVuelos, simulationTime, envios }) => {
   const [visible, setVisible] = useState<boolean>(false);
   const [opcion, setOpcion] = useState<number>(0);
+  const [programacionVuelo, setProgramacionVuelo] = useState<ProgramacionVuelo | null>(null);
 
   const toggleVisibility = () => {
     setVisible(!visible);
@@ -19,6 +25,9 @@ const DatosVuelo: React.FC<DatosVueloProps> = ({ vuelo, aeropuerto }) => {
 
   useEffect(() => {
     if(vuelo == null) return;
+    //En base al día de la simulación, se obtiene la programación de vuelo correspondiente
+    const claveProgramacion = vuelo.id + "-" + simulationTime.toISOString().slice(0,10);
+    setProgramacionVuelo(programacionVuelos.current.get(claveProgramacion) || null);
     setOpcion(1);
   }, [vuelo]);
 
@@ -51,9 +60,9 @@ const DatosVuelo: React.FC<DatosVueloProps> = ({ vuelo, aeropuerto }) => {
                 </p>
               </div>
               <div className="datos-vuelo-capacidad">
-                <h2>Cap: {vuelo.capacidad} Paquetes</h2>
+                <h2>Cap: {programacionVuelo?.cantPaquetes ?? 120} Paquetes</h2>
                 <p>
-                  {Math.round((vuelo.cargaPorDia.size / vuelo.capacidad) * 100)}
+                  {Math.round((programacionVuelo?.cantPaquetes ?? 120 / vuelo.capacidad) * 100)}
                   % lleno
                 </p>
                 <img

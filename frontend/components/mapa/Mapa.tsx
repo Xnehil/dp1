@@ -36,6 +36,8 @@ import {
     seleccionarElemento,
 } from "@/utils/FuncionesMapa";
 import BarraMapa from "./BarraMapa";
+import { ProgramacionVuelo } from "@/types/ProgramacionVuelo";
+import { Envio } from "@/types/Envio";
 
 type MapaProps = {
     vuelos: React.RefObject<
@@ -50,6 +52,8 @@ type MapaProps = {
         >
     >;
     aeropuertos: Map<string, Aeropuerto>;
+    programacionVuelos: React.MutableRefObject<Map<string, ProgramacionVuelo>>;
+    envios: React.MutableRefObject<Map<string, Envio>>;
     simulationInterval: number;
     horaInicio: Date;
     nuevosVuelos: number[];
@@ -61,6 +65,8 @@ type MapaProps = {
 const Mapa = ({
     vuelos,
     aeropuertos,
+    programacionVuelos,
+    envios,
     simulationInterval,
     horaInicio = new Date(),
     nuevosVuelos,
@@ -292,7 +298,9 @@ const Mapa = ({
                     fechaHoraActual={currentTime.toLocaleString()}
                     fechaHoraSimulada={simulationTime.toLocaleString()}
                 />
-                <DatosVuelo vuelo={selectedVuelo} aeropuerto={selectedAeropuerto}/>
+                <DatosVuelo vuelo={selectedVuelo} aeropuerto={selectedAeropuerto} programacionVuelos={programacionVuelos} simulationTime={simulationTime}
+                    envios={envios}
+                />
             </div>{" "}
         </div>
     );

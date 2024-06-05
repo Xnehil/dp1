@@ -120,7 +120,7 @@ public class SocketConnectionHandler extends TextWebSocketHandler {
                 logger.info("Enviando # de vuelos en el aire: inicio" + diferenciaVuelos.size());
                 
                 //Enviamos la data por primera vez
-                String paquetesConRutas = acoService.ejecutarAcoInicial(simulatedTime.minusDays(3),simulatedTime);
+                String paquetesConRutas = acoService.ejecutarAcoInicial(simulatedTime.minusDays(1),simulatedTime);
                 session.sendMessage(new TextMessage(paquetesConRutas));
                 
                 return;
