@@ -4,8 +4,8 @@ export type Envio = BaseModel & {
     codigoEnvio: string;
     origen: string;
     destino: string;
-    fechaHoraSalida: Date;
-    fechaHoraLlegadaPrevista: Date;
+    fechaHoraSalida: number;
+    fechaHoraLlegadaPrevista: number;
     cantidadPaquetes: number;
     paquetes: Array<Paquete>;
 };

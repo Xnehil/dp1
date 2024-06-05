@@ -13,6 +13,7 @@
 .datos-vuelo-contenedor.visible {
     transform: translateY(0);
     opacity: 1;
+    max-height: 200px;
 }
 
 .datos-vuelo-contenedor.hidden {

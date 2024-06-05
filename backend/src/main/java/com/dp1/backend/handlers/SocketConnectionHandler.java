@@ -38,9 +38,8 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 @Component
 public class SocketConnectionHandler extends TextWebSocketHandler {
     private static final Logger logger = LogManager.getLogger(SocketConnectionHandler.class);
-    private ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
     private HashMap<WebSocketSession, ZonedDateTime> lastMessageTimes = new HashMap<>();
-    private ZonedDateTime algorLastTime = null;
+    private HashMap<WebSocketSession, ZonedDateTime> lastAlgorTimes = new HashMap<>();
     private HashMap<WebSocketSession, ZonedDateTime> simulatedTimes = new HashMap<>();
     private ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy, h:mm:ss a", Locale.ENGLISH);
@@ -66,6 +65,7 @@ public class SocketConnectionHandler extends TextWebSocketHandler {
         webSocketSessions.add(session);
         lastMessageTimes.put(session, null);
         simulatedTimes.put(session, null);
+        lastAlgorTimes.put(session, null);
     }
 
     // Cuando el cliente se desconecta del WebSocket, se llama a este método
@@ -77,7 +77,9 @@ public class SocketConnectionHandler extends TextWebSocketHandler {
         // Removing the connection info from the list
         lastMessageTimes.remove(session);
         simulatedTimes.remove(session);
+        lastAlgorTimes.remove(session);
         webSocketSessions.remove(session);
+        datosEnMemoriaService.limpiarMemoria();
         // executorService.shutdown();
     }
 
@@ -98,12 +100,15 @@ public class SocketConnectionHandler extends TextWebSocketHandler {
             ZonedDateTime simulatedTime = LocalDateTime.parse(tiempo, formatter).atZone(ZoneId.of("America/Lima"));
             ArrayList<Vuelo> diferenciaVuelos;
             ZonedDateTime lastMessageTime = lastMessageTimes.get(session);
+            ZonedDateTime algorLastTime = lastAlgorTimes.get(session);
             // If this is the first received time, store it
             if (lastMessageTime == null) {
                 lastMessageTime = simulatedTime;
                 algorLastTime = simulatedTime;
                 vuelosEnElAire.put(session, datosEnMemoriaService.getVuelosEnElAireMap(simulatedTime));
                 lastMessageTimes.put(session, lastMessageTime);
+                algorLastTime = simulatedTime;
+                lastAlgorTimes.put(session, algorLastTime);
                 diferenciaVuelos = new ArrayList<>();
                 for (Vuelo vuelo : vuelosEnElAire.get(session).values()) {
                     diferenciaVuelos.add(vuelo);
@@ -114,15 +119,10 @@ public class SocketConnectionHandler extends TextWebSocketHandler {
                 String messageJson = objectMapper.writeValueAsString(messageMap);
                 session.sendMessage(new TextMessage(messageJson));
                 datosEnMemoriaService.cargarEnviosDesdeHasta(lastMessageTime);//cargamos todos los envios de la semana
-
-
-
                 logger.info("Enviando # de vuelos en el aire: inicio" + diferenciaVuelos.size());
-                
                 //Enviamos la data por primera vez
-                String paquetesConRutas = acoService.ejecutarAcoInicial(simulatedTime.minusDays(1),simulatedTime);
+                String paquetesConRutas = acoService.ejecutarAcoInicial(simulatedTime.minusDays(2),simulatedTime);
                 session.sendMessage(new TextMessage(paquetesConRutas));
-                
                 return;
             }
 
@@ -133,7 +133,7 @@ public class SocketConnectionHandler extends TextWebSocketHandler {
             long difference = Duration.between(lastMessageTime, simulatedTime).toMinutes();
             // System.out.println("Difference: " + difference);
             try {
-                if (difference > 15) {
+                if (difference > 20) {
                     // session.sendMessage(new TextMessage("15 minute has passed since the last
                     // message"));
                     // logger.info("15 minute has passed since the last message");
@@ -162,20 +162,10 @@ public class SocketConnectionHandler extends TextWebSocketHandler {
             difference = Duration.between(algorLastTime, simulatedTime).toMinutes();
             try {
                 if (difference > 180) {
-                    //Map<String, Object> messageAlgoritmo = new HashMap<>();
-                    //messageAlgoritmo.put("metadata", "correrAlgoritmo");
                     String paquetesConRutas = acoService.ejecutarAco(simulatedTime);
-                    System.out.println(paquetesConRutas);
-                    // ArrayList<Integer> arrNumeros = new ArrayList<>();
-                    // arrNumeros.add(5);
-                    // arrNumeros.add(6);
-                    // arrNumeros.add(7);
-
-                    //messageAlgoritmo.put("data", paquetesConRutas);
-                    //String messageJson = objectMapper.writeValueAsString(messageAlgoritmo);
                     session.sendMessage(new TextMessage(paquetesConRutas));
                     logger.info("Enviando resultado del algoritmo 'para los vuelos en el aire'");
-                    algorLastTime = simulatedTime;
+                    lastAlgorTimes.put(session, simulatedTime);
                 }
             } catch (Exception e) {
                 logger.error("Error en ejecución del algoritmo: " + e.getLocalizedMessage());

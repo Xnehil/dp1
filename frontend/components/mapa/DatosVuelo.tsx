@@ -5,6 +5,7 @@ import { Vuelo } from "@/types/Vuelo";
 import { Aeropuerto } from "@/types/Aeropuerto";
 import { ProgramacionVuelo } from "@/types/ProgramacionVuelo";
 import { Envio } from "@/types/Envio";
+import { aHoraMinutos, tiempoFaltante } from "@/utils/FuncionesTiempo";
 
 type DatosVueloProps = {
   vuelo: Vuelo | null;
@@ -18,6 +19,7 @@ const DatosVuelo: React.FC<DatosVueloProps> = ({ vuelo, aeropuerto, programacion
   const [visible, setVisible] = useState<boolean>(false);
   const [opcion, setOpcion] = useState<number>(0);
   const [programacionVuelo, setProgramacionVuelo] = useState<ProgramacionVuelo | null>(null);
+  const [cargado, setCargado] = useState<boolean>(false);
 
   const toggleVisibility = () => {
     setVisible(!visible);
@@ -25,9 +27,14 @@ const DatosVuelo: React.FC<DatosVueloProps> = ({ vuelo, aeropuerto, programacion
 
   useEffect(() => {
     if(vuelo == null) return;
+    console.log("Vuelo: ", vuelo);
     //En base al día de la simulación, se obtiene la programación de vuelo correspondiente
     const claveProgramacion = vuelo.id + "-" + simulationTime.toISOString().slice(0,10);
-    setProgramacionVuelo(programacionVuelos.current.get(claveProgramacion) || null);
+    // console.log("Clave programación: ", claveProgramacion);
+    // console.log("Programaciones de vuelo: ", programacionVuelos.current);
+    const auxProgramacion = programacionVuelos.current.get(claveProgramacion);
+    // console.log("Programación de vuelo: ", auxProgramacion);
+    setProgramacionVuelo(auxProgramacion ?? null);
     setOpcion(1);
   }, [vuelo]);
 
@@ -36,15 +43,19 @@ const DatosVuelo: React.FC<DatosVueloProps> = ({ vuelo, aeropuerto, programacion
     setOpcion(2);
   }, [aeropuerto]);
 
+
+
+
   return (
     <div className="datos-vuelo-wrapper">
       <button className="toggle-button-datos-vuelo" onClick={toggleVisibility}>
         {visible ? "▼" : "▲"}
       </button>
+      
       <div
         className={`datos-vuelo-contenedor ${visible ? "visible" : "hidden"}`}
       >
-        {vuelo ? (
+        {(vuelo)? (
           <>
             <div className="datos-vuelo-header">
               <img src="/logos/vueloEnhancedBlue.png" alt="Avión" className="icono-vuelo" />
@@ -60,9 +71,9 @@ const DatosVuelo: React.FC<DatosVueloProps> = ({ vuelo, aeropuerto, programacion
                 </p>
               </div>
               <div className="datos-vuelo-capacidad">
-                <h2>Cap: {programacionVuelo?.cantPaquetes ?? 120} Paquetes</h2>
+                <h2>Carga: {programacionVuelo?.cantPaquetes ?? 0} Paquetes</h2>
                 <p>
-                  {Math.round((programacionVuelo?.cantPaquetes ?? 120 / vuelo.capacidad) * 100)}
+                  {(((programacionVuelo?.cantPaquetes ?? 0) / vuelo.capacidad) * 100).toFixed(2)}
                   % lleno
                 </p>
                 <img
@@ -93,27 +104,16 @@ const DatosVuelo: React.FC<DatosVueloProps> = ({ vuelo, aeropuerto, programacion
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
-                      <td>120356</td>
-                      <td>18:00</td>
-                      <td>Lima</td>
-                      <td>Santiago</td>
-                      <td>450</td>
-                    </tr>
-                    <tr>
-                      <td>121356</td>
-                      <td>12:00</td>
-                      <td>Lima</td>
-                      <td>Santiago</td>
-                      <td>450</td>
-                    </tr>
-                    <tr>
-                      <td>220252</td>
-                      <td>11:00</td>
-                      <td>Lima</td>
-                      <td>Santiago</td>
-                      <td>250</td>
-                    </tr>
+                  {programacionVuelo?.paquetes.map((paquete, index) => (
+                        <tr key={index}>
+                            <td>{paquete.id}</td>
+                            <td>{tiempoFaltante(envios.current.get(paquete.codigoEnvio), simulationTime)}</td>
+                            {/* <td>111</td> */}
+                            <td>{envios.current.get(paquete.codigoEnvio)?.origen ?? "NULL"}</td>
+                            <td>{envios.current.get(paquete.codigoEnvio)?.destino ?? "NULL"}</td>
+                            <td>{paquete.codigoEnvio}</td>
+                        </tr>
+                    ))}
                   </tbody>
                 </table>
               </div>
@@ -203,6 +203,7 @@ const DatosVuelo: React.FC<DatosVueloProps> = ({ vuelo, aeropuerto, programacion
           </>
         )}
       </div>
+
     </div>
   );
 };

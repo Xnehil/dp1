@@ -4,12 +4,14 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 
@@ -248,6 +250,14 @@ public class DatosEnMemoriaService {
 
     public void setEnvios(HashMap<String, Envio> envios) {
         this.envios = envios;
+    }
+
+    public void limpiarMemoria() {
+        envios.clear();
+        for (Aeropuerto a : aeropuertos.values()) {
+            a.setCantPaqReal(new TreeMap<LocalDateTime, Integer>());
+            a.setCantPaqParaPlanificacion(new TreeMap<LocalDateTime, Integer>());
+        }
     }
 
 }

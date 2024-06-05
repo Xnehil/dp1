@@ -36,6 +36,7 @@ public class ACOService {
 
         HashMap<String, Aeropuerto> aeropuertos = datosEnMemoriaService.getAeropuertos();
         HashMap<Integer, Vuelo> vuelos = datosEnMemoriaService.getVuelos();
+        logger.info("Desde - hasta: " + horaActual.minusHours(3) + " - " + horaActual);
         HashMap<String, Envio> envios = datosEnMemoriaService.devolverEnviosDesdeHasta(horaActual.minusHours(3), horaActual);
         for (Envio e : envios.values()) {
             paquetes.addAll(e.getPaquetes());

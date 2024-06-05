@@ -38,6 +38,7 @@ import {
 import BarraMapa from "./BarraMapa";
 import { ProgramacionVuelo } from "@/types/ProgramacionVuelo";
 import { Envio } from "@/types/Envio";
+import { limpiarMapasDeDatos } from "@/utils/FuncionesDatos";
 
 type MapaProps = {
     vuelos: React.RefObject<
@@ -204,9 +205,7 @@ const Mapa = ({
         const updateTime = () => {
             setCurrentTime(new Date());
         };
-
         const intervalId = setInterval(updateTime, 1000); // Actualiza cada segundo
-
         return () => clearInterval(intervalId); // Limpiar el intervalo cuando el componente se desmonte
     }, []);
 
@@ -219,9 +218,7 @@ const Mapa = ({
                             simulationInterval * 60 * 1000
                     )
             );
-            // console.log("Simulation time: ", simulationTime);
             if (sendMessage) {
-                // console.log("Enviando tiempo: ", simulationTime.toDateString());
                 const limaTime = simulationTime.toLocaleString("en-US", {
                     timeZone: "America/Lima",
                 });
@@ -255,6 +252,11 @@ const Mapa = ({
         // Clean up interval on unmount
         return () => clearInterval(intervalId);
     }, [simulationTime, simulationInterval]);
+
+    useEffect(() => {
+        const timeoutId = setInterval(() => limpiarMapasDeDatos(programacionVuelos, envios, new Date(simulationTime.getTime())), 360 * 1000); // 360 seconds = 6 minutes
+        return () => clearInterval(timeoutId); // Clear the interval if the component is unmounted
+    }, []);
 
     useEffect(() => {
         if (nuevosVuelos.length > 0 && semaforo > 0) {

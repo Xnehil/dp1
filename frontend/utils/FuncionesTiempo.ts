@@ -1,4 +1,5 @@
 import { Aeropuerto } from "@/types/Aeropuerto";
+import { Envio } from "@/types/Envio";
 import { Vuelo } from "@/types/Vuelo";
 
 export function actualmenteEnVuelo(vuelo: Vuelo, aeropuertos: Map<string, Aeropuerto>): Boolean | undefined {
@@ -62,5 +63,23 @@ export function tiempoEntreAhoraYSalida(vuelo: Vuelo, aeropuertos: Map<String, A
 export function tiempoEntre(fechaInicio: Date, fechaFin: Date): number {
     //Devuelve la diferencia en minutos entre dos fechas
     const diferencia = fechaFin.getTime() - fechaInicio.getTime();
+    if(diferencia < 0) {
+        return 0;
+    }
     return diferencia / (1000 * 60);
+}
+
+export function aHoraMinutos(tiempo: number): string {
+    //Devuelve un string con el tiempo en formato hh:mm
+    const horas = Math.floor(tiempo / 60);
+    const minutos = (tiempo % 60).toFixed(0);
+    return `${horas.toString().padStart(2, "0")}:${minutos.toString().padStart(2, "0")}`;
+}
+
+export function tiempoFaltante(envio: Envio | undefined, simulationTime: Date): string{
+    //Devuelve un string con el tiempo restante para la llegada del envío
+    // console.log("Calculando tiempo entre: ", simulationTime, new Date((envio?.fechaHoraLlegadaPrevista ?? 0 )*1000 ));
+    const tiempoRestante = tiempoEntre(simulationTime, new Date((envio?.fechaHoraLlegadaPrevista ?? 0 )*1000 ));
+    // console.log("Tiempo restante: ", tiempoRestante);
+    return aHoraMinutos(tiempoRestante);
 }

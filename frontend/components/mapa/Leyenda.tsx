@@ -29,10 +29,10 @@ interface InfoVuelosProps {
               <span className="resumen-valor">{vuelosEnTransito}</span>
               <span className="resumen-etiqueta">vuelos en tránsito</span>
             </div>
-            <div className="resumen-item">
+            {/* <div className="resumen-item">
               <span className="resumen-valor">{enviosEnElAire}</span>
               <span className="resumen-etiqueta">envíos en el aire</span>
-            </div>
+            </div> */}
           </div>
           <div className="info-fecha">
             <div className="fecha-item">
