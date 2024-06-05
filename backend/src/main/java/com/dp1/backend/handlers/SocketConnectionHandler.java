@@ -113,8 +113,16 @@ public class SocketConnectionHandler extends TextWebSocketHandler {
                 messageMap.put("data", diferenciaVuelos);
                 String messageJson = objectMapper.writeValueAsString(messageMap);
                 session.sendMessage(new TextMessage(messageJson));
-                datosEnMemoriaService.cargarEnviosDesdeHasta(lastMessageTime);
+                datosEnMemoriaService.cargarEnviosDesdeHasta(lastMessageTime);//cargamos todos los envios de la semana
+
+
+
                 logger.info("Enviando # de vuelos en el aire: inicio" + diferenciaVuelos.size());
+                
+                //Enviamos la data por primera vez
+                String paquetesConRutas = acoService.ejecutarAcoInicial(simulatedTime.minusDays(3),simulatedTime);
+                session.sendMessage(new TextMessage(paquetesConRutas));
+                
                 return;
             }
 

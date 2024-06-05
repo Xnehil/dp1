@@ -212,6 +212,10 @@ public class DatosEnMemoriaService {
 
     public void cargarEnviosDesdeHasta(ZonedDateTime horaActual) {
         envios.clear();
+        // Modifico la horaActual para que pueda tener data para el inicio de mi
+        // simulación semanal, la cual tomará
+        // como máximo de 3 dias antes de la fecha de simulación.
+        ZonedDateTime horaActualMenos3Dias = horaActual.minusDays(3);
         ZonedDateTime horaFin = horaActual.plusDays(7);
         try (Stream<Path> paths = Files.walk(Paths.get(workingDirectory + "data/"))) {
             paths
@@ -219,7 +223,8 @@ public class DatosEnMemoriaService {
                     .filter(p -> p.getFileName().toString().startsWith("pack_enviado_"))
                     .forEach(p -> {
                         logger.info("Leyendo archivo: " + p.toString());
-                        envios.putAll(FuncionesLectura.leerEnviosDesdeHasta(p.toString(), aeropuertos, horaActual, horaFin));
+                        envios.putAll(
+                                FuncionesLectura.leerEnviosDesdeHasta(p.toString(), aeropuertos, horaActualMenos3Dias, horaFin));
                     });
         } catch (IOException e) {
             e.printStackTrace();
@@ -237,14 +242,12 @@ public class DatosEnMemoriaService {
         return enviosDesdeHasta;
     }
 
-
-    public HashMap<String,Envio> getEnvios() {
+    public HashMap<String, Envio> getEnvios() {
         return this.envios;
     }
 
-    public void setEnvios(HashMap<String,Envio> envios) {
+    public void setEnvios(HashMap<String, Envio> envios) {
         this.envios = envios;
     }
-
 
 }
