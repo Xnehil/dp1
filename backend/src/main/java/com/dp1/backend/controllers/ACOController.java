@@ -2,12 +2,11 @@ package com.dp1.backend.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dp1.backend.services.ACOService;
-import java.time.ZonedDateTime;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/aco")
@@ -25,7 +24,7 @@ public class ACOController {
     }
 
     @GetMapping("/ejecutar/{codigo}")
-    public String ejecutarAco(String codigo) {
+    public String ejecutarAcoCiudad(@PathVariable(name = "codigo", required = true) String codigo) {
         return acoService.ejecutarAcoAntiguo(codigo);
     }
 

@@ -328,7 +328,7 @@ public class ACOService {
         }
         String rutaArchivos = "data/pack_enviado_";
         for (int i = 0; i < ciudades.length; i++) {
-            envios.putAll(FuncionesLectura.leerEnvios(rutaArchivos + ciudades[i] + ".txt", aeropuertos, 200));
+            envios.putAll(FuncionesLectura.leerEnvios(rutaArchivos + ciudades[i] + ".txt", aeropuertos, 20));
         }
 
         for (Envio e : envios.values()) {
