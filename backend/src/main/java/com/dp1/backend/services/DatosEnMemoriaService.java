@@ -41,6 +41,55 @@ public class DatosEnMemoriaService {
     private HashMap<String, ColeccionRuta> rutasPosibles = new HashMap<>();
     private HashSet<String> rutasPosiblesSet = new HashSet<>();
 
+    //Services para ColeccionRuta y RutaPosible
+    @Autowired
+    private ColeccionRutaService coleccionRutaService;
+
+    @Autowired
+    private RutaPosibleService rutaPosibleService;
+
+    private final static Logger logger = LogManager.getLogger(DatosEnMemoriaService.class);
+    private String workingDirectory = System.getProperty("user.dir");
+
+    
+   
+
+
+    public DatosEnMemoriaService() {
+        logger.info("Inicializando DatosEnMemoriaService con working directory: " + workingDirectory);
+        if (workingDirectory.trim().equals("/")) {
+            workingDirectory = "/home/inf226.982.2b/";
+        } else {
+            workingDirectory = "";
+        }
+
+        aeropuertos.putAll(FuncionesLectura.leerAeropuertos(workingDirectory + "data/Aeropuerto.husos.v2.txt"));
+        vuelos.putAll(FuncionesLectura.leerVuelos(workingDirectory + "data/planes_vuelo.v3.txt", aeropuertos));
+    }
+
+    @PostConstruct
+    @Transactional
+    public void init() {
+        logger.info("Leyendo rutas posibles");
+        coleccionRutaService.getAllColeccionRutas().forEach(cr -> {
+            rutasPosibles.put(cr.getCodigoRuta(), cr);
+            String ruta = cr.getCodigoRuta();
+            for (RutaPosible rp : cr.getRutasPosibles()) {
+                String sucesionVuelos = "";
+                for (Integer vueloId : rp.getFlights()) {
+                    sucesionVuelos += ("-" + vueloId);
+                }
+                ruta += sucesionVuelos;
+                if (!rutasPosiblesSet.contains(ruta)) {
+                    rutasPosiblesSet.add(ruta);
+                }
+            }
+        });
+
+        logger.info("Colecciones rutas: " + rutasPosibles.size());
+        logger.info("Rutas posibles set: " + rutasPosiblesSet.size());
+    }
+
     public HashSet<String> getRutasPosiblesSet() {
         return this.rutasPosiblesSet;
     }
@@ -65,45 +114,6 @@ public class DatosEnMemoriaService {
         this.coleccionRutaService = coleccionRutaService;
     }
 
-    private final static Logger logger = LogManager.getLogger(DatosEnMemoriaService.class);
-    private String workingDirectory = System.getProperty("user.dir");
-
-    @Autowired
-    private ColeccionRutaService coleccionRutaService;
-
-    public DatosEnMemoriaService() {
-        logger.info("Inicializando DatosEnMemoriaService con working directory: " + workingDirectory);
-        if (workingDirectory.trim().equals("/")) {
-            workingDirectory = "/home/inf226.982.2b/";
-        } else {
-            workingDirectory = "";
-        }
-
-        aeropuertos.putAll(FuncionesLectura.leerAeropuertos(workingDirectory + "data/Aeropuerto.husos.v2.txt"));
-        vuelos.putAll(FuncionesLectura.leerVuelos(workingDirectory + "data/planes_vuelo.v3.txt", aeropuertos));
-    }
-
-    @PostConstruct
-    @Transactional
-    public void init() {
-        coleccionRutaService.getAllColeccionRutas().forEach(cr -> {
-            rutasPosibles.put(cr.getCodigoRuta(), cr);
-            String ruta = cr.getCodigoRuta();
-            for (RutaPosible rp : cr.getRutasPosibles()) {
-                String sucesionVuelos = "";
-                for (Integer vueloId : rp.getFlights()) {
-                    sucesionVuelos += ("-" + vueloId);
-                }
-                ruta += sucesionVuelos;
-                if (!rutasPosiblesSet.contains(ruta)) {
-                    rutasPosiblesSet.add(ruta);
-                }
-            }
-        });
-
-        logger.info("Rutas posibles: " + rutasPosibles.size());
-        logger.info("Rutas posibles set: " + rutasPosiblesSet.size());
-    }
 
     public HashMap<String, Aeropuerto> getAeropuertos() {
         return this.aeropuertos;
@@ -195,6 +205,7 @@ public class DatosEnMemoriaService {
             rutasPosibles.put(llave, cr);
             // logger.info("Ruta creada: " + llave);
             // Guardar cr en bd
+            coleccionRutaService.createColeccionRuta(cr);
         }
         RutaPosible rp = new RutaPosible();
         rp.setColeccionRuta(cr);
@@ -207,7 +218,9 @@ public class DatosEnMemoriaService {
             llave2 += "-" + i;
         }
         rutasPosiblesSet.add(llave2);
-        // logger.info("Ruta agregada en set: " + llave2);
+        // Guardar llave2 en bd
+        rutaPosibleService.createRutaPosible(rp);
+        logger.info("Ruta agregada en set: " + llave2);
 
         //
     }

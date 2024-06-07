@@ -137,6 +137,60 @@ public class ACOService {
 
     }
 
+    public String ejecutarAcoAntiguo() {
+        paquetes.clear();
+
+        HashMap<String, Aeropuerto> aeropuertos = datosEnMemoriaService.getAeropuertos();
+        HashMap<Integer, Vuelo> vuelos = datosEnMemoriaService.getVuelos();
+        HashMap<String, Envio> envios =  new HashMap<String, Envio>();
+        cargarDatos(aeropuertos, envios, paquetes, new String[] { "SKBO", "SEQM", "SUAA", "SCEL", "SABE", "EBCI", "EHAM", "WMKK", "VIDP", "ZBAA" });
+        for (Envio e : envios.values()) {
+            paquetes.addAll(e.getPaquetes());
+        }
+        // Imprimir datos
+        logger.info("Ejecutando ACO para: ");
+        logger.info("Aeropuertos: " + aeropuertos.size());
+        logger.info("Vuelos: " + vuelos.size());
+        logger.info("Envios: " + envios.size());
+        logger.info("Paquetes: " + paquetes.size());
+
+        try {
+            // Medit tiempo de ejecución
+            Long startTime = System.currentTimeMillis();
+            paquetes = ACO.run_v2(aeropuertos, vuelos, envios, paquetes, 20);
+            Long endTime = System.currentTimeMillis();
+            Long totalTime = endTime - startTime;
+            logger.info("Tiempo de ejecución: " + totalTime + " ms");
+            int rutasAntes = datosEnMemoriaService.getRutasPosiblesSet().size();
+            int paquetesEntregados = Auxiliares.verificacionTotalPaquetes(aeropuertos, vuelos, envios, paquetes,
+                    datosEnMemoriaService);
+            int rutasDespues = datosEnMemoriaService.getRutasPosiblesSet().size();
+            // logger.info("Rutas antes: " + rutasAntes);
+            // logger.info("Rutas después: " + rutasDespues);
+            logger.info("Paquetes entregados con función André: " + paquetesEntregados);
+
+        } catch (Exception e) {
+            logger.error("Error en ejecutarAco: " + e.getLocalizedMessage());
+            return null;
+        }
+        //Enviar data en formato JSON (String)
+        try {
+            //ArrayList<Vuelo> auxVuelos = new ArrayList<>();
+            //for(Vuelo v: vuelos.values())
+            //    auxVuelos.add(v);   
+            Map<String, Object> messageMap = new HashMap<>();
+            messageMap.put("metadata", "correrAlgoritmo");
+            messageMap.put("data", envios);
+            String paquetesRutasJSON = objectMapper.writeValueAsString(messageMap);
+
+            return paquetesRutasJSON;
+        } catch (Exception e) {
+            logger.error("Error en enviar los vuelos de prueba en formato JSON: " + e.getMessage());
+            return null;
+        }
+
+    }
+
     public boolean guardarRutas() {
         HashMap<String, ColeccionRuta> rutas = new HashMap<String, ColeccionRuta>();
         try {
@@ -148,8 +202,122 @@ public class ACOService {
         return true;
     }
 
-    private void cargarDatos(HashMap<String, Aeropuerto> aeropuertos, HashMap<Integer, Vuelo> vuelos,
-            HashMap<String, Envio> envios, ArrayList<Paquete> paquetes) {
+    public String ejecutarAcoAntiguo(String codigo) {
+        paquetes.clear();
+
+        HashMap<String, Aeropuerto> aeropuertos = datosEnMemoriaService.getAeropuertos();
+        HashMap<Integer, Vuelo> vuelos = datosEnMemoriaService.getVuelos();
+        HashMap<String, Envio> envios =  new HashMap<String, Envio>();
+        String [] ciudades = new String[] {codigo};
+        cargarDatos(aeropuertos, envios, paquetes, ciudades);
+        for (Envio e : envios.values()) {
+            paquetes.addAll(e.getPaquetes());
+        }
+        // Imprimir datos
+        logger.info("Ejecutando ACO para: ");
+        logger.info("Aeropuertos: " + aeropuertos.size());
+        logger.info("Vuelos: " + vuelos.size());
+        logger.info("Envios: " + envios.size());
+        logger.info("Paquetes: " + paquetes.size());
+
+        try {
+            // Medit tiempo de ejecución
+            Long startTime = System.currentTimeMillis();
+            paquetes = ACO.run_v2(aeropuertos, vuelos, envios, paquetes, 20);
+            Long endTime = System.currentTimeMillis();
+            Long totalTime = endTime - startTime;
+            logger.info("Tiempo de ejecución: " + totalTime + " ms");
+            int rutasAntes = datosEnMemoriaService.getRutasPosiblesSet().size();
+            int paquetesEntregados = Auxiliares.verificacionTotalPaquetes(aeropuertos, vuelos, envios, paquetes,
+                    datosEnMemoriaService);
+            int rutasDespues = datosEnMemoriaService.getRutasPosiblesSet().size();
+            // logger.info("Rutas antes: " + rutasAntes);
+            // logger.info("Rutas después: " + rutasDespues);
+            logger.info("Paquetes entregados con función André: " + paquetesEntregados);
+
+        } catch (Exception e) {
+            logger.error("Error en ejecutarAco: " + e.getLocalizedMessage());
+            return null;
+        }
+        //Enviar data en formato JSON (String)
+        try {
+            //ArrayList<Vuelo> auxVuelos = new ArrayList<>();
+            //for(Vuelo v: vuelos.values())
+            //    auxVuelos.add(v);   
+            Map<String, Object> messageMap = new HashMap<>();
+            messageMap.put("metadata", "correrAlgoritmo");
+            messageMap.put("data", envios);
+            String paquetesRutasJSON = objectMapper.writeValueAsString(messageMap);
+
+            return paquetesRutasJSON;
+        } catch (Exception e) {
+            logger.error("Error en enviar los vuelos de prueba en formato JSON: " + e.getMessage());
+            return null;
+        }
+
+    }
+
+    public String ejecutarAcoTodo() {
+        paquetes.clear();
+
+        HashMap<String, Aeropuerto> aeropuertos = datosEnMemoriaService.getAeropuertos();
+        HashMap<Integer, Vuelo> vuelos = datosEnMemoriaService.getVuelos();
+        HashMap<String, Envio> envios =  new HashMap<String, Envio>();
+        String[] ciudades = new String[] { 
+            "SKBO", "SEQM", "SVMI", "SBBR", "SPIM", "SLLP", "SCEL", "SABE", "SGAS", "SUAA",
+            "LATI", "EDDI", "LOWW", "EBCI", "UMMS", "LBSF", "LKPR", "LDZA", "EKCH", "EHAM",
+            "VIDP", "RKSI", "VTBS", "OMDB", "ZBAA", "RJTT", "WMKK", "WSSS", "WIII", "RPLL"
+        };
+        cargarDatos(aeropuertos, envios, paquetes, ciudades);
+        for (Envio e : envios.values()) {
+            paquetes.addAll(e.getPaquetes());
+        }
+        // Imprimir datos
+        logger.info("Ejecutando ACO para: ");
+        logger.info("Aeropuertos: " + aeropuertos.size());
+        logger.info("Vuelos: " + vuelos.size());
+        logger.info("Envios: " + envios.size());
+        logger.info("Paquetes: " + paquetes.size());
+
+        try {
+            // Medit tiempo de ejecución
+            Long startTime = System.currentTimeMillis();
+            paquetes = ACO.run_v2(aeropuertos, vuelos, envios, paquetes, 20);
+            Long endTime = System.currentTimeMillis();
+            Long totalTime = endTime - startTime;
+            logger.info("Tiempo de ejecución: " + totalTime + " ms");
+            int rutasAntes = datosEnMemoriaService.getRutasPosiblesSet().size();
+            int paquetesEntregados = Auxiliares.verificacionTotalPaquetes(aeropuertos, vuelos, envios, paquetes,
+                    datosEnMemoriaService);
+            int rutasDespues = datosEnMemoriaService.getRutasPosiblesSet().size();
+            // logger.info("Rutas antes: " + rutasAntes);
+            // logger.info("Rutas después: " + rutasDespues);
+            logger.info("Paquetes entregados con función André: " + paquetesEntregados);
+
+        } catch (Exception e) {
+            logger.error("Error en ejecutarAco: " + e.getLocalizedMessage());
+            return null;
+        }
+        //Enviar data en formato JSON (String)
+        try {
+            //ArrayList<Vuelo> auxVuelos = new ArrayList<>();
+            //for(Vuelo v: vuelos.values())
+            //    auxVuelos.add(v);   
+            Map<String, Object> messageMap = new HashMap<>();
+            messageMap.put("metadata", "correrAlgoritmo");
+            messageMap.put("data", envios);
+            String paquetesRutasJSON = objectMapper.writeValueAsString(messageMap);
+
+            return paquetesRutasJSON;
+        } catch (Exception e) {
+            logger.error("Error en enviar los vuelos de prueba en formato JSON: " + e.getMessage());
+            return null;
+        }
+
+    }
+
+    private void cargarDatos(HashMap<String, Aeropuerto> aeropuertos, HashMap<String, Envio> envios, ArrayList<Paquete> paquetes,
+            String[] ciudades) {
         // Ahora mismo está leyendo datos de archivos, pero debería leer de la base de
         // datos
         String workingDirectory = System.getProperty("user.dir");
@@ -158,12 +326,9 @@ public class ACOService {
         } else {
             workingDirectory = "";
         }
-        aeropuertos.putAll(FuncionesLectura.leerAeropuertos(workingDirectory + "data/Aeropuerto.husos.v2.txt"));
-        vuelos.putAll(FuncionesLectura.leerVuelos(workingDirectory + "data/planes_vuelo.v3.txt", aeropuertos));
         String rutaArchivos = "data/pack_enviado_";
-        String[] ciudades = { "SKBO", "SEQM", "SUAA", "SCEL", "SABE", "EBCI", "EHAM", "WMKK", "VIDP", "ZBAA" };
         for (int i = 0; i < ciudades.length; i++) {
-            envios.putAll(FuncionesLectura.leerEnvios(rutaArchivos + ciudades[i] + ".txt", aeropuertos, 20));
+            envios.putAll(FuncionesLectura.leerEnvios(rutaArchivos + ciudades[i] + ".txt", aeropuertos, 200));
         }
 
         for (Envio e : envios.values()) {

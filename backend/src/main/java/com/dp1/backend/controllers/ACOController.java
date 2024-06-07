@@ -21,6 +21,16 @@ public class ACOController {
 
     @GetMapping("/ejecutar")
     public String ejecutarAco() {
-        return acoService.ejecutarAco(ZonedDateTime.now());
+        return acoService.ejecutarAcoAntiguo();
+    }
+
+    @GetMapping("/ejecutar/{codigo}")
+    public String ejecutarAco(String codigo) {
+        return acoService.ejecutarAcoAntiguo(codigo);
+    }
+
+    @GetMapping("/ejecutar/todaCiudad")
+    public String ejecutarAcoTodo() {
+        return acoService.ejecutarAcoTodo();
     }
 }
