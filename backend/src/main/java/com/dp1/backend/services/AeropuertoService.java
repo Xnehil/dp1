@@ -13,6 +13,9 @@ public class AeropuertoService {
     @Autowired
     private AeropuertoRepository aeropuertoRepository;
 
+    @Autowired
+    private DatosEnMemoriaService datosEnMemoriaService;
+
     public Aeropuerto createAeropuerto(Aeropuerto aeropuerto)
     {
         try {
@@ -61,5 +64,14 @@ public class AeropuertoService {
     public ArrayList<Aeropuerto> getAeropuertos()
     {
         return (ArrayList<Aeropuerto>) aeropuertoRepository.findAll();
+    }
+
+    public ArrayList<Aeropuerto> getAeropuertosMemoria()
+    {
+        ArrayList<Aeropuerto> aeropuertos = new ArrayList<Aeropuerto>();
+        for (Aeropuerto aeropuerto : datosEnMemoriaService.getAeropuertos().values()) {
+            aeropuertos.add(aeropuerto);
+        }
+        return aeropuertos;
     }
 }

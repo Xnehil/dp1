@@ -52,7 +52,7 @@ type MapaProps = {
             }
         >
     >;
-    aeropuertos: Map<string, Aeropuerto>;
+    aeropuertos: React.MutableRefObject<Map<string, Aeropuerto>>;
     programacionVuelos: React.MutableRefObject<Map<string, ProgramacionVuelo>>;
     envios: React.MutableRefObject<Map<string, Envio>>;
     simulationInterval: number;
@@ -110,7 +110,7 @@ const Mapa = ({
 
         let auxLineFeatures: any[] = [];
         vuelos.current?.forEach((item) => {
-            const feature = crearLineaDeVuelo(aeropuertos, item);
+            const feature = crearLineaDeVuelo(aeropuertos.current, item);
             item.lineFeature = feature;
             auxLineFeatures.push(feature);
         });
@@ -119,7 +119,7 @@ const Mapa = ({
         vuelos.current?.forEach((item) => {
             //const isSelected = selectedFeature != null && selectedFeature.get("vueloId") === item.vuelo.id;
             const feature = crearPuntoDeVuelo(
-                aeropuertos,
+                aeropuertos.current,
                 item,
                 simulationTime
             );
@@ -127,7 +127,7 @@ const Mapa = ({
             auxPointFeatures.push(feature);
         });
 
-        const aeropuertoFeatures = Array.from(aeropuertos.values()).map(
+        const aeropuertoFeatures = Array.from(aeropuertos.current.values()).map(
             (aeropuerto) => {
                 const point = new Point(
                     fromLonLat([aeropuerto.longitud, aeropuerto.latitud])
@@ -192,7 +192,7 @@ const Mapa = ({
                             setSelectedAeropuerto,
                             selectedFeature,
                             vuelos,
-                            aeropuertos,
+                            aeropuertos.current,
                             feature
                         );
                     }
@@ -230,7 +230,7 @@ const Mapa = ({
 
         if (vectorSourceRef.current.getFeatures().length > 0) {
             const aBorrar = updateCoordinates(
-                aeropuertos,
+                aeropuertos.current,
                 vuelos.current,
                 simulationTime
             );
@@ -265,9 +265,9 @@ const Mapa = ({
                 const idVuelo = nuevosVuelos[i];
                 const item = vuelos.current?.get(idVuelo);
                 if (item) {
-                    item.lineFeature = crearLineaDeVuelo(aeropuertos, item);
+                    item.lineFeature = crearLineaDeVuelo(aeropuertos.current, item);
                     item.pointFeature = crearPuntoDeVuelo(
-                        aeropuertos,
+                        aeropuertos.current,
                         item,
                         simulationTime
                     );
@@ -292,7 +292,7 @@ const Mapa = ({
                     mapRef={mapRef}
                     selectedFeature={selectedFeature}
                     vuelos={vuelos}
-                    aeropuertos={aeropuertos}
+                    aeropuertos={aeropuertos.current}
                 />
                 <Leyenda
                     vuelosEnTransito={vuelos.current?.size ?? 0}

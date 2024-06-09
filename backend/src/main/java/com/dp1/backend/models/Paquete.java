@@ -38,7 +38,7 @@ public class Paquete extends BaseModel{
     //Se almacena la lista de ids de los vuelos a seguir
 
     // @ElementCollection
-    // @CollectionTable(name = "ruta", joinColumns = @JoinColumn(name = "id"))
+    // @CollectionTable(name = "ruta_dia_a_dia", joinColumns = @JoinColumn(name = "id"))
     // @Column(name = "ruta_point")
     // @OrderColumn(name = "ruta_index")  // Changed from "index" to "ruta_index"
     private ArrayList<Integer> ruta;

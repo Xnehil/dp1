@@ -38,7 +38,7 @@ public class AeropuertoController {
 
     @GetMapping()
     public ArrayList<Aeropuerto> getAeropuertos() {
-        return aeropuertoService.getAeropuertos();
+        return aeropuertoService.getAeropuertosMemoria();
     }
 
     @PostMapping

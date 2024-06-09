@@ -9,7 +9,7 @@ import { Aeropuerto } from "@/types/Aeropuerto";
 import { conectarAWebsocket, enviarMensaje } from "@/utils/FuncionesWebsocket";
 import useWebSocket, { ReadyState } from "react-use-websocket";
 import { ProgramacionVuelo } from "@/types/ProgramacionVuelo";
-import { procesarData } from "@/utils/FuncionesDatos";
+import { procesarData, quitarPaquetesAlmacenados } from "@/utils/FuncionesDatos";
 import { Envio } from "@/types/Envio";
 
 type MessageData = {
@@ -35,11 +35,10 @@ const Page = () => {
         new Map()
     );
     const envios = useRef<Map<string, Envio>>(new Map());
-    const [aeropuertos, setAeropuertos] = useState<Map<string, Aeropuerto>>(
-        new Map()
-    );
+    const aeropuertos = useRef<Map<string, Aeropuerto>>(new Map());
     const [cargado, setCargado] = useState(false);
     const [horaInicio, setHoraInicio] = useState(new Date());
+    const [campana, setCampana] = useState(false);
     const { sendMessage, lastMessage, readyState, getWebSocket } = useWebSocket(
         process.env.REACT_APP_WS_URL_BASE + "/socket",
         {
@@ -75,22 +74,27 @@ const Page = () => {
         axios
             .get(`${apiURL}/aeropuerto`)
             .then((response) => {
-                const aeropuertos = new Map<string, Aeropuerto>();
-                response.data.forEach((aeropuerto: Aeropuerto) => {
-                    aeropuertos.set(aeropuerto.codigoOACI, aeropuerto);
-                });
-                setAeropuertos(aeropuertos);
+                if (response.data) {
+                    // console.log("Respuesta de aeropuertos: ", response.data);
+                    const auxAeropuertos = new Map<string, Aeropuerto>();
+                    response.data.forEach((aeropuerto: Aeropuerto) => {
+                        auxAeropuertos.set(aeropuerto.codigoOACI, aeropuerto);
+                    });
+                    // console.log("Aeropuertos cargados: ", auxAeropuertos);
+                    aeropuertos.current = auxAeropuertos;
+                } else {
+                    // console.log("No data received from the API");
+                }
             })
             .catch((error) => {
-                console.error(error);
+                console.error("Error fetching data from the API: ", error);
             });
     }, []);
 
     useEffect(() => {
         if (
-            vuelos.current &&
             vuelos.current.size > 0 &&
-            aeropuertos.size > 0 &&
+            aeropuertos.current.size > 0 &&
             readyState === ReadyState.OPEN
         ) {
             if (cargado) {
@@ -115,7 +119,7 @@ const Page = () => {
                 );
             }
         }
-    }, [vuelos, aeropuertos, readyState]);
+    }, [vuelos, aeropuertos, campana, readyState]);
 
     useEffect(() => {
         if (lastMessage) {
@@ -140,6 +144,7 @@ const Page = () => {
                         auxNuevosVuelos.push(vuelo.id);
                     });
                     console.log("Vuelos luego tamaño: ", vuelos.current.size);
+                    quitarPaquetesAlmacenados(auxNuevosVuelos, programacionVuelos, aeropuertos);
                     setNuevosVuelos(auxNuevosVuelos);
                     setSemaforo(semaforo + 1);
                     // console.log("Vuelos actualizados: ", vuelos);
@@ -154,10 +159,11 @@ const Page = () => {
                     });
                     console.log("Vuelos cargados: ", vuelos.current.size);
                 }
+                setCampana(true);
             }
             if (message.metadata.includes("correrAlgoritmo")) {
                 console.log(message.data);
-                procesarData(message.data, programacionVuelos, envios);
+                procesarData(message.data, programacionVuelos, envios, aeropuertos);
             }
         }
     }, [lastMessage]);

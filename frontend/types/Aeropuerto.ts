@@ -1,3 +1,5 @@
+import { Paquete } from "./Paquete";
+
 export type Aeropuerto = BaseModel & {
     codigoOACI: string;
     ciudad: string;
@@ -10,4 +12,7 @@ export type Aeropuerto = BaseModel & {
     zonaHoraria: string;
     latitud: number;
     longitud: number;
+
+    paquetes: Paquete[];
+    cantidadActual: number;
 };
