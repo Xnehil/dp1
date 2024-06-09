@@ -5,7 +5,7 @@ import { Vuelo } from "@/types/Vuelo";
 import { Aeropuerto } from "@/types/Aeropuerto";
 import { ProgramacionVuelo } from "@/types/ProgramacionVuelo";
 import { Envio } from "@/types/Envio";
-import { aHoraMinutos, tiempoFaltante } from "@/utils/FuncionesTiempo";
+import { aHoraMinutos, mostrarTiempoEnZonaHoraria, tiempoFaltante } from "@/utils/FuncionesTiempo";
 
 type DatosVueloProps = {
   vuelo: Vuelo | null;
@@ -127,13 +127,13 @@ const DatosVuelo: React.FC<DatosVueloProps> = ({ vuelo, aeropuerto, programacion
                 <h2 className="vuelo-codigo">Almacén {aeropuerto.pais} - {aeropuerto.codigoOACI}</h2>
                 <p className="vuelo-horario">
                   Hora local: {" "}
-                  {new Date(aeropuerto.updateDate).toLocaleTimeString()}
+                  {mostrarTiempoEnZonaHoraria(simulationTime, aeropuerto.gmt)}
                 </p>
               </div>
               <div className="datos-vuelo-capacidad">
-                <h2>Cap Max: {aeropuerto.capacidadMaxima} Paquetes</h2>
+                <h2>Cap. máxima: {aeropuerto.capacidadMaxima} Paquetes</h2>
                 <p>
-                  {Math.round((1) * 100)}
+                  {(aeropuerto.cantidadActual  / aeropuerto.capacidadMaxima * 100).toFixed(2)}
                   % lleno
                 </p>
                 <img
@@ -164,27 +164,15 @@ const DatosVuelo: React.FC<DatosVueloProps> = ({ vuelo, aeropuerto, programacion
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
-                      <td>120356</td>
-                      <td>18:00</td>
-                      <td>Lima</td>
-                      <td>Santiago</td>
-                      <td>450</td>
-                    </tr>
-                    <tr>
-                      <td>121356</td>
-                      <td>12:00</td>
-                      <td>Lima</td>
-                      <td>Santiago</td>
-                      <td>450</td>
-                    </tr>
-                    <tr>
-                      <td>220252</td>
-                      <td>11:00</td>
-                      <td>Lima</td>
-                      <td>Santiago</td>
-                      <td>250</td>
-                    </tr>
+                    {aeropuerto.paquetes.map((paquete, index) => (
+                      <tr key={index}>
+                        <td>{paquete.id}</td>
+                        <td>{tiempoFaltante(envios.current.get(paquete.codigoEnvio), simulationTime)}</td>
+                        <td>{envios.current.get(paquete.codigoEnvio)?.origen ?? "NULL"}</td>
+                        <td>{envios.current.get(paquete.codigoEnvio)?.destino ?? "NULL"}</td>
+                        <td>{paquete.codigoEnvio}</td>
+                      </tr>
+                    ))}
                   </tbody>
                 </table>
               </div>

@@ -61,6 +61,7 @@ type MapaProps = {
     semaforo: number;
     setSemaforo: React.Dispatch<React.SetStateAction<number>>;
     sendMessage: (message: string, keep: boolean) => void;
+    onSimulationTimeChange: any;
 };
 
 const Mapa = ({
@@ -74,6 +75,7 @@ const Mapa = ({
     semaforo,
     setSemaforo,
     sendMessage,
+    onSimulationTimeChange,
 }: MapaProps) => {
     const mapRef = useRef<OLMap | null>(null);
     const vectorSourceRef = useRef(new VectorSource());
@@ -167,24 +169,6 @@ const Mapa = ({
                     (feature) => {
                         const vueloId = feature.get("vueloId");
                         const aeropuertoId = feature.get("aeropuertoId");
-                        /*if (vueloId) {
-                            seleccionarVuelo(
-                                vueloId,
-                                setSelectedVuelo,
-                                selectedFeature,
-                                vuelos,
-                                feature
-                            );
-                        }
-                        else if (aeropuertoId) {
-                            seleccionarAeropuerto(
-                                aeropuertoId,
-                                setSelectedAeropuerto,
-                                selectedFeature2,
-                                aeropuertos,
-                                feature
-                            );
-                        }*/
                         seleccionarElemento(
                             vueloId,
                             aeropuertoId,
@@ -218,6 +202,7 @@ const Mapa = ({
                             simulationInterval * 60 * 1000
                     )
             );
+            onSimulationTimeChange(simulationTime);
             if (sendMessage) {
                 const limaTime = simulationTime.toLocaleString("en-US", {
                     timeZone: "America/Lima",

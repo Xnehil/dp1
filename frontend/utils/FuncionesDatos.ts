@@ -23,10 +23,12 @@ export function procesarData(
                 }
 
                 // console.log("paquete: ", paquete);
-                for (let i = 0; i < paquete.ruta.length; i++) {
+                for (let i = 0; i < paquete.fechasRuta.length; i++) {
                     const idVuelo = paquete.ruta[i];
                     //Java lo envía como UNIX timestamp en segundos, pero JS lo necesita en milisegundos
+                    // console.log("Fecha ruta: ", paquete.fechasRuta[i]);
                     const fechaVuelo = new Date(paquete.fechasRuta[i] * 1000);
+                    // console.log("Fecha vuelo: ", fechaVuelo);
                     const fechaVueloFormatted = fechaVuelo
                         .toISOString()
                         .slice(0, 10);
@@ -89,7 +91,30 @@ export function limpiarMapasDeDatos(
 export function quitarPaquetesAlmacenados(
     nuevosVuelos: number[],
     programacionVuelos: React.MutableRefObject<Map<string, ProgramacionVuelo>>,
-    aeropuertos: React.MutableRefObject<Map<string, Aeropuerto>>
+    aeropuertos: React.MutableRefObject<Map<string, Aeropuerto>>,
+    simulationTime: Date | null
 ) {
-   
+    if (!simulationTime) return;
+    // console.log("Simulation time: ", simulationTime);
+    const diaDeSimulacion = simulationTime.toISOString().slice(0, 10);
+    let cuenta = 0;
+    for (let idVuelo of nuevosVuelos) {
+        const claveProgramacion = idVuelo + "-" + diaDeSimulacion;
+        const programacion = programacionVuelos.current.get(claveProgramacion);
+        if (programacion) {
+            for (let paquete of programacion.paquetes) {
+                const aeropuertoOrigen = aeropuertos.current.get(
+                    paquete.codigoEnvio.slice(0, 4)
+                );
+                if (aeropuertoOrigen) {
+                    aeropuertoOrigen.cantidadActual--;
+                    aeropuertoOrigen.paquetes = aeropuertoOrigen.paquetes.filter(
+                        (p) => p.id !== paquete.id
+                    );
+                    cuenta++;
+                }
+            }
+        }
+    }
+    console.log("Se eliminaron ", cuenta, " paquetes de aeropuertos");
 }

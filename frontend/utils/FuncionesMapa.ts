@@ -215,6 +215,7 @@ export function seleccionarElemento(
             setSelectedAeropuerto(aeropuerto);
             setSelectedVuelo(null);
             console.log(`Aeropuerto seleccionado setteado: Aeropuerto ID ${aeropuerto.id}`);
+            console.log("Aero: ", aeropuerto);
             if (selectedFeature.current != null) {
                 if (selectedFeature.current.get("vueloId")) {
                     selectedFeature.current.setStyle(dinamicPlaneStyle(vuelos.current?.get(selectedFeature.current.get("vueloId"))));

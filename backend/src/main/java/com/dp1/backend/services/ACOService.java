@@ -125,7 +125,7 @@ public class ACOService {
             //for(Vuelo v: vuelos.values())
             //    auxVuelos.add(v);   
             Map<String, Object> messageMap = new HashMap<>();
-            messageMap.put("metadata", "correrAlgoritmo");
+            messageMap.put("metadata", "primeraCarga");
             messageMap.put("data", envios);
             String paquetesRutasJSON = objectMapper.writeValueAsString(messageMap);
 

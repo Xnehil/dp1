@@ -39,6 +39,7 @@ const Page = () => {
     const [cargado, setCargado] = useState(false);
     const [horaInicio, setHoraInicio] = useState(new Date());
     const [campana, setCampana] = useState(false);
+    const [simulationTime, setSimulationTime] = useState<Date | null>(null);
     const { sendMessage, lastMessage, readyState, getWebSocket } = useWebSocket(
         process.env.REACT_APP_WS_URL_BASE + "/socket",
         {
@@ -78,6 +79,8 @@ const Page = () => {
                     // console.log("Respuesta de aeropuertos: ", response.data);
                     const auxAeropuertos = new Map<string, Aeropuerto>();
                     response.data.forEach((aeropuerto: Aeropuerto) => {
+                        aeropuerto.paquetes = [];
+                        aeropuerto.cantidadActual = 0;
                         auxAeropuertos.set(aeropuerto.codigoOACI, aeropuerto);
                     });
                     // console.log("Aeropuertos cargados: ", auxAeropuertos);
@@ -93,9 +96,7 @@ const Page = () => {
 
     useEffect(() => {
         if (
-            vuelos.current.size > 0 &&
-            aeropuertos.current.size > 0 &&
-            readyState === ReadyState.OPEN
+            campana
         ) {
             if (cargado) {
                 return;
@@ -144,7 +145,7 @@ const Page = () => {
                         auxNuevosVuelos.push(vuelo.id);
                     });
                     console.log("Vuelos luego tamaño: ", vuelos.current.size);
-                    quitarPaquetesAlmacenados(auxNuevosVuelos, programacionVuelos, aeropuertos);
+                    quitarPaquetesAlmacenados(auxNuevosVuelos, programacionVuelos, aeropuertos, simulationTime);
                     setNuevosVuelos(auxNuevosVuelos);
                     setSemaforo(semaforo + 1);
                     // console.log("Vuelos actualizados: ", vuelos);
@@ -159,7 +160,11 @@ const Page = () => {
                     });
                     console.log("Vuelos cargados: ", vuelos.current.size);
                 }
+            }
+            if(message.metadata.includes("primeraCarga")) {
+                console.log("Mensaje de primera carga");
                 setCampana(true);
+                procesarData(message.data, programacionVuelos, envios, aeropuertos);
             }
             if (message.metadata.includes("correrAlgoritmo")) {
                 console.log(message.data);
@@ -167,6 +172,8 @@ const Page = () => {
             }
         }
     }, [lastMessage]);
+
+    
     return (
         <>
             {cargado && (
@@ -182,6 +189,7 @@ const Page = () => {
                         semaforo={semaforo}
                         setSemaforo={setSemaforo}
                         sendMessage={sendMessage}
+                        onSimulationTimeChange={setSimulationTime}
                     />
                     <div ref={bottomRef}></div>
                 </div>

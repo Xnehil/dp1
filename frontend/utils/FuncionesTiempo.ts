@@ -83,3 +83,10 @@ export function tiempoFaltante(envio: Envio | undefined, simulationTime: Date): 
     // console.log("Tiempo restante: ", tiempoRestante);
     return aHoraMinutos(tiempoRestante);
 }
+
+export function mostrarTiempoEnZonaHoraria(fecha: Date, zonaHoraria: number): string {
+    const simulationTimeInMS = new Date(fecha).getTime();
+    const timezoneDifference =zonaHoraria - (-5);
+    const adjustedSimulationTime = new Date(simulationTimeInMS + timezoneDifference * 60 * 60 * 1000);
+    return adjustedSimulationTime.toLocaleTimeString();
+}
