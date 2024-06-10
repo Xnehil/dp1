@@ -22,9 +22,8 @@ public class RutaPosible extends BaseModel{
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "ruta_vuelos", joinColumns = @JoinColumn(name = "ruta_posible_id"))
-    @Column(name = "id_vuelo")
     @OrderColumn(name = "vuelo_index")
-    private List<Integer> flights;
+    private List<ItemRutaPosible> flights;
 
 
     public ColeccionRuta getColeccionRuta() {
@@ -35,11 +34,11 @@ public class RutaPosible extends BaseModel{
         this.coleccionRuta = coleccionRuta;
     }
 
-    public List<Integer> getFlights() {
+    public List<ItemRutaPosible> getFlights() {
         return this.flights;
     }
 
-    public void setFlights(ArrayList<Integer> flights) {
+    public void setFlights(ArrayList<ItemRutaPosible> flights) {
         this.flights = flights;
     }
 

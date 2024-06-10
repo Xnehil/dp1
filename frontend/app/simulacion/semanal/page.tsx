@@ -169,6 +169,7 @@ const Page = () => {
             }
             if(message.metadata.includes("primeraCarga")) {
                 console.log("Mensaje de primera carga");
+                console.log("Datos recibidos: ", message.data);
                 procesarData(message.data, programacionVuelos, envios, aeropuertos);
             }
             if (message.metadata.includes("correrAlgoritmo")) {
