@@ -208,7 +208,7 @@ public class DatosEnMemoriaService {
             rutasPosibles.put(llave, cr);
             // logger.info("Ruta creada: " + llave);
             // Guardar cr en bd
-            // coleccionRutaService.createColeccionRuta(cr);
+            coleccionRutaService.createColeccionRuta(cr);
         }
         RutaPosible rp = new RutaPosible();
         rp.setColeccionRuta(cr);
@@ -221,7 +221,7 @@ public class DatosEnMemoriaService {
         }
         rutasPosiblesSet.add(llave2);
         // Guardar llave2 en bd
-        // rutaPosibleService.createRutaPosible(rp);
+        rutaPosibleService.createRutaPosible(rp);
         logger.info("Ruta agregada en set: " + llave2);
 
         //
@@ -230,12 +230,18 @@ public class DatosEnMemoriaService {
     private ArrayList<ItemRutaPosible> cargarVuelosARutaPosible(Paquete paquete){
         ArrayList<ItemRutaPosible> items = new ArrayList<>();
         ZonedDateTime inicio=paquete.getFechasRuta().get(0);
-        for (int i : paquete.getRuta()) {
-            ZonedDateTime fechaVuelo = paquete.getFechasRuta().get(i);
-            ItemRutaPosible irp = new ItemRutaPosible();
-            irp.setIdVuelo(i);
-            irp.setDiaRelativo((int) (fechaVuelo.toLocalDate().toEpochDay() - inicio.toLocalDate().toEpochDay()));
-            items.add(irp);
+        try{
+            int index=0;
+            for (int i : paquete.getRuta()) {
+                ZonedDateTime fechaVuelo = paquete.getFechasRuta().get(index);
+                ItemRutaPosible irp = new ItemRutaPosible();
+                irp.setIdVuelo(i);
+                irp.setDiaRelativo((int) (fechaVuelo.toLocalDate().toEpochDay() - inicio.toLocalDate().toEpochDay()));
+                items.add(irp);
+                index++;
+            }
+        }catch(Exception e){
+            logger.error("Error al cargar vuelos a ruta posible: "+e.getLocalizedMessage());
         }
         return items;
     }
