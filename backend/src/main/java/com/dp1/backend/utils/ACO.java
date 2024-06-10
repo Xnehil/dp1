@@ -301,8 +301,11 @@ public class ACO {
                 // Si no hay vuelos disponibles para el paquete, significa que nos quedamos sin
                 // tiempo
                 if (tablaOpcionesVuelos.size() == 0) {
-                    //System.out.println();
-                    //System.out.println("El paquete " + paq.getIdPaquete() + " NO HA LLEGADO A SU DESTINO");
+                    if(envios.get(paq.getCodigoEnvio()).getOrigen().equals("VIDP")){
+                        System.out.println();
+                        System.out.println("El paquete " + paq.getIdPaquete() + " NO HA LLEGADO A SU DESTINO");
+                        System.out.println();
+                    }
                     break;
                 }
 
@@ -361,20 +364,22 @@ public class ACO {
                 //Actualizar capacidad planificación del vuelo
                 vuelosProgramados.get(idVueloEscogido).setCargaActualPlanificacion(vuelosProgramados.get(idVueloEscogido).getCargaActualPlanificacion() + 1);
                 // Creo que eso no va a pasar
-                /*
-                System.out.println("                IMPRIMIENDO TABLA DE OPCIONES PARA EL PAQUETE "
-                        + paq.getIdPaquete() + " " + envios.get(paq.getCodigoEnvio()).getOrigen() + " "
-                        + envios.get(paq.getCodigoEnvio()).getDestino() + "   Hora actual: " + fechaActualPaquete);
+                if(envios.get(paq.getCodigoEnvio()).getOrigen().equals("VIDP")){
 
-                // generarArchivoTabla(tablaOpcionesVuelos, "salida");
-                imprimirTabla_v2(tablaOpcionesVuelos, vuelosProgramados, vuelos);
-                System.out.println("VUELO ESCOGIDO PAQUETE " + paq.getIdPaquete() + ": " + vueloEscogido);
-                System.out.println("CIUDAD ACTUAL PAQUETE "
-                        + vuelos.get(vuelosProgramados.get(vueloEscogido).getIdVuelo()).getDestino());
-
-                System.out.println(
-                        "FECHA ACTUAL PAQUETE " + paq.getIdPaquete() + ": " + paq.getFechaLlegadaUltimoVuelo());
-                    */
+                    System.out.println("                IMPRIMIENDO TABLA DE OPCIONES PARA EL PAQUETE "
+                            + paq.getIdPaquete() + " " + envios.get(paq.getCodigoEnvio()).getOrigen() + " "
+                            + envios.get(paq.getCodigoEnvio()).getDestino() + "   Hora actual: " + fechaActualPaquete);
+    
+                    // generarArchivoTabla(tablaOpcionesVuelos, "salida");
+                    imprimirTabla_v2(tablaOpcionesVuelos, vuelosProgramados, vuelos);
+                    System.out.println("VUELO ESCOGIDO PAQUETE " + paq.getIdPaquete() + ": " + vueloEscogido);
+                    System.out.println("CIUDAD ACTUAL PAQUETE "
+                            + vuelos.get(vuelosProgramados.get(vueloEscogido.getId()).getIdVuelo()).getDestino());
+    
+                    System.out.println(
+                            "FECHA ACTUAL PAQUETE " + paq.getIdPaquete() + ": " + paq.getFechaLlegadaUltimoVuelo());
+                }
+                
                 // Si ya llegamos al destino, salimos del while || si ya nos quedamos sin tiempo
                 // para seguir buscando (creo que en Costo no hay manera de incluir este param)
                 // Comparar el destino del ultimo vuelo tomado con el destino de su envio
@@ -386,16 +391,21 @@ public class ACO {
                     // Si no llegamos al destino por quedarnos sin tiempo (2dias o 1 dia), salimos
 
                     exito++;
-                    paq.setLlegoDestino(true);
-                    // System.out.println("El paquete " + paq.getIdPaquete() + " llegó al destino");
-                    // System.out.println(
-                    //         "Tiempo restante paquete " + paq.getTiempoRestanteDinamico().toMinutes() + " minutos");
+                    if(envios.get(paq.getCodigoEnvio()).getOrigen().equals("VIDP")){
+
+                        paq.setLlegoDestino(true);
+                        System.out.println("El paquete " + paq.getIdPaquete() + " llegó al destino");
+                        System.out.println(
+                                "Tiempo restante paquete " + paq.getTiempoRestanteDinamico().toMinutes() + " minutos");
+                    }
                     break;
                 } else {
-
-                    // System.out.println("El paquete " + paq.getIdPaquete() + " aun no llega al destino");
-                    // System.out.println(
-                    //         "Tiempo restante paquete " + paq.getTiempoRestanteDinamico().toMinutes() + " minutos");
+                    if(envios.get(paq.getCodigoEnvio()).getOrigen().equals("VIDP")){
+                    
+                        System.out.println("El paquete " + paq.getIdPaquete() + " aun no llega al destino");
+                        System.out.println(
+                                "Tiempo restante paquete " + paq.getTiempoRestanteDinamico().toMinutes() + " minutos");
+                    }
 
                 }
 

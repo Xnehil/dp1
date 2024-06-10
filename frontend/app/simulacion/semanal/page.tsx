@@ -188,7 +188,7 @@ const Page = () => {
                         aeropuertos={aeropuertos}
                         programacionVuelos={programacionVuelos}
                         envios={envios}
-                        simulationInterval={1/60}
+                        simulationInterval={4}
                         horaInicio={horaInicio}
                         nuevosVuelos={nuevosVuelos}
                         semaforo={semaforo}
