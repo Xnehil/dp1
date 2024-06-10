@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import com.dp1.backend.models.Aeropuerto;
 import com.dp1.backend.models.ColeccionRuta;
 import com.dp1.backend.models.Envio;
+import com.dp1.backend.models.ItemRutaPosible;
 import com.dp1.backend.models.Paquete;
 import com.dp1.backend.models.RutaPosible;
 import com.dp1.backend.models.Vuelo;
@@ -76,7 +77,8 @@ public class DatosEnMemoriaService {
             String ruta = cr.getCodigoRuta();
             for (RutaPosible rp : cr.getRutasPosibles()) {
                 String sucesionVuelos = "";
-                for (Integer vueloId : rp.getFlights()) {
+                for (ItemRutaPosible itemVuelo : rp.getFlights()) {
+                    int vueloId = itemVuelo.getIdVuelo();
                     sucesionVuelos += ("-" + vueloId);
                 }
                 ruta += sucesionVuelos;
@@ -200,7 +202,8 @@ public class DatosEnMemoriaService {
             cr.setRutasPosibles(new ArrayList<RutaPosible>());
             RutaPosible rp = new RutaPosible();
             rp.setColeccionRuta(cr);
-            rp.setFlights(paquete.getRuta());
+    
+            rp.setFlights(cargarVuelosARutaPosible(paquete));
             cr.getRutasPosibles().add(rp);
             rutasPosibles.put(llave, cr);
             // logger.info("Ruta creada: " + llave);
@@ -209,7 +212,7 @@ public class DatosEnMemoriaService {
         }
         RutaPosible rp = new RutaPosible();
         rp.setColeccionRuta(cr);
-        rp.setFlights(paquete.getRuta());
+        rp.setFlights(cargarVuelosARutaPosible(paquete));
         cr.getRutasPosibles().add(rp);
 
         String llave2 = envio.getOrigen() + envio.getDestino();
@@ -222,6 +225,19 @@ public class DatosEnMemoriaService {
         logger.info("Ruta agregada en set: " + llave2);
 
         //
+    }
+
+    private ArrayList<ItemRutaPosible> cargarVuelosARutaPosible(Paquete paquete){
+        ArrayList<ItemRutaPosible> items = new ArrayList<>();
+        ZonedDateTime inicio=paquete.getFechasRuta().get(0);
+        for (int i : paquete.getRuta()) {
+            ZonedDateTime fechaVuelo = paquete.getFechasRuta().get(i);
+            ItemRutaPosible irp = new ItemRutaPosible();
+            irp.setIdVuelo(i);
+            irp.setDiaRelativo((int) (fechaVuelo.toLocalDate().toEpochDay() - inicio.toLocalDate().toEpochDay()));
+            items.add(irp);
+        }
+        return items;
     }
 
     public void cargarEnviosDesdeHasta(ZonedDateTime horaActual) {

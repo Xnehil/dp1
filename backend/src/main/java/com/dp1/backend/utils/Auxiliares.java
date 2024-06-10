@@ -510,7 +510,12 @@ public class Auxiliares {
                     List<RutaPosible> rutasPosibles = datosEnMemoriaService.getRutasPosibles().get(cadenaABuscar)
                             .getRutasPosibles();
                     int random = (int) (Math.random() * rutasPosibles.size());
-                    paquete.setRuta(new ArrayList<Integer>(rutasPosibles.get(random).getFlights()));
+                    ArrayList<Integer> ruta = new ArrayList<Integer>();
+                    RutaPosible rutaPosible = rutasPosibles.get(random);
+                    for (int i = 0; i < rutaPosible.getFlights().size(); i++) {
+                        ruta.add(rutaPosible.getFlights().get(i).getIdVuelo());
+                    }
+                    paquete.setRuta(ruta);
                     paquetesRutasSalvadas++;
                 } catch (Exception e) {
                     System.out.println("No se encontró la ruta en las rutas posibles cargadas en memoria.");
