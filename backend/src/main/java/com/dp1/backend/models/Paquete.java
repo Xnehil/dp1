@@ -76,9 +76,11 @@ public class Paquete extends BaseModel{
     }
     
     public ZonedDateTime getFechaLlegadaUltimoVuelo(){
+        if (fechasRuta.isEmpty()) {
+            return null; // or return a default value
+        }
         return fechasRuta.get(fechasRuta.size()-1);
     }
-
     public ArrayList<ZonedDateTime> getFechasRuta() {
         return this.fechasRuta;
     }
