@@ -38,7 +38,7 @@ const Page = () => {
     const aeropuertos = useRef<Map<string, Aeropuerto>>(new Map());
     const [cargado, setCargado] = useState(false);
     const [horaInicio, setHoraInicio] = useState(new Date());
-    const [campana, setCampana] = useState(false);
+    const [campana, setCampana] = useState(0);
     const [simulationTime, setSimulationTime] = useState<Date | null>(null);
     const { sendMessage, lastMessage, readyState, getWebSocket } = useWebSocket(
         process.env.REACT_APP_WS_URL_BASE + "/socket",
@@ -85,9 +85,8 @@ const Page = () => {
                     });
                     // console.log("Aeropuertos cargados: ", auxAeropuertos);
                     aeropuertos.current = auxAeropuertos;
-                } else {
-                    // console.log("No data received from the API");
-                }
+                    setCampana(campana + 1);
+                } 
             })
             .catch((error) => {
                 console.error("Error fetching data from the API: ", error);
@@ -95,13 +94,13 @@ const Page = () => {
     }, []);
 
     useEffect(() => {
-        if (
-            campana
-        ) {
+        if (campana ==2) {
+            console.log("Campana sonando");
             if (cargado) {
                 return;
             }
             setCargado(true);
+            console.log("Cargando datos");
             // console.log("Aeropuertos cargados: ", aeropuertos);
             if (typeof window !== "undefined") {
                 const params = new URLSearchParams(window.location.search);
@@ -120,7 +119,7 @@ const Page = () => {
                 );
             }
         }
-    }, [vuelos, aeropuertos, campana, readyState]);
+    }, [campana]);
 
     useEffect(() => {
         if (lastMessage) {
@@ -131,11 +130,12 @@ const Page = () => {
             const auxNuevosVuelos: number[] = [];
 
             if (message.metadata.includes("dataVuelos")) {
-                // console.log("Actualizando vuelos");
+                console.log("Actualizando vuelos");
                 // console.log("Vuelos recibidos: ", message.data);
                 console.log("Vuelos actuales tamaño: ", vuelos.current.size);
                 if (cargado) {
                     message.data.forEach((vuelo: Vuelo) => {
+                        vuelo.pintarAuxiliar = false;
                         vuelos.current.set(vuelo.id, {
                             vuelo: vuelo,
                             pointFeature: null,
@@ -150,20 +150,25 @@ const Page = () => {
                     setSemaforo(semaforo + 1);
                     // console.log("Vuelos actualizados: ", vuelos);
                 } else {
+                    console.log("Cargando vuelos con datos: ", message.data);
                     message.data.forEach((vuelo: Vuelo) => {
+                        vuelo.pintarAuxiliar = false;
                         vuelos.current.set(vuelo.id, {
                             vuelo: vuelo,
                             pointFeature: null,
                             lineFeature: null,
                             routeFeature: null,
                         });
+                        auxNuevosVuelos.push(vuelo.id);
                     });
+                    setCampana(campana + 1);
+                    // setNuevosVuelos(auxNuevosVuelos);
+                    // setSemaforo(semaforo + 1);
                     console.log("Vuelos cargados: ", vuelos.current.size);
                 }
             }
             if(message.metadata.includes("primeraCarga")) {
                 console.log("Mensaje de primera carga");
-                setCampana(true);
                 procesarData(message.data, programacionVuelos, envios, aeropuertos);
             }
             if (message.metadata.includes("correrAlgoritmo")) {
@@ -183,7 +188,7 @@ const Page = () => {
                         aeropuertos={aeropuertos}
                         programacionVuelos={programacionVuelos}
                         envios={envios}
-                        simulationInterval={4}
+                        simulationInterval={1/60}
                         horaInicio={horaInicio}
                         nuevosVuelos={nuevosVuelos}
                         semaforo={semaforo}

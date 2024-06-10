@@ -109,6 +109,12 @@ public class SocketConnectionHandler extends TextWebSocketHandler {
                 lastMessageTimes.put(session, lastMessageTime);
                 algorLastTime = simulatedTime;
                 lastAlgorTimes.put(session, algorLastTime);
+
+                //Enviamos la data por primera vez
+                datosEnMemoriaService.cargarEnviosDesdeHasta(lastMessageTime);//cargamos todos los envios de la semana
+                String paquetesConRutas = acoService.ejecutarAcoInicial(simulatedTime.minusDays(1),simulatedTime);
+                session.sendMessage(new TextMessage(paquetesConRutas));
+
                 diferenciaVuelos = new ArrayList<>();
                 for (Vuelo vuelo : vuelosEnElAire.get(session).values()) {
                     diferenciaVuelos.add(vuelo);
@@ -117,12 +123,8 @@ public class SocketConnectionHandler extends TextWebSocketHandler {
                 messageMap.put("metadata", "dataVuelos");
                 messageMap.put("data", diferenciaVuelos);
                 String messageJson = objectMapper.writeValueAsString(messageMap);
-                session.sendMessage(new TextMessage(messageJson));
-                datosEnMemoriaService.cargarEnviosDesdeHasta(lastMessageTime);//cargamos todos los envios de la semana
+                session.sendMessage(new TextMessage(messageJson));           
                 logger.info("Enviando # de vuelos en el aire: inicio" + diferenciaVuelos.size());
-                //Enviamos la data por primera vez
-                String paquetesConRutas = acoService.ejecutarAcoInicial(simulatedTime.minusDays(2),simulatedTime);
-                session.sendMessage(new TextMessage(paquetesConRutas));
                 return;
             }
 

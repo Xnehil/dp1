@@ -26,35 +26,27 @@ export function actualmenteEnVuelo(vuelo: Vuelo, aeropuertos: Map<string, Aeropu
     //Creo que esto mejor no
 }
 
-export function tiempoEntreAhoraYSalida(vuelo: Vuelo, aeropuertos: Map<String, Aeropuerto>, simulationTime: Date): number {
-    //Devuelve el tiempo en minutos entre el momento actual y la hora de inicio del vuelo
-    // console.log("vuelo: ", vuelo);
-    const ciudadSalida = aeropuertos.get(vuelo.origen);
-    // console.log("ciudadSalida: ", ciudadSalida);
-    const ahora = simulationTime;
+export function tiempoEntreAhoraYSalida(vuelo: Vuelo, aeropuertos: Map<String, Aeropuerto>, simulationTime: Date, verbose?: boolean): number {
     const [ , time] = vuelo.fechaHoraSalida.split('T');
     const [ hour, minute ] = time.split(':');
 
-    const horaInicio = new Date();
-    horaInicio.setHours(parseInt(hour));
-    horaInicio.setMinutes(parseInt(minute));
+    // Convert simulationTime to UTC
+    const ahoraUTC = new Date(simulationTime.getTime() + simulationTime.getTimezoneOffset() * 60000);
 
-    // Poner ambos el mismo día
-    horaInicio.setFullYear(ahora.getFullYear());
-    horaInicio.setMonth(ahora.getMonth());
-    horaInicio.setDate(ahora.getDate());
+    const horaInicioUTC = new Date(ahoraUTC.getTime());
+    horaInicioUTC.setUTCHours(parseInt(hour));
+    horaInicioUTC.setUTCMinutes(parseInt(minute));
 
-    // Convertir la horaactual a la zona horaria de la ciudad de salida
-    const timeZone = ciudadSalida?.zoneId;
-    const ahoraEnZonaHorariaSalida = new Date(ahora.toLocaleString("en-US", {timeZone: timeZone}));
-    // console.log("ahoraEnZonaHorariaSalida: ", ahoraEnZonaHorariaSalida);
-    // console.log("horaInicio: ", horaInicio);
-    // Calcular la diferencia en minutos
-    let tiempoTranscurrido = tiempoEntre(horaInicio, ahoraEnZonaHorariaSalida);
-    // console.log("tiempoTranscurrido: ", tiempoTranscurrido);
-    // Si el tiempo transcurrido es negativo, sumar 24 horas
+    if (verbose) {
+        console.log("ahoraUTC: ", ahoraUTC);
+        console.log("horaInicioUTC: ", horaInicioUTC);
+    }
+
+    let tiempoTranscurrido = tiempoEntre(horaInicioUTC, ahoraUTC);
+
+    // Si el tiempo transcurrido es negativo, significa que es el día siguiente
     if (tiempoTranscurrido < 0) {
-        tiempoTranscurrido += 24 * 60;
+        tiempoTranscurrido+= 24 * 60;
     }
 
     return tiempoTranscurrido;
@@ -63,9 +55,6 @@ export function tiempoEntreAhoraYSalida(vuelo: Vuelo, aeropuertos: Map<String, A
 export function tiempoEntre(fechaInicio: Date, fechaFin: Date): number {
     //Devuelve la diferencia en minutos entre dos fechas
     const diferencia = fechaFin.getTime() - fechaInicio.getTime();
-    if(diferencia < 0) {
-        return 0;
-    }
     return diferencia / (1000 * 60);
 }
 
@@ -80,6 +69,9 @@ export function tiempoFaltante(envio: Envio | undefined, simulationTime: Date): 
     //Devuelve un string con el tiempo restante para la llegada del envío
     // console.log("Calculando tiempo entre: ", simulationTime, new Date((envio?.fechaHoraLlegadaPrevista ?? 0 )*1000 ));
     const tiempoRestante = tiempoEntre(simulationTime, new Date((envio?.fechaHoraLlegadaPrevista ?? 0 )*1000 ));
+    if(tiempoRestante < 0) {
+        return "00:00";
+    }
     // console.log("Tiempo restante: ", tiempoRestante);
     return aHoraMinutos(tiempoRestante);
 }
@@ -89,4 +81,13 @@ export function mostrarTiempoEnZonaHoraria(fecha: Date, zonaHoraria: number): st
     const timezoneDifference =zonaHoraria - (-5);
     const adjustedSimulationTime = new Date(simulationTimeInMS + timezoneDifference * 60 * 60 * 1000);
     return adjustedSimulationTime.toLocaleTimeString();
+}
+
+export function utcStringToZonedDate(utcString: string, zonaHoraria: number): string{
+    // console.log("utcString: ", utcString);
+    // console.log("zonaHoraria: ", zonaHoraria);
+    const simulationTimeInMS = new Date(utcString).getTime();
+    const adjustedSimulationTime = new Date(simulationTimeInMS + zonaHoraria * 60 * 60 * 1000);
+    // Extract the time portion in HH:MM:SS format
+    return adjustedSimulationTime.toISOString().split("T")[1].split(".")[0];
 }

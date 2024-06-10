@@ -38,7 +38,7 @@ import {
 import BarraMapa from "./BarraMapa";
 import { ProgramacionVuelo } from "@/types/ProgramacionVuelo";
 import { Envio } from "@/types/Envio";
-import { limpiarMapasDeDatos } from "@/utils/FuncionesDatos";
+import { agregarPaquetesAlmacen, limpiarMapasDeDatos } from "@/utils/FuncionesDatos";
 
 type MapaProps = {
     vuelos: React.RefObject<
@@ -123,7 +123,8 @@ const Mapa = ({
             const feature = crearPuntoDeVuelo(
                 aeropuertos.current,
                 item,
-                simulationTime
+                simulationTime,
+                programacionVuelos.current
             );
             item.pointFeature = feature;
             auxPointFeatures.push(feature);
@@ -230,6 +231,7 @@ const Mapa = ({
                     item.lineFeature = null;
                     item.routeFeature = null;
                     vuelos.current?.delete(idVuelo);
+                    agregarPaquetesAlmacen(idVuelo, programacionVuelos, aeropuertos, simulationTime, envios);
                 }
             }
         }
@@ -254,7 +256,8 @@ const Mapa = ({
                     item.pointFeature = crearPuntoDeVuelo(
                         aeropuertos.current,
                         item,
-                        simulationTime
+                        simulationTime,
+                        programacionVuelos.current
                     );
                     vectorSourceRef.current.addFeature(item.pointFeature);
                     vectorSourceRef.current.addFeature(item.lineFeature);
@@ -262,8 +265,7 @@ const Mapa = ({
             }
             setSemaforo(semaforo - 1);
         }
-    }),
-        [nuevosVuelos, semaforo];
+    }),[nuevosVuelos, semaforo];
 
     const enviosEnElAire = 1420;
 
@@ -286,7 +288,7 @@ const Mapa = ({
                     fechaHoraSimulada={simulationTime.toLocaleString()}
                 />
                 <DatosVuelo vuelo={selectedVuelo} aeropuerto={selectedAeropuerto} programacionVuelos={programacionVuelos} simulationTime={simulationTime}
-                    envios={envios}
+                    envios={envios} aeropuertos={aeropuertos}
                 />
             </div>{" "}
         </div>

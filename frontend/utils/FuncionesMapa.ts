@@ -9,6 +9,7 @@ import { Feature } from 'ol';
 import { getVectorContext } from 'ol/render';
 import Icon from 'ol/style/Icon';
 import Style from 'ol/style/Style';
+import { ProgramacionVuelo } from '@/types/ProgramacionVuelo';
 
 export function updateCoordinates(aeropuertos: Map<String, Aeropuerto>, vuelos: Map<number, { vuelo: Vuelo, pointFeature: any, lineFeature: any}> | null, simulationTime: Date):
     number[]{
@@ -71,11 +72,31 @@ export function coordenadasIniciales(aeropuertos: Map<String, Aeropuerto>, item:
     const line = lineFeature.getGeometry() as LineString;
     const coordinates = line.getCoordinates();
 
+    let verbose = false;
+    if(item.vuelo.id == 478){
+        verbose = true;
+    }
+
+    if (verbose) {
+        console.log("vuelo: ", item.vuelo);
+        console.log("line: ", line);
+        console.log("coordinates: ", coordinates);
+    }
+
     // Calculate the elapsed time in minutes
-    const tiempoPasadoMinutos = tiempoEntreAhoraYSalida(item.vuelo, aeropuertos, simulationTime);
+    const tiempoPasadoMinutos = tiempoEntreAhoraYSalida(item.vuelo, aeropuertos, simulationTime, verbose);
+
+    if (verbose) {
+        console.log("tiempoPasadoMinutos: ", tiempoPasadoMinutos);
+    }
+
 
     // Qué tan avanzado está el vuelo
     const ratio = tiempoPasadoMinutos / item.vuelo.duracionVuelo;
+
+    if (verbose) {
+        console.log("ratio: ", ratio);
+    }
 
     const lonlatInicio = coordinates[0] as Coordinate;
     const lonlatFin = coordinates[1] as Coordinate;
@@ -85,6 +106,10 @@ export function coordenadasIniciales(aeropuertos: Map<String, Aeropuerto>, item:
         lonlatInicio[0] + ratio * (lonlatFin[0] - lonlatInicio[0]),
         lonlatInicio[1] + ratio * (lonlatFin[1] - lonlatInicio[1]),
     ];
+
+    if (verbose) {
+        console.log("newCoordinates: ", newCoordinates);
+    }
     // console.log("Vuelo: ", vuelo);
     // console.log("lonlatInicio: ", lonlatInicio);
     // console.log("lonlatFin: ", lonlatFin);
@@ -120,12 +145,22 @@ export function crearLineaDeVuelo(aeropuertos: Map<String, Aeropuerto>, item: an
     return feature;
 }
 
-export function crearPuntoDeVuelo(aeropuertos: Map<String, Aeropuerto>, item: any, simulationTime: Date): any {
+export function crearPuntoDeVuelo(aeropuertos: Map<String, Aeropuerto>, item: any, simulationTime: Date,
+    programacionVuelos: Map<string, ProgramacionVuelo>): any {
     const point = coordenadasIniciales(aeropuertos, item, simulationTime);
     const feature = new Feature({
         geometry: point,
     });
-    feature.setStyle(dinamicPlaneStyle(item));
+
+    const llaveBusqueda = item.vuelo.id + "-" + simulationTime.toISOString().slice(0, 10);
+    const programacion = programacionVuelos.get(llaveBusqueda);
+    const tienePaquetes = programacion?.paquetes.length ?? 0 > 0;
+
+    if (tienePaquetes) {
+        feature.setStyle(dinamicPlaneStyle(item));
+    } else {
+        feature.setStyle(invisibleStyle);
+    }
     feature.set('vueloId', item.vuelo.id); // Agregar el ID del vuelo
     return feature;
 }
@@ -194,7 +229,8 @@ export function seleccionarElemento(
         if (vuelo) {
             setSelectedVuelo(vuelo);
             setSelectedAeropuerto(null);
-            console.log(`Vuelo seleccionado setteado: Vuelo ID${vuelo.id}`);
+            // console.log(`Vuelo seleccionado setteado: Vuelo ID${vuelo.id}`);
+            console.log("Item del vuelo: ", vuelos.current?.get(vueloId));
             if (selectedFeature.current != null) {
                 if (selectedFeature.current.get("vueloId")) {
                     selectedFeature.current.setStyle(dinamicPlaneStyle(vuelos.current?.get(selectedFeature.current.get("vueloId"))));

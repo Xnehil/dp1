@@ -9,4 +9,6 @@ export type Vuelo = BaseModel & {
     cargaPorDia: Map<string, number>;
     duracionVuelo: number;
     distanciaVuelo: number;
+    //Pintar auxiliar para la primera carga
+    pintarAuxiliar: boolean;
 };

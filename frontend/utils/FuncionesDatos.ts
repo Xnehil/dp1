@@ -1,14 +1,17 @@
+import { dinamicPlaneStyle } from "@/components/mapa/EstilosMapa";
 import { Aeropuerto } from "@/types/Aeropuerto";
 import { Envio } from "@/types/Envio";
 import { Paquete } from "@/types/Paquete";
 import { ProgramacionVuelo } from "@/types/ProgramacionVuelo";
+import { Vuelo } from "@/types/Vuelo";
 
 export function procesarData(
     messageData: any,
     programacionVuelos: React.MutableRefObject<Map<string, ProgramacionVuelo>>,
     envios: React.MutableRefObject<Map<string, Envio>>,
-    aeropuertos: React.MutableRefObject<Map<string, Aeropuerto>>
+    aeropuertos: React.MutableRefObject<Map<string, Aeropuerto>>,
 ): void {
+    console.log("Procesando data");
     for (let key in messageData) {
         if (messageData.hasOwnProperty(key)) {
             let envio = messageData[key] as Envio;
@@ -16,7 +19,8 @@ export function procesarData(
             for (let paquete of envio.paquetes) {
                 if (!paquete.llegoDestino) continue;
                 //Añadir paquete a aeropuerto de origen
-                const aeropuertoOrigen :Aeropuerto | undefined = aeropuertos.current.get(envio.origen);
+                const aeropuertoOrigen: Aeropuerto | undefined =
+                    aeropuertos.current.get(envio.origen);
                 if (aeropuertoOrigen) {
                     aeropuertoOrigen.cantidadActual++;
                     aeropuertoOrigen.paquetes.push(paquete);
@@ -53,6 +57,7 @@ export function procesarData(
             }
         }
     }
+    console.log("Data procesada");
 }
 
 export function limpiarMapasDeDatos(
@@ -87,7 +92,6 @@ export function limpiarMapasDeDatos(
     console.log("Se eliminaron ", cuenta, " envíos");
 }
 
-
 export function quitarPaquetesAlmacenados(
     nuevosVuelos: number[],
     programacionVuelos: React.MutableRefObject<Map<string, ProgramacionVuelo>>,
@@ -108,13 +112,47 @@ export function quitarPaquetesAlmacenados(
                 );
                 if (aeropuertoOrigen) {
                     aeropuertoOrigen.cantidadActual--;
-                    aeropuertoOrigen.paquetes = aeropuertoOrigen.paquetes.filter(
-                        (p) => p.id !== paquete.id
-                    );
+                    aeropuertoOrigen.paquetes =
+                        aeropuertoOrigen.paquetes.filter(
+                            (p) => p.id !== paquete.id
+                        );
                     cuenta++;
                 }
             }
         }
     }
     console.log("Se eliminaron ", cuenta, " paquetes de aeropuertos");
+}
+
+//agregarPaquetesAlmacen(idVuelo, programacionVuelos, aeropuertos, simulationTime);
+export function agregarPaquetesAlmacen(
+    idVuelo: number,
+    programacionVuelos: React.MutableRefObject<Map<string, ProgramacionVuelo>>,
+    aeropuertos: React.MutableRefObject<Map<string, Aeropuerto>>,
+    simulationTime: Date | null,
+    envios: React.MutableRefObject<Map<string, Envio>>
+) {
+    if (!simulationTime) return;
+    // console.log("Simulation time: ", simulationTime);
+    const diaDeSimulacion = simulationTime.toISOString().slice(0, 10);
+    const claveProgramacion = idVuelo + "-" + diaDeSimulacion;
+    const programacion = programacionVuelos.current.get(claveProgramacion);
+    let cuenta = 0;
+    //Si es que existe la programación de vuelo para ese día
+    if (programacion) {
+        for (let paquete of programacion.paquetes) {
+            const envio = envios.current.get(paquete.codigoEnvio);
+            if (!envio) {
+                console.log("No se encontró el envío para sacar el destino del paquete");
+                continue;
+            }
+            const aeropuertoDestino = aeropuertos.current.get(envio.destino);
+            if (aeropuertoDestino) {
+                aeropuertoDestino.cantidadActual++;
+                aeropuertoDestino.paquetes.push(paquete);
+                cuenta++;
+            }
+        }
+    }
+    // console.log("Se agregaron ", cuenta, " paquetes a aeropuertos");
 }

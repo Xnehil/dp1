@@ -5,7 +5,7 @@ import { Vuelo } from "@/types/Vuelo";
 import { Aeropuerto } from "@/types/Aeropuerto";
 import { ProgramacionVuelo } from "@/types/ProgramacionVuelo";
 import { Envio } from "@/types/Envio";
-import { aHoraMinutos, mostrarTiempoEnZonaHoraria, tiempoFaltante } from "@/utils/FuncionesTiempo";
+import { aHoraMinutos, mostrarTiempoEnZonaHoraria, tiempoFaltante, utcStringToZonedDate } from "@/utils/FuncionesTiempo";
 
 type DatosVueloProps = {
   vuelo: Vuelo | null;
@@ -13,9 +13,10 @@ type DatosVueloProps = {
   programacionVuelos: React.MutableRefObject<Map<string, ProgramacionVuelo>>;
   simulationTime: Date;
   envios: React.MutableRefObject<Map<string, Envio>>;
+  aeropuertos: React.MutableRefObject<Map<string, Aeropuerto>>;
 };
 
-const DatosVuelo: React.FC<DatosVueloProps> = ({ vuelo, aeropuerto, programacionVuelos, simulationTime, envios }) => {
+const DatosVuelo: React.FC<DatosVueloProps> = ({ vuelo, aeropuerto, programacionVuelos, simulationTime, envios, aeropuertos }) => {
   const [visible, setVisible] = useState<boolean>(false);
   const [opcion, setOpcion] = useState<number>(0);
   const [programacionVuelo, setProgramacionVuelo] = useState<ProgramacionVuelo | null>(null);
@@ -63,11 +64,11 @@ const DatosVuelo: React.FC<DatosVueloProps> = ({ vuelo, aeropuerto, programacion
                 <h2 className="vuelo-codigo">Vuelo {vuelo.id}</h2>
                 <p className="vuelo-horario">
                   Salida: {vuelo.origen} -{" "}
-                  {new Date(vuelo.fechaHoraSalida).toLocaleTimeString()}
+                  {utcStringToZonedDate(vuelo.fechaHoraSalida, aeropuertos.current.get(vuelo.origen)?.gmt ?? 0)}
                 </p>
                 <p className="vuelo-horario">
                   Llegada: {vuelo.destino} -{" "}
-                  {new Date(vuelo.fechaHoraLlegada).toLocaleTimeString()}
+                  {utcStringToZonedDate(vuelo.fechaHoraLlegada, aeropuertos.current.get(vuelo.destino)?.gmt ?? 0)}
                 </p>
               </div>
               <div className="datos-vuelo-capacidad">
@@ -157,7 +158,6 @@ const DatosVuelo: React.FC<DatosVueloProps> = ({ vuelo, aeropuerto, programacion
                   <thead>
                     <tr>
                       <th>Código</th>
-                      <th>Tiempo restante</th>
                       <th>Origen</th>
                       <th>Destino</th>
                       <th>ID envío</th>
@@ -167,7 +167,6 @@ const DatosVuelo: React.FC<DatosVueloProps> = ({ vuelo, aeropuerto, programacion
                     {aeropuerto.paquetes.map((paquete, index) => (
                       <tr key={index}>
                         <td>{paquete.id}</td>
-                        <td>{tiempoFaltante(envios.current.get(paquete.codigoEnvio), simulationTime)}</td>
                         <td>{envios.current.get(paquete.codigoEnvio)?.origen ?? "NULL"}</td>
                         <td>{envios.current.get(paquete.codigoEnvio)?.destino ?? "NULL"}</td>
                         <td>{paquete.codigoEnvio}</td>
