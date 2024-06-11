@@ -10,6 +10,7 @@ import { getVectorContext } from 'ol/render';
 import Icon from 'ol/style/Icon';
 import Style from 'ol/style/Style';
 import { ProgramacionVuelo } from '@/types/ProgramacionVuelo';
+import React from 'react';
 
 export function updateCoordinates(aeropuertos: Map<String, Aeropuerto>, vuelos: Map<number, { vuelo: Vuelo, pointFeature: any, lineFeature: any}> | null, simulationTime: Date):
     number[]{
@@ -221,7 +222,7 @@ export function seleccionarElemento(
     setSelectedAeropuerto: any,
     selectedFeature: any,
     vuelos: React.RefObject<Map<number, { vuelo: Vuelo, pointFeature: any, lineFeature: any }>>,
-    aeropuertos: Map<string, Aeropuerto>,
+    aeropuertos: React.RefObject<Map<string, Aeropuerto>>,
     feature: any
 ) {
     if (vueloId) {
@@ -246,12 +247,14 @@ export function seleccionarElemento(
             console.error(`Vuelo no encontrado: Vuelo ID ${vueloId}`);
         }
     } else if (aeropuertoId) {
-        const aeropuerto = aeropuertos.get(aeropuertoId);
+        const aeropuerto = aeropuertos.current?.get(aeropuertoId);
         if (aeropuerto) {
             setSelectedAeropuerto(aeropuerto);
             setSelectedVuelo(null);
-            console.log(`Aeropuerto seleccionado setteado: Aeropuerto ID ${aeropuerto.id}`);
+            // console.log(`Aeropuerto seleccionado setteado: Aeropuerto ID ${aeropuerto.id}`);
             console.log("Aero: ", aeropuerto);
+            // console.log("Feature: ", feature);
+            // console.log("SelectedFeature: ", selectedFeature.current);
             if (selectedFeature.current != null) {
                 if (selectedFeature.current.get("vueloId")) {
                     selectedFeature.current.setStyle(dinamicPlaneStyle(vuelos.current?.get(selectedFeature.current.get("vueloId"))));

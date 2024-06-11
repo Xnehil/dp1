@@ -37,12 +37,13 @@ export function procesarData(
                     //Para rutas salvadas tenemos que calcular la fecha de vuelo 
                     let fechaVuelo = new Date();
                     if(auxFechaRuta < 10) {
-                        console.log("Se detectó una ruta guardada");
-                        console.log("auxFechaRuta: ", auxFechaRuta);
+                        // console.log("Se detectó una ruta guardada");
+                        // console.log("auxFechaRuta: ", auxFechaRuta);
+                        // console.log("Simulation time: ", simulationTime);
                         // auxFechaRuta es la cantidad de días desde la fecha de simulación
 
                         fechaVuelo = new Date(simulationTime!.getTime() + auxFechaRuta * 24 * 60 * 60 * 1000);
-                        console.log("Fecha vuelo: ", fechaVuelo);
+                        // console.log("Fecha vuelo: ", fechaVuelo);
                     }
                     else{
                         //Java lo envía como UNIX timestamp en segundos, pero JS lo necesita en milisegundos

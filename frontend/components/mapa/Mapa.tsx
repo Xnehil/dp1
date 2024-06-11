@@ -164,25 +164,33 @@ const Mapa = ({
         mapRef.current.addLayer(vectorLayer);
 
         if (mapRef.current) {
-            mapRef.current.on("click", (event) => {
-                mapRef.current?.forEachFeatureAtPixel(
-                    event.pixel,
-                    (feature) => {
-                        const vueloId = feature.get("vueloId");
-                        const aeropuertoId = feature.get("aeropuertoId");
-                        seleccionarElemento(
-                            vueloId,
-                            aeropuertoId,
-                            setSelectedVuelo,
-                            setSelectedAeropuerto,
-                            selectedFeature,
-                            vuelos,
-                            aeropuertos.current,
-                            feature
-                        );
-                    }
-                );
-            });
+            const clickHandler = (event: any) => {
+                const feature = mapRef.current?.getFeaturesAtPixel(event.pixel)[0];
+                // console.log("Feature clicked: ", feature);
+                if (feature) {
+                    const vueloId = feature.get("vueloId");
+                    const aeropuertoId = feature.get("aeropuertoId");
+                    seleccionarElemento(
+                        vueloId,
+                        aeropuertoId,
+                        setSelectedVuelo,
+                        setSelectedAeropuerto,
+                        selectedFeature,
+                        vuelos,
+                        aeropuertos,
+                        feature
+                    );
+                }
+            };
+    
+            mapRef.current.on("click", clickHandler);
+    
+            // Cleanup function to remove the event listener when the component is unmounted
+            return () => {
+                if (mapRef.current) {
+                    mapRef.current.un("click", clickHandler);
+                }
+            };
         }
     }, [mapRef]);
 

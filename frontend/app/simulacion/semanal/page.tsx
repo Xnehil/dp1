@@ -72,6 +72,14 @@ const Page = () => {
     }, [cargado]);
 
     useEffect(() => {
+        const params = new URLSearchParams(window.location.search);
+        const startDate = params.get("startDate");
+        if (startDate !== null) {
+            setHoraInicio(new Date(startDate));
+        } else {
+            setHoraInicio(new Date());
+        }
+        
         axios
             .get(`${apiURL}/aeropuerto`)
             .then((response) => {
@@ -103,14 +111,6 @@ const Page = () => {
             console.log("Cargando datos");
             // console.log("Aeropuertos cargados: ", aeropuertos);
             if (typeof window !== "undefined") {
-                const params = new URLSearchParams(window.location.search);
-                const startDate = params.get("startDate");
-                if (startDate !== null) {
-                    setHoraInicio(new Date(startDate));
-                } else {
-                    setHoraInicio(new Date());
-                }
-                // Use startDate here
                 //Limpiar la URL del query string
                 window.history.replaceState(
                     {},
