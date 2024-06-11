@@ -6,7 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -511,11 +513,16 @@ public class Auxiliares {
                             .getRutasPosibles();
                     int random = (int) (Math.random() * rutasPosibles.size());
                     ArrayList<Integer> ruta = new ArrayList<Integer>();
+                    ArrayList<ZonedDateTime> fechas = new ArrayList<ZonedDateTime>();
                     RutaPosible rutaPosible = rutasPosibles.get(random);
                     for (int i = 0; i < rutaPosible.getFlights().size(); i++) {
                         ruta.add(rutaPosible.getFlights().get(i).getIdVuelo());
+                        int unixTimestampSeconds = rutaPosible.getFlights().get(i).getDiaRelativo();
+                        fechas.add((ZonedDateTime.ofInstant(Instant.ofEpochSecond(unixTimestampSeconds), ZoneId.systemDefault())));
                     }
                     paquete.setRuta(ruta);
+                    paquete.setFechasRuta(fechas);
+                    paquete.setLlegoDestino(true);
                     paquetesRutasSalvadas++;
                 } catch (Exception e) {
                     System.out.println("No se encontró la ruta en las rutas posibles cargadas en memoria.");

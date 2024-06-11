@@ -10,11 +10,14 @@ export function procesarData(
     programacionVuelos: React.MutableRefObject<Map<string, ProgramacionVuelo>>,
     envios: React.MutableRefObject<Map<string, Envio>>,
     aeropuertos: React.MutableRefObject<Map<string, Aeropuerto>>,
+    simulationTime: Date | null
 ): void {
     console.log("Procesando data");
     for (let key in messageData) {
+        // console.log("Key: ", key);
         if (messageData.hasOwnProperty(key)) {
             let envio = messageData[key] as Envio;
+            // console.log("Envio: ", envio);
             envios.current.set(envio.codigoEnvio, envio);
             for (let paquete of envio.paquetes) {
                 if (!paquete.llegoDestino) continue;
@@ -29,9 +32,23 @@ export function procesarData(
                 // console.log("paquete: ", paquete);
                 for (let i = 0; i < paquete.fechasRuta.length; i++) {
                     const idVuelo = paquete.ruta[i];
-                    //Java lo envía como UNIX timestamp en segundos, pero JS lo necesita en milisegundos
-                    // console.log("Fecha ruta: ", paquete.fechasRuta[i]);
-                    const fechaVuelo = new Date(paquete.fechasRuta[i] * 1000);
+                    const auxFechaRuta = paquete.fechasRuta[i];
+
+                    //Para rutas salvadas tenemos que calcular la fecha de vuelo 
+                    let fechaVuelo = new Date();
+                    if(auxFechaRuta < 10) {
+                        console.log("Se detectó una ruta guardada");
+                        console.log("auxFechaRuta: ", auxFechaRuta);
+                        // auxFechaRuta es la cantidad de días desde la fecha de simulación
+
+                        fechaVuelo = new Date(simulationTime!.getTime() + auxFechaRuta * 24 * 60 * 60 * 1000);
+                        console.log("Fecha vuelo: ", fechaVuelo);
+                    }
+                    else{
+                        //Java lo envía como UNIX timestamp en segundos, pero JS lo necesita en milisegundos
+                        // console.log("Fecha ruta: ", paquete.fechasRuta[i]);
+                        fechaVuelo = new Date(paquete.fechasRuta[i] * 1000);
+                    }
                     // console.log("Fecha vuelo: ", fechaVuelo);
                     const fechaVueloFormatted = fechaVuelo
                         .toISOString()

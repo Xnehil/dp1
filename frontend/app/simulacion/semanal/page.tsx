@@ -170,11 +170,11 @@ const Page = () => {
             if(message.metadata.includes("primeraCarga")) {
                 console.log("Mensaje de primera carga");
                 console.log("Datos recibidos: ", message.data);
-                procesarData(message.data, programacionVuelos, envios, aeropuertos);
+                procesarData(message.data, programacionVuelos, envios, aeropuertos, simulationTime?simulationTime:horaInicio);
             }
             if (message.metadata.includes("correrAlgoritmo")) {
                 console.log(message.data);
-                procesarData(message.data, programacionVuelos, envios, aeropuertos);
+                procesarData(message.data, programacionVuelos, envios, aeropuertos, simulationTime);
             }
         }
     }, [lastMessage]);
