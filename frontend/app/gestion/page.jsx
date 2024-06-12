@@ -1,9 +1,9 @@
-import RegistrarEnvio  from "@/components/envio/registrarEnvio";
+import RegisterShipmentPage  from "@/components/envio/registrarEnvio";
 
 export default function Page() {
   return (
     <div>
-        <RegistrarEnvio/>
+        <RegisterShipmentPage/>
     </div>
   );
 }
