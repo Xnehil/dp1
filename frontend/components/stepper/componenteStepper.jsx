@@ -16,6 +16,51 @@ export default function HorizontalLinearStepper() {
   const [activeStep, setActiveStep] = React.useState(0);
   const [skipped, setSkipped] = React.useState(new Set());
 
+  const [numDocREM, setnumDocREM] = React.useState('');
+  const [tipoDocREM, settipoDocREM] = React.useState('');
+  const [apellidoREM, setapellidoREM] = React.useState('');
+  const [nombreREM, setnombreREM] = React.useState('');
+  const [segundonombreREM, setsegundonombreREM] = React.useState('');
+  const [telefonoREM, settelefonoREM] = React.useState('');
+  const [numeroREM, setnumeroREM] = React.useState('');
+  const [emailREM, setemailREM] = React.useState('');
+
+  const [ciudadOrigen, setciudadOrigen] = React.useState('');
+  const [ciudadDestino, setciudadDestino] = React.useState('');
+  const [numPaquetes, setnumPaquetes] = React.useState('');
+
+  const [numDocDES, setnumDocDES] = React.useState('');
+  const [tipoDocDES, settipoDocDES] = React.useState('');
+  const [apellidoDES, setapellidoDES] = React.useState('');
+  const [nombreDES, setnombreDES] = React.useState('');
+  const [segundonombreDES, setsegundonombreDES] = React.useState('');
+  const [telefonoDES, settelefonoDES] = React.useState('');
+  const [numeroDES, setnumeroDES] = React.useState('');
+  const [emailDES, setemailDES] = React.useState('');
+
+   // Funciones handleChange
+   const handleChangeNumDocREM = (e) => setnumDocREM(e.target.value);
+   const handleChangeTipoDocREM = (e) => settipoDocREM(e.target.value);
+   const handleChangeApellidoREM = (e) => setapellidoREM(e.target.value);
+   const handleChangeNombreREM = (e) => setnombreREM(e.target.value);
+   const handleChangeSegundonombreREM = (e) => setsegundonombreREM(e.target.value);
+   const handleChangeTelefonoREM = (e) => settelefonoREM(e.target.value);
+   const handleChangeNumeroREM = (e) => setnumeroREM(e.target.value);
+   const handleChangeEmailREM = (e) => setemailREM(e.target.value);
+ 
+   const handleChangeCiudadOrigen = (e) => setciudadOrigen(e.target.value);
+   const handleChangeCiudadDestino = (e) => setciudadDestino(e.target.value);
+   const handleChangeNumPaquetes = (e) => setnumPaquetes(e.target.value);
+ 
+   const handleChangeNumDocDES = (e) => setnumDocDES(e.target.value);
+   const handleChangeTipoDocDES = (e) => settipoDocDES(e.target.value);
+   const handleChangeApellidoDES = (e) => setapellidoDES(e.target.value);
+   const handleChangeNombreDES = (e) => setnombreDES(e.target.value);
+   const handleChangeSegundonombreDES = (e) => setsegundonombreDES(e.target.value);
+   const handleChangeTelefonoDES = (e) => settelefonoDES(e.target.value);
+   const handleChangeNumeroDES = (e) => setnumeroDES(e.target.value);
+   const handleChangeEmailDES = (e) => setemailDES(e.target.value);
+
   const isStepOptional = (step) => {
     return step === 1;
   };
@@ -300,7 +345,7 @@ export default function HorizontalLinearStepper() {
           const labelProps = {};
           if (isStepOptional(index)) {
             labelProps.optional = (
-              <Typography variant="caption">Siguiente paso</Typography>
+              <Typography variant="caption"></Typography>
             );
           }
           if (isStepSkipped(index)) {
