@@ -119,10 +119,10 @@ export default function HorizontalLinearStepper() {
               Tipo de documento
             </h2>
             <div className="flex flex-col gap-4">
-              <BasicSelect value={tipoDocREM} setValue={settipoDocREM}/>
+              <BasicSelect required value={tipoDocREM} setValue={settipoDocREM}/>
               <h2 className="flex flex-col gap-3 text-3m mb-2 text-[#000000] text-left font-bold">
                 Número de documento
-                <TextField id="filled-basic" label="Ej. 742056989" variant="filled" sx={{ width: '40%' }}
+                <TextField required id="filled-basic" label="Ej. 742056989" variant="filled" sx={{ width: '40%' }}
                   value={numDocREM} onChange={handleChangeNumDocREM} />
               </h2>
               <h2 className="flex flex-row gap-2 text-3m mb-2 text-[#000000] text-left font-bold">
@@ -137,21 +137,21 @@ export default function HorizontalLinearStepper() {
                     <h2 className="flex flex-col gap-3 text-3m mb-2 text-[#000000] text-left font-bold">
                       Apellido
                     </h2>
-                    <TextField id="apellido" label="Ej. Cruzalegui" variant="filled" fullWidth
+                    <TextField required id="apellido" label="Ej. Cruzalegui" variant="filled" fullWidth
                       value={apellidoREM} onChange={handleChangeApellidoREM} />
                   </Box>
                   <Box display="flex" flexDirection="column" alignItems="left" width="30%">
                     <h2 className="flex flex-col gap-3 text-3m mb-2 text-[#000000] text-left font-bold">
                       Nombre
                     </h2>
-                    <TextField id="nombre" label="Ej. Miguel" variant="filled" fullWidth
+                    <TextField required id="nombre" label="Ej. Miguel" variant="filled" fullWidth
                       value={nombreREM} onChange={handleChangeNombreREM} />
                   </Box>
                   <Box display="flex" flexDirection="column" alignItems="left" width="30%">
                     <h2 className="flex flex-col gap-3 text-3m mb-2 text-[#000000] text-left font-bold">
                       Segundo nombre
                     </h2>
-                    <TextField id="segundo-nombre" label="Ej. David" variant="filled" fullWidth
+                    <TextField required id="segundo-nombre" label="Ej. David" variant="filled" fullWidth
                       value={segundonombreREM} onChange={handleChangeSegundonombreREM} />
                   </Box>
 
@@ -168,13 +168,13 @@ export default function HorizontalLinearStepper() {
                     <h2 className="flex flex-col gap-3 text-3m mb-2 text-[#000000] text-left font-bold">
                       Teléfono
                     </h2>
-                    <SelectVariants numCode={telefonoREM} setnumCode={settelefonoREM} />
+                    <SelectVariants required numCode={telefonoREM} setnumCode={settelefonoREM} />
                   </Box>
                   <Box display="flex" flexDirection="column" alignItems="left" width="30%">
                     <h2 className="flex flex-col text-3m mb-2 text-[#000000] text-left font-bold">
                       Número
                     </h2>
-                    <TextField id="nombre" label="Ej. 985632599" variant="filled" fullWidth
+                    <TextField required id="nombre" label="Ej. 985632599" variant="filled" fullWidth
                       value={numeroREM} onChange={handleChangeNumeroREM} />
                   </Box>
 
@@ -192,7 +192,7 @@ export default function HorizontalLinearStepper() {
                     <h2 className="flex flex-col text-3m mb-2 text-[#000000] text-left font-bold">
                       Correo electrónico
                     </h2>
-                    <TextField id="nombre" label="Ej. miguel.david@gmail.com" variant="filled" fullWidth
+                    <TextField required id="nombre" label="Ej. miguel.david@gmail.com" variant="filled" fullWidth
                       value={emailREM} onChange={handleChangeEmailREM} />
                   </Box>
 
@@ -218,10 +218,10 @@ export default function HorizontalLinearStepper() {
             </h2>
 
             <div className="flex flex-col gap-4">
-              <SelectVariantsCity city={ciudadOrigen} setCity={setciudadOrigen} />
+              <SelectVariantsCity required city={ciudadOrigen} setCity={setciudadOrigen} />
               <h2 className="flex flex-col gap-3 text-3m mb-2 text-[#000000] text-left font-bold">
                 Ciudad de destino
-                <SelectVariantsCity city={ciudadDestino} setCity={setciudadDestino} />
+                <SelectVariantsCity required city={ciudadDestino} setCity={setciudadDestino} />
               </h2>
 
               <h2 className="text-2xl mb-2 text-[#52489C] text-left font-bold">
@@ -231,7 +231,7 @@ export default function HorizontalLinearStepper() {
                 <h2 className="flex flex-col gap-3 text-3m mb-2 text-[#000000] text-left font-bold" >
                   Número de paquetes
                 </h2>
-                <TextField id="apellido" label="Ej. 3" variant="filled" fullWidth
+                <TextField required id="apellido" label="Ej. 3" variant="filled" fullWidth
                   value={numPaquetes} onChange={handleChangeNumPaquetes} />
               </Box>
               <h2 className="flex flex-row gap-2 text-3m mb-2 text-[#000000] text-left font-bold">
@@ -255,10 +255,10 @@ export default function HorizontalLinearStepper() {
               Tipo de documento
             </h2>
             <div className="flex flex-col gap-4">
-              <BasicSelect value={tipoDocDES} setValue={settipoDocDES} />
+              <BasicSelect required value={tipoDocDES} setValue={settipoDocDES} />
               <h2 className="flex flex-col gap-3 text-3m mb-2 text-[#000000] text-left font-bold">
                 Número de documento
-                <TextField id="filled-basic" label="Ej. 742056989" variant="filled" sx={{ width: '40%' }}
+                <TextField required id="filled-basic" label="Ej. 742056989" variant="filled" sx={{ width: '40%' }}
                   value={numDocDES} onChange={(handleChangeNumDocDES)} />
               </h2>
               <h2 className="flex flex-row gap-2 text-3m mb-2 text-[#000000] text-left font-bold">
@@ -273,21 +273,21 @@ export default function HorizontalLinearStepper() {
                     <h2 className="flex flex-col gap-3 text-3m mb-2 text-[#000000] text-left font-bold">
                       Apellido
                     </h2>
-                    <TextField id="apellido" label="Ej. Cruzalegui" variant="filled" fullWidth
+                    <TextField required id="apellido" label="Ej. Cruzalegui" variant="filled" fullWidth
                       value={apellidoDES} onChange={handleChangeApellidoDES} />
                   </Box>
                   <Box display="flex" flexDirection="column" alignItems="left" width="30%">
                     <h2 className="flex flex-col gap-3 text-3m mb-2 text-[#000000] text-left font-bold">
                       Nombre
                     </h2>
-                    <TextField id="nombre" label="Ej. Miguel" variant="filled" fullWidth
+                    <TextField required id="nombre" label="Ej. Miguel" variant="filled" fullWidth
                       value={nombreDES} onChange={handleChangeNombreDES} />
                   </Box>
                   <Box display="flex" flexDirection="column" alignItems="left" width="30%">
                     <h2 className="flex flex-col gap-3 text-3m mb-2 text-[#000000] text-left font-bold">
                       Segundo nombre
                     </h2>
-                    <TextField id="segundo-nombre" label="Ej. David" variant="filled" fullWidth
+                    <TextField required id="segundo-nombre" label="Ej. David" variant="filled" fullWidth
                       value={segundonombreDES} onChange={handleChangeSegundonombreDES} />
                   </Box>
 
@@ -304,13 +304,13 @@ export default function HorizontalLinearStepper() {
                     <h2 className="flex flex-col gap-3 text-3m mb-2 text-[#000000] text-left font-bold">
                       Teléfono
                     </h2>
-                    <SelectVariants numCode={telefonoDES} setnumCode={settelefonoDES} />
+                    <SelectVariants required numCode={telefonoDES} setnumCode={settelefonoDES} />
                   </Box>
                   <Box display="flex" flexDirection="column" alignItems="left" width="30%">
                     <h2 className="flex flex-col text-3m mb-2 text-[#000000] text-left font-bold">
                       Número
                     </h2>
-                    <TextField id="nombre" label="Ej. 985632599" variant="filled" fullWidth
+                    <TextField required id="nombre" label="Ej. 985632599" variant="filled" fullWidth
                       value={numeroDES} onChange={handleChangeNumeroDES} />
                   </Box>
 
@@ -328,7 +328,7 @@ export default function HorizontalLinearStepper() {
                     <h2 className="flex flex-col text-3m mb-2 text-[#000000] text-left font-bold">
                       Correo electrónico
                     </h2>
-                    <TextField id="nombre" label="Ej. miguel.david@gmail.com" variant="filled" fullWidth
+                    <TextField required id="nombre" label="Ej. miguel.david@gmail.com" variant="filled" fullWidth
                       value={emailDES} onChange={handleChangeEmailDES} />
                   </Box>
 
