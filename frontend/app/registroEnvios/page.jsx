@@ -5,75 +5,73 @@ import React, { useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { FaCalendarAlt } from "react-icons/fa";
-import TextField from '@mui/material/TextField'; 
+import TextField from '@mui/material/TextField';
 import HorizontalLinearStepper from "@/components/stepper/componenteStepper.jsx";
-
+import UploadFile from "@/components/uploadFile/uploadFile.jsx";
 
 function ConfiguracionRegistro({ buttonText, activeTab }) {
-    const [startDate, setStartDate] = useState(new Date("2024-01-12T05:36:52"));
-    
-    return (
-        <div className="flex flex-col items-center mt-5 w-full mb-8">
-            <div className="w-full max-w-4xl px-10">
-                <h2 className="text-3xl mb-2 text-[#84A98C] text-left font-bold">
-                    Registro de envío
-                </h2>
-                <div className="flex flex-col gap-2">
-                  
-                <HorizontalLinearStepper/>
+  const [startDate, setStartDate] = useState(new Date("2024-01-12T05:36:52"));
 
-                </div>
-                
-                <Link href={`/simulacion/${activeTab}?startDate=${startDate}`} className="w-full">
-                    
-                </Link>
-            </div>
+  return (
+    <div className="flex flex-col items-center mt-5 w-full mb-8">
+      <div className="w-full max-w-4xl px-10">
+        <h2 className="text-3xl mb-5 text-[#84A98C] text-left font-bold">
+          Registro de envío
+        </h2>
+        <div className="flex flex-col gap-2" >
+        {activeTab === 'individual' && <HorizontalLinearStepper />}
+        {activeTab === 'archivo' && <UploadFile />}
+
         </div>
-    );
+
+        <Link href={`/simulacion/${activeTab}?startDate=${startDate}`} className="w-full">
+
+        </Link>
+      </div>
+    </div>
+  );
 }
 
 export default function SimulacionPage() {
-    const [activeTab, setActiveTab] = useState("individual");
+  const [activeTab, setActiveTab] = useState("individual");
 
-    return (
-        <div className="flex flex-col items-center mt-5 w-full">
-            <div className="w-full max-w-4xl">
-                <div className="flex justify-around mb-4 border-b-2 border-gray-200">
-                    <button
-                        className={`py-2 px-4 ${
-                            activeTab === "individual"
-                                ? "border-b-2 border-[#52489c] font-bold"
-                                : "font-normal"
-                        }`}
-                        onClick={() => setActiveTab("individual")}
-                    >
-                        Registro individual
-                    </button>
-                    <button
-                        className={`py-2 px-4 ${
-                            activeTab === "archivo"
-                                ? "border-b-2 border-[#52489c] font-bold"
-                                : "font-normal"
-                        }`}
-                        onClick={() => setActiveTab("archivo")}
-                    >
-                        Registro por archivo
-                    </button>
-                </div>
-                {activeTab === "individual" ? (
-                    <ConfiguracionRegistro
-                        buttonText="Registro individual"
-                        activeTab={activeTab}
-                    />
-                ) : (
-                    <ConfiguracionRegistro
-                        buttonText="Registro por archivo"
-                        activeTab={activeTab}
-                    />
-                )}
-            </div>
+  return (
+    <div className="flex flex-col items-center mt-5 w-full">
+      <div className="w-full max-w-4xl">
+        <div className="flex justify-around mb-4 border-b-2 border-gray-200">
+          <button
+            className={`py-2 px-4 ${activeTab === "individual"
+                ? "border-b-2 border-[#52489c] font-bold"
+                : "font-normal"
+              }`}
+            onClick={() => setActiveTab("individual")}
+          >
+            Registro individual
+          </button>
+          <button
+            className={`py-2 px-4 ${activeTab === "archivo"
+                ? "border-b-2 border-[#52489c] font-bold"
+                : "font-normal"
+              }`}
+            onClick={() => setActiveTab("archivo")}
+          >
+            Registro por archivo
+          </button>
         </div>
-    );
+        {activeTab === "individual" ? (
+          <ConfiguracionRegistro
+            buttonText="Registro individual"
+            activeTab={activeTab}
+          />
+        ) : (
+          <ConfiguracionRegistro
+            buttonText="Registro por archivo"
+            activeTab={activeTab}
+          />
+        )}
+      </div>
+    </div>
+  );
 }
 
 /*

@@ -4,11 +4,10 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 
-export default function SelectVariants() {
-  const [age, setAge] = React.useState('');
+export default function SelectVariants({disabled=false, value, setValue}) {
 
   const handleChange = (event) => {
-    setAge(event.target.value);
+    setValue(event.target.value);
   };
 
   return (
@@ -18,8 +17,10 @@ export default function SelectVariants() {
         <Select
           labelId="demo-simple-select-filled-label"
           id="demo-simple-select-filled"
-          value={age}
+          value={value}
           onChange={handleChange}
+          inputProps={{ readOnly: disabled }}
+
         >
         
           <MenuItem value={10}>DNI</MenuItem>
