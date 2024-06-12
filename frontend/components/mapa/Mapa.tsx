@@ -86,7 +86,7 @@ const Mapa = ({
     const [selectedAeropuerto, setSelectedAeropuerto] = useState<Aeropuerto | null>(null);
     const selectedFeature = useRef<Feature | null>(null);
     const vistaActual = useRef<View | null>(null);
-    const fechaFinSemana = new Date(horaInicio.getTime() + 7 * 24 * 60 * 60 * 1000 / 112); //suma 7 dias
+    const fechaFinSemana = new Date(horaInicio.getTime() + 7 * 24 * 60 * 60 * 1000); //suma 7 dias
     const [vuelosABorrar, setVuelosABorrar] = useState<number[]>([]);
 
     useEffect(() => {
