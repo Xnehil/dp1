@@ -1,6 +1,7 @@
 "use client";
 import Leyenda from "@/components/mapa/Leyenda";
 import DatosVuelo from "@/components/mapa/DatosVuelo";
+import FinSemanal from "@/components/mapa/FinSemanal";
 import React, { useEffect, useRef, useState } from "react";
 import "ol/ol.css";
 import { Map as OLMap } from "ol";
@@ -85,6 +86,7 @@ const Mapa = ({
     const [selectedAeropuerto, setSelectedAeropuerto] = useState<Aeropuerto | null>(null);
     const selectedFeature = useRef<Feature | null>(null);
     const vistaActual = useRef<View | null>(null);
+    const fechaFinSemana = new Date(horaInicio.getTime() + 7 * 24 * 60  60 * 1000); //suma 7 dias
 
     useEffect(() => {
         if (!mapRef.current) {
@@ -217,6 +219,9 @@ const Mapa = ({
                     timeZone: "America/Lima",
                 });
                 sendMessage("tiempo: " + limaTime, true);
+            }
+            if(simulationTime.getTime() === fechaFinSemana.getTime()){
+                simulationInterval = 0;
             }
         }, 1000);
 
