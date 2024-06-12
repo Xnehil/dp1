@@ -17,12 +17,22 @@ export function updateCoordinates(aeropuertos: Map<String, Aeropuerto>, vuelos: 
     let aBorrar:number[] = [];
     //Iterar por cada vuelo
     let cuenta=0;
+    let verbose = false;
     // let medirTiempo = new Date();
     vuelos?.forEach((item, i) => {
+        
         const vuelo = item.vuelo;
+        if (vuelo.id == 106) {
+            // verbose = true;
+        }
+
         // console.log("vuelo: ", vuelo);
         const pointFeature = item.pointFeature;
         const lineFeature = item.lineFeature;
+
+        if (verbose) {
+            console.log("pointFeature: ", pointFeature);
+        }
 
         // console.log("vuelo: ", vuelo);
         const line = lineFeature.getGeometry() as LineString;
@@ -30,6 +40,10 @@ export function updateCoordinates(aeropuertos: Map<String, Aeropuerto>, vuelos: 
         // console.log("coordinates: ", coordinates);
         const totalDistance = vuelo.distanciaVuelo; //En km
         const speed = totalDistance / (vuelo.duracionVuelo); //En km/min
+
+        if (verbose) {
+            console.log("speed: ", speed);
+        }
 
         const point = pointFeature.getGeometry() as Point;
         const destinationCoordinates = coordinates[1] as Coordinate;
@@ -40,6 +54,11 @@ export function updateCoordinates(aeropuertos: Map<String, Aeropuerto>, vuelos: 
 
         const distanciaRecorrida = speed * tiempoPasadoMinutos;
         const ratio = distanciaRecorrida / totalDistance;
+        if (verbose) {
+            console.log("distanciaRecorrida: ", distanciaRecorrida);
+            console.log("totalDistance: ", totalDistance);
+            console.log("ratio: ", ratio);
+        }
         // console.log("distanciaRecorrida: ", distanciaRecorrida);
         // console.log("totalDistance: ", totalDistance);
         // console.log("ratio: ", ratio);
@@ -47,6 +66,10 @@ export function updateCoordinates(aeropuertos: Map<String, Aeropuerto>, vuelos: 
             originCoordinates[0] + ratio * (destinationCoordinates[0] - originCoordinates[0]),
             originCoordinates[1] + ratio * (destinationCoordinates[1] - originCoordinates[1]),
         ] as Coordinate;
+
+        if (verbose) {
+            console.log("newCoordinates: ", newCoordinates);
+        }
 
         if (distanciaRecorrida >= totalDistance) {
             point.setCoordinates(destinationCoordinates);
@@ -74,7 +97,7 @@ export function coordenadasIniciales(aeropuertos: Map<String, Aeropuerto>, item:
     const coordinates = line.getCoordinates();
 
     let verbose = false;
-    if(item.vuelo.id == 478){
+    if(item.vuelo.id == 106){
         verbose = true;
     }
 

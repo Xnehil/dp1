@@ -31,13 +31,15 @@ export function tiempoEntreAhoraYSalida(vuelo: Vuelo, aeropuertos: Map<String, A
     const [ hour, minute ] = time.split(':');
 
     // Convert simulationTime to UTC
-    const ahoraUTC = new Date(simulationTime.getTime() + simulationTime.getTimezoneOffset() * 60000);
+    const ahoraUTC = new Date(simulationTime.getTime());
 
     const horaInicioUTC = new Date(ahoraUTC.getTime());
     horaInicioUTC.setUTCHours(parseInt(hour));
     horaInicioUTC.setUTCMinutes(parseInt(minute));
 
     if (verbose) {
+        console.log("hour: ", hour);
+        console.log("minute: ", minute);
         console.log("ahoraUTC: ", ahoraUTC);
         console.log("horaInicioUTC: ", horaInicioUTC);
     }
