@@ -38,12 +38,14 @@ const DatosVuelo: React.FC<DatosVueloProps> = ({ vuelo, aeropuerto, programacion
     const auxProgramacion = programacionVuelos.current.get(claveProgramacion);
     // console.log("Programación de vuelo: ", auxProgramacion);
     setProgramacionVuelo(auxProgramacion ?? null);
+    setVisible(true);
     setOpcion(1);
   }, [vuelo]);
 
   useEffect(() => {
     if(aeropuerto == null) return;
     setOpcion(2);
+    setVisible(true);
   }, [aeropuerto]);
 
   function procesarBusqueda() {
@@ -162,14 +164,18 @@ const DatosVuelo: React.FC<DatosVueloProps> = ({ vuelo, aeropuerto, programacion
             <div className="datos-vuelo-header">
               <img src="/logos/oficinasEnhancedBlue.png" alt="Oficina" className="icono-vuelo" />
               <div className="datos-vuelo-info">
-                <h2 className="vuelo-codigo">Almacén {aeropuerto.pais} - {aeropuerto.codigoOACI}</h2>
+                <h2 className="vuelo-codigo">Almacén {aeropuerto.pais}</h2>
+                <h2 className="vuelo-codigo"> {aeropuerto.codigoOACI}</h2>
                 <p className="vuelo-horario">
                   Hora local: {" "}
                   {mostrarTiempoEnZonaHoraria(simulationTime, aeropuerto.gmt)}
                 </p>
               </div>
               <div className="datos-vuelo-capacidad">
-                <h2>Cap. máxima: {aeropuerto.capacidadMaxima} Paquetes</h2>
+                <h2>Capacidad máxima:</h2>
+                <h2>
+                   {aeropuerto.capacidadMaxima} Paquetes
+                </h2>
                 <p>
                   {(aeropuerto.cantidadActual  / aeropuerto.capacidadMaxima * 100).toFixed(2)}
                   % lleno

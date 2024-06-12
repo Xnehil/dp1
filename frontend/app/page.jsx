@@ -11,11 +11,12 @@ import srcRegistroEnvio from "@/public/logos/registroEnvio.png";
 import srcPlaneamiento from "@/public/logos/planeamientoGestion.png";
 import srcSimulacion from "@/public/logos/simulacionEnvios.png";
 import srcVuelosEnVivo from "@/public/logos/vuelosEnVivo.png";
+import TextField from '@mui/material/TextField'; 
 
 
 export default function Home() {
     return (
-        <main>
+        <main className=" mb-8">
             <div className="w-1/2 mx-auto flex items-center px-3 rounded-2xl">
                 <h1 className="text-6xl  text-black-500 px-4 text-center mt-0 mb-10 font-title">
                     Bienvenid@ al sistema de gestión de envíos de RedEx
