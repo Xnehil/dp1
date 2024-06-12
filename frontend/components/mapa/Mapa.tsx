@@ -87,6 +87,7 @@ const Mapa = ({
     const selectedFeature = useRef<Feature | null>(null);
     const vistaActual = useRef<View | null>(null);
     const fechaFinSemana = new Date(horaInicio.getTime() + 7 * 24 * 60 * 60 * 1000); //suma 7 dias
+    const [vuelosABorrar, setVuelosABorrar] = useState<number[]>([]);
 
     useEffect(() => {
         if (!mapRef.current) {
@@ -220,7 +221,7 @@ const Mapa = ({
                 });
                 sendMessage("tiempo: " + limaTime, true);
             }
-            if(simulationTime.getTime() === fechaFinSemana.getTime()){
+            if(simulationTime.getTime() > fechaFinSemana.getTime()){
                 simulationInterval = 0;
             }
         }, 1000);
@@ -228,25 +229,13 @@ const Mapa = ({
         // console.log("Updating coordinates con tiempo: ", simulationTime);
 
         if (vectorSourceRef.current.getFeatures().length > 0) {
-            const aBorrar = updateCoordinates(
+            const aBorrar: number[] = updateCoordinates(
                 aeropuertos.current,
                 vuelos.current,
                 simulationTime
             );
             // console.log("aBorrar: ", aBorrar);
-            for (let i = 0; i < aBorrar.length; i++) {
-                const idVuelo = aBorrar[i];
-                const item = vuelos.current?.get(idVuelo);
-                if (item) {
-                    vectorSourceRef.current.removeFeature(item.pointFeature);
-                    vectorSourceRef.current.removeFeature(item.lineFeature);
-                    item.pointFeature = null;
-                    item.lineFeature = null;
-                    item.routeFeature = null;
-                    vuelos.current?.delete(idVuelo);
-                    agregarPaquetesAlmacen(idVuelo, programacionVuelos, aeropuertos, simulationTime, envios);
-                }
-            }
+            setVuelosABorrar(aBorrar);
         }
 
         // Clean up interval on unmount
@@ -257,6 +246,36 @@ const Mapa = ({
         const timeoutId = setInterval(() => limpiarMapasDeDatos(programacionVuelos, envios, new Date(simulationTime.getTime())), 360 * 1000); // 360 seconds = 6 minutes
         return () => clearInterval(timeoutId); // Clear the interval if the component is unmounted
     }, []);
+
+    useEffect(() => {
+        async function processItem(item: any, idVuelo: number) {
+            if (item) {
+                vectorSourceRef.current.removeFeature(item.pointFeature);
+                vectorSourceRef.current.removeFeature(item.lineFeature);
+                item.pointFeature = null;
+                item.lineFeature = null;
+                item.routeFeature = null;
+                try {
+                    await agregarPaquetesAlmacen(idVuelo, programacionVuelos, aeropuertos, simulationTime, envios, vuelos);
+                } catch (error) {
+                    console.error('Promesa rechazada: ', error);
+                }
+                vuelos.current?.delete(idVuelo);
+            }
+        }
+
+        async function processItems(aBorrar: number[]) {
+            for (let i = 0; i < aBorrar.length; i++) {
+                const idVuelo = aBorrar[i];
+                const item = vuelos.current?.get(idVuelo);
+                await processItem(item, idVuelo);
+            }
+        }
+
+        if(vuelosABorrar.length > 0){
+             processItems(vuelosABorrar);
+        }
+    } ,[vuelosABorrar]);
 
     useEffect(() => {
         if (nuevosVuelos.length > 0 && semaforo > 0) {
