@@ -13,7 +13,7 @@ function ConfiguracionRegistro({ buttonText, activeTab }) {
         <div className="flex flex-col items-center mt-10 w-full">
             <div className="w-full max-w-4xl px-10">
                 <h2 className="text-3xl mb-2 text-[#161616] text-left">
-                    Configuración
+                    Registro de envío
                 </h2>
                 <p className="mb-4 text-[#525252] text-left">
                     Elige los parámetros para la simulación
