@@ -1,9 +1,9 @@
-import RegisterShipmentPage  from "@/components/envio/registrarEnvio";
+import FinSemanal  from "@/components/mapa/FinSemanal";
 
 export default function Page() {
   return (
     <div>
-        <RegisterShipmentPage/>
+        <FinSemanal/>
     </div>
   );
 }
