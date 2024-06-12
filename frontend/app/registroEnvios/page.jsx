@@ -21,8 +21,6 @@ function ConfiguracionRegistro({ buttonText, activeTab }) {
                 <div className="flex flex-col gap-2">
                   
                 <HorizontalLinearStepper/>
-                <TextField id="outlined-basic" label="Outlined" variant="outlined" />
-                <TextField id="outlined-basic" label="Outlined" variant="outlined" />
 
                 </div>
                 
