@@ -8,12 +8,14 @@
     opacity: 0;
     display: flex;
     flex: 1;
+    justify-content: space-between;
   }
 
 .datos-vuelo-contenedor.visible {
     transform: translateY(0);
     opacity: 1;
     max-height: 200px;
+    width: 80%;
 }
 
 .datos-vuelo-contenedor.hidden {
@@ -41,6 +43,7 @@
 .vuelo-codigo {
     color: #59C3C3;
     margin: 0;
+    font-size: large;
 }
 
 .vuelo-horario {
@@ -160,6 +163,7 @@
     display: flex;
     flex-direction: column;
     flex: 1;
+    max-width: 600px;
   }
 
 .datos-vuelo-busqueda {
