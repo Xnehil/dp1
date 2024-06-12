@@ -6,6 +6,7 @@ import StepLabel from '@mui/material/StepLabel';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
+import Modal from '@mui/material/Modal';
 import BasicSelect from "@/components/select/select.jsx";
 import SelectVariants from "@/components/select/selectNumCode.jsx";
 import SelectVariantsCity from "@/components/select/selectCity.jsx"
@@ -18,6 +19,7 @@ export default function HorizontalLinearStepper() {
   const [numCode, setnumCode] = React.useState('');
   const [activeStep, setActiveStep] = React.useState(0);
   const [skipped, setSkipped] = React.useState(new Set());
+  const [openModal, setOpenModal] = React.useState(false);
 
   const [numDocREM, setnumDocREM] = React.useState('');
   const [tipoDocREM, settipoDocREM] = React.useState('');
@@ -83,6 +85,22 @@ export default function HorizontalLinearStepper() {
     setSkipped(newSkipped);
   };
 
+
+  const handleOpenModal = () => {
+    setOpenModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setOpenModal(false);
+    handleNext();
+  };
+
+  const handleFinish = () => {
+    handleOpenModal(); // Abre el modal al hacer clic en 'Finalizar'
+    // Puedes agregar más lógica aquí si es necesario
+  };
+
+
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
@@ -119,10 +137,10 @@ export default function HorizontalLinearStepper() {
               Tipo de documento
             </h2>
             <div className="flex flex-col gap-4">
-              <BasicSelect value={tipoDocREM} setValue={settipoDocREM}/>
+              <BasicSelect required value={tipoDocREM} setValue={settipoDocREM} />
               <h2 className="flex flex-col gap-3 text-3m mb-2 text-[#000000] text-left font-bold">
                 Número de documento
-                <TextField id="filled-basic" label="Ej. 742056989" variant="filled" sx={{ width: '40%' }}
+                <TextField required id="filled-basic" label="Ej. 742056989" variant="filled" sx={{ width: '40%' }}
                   value={numDocREM} onChange={handleChangeNumDocREM} />
               </h2>
               <h2 className="flex flex-row gap-2 text-3m mb-2 text-[#000000] text-left font-bold">
@@ -137,21 +155,21 @@ export default function HorizontalLinearStepper() {
                     <h2 className="flex flex-col gap-3 text-3m mb-2 text-[#000000] text-left font-bold">
                       Apellido
                     </h2>
-                    <TextField id="apellido" label="Ej. Cruzalegui" variant="filled" fullWidth
+                    <TextField required id="apellido" label="Ej. Cruzalegui" variant="filled" fullWidth
                       value={apellidoREM} onChange={handleChangeApellidoREM} />
                   </Box>
                   <Box display="flex" flexDirection="column" alignItems="left" width="30%">
                     <h2 className="flex flex-col gap-3 text-3m mb-2 text-[#000000] text-left font-bold">
                       Nombre
                     </h2>
-                    <TextField id="nombre" label="Ej. Miguel" variant="filled" fullWidth
+                    <TextField required id="nombre" label="Ej. Miguel" variant="filled" fullWidth
                       value={nombreREM} onChange={handleChangeNombreREM} />
                   </Box>
                   <Box display="flex" flexDirection="column" alignItems="left" width="30%">
                     <h2 className="flex flex-col gap-3 text-3m mb-2 text-[#000000] text-left font-bold">
                       Segundo nombre
                     </h2>
-                    <TextField id="segundo-nombre" label="Ej. David" variant="filled" fullWidth
+                    <TextField required id="segundo-nombre" label="Ej. David" variant="filled" fullWidth
                       value={segundonombreREM} onChange={handleChangeSegundonombreREM} />
                   </Box>
 
@@ -168,13 +186,13 @@ export default function HorizontalLinearStepper() {
                     <h2 className="flex flex-col gap-3 text-3m mb-2 text-[#000000] text-left font-bold">
                       Teléfono
                     </h2>
-                    <SelectVariants numCode={telefonoREM} setnumCode={settelefonoREM} />
+                    <SelectVariants required numCode={telefonoREM} setnumCode={settelefonoREM} />
                   </Box>
                   <Box display="flex" flexDirection="column" alignItems="left" width="30%">
                     <h2 className="flex flex-col text-3m mb-2 text-[#000000] text-left font-bold">
                       Número
                     </h2>
-                    <TextField id="nombre" label="Ej. 985632599" variant="filled" fullWidth
+                    <TextField required id="nombre" label="Ej. 985632599" variant="filled" fullWidth
                       value={numeroREM} onChange={handleChangeNumeroREM} />
                   </Box>
 
@@ -192,7 +210,7 @@ export default function HorizontalLinearStepper() {
                     <h2 className="flex flex-col text-3m mb-2 text-[#000000] text-left font-bold">
                       Correo electrónico
                     </h2>
-                    <TextField id="nombre" label="Ej. miguel.david@gmail.com" variant="filled" fullWidth
+                    <TextField required id="nombre" label="Ej. miguel.david@gmail.com" variant="filled" fullWidth
                       value={emailREM} onChange={handleChangeEmailREM} />
                   </Box>
 
@@ -218,10 +236,10 @@ export default function HorizontalLinearStepper() {
             </h2>
 
             <div className="flex flex-col gap-4">
-              <SelectVariantsCity city={ciudadOrigen} setCity={setciudadOrigen} />
+              <SelectVariantsCity required city={ciudadOrigen} setCity={setciudadOrigen} />
               <h2 className="flex flex-col gap-3 text-3m mb-2 text-[#000000] text-left font-bold">
                 Ciudad de destino
-                <SelectVariantsCity city={ciudadDestino} setCity={setciudadDestino} />
+                <SelectVariantsCity required city={ciudadDestino} setCity={setciudadDestino} />
               </h2>
 
               <h2 className="text-2xl mb-2 text-[#52489C] text-left font-bold">
@@ -231,7 +249,7 @@ export default function HorizontalLinearStepper() {
                 <h2 className="flex flex-col gap-3 text-3m mb-2 text-[#000000] text-left font-bold" >
                   Número de paquetes
                 </h2>
-                <TextField id="apellido" label="Ej. 3" variant="filled" fullWidth
+                <TextField required id="apellido" label="Ej. 3" variant="filled" fullWidth
                   value={numPaquetes} onChange={handleChangeNumPaquetes} />
               </Box>
               <h2 className="flex flex-row gap-2 text-3m mb-2 text-[#000000] text-left font-bold">
@@ -255,10 +273,10 @@ export default function HorizontalLinearStepper() {
               Tipo de documento
             </h2>
             <div className="flex flex-col gap-4">
-              <BasicSelect value={tipoDocDES} setValue={settipoDocDES} />
+              <BasicSelect required value={tipoDocDES} setValue={settipoDocDES} />
               <h2 className="flex flex-col gap-3 text-3m mb-2 text-[#000000] text-left font-bold">
                 Número de documento
-                <TextField id="filled-basic" label="Ej. 742056989" variant="filled" sx={{ width: '40%' }}
+                <TextField required id="filled-basic" label="Ej. 742056989" variant="filled" sx={{ width: '40%' }}
                   value={numDocDES} onChange={(handleChangeNumDocDES)} />
               </h2>
               <h2 className="flex flex-row gap-2 text-3m mb-2 text-[#000000] text-left font-bold">
@@ -273,21 +291,21 @@ export default function HorizontalLinearStepper() {
                     <h2 className="flex flex-col gap-3 text-3m mb-2 text-[#000000] text-left font-bold">
                       Apellido
                     </h2>
-                    <TextField id="apellido" label="Ej. Cruzalegui" variant="filled" fullWidth
+                    <TextField required id="apellido" label="Ej. Cruzalegui" variant="filled" fullWidth
                       value={apellidoDES} onChange={handleChangeApellidoDES} />
                   </Box>
                   <Box display="flex" flexDirection="column" alignItems="left" width="30%">
                     <h2 className="flex flex-col gap-3 text-3m mb-2 text-[#000000] text-left font-bold">
                       Nombre
                     </h2>
-                    <TextField id="nombre" label="Ej. Miguel" variant="filled" fullWidth
+                    <TextField required id="nombre" label="Ej. Miguel" variant="filled" fullWidth
                       value={nombreDES} onChange={handleChangeNombreDES} />
                   </Box>
                   <Box display="flex" flexDirection="column" alignItems="left" width="30%">
                     <h2 className="flex flex-col gap-3 text-3m mb-2 text-[#000000] text-left font-bold">
                       Segundo nombre
                     </h2>
-                    <TextField id="segundo-nombre" label="Ej. David" variant="filled" fullWidth
+                    <TextField required id="segundo-nombre" label="Ej. David" variant="filled" fullWidth
                       value={segundonombreDES} onChange={handleChangeSegundonombreDES} />
                   </Box>
 
@@ -304,13 +322,13 @@ export default function HorizontalLinearStepper() {
                     <h2 className="flex flex-col gap-3 text-3m mb-2 text-[#000000] text-left font-bold">
                       Teléfono
                     </h2>
-                    <SelectVariants numCode={telefonoDES} setnumCode={settelefonoDES} />
+                    <SelectVariants required numCode={telefonoDES} setnumCode={settelefonoDES} />
                   </Box>
                   <Box display="flex" flexDirection="column" alignItems="left" width="30%">
                     <h2 className="flex flex-col text-3m mb-2 text-[#000000] text-left font-bold">
                       Número
                     </h2>
-                    <TextField id="nombre" label="Ej. 985632599" variant="filled" fullWidth
+                    <TextField required id="nombre" label="Ej. 985632599" variant="filled" fullWidth
                       value={numeroDES} onChange={handleChangeNumeroDES} />
                   </Box>
 
@@ -328,7 +346,7 @@ export default function HorizontalLinearStepper() {
                     <h2 className="flex flex-col text-3m mb-2 text-[#000000] text-left font-bold">
                       Correo electrónico
                     </h2>
-                    <TextField id="nombre" label="Ej. miguel.david@gmail.com" variant="filled" fullWidth
+                    <TextField required id="nombre" label="Ej. miguel.david@gmail.com" variant="filled" fullWidth
                       value={emailDES} onChange={handleChangeEmailDES} />
                   </Box>
 
@@ -353,10 +371,10 @@ export default function HorizontalLinearStepper() {
                 Tipo de documento
               </h2>
               <div className="flex flex-col gap-4">
-                <BasicSelect disabled={true} value={tipoDocREM} setValue={settipoDocREM}/>
+                <BasicSelect disabled={true} value={tipoDocREM} setValue={settipoDocREM} />
                 <h2 className="flex flex-col gap-3 text-3m mb-2 text-[#000000] text-left font-bold">
                   Número de documento
-                  <TextField disabled id="filled-basic" label="Número de documento"variant="filled" sx={{ width: '40%' }}
+                  <TextField disabled id="filled-basic" label="Número de documento" variant="filled" sx={{ width: '40%' }}
                     value={numDocREM} />
                 </h2>
                 <h2 className="flex flex-row gap-2 text-3m mb-2 text-[#000000] text-left font-bold">
@@ -449,7 +467,7 @@ export default function HorizontalLinearStepper() {
               </h2>
 
               <div className="flex flex-col gap-4">
-                <SelectVariantsCity disabled={true} city={ciudadOrigen} setCity={setciudadOrigen}  />
+                <SelectVariantsCity disabled={true} city={ciudadOrigen} setCity={setciudadOrigen} />
                 <h2 className="flex flex-col gap-3 text-3m mb-2 text-[#000000] text-left font-bold">
                   Ciudad de destino
                   <SelectVariantsCity disabled={true} city={ciudadDestino} setCity={setciudadDestino} />
@@ -463,7 +481,7 @@ export default function HorizontalLinearStepper() {
                     Número de paquetes
                   </h2>
                   <TextField disabled id="apellido" label="Paquetes" variant="filled" fullWidth
-                    value={numPaquetes}  />
+                    value={numPaquetes} />
                 </Box>
                 <h2 className="flex flex-row gap-2 text-3m mb-2 text-[#000000] text-left font-bold">
 
@@ -483,7 +501,7 @@ export default function HorizontalLinearStepper() {
                 Tipo de documento
               </h2>
               <div className="flex flex-col gap-4">
-                <BasicSelect  disabled ={true} value={tipoDocDES} setValue={settipoDocDES}/>
+                <BasicSelect disabled={true} value={tipoDocDES} setValue={settipoDocDES} />
                 <h2 className="flex flex-col gap-3 text-3m mb-2 text-[#000000] text-left font-bold">
                   Número de documento
                   <TextField disabled id="filled-basic" label="Número de documento" variant="filled" sx={{ width: '40%' }}
@@ -502,21 +520,21 @@ export default function HorizontalLinearStepper() {
                         Apellido
                       </h2>
                       <TextField disabled id="apellido" label="Apellido" variant="filled" fullWidth
-                        value={apellidoDES}  />
+                        value={apellidoDES} />
                     </Box>
                     <Box display="flex" flexDirection="column" alignItems="left" width="30%">
                       <h2 className="flex flex-col gap-3 text-3m mb-2 text-[#000000] text-left font-bold">
                         Nombre
                       </h2>
                       <TextField disabled id="nombre" label="Nombre" variant="filled" fullWidth
-                        value={nombreDES}  />
+                        value={nombreDES} />
                     </Box>
                     <Box display="flex" flexDirection="column" alignItems="left" width="30%">
                       <h2 className="flex flex-col gap-3 text-3m mb-2 text-[#000000] text-left font-bold">
                         Segundo nombre
                       </h2>
                       <TextField disabled id="segundo-nombre" label="Segundo nombre" variant="filled" fullWidth
-                        value={segundonombreDES}  />
+                        value={segundonombreDES} />
                     </Box>
 
                   </Box>
@@ -539,7 +557,7 @@ export default function HorizontalLinearStepper() {
                         Número
                       </h2>
                       <TextField disabled id="nombre" label="Número" variant="filled" fullWidth
-                        value={numeroDES}  />
+                        value={numeroDES} />
                     </Box>
 
                   </Box>
@@ -557,7 +575,7 @@ export default function HorizontalLinearStepper() {
                         Correo electrónico
                       </h2>
                       <TextField disabled id="nombre" label="Email" variant="filled" fullWidth
-                        value={emailDES}  />
+                        value={emailDES} />
                     </Box>
 
                   </Box>
@@ -600,12 +618,12 @@ export default function HorizontalLinearStepper() {
       <div>
         {activeStep === steps.length ? (
           <React.Fragment>
-            <Typography sx={{ mt: 2, mb: 1 }}>
-              Todos los pasos completados - has terminado
+            <Typography className="flex flex-col text-3l mb-2 text-[#000000] text-center font-bold" sx={{ mt: 2, mb: 1 }}>
+              Tu envío fue registrado con éxito
             </Typography>
             <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
               <Box sx={{ flex: '1 1 auto' }} />
-              <Button onClick={handleReset}>Resetear</Button>
+              <Button sx={{ color: '#52489C', backgroundColor: "#FFFFFF" }} onClick={handleReset}>Registrar otro envío</Button>
             </Box>
           </React.Fragment>
         ) : (
@@ -624,9 +642,43 @@ export default function HorizontalLinearStepper() {
               <Button
                 sx={{ color: '#52489C', backgroundColor: "#FFFFFF" }}
                 variant="contained"
-                onClick={handleNext}>
+                onClick={activeStep === steps.length - 1 ? handleFinish : handleNext}>
                 {activeStep === steps.length - 1 ? 'Finalizar' : 'Siguiente'}
               </Button>
+
+              <Modal
+                open={openModal}
+                onClose={handleCloseModal}
+                aria-labelledby="modal-title"
+                aria-describedby="modal-description"
+              >
+                <Box sx={{
+                  position: 'absolute',
+                  top: '50%',
+                  left: '50%',
+                  transform: 'translate(-50%, -50%)',
+                  width: 400,
+                  bgcolor: 'background.paper',
+                  border: '2px solid #000',
+                  boxShadow: 24,
+                  p: 4,
+                }}>
+                  <h2 className="text-2xl mb-2 text-[#52489C] text-left font-bold">
+                    ¡Códigos de rastreo generados!
+                  </h2>
+                  <div id="modal-description" sx={{ mt: 2}}>
+                    Código 000000001
+                    <div id="modal-description" sx={{ mt: 2 }}>
+                      Código 000000002
+                      <div id="modal-description" sx={{ mt: 2 }}>
+                        Código 000000003
+                      </div>
+                    </div>
+                  </div>
+                  <Button onClick={handleCloseModal} sx={{ mt: 2, color: '#52489C', backgroundColor: "#FFFFFF" }}>Terminar</Button>
+                </Box>
+              </Modal>
+
             </Box>
           </React.Fragment>
         )}
