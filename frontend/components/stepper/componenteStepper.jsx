@@ -5,7 +5,7 @@ import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-import TextField from '@mui/material/TextField'; 
+import TextField from '@mui/material/TextField';
 import BasicSelect from "@/components/select/select.jsx";
 import SelectVariants from "@/components/select/selectNumCode.jsx";
 import SelectVariantsCity from "@/components/select/selectCity.jsx"
@@ -13,6 +13,9 @@ import SelectVariantsCity from "@/components/select/selectCity.jsx"
 const steps = ['Datos del cliente', 'Destino y paquetes', 'Datos del receptor', 'Confirmar envío'];
 
 export default function HorizontalLinearStepper() {
+  const [value, setValue] = React.useState('');
+  const [city, setCity] = React.useState('');
+  const [numCode, setnumCode] = React.useState('');
   const [activeStep, setActiveStep] = React.useState(0);
   const [skipped, setSkipped] = React.useState(new Set());
 
@@ -38,28 +41,28 @@ export default function HorizontalLinearStepper() {
   const [numeroDES, setnumeroDES] = React.useState('');
   const [emailDES, setemailDES] = React.useState('');
 
-   // Funciones handleChange
-   const handleChangeNumDocREM = (e) => setnumDocREM(e.target.value);
-   const handleChangeTipoDocREM = (e) => settipoDocREM(e.target.value);
-   const handleChangeApellidoREM = (e) => setapellidoREM(e.target.value);
-   const handleChangeNombreREM = (e) => setnombreREM(e.target.value);
-   const handleChangeSegundonombreREM = (e) => setsegundonombreREM(e.target.value);
-   const handleChangeTelefonoREM = (e) => settelefonoREM(e.target.value);
-   const handleChangeNumeroREM = (e) => setnumeroREM(e.target.value);
-   const handleChangeEmailREM = (e) => setemailREM(e.target.value);
- 
-   const handleChangeCiudadOrigen = (e) => setciudadOrigen(e.target.value);
-   const handleChangeCiudadDestino = (e) => setciudadDestino(e.target.value);
-   const handleChangeNumPaquetes = (e) => setnumPaquetes(e.target.value);
- 
-   const handleChangeNumDocDES = (e) => setnumDocDES(e.target.value);
-   const handleChangeTipoDocDES = (e) => settipoDocDES(e.target.value);
-   const handleChangeApellidoDES = (e) => setapellidoDES(e.target.value);
-   const handleChangeNombreDES = (e) => setnombreDES(e.target.value);
-   const handleChangeSegundonombreDES = (e) => setsegundonombreDES(e.target.value);
-   const handleChangeTelefonoDES = (e) => settelefonoDES(e.target.value);
-   const handleChangeNumeroDES = (e) => setnumeroDES(e.target.value);
-   const handleChangeEmailDES = (e) => setemailDES(e.target.value);
+  // Funciones handleChange
+  const handleChangeNumDocREM = (e) => setnumDocREM(e.target.value);
+  const handleChangeTipoDocREM = (e) => settipoDocREM(e.target.value);
+  const handleChangeApellidoREM = (e) => setapellidoREM(e.target.value);
+  const handleChangeNombreREM = (e) => setnombreREM(e.target.value);
+  const handleChangeSegundonombreREM = (e) => setsegundonombreREM(e.target.value);
+  const handleChangeTelefonoREM = (e) => settelefonoREM(e.target.value);
+  const handleChangeNumeroREM = (e) => setnumeroREM(e.target.value);
+  const handleChangeEmailREM = (e) => setemailREM(e.target.value);
+
+  const handleChangeCiudadOrigen = (e) => setciudadOrigen(e.target.value);
+  const handleChangeCiudadDestino = (e) => setciudadDestino(e.target.value);
+  const handleChangeNumPaquetes = (e) => setnumPaquetes(e.target.value);
+
+  const handleChangeNumDocDES = (e) => setnumDocDES(e.target.value);
+  const handleChangeTipoDocDES = (e) => settipoDocDES(e.target.value);
+  const handleChangeApellidoDES = (e) => setapellidoDES(e.target.value);
+  const handleChangeNombreDES = (e) => setnombreDES(e.target.value);
+  const handleChangeSegundonombreDES = (e) => setsegundonombreDES(e.target.value);
+  const handleChangeTelefonoDES = (e) => settelefonoDES(e.target.value);
+  const handleChangeNumeroDES = (e) => setnumeroDES(e.target.value);
+  const handleChangeEmailDES = (e) => setemailDES(e.target.value);
 
   const isStepOptional = (step) => {
     return step === 1;
@@ -107,19 +110,254 @@ export default function HorizontalLinearStepper() {
     switch (step) {
       case 0:
         return (
+          <React.Fragment>
+            <Typography sx={{ mt: 2, mb: 1 }}>Paso {activeStep + 1}</Typography>
+            <h2 className="text-2xl mb-2 text-[#52489C] text-left font-bold">
+              Datos personales del cliente
+            </h2>
+            <h2 className="text-3m mb-2 text-[#000000] text-left font-bold">
+              Tipo de documento
+            </h2>
+            <div className="flex flex-col gap-4">
+              <BasicSelect value={tipoDocREM} setValue={settipoDocREM}/>
+              <h2 className="flex flex-col gap-3 text-3m mb-2 text-[#000000] text-left font-bold">
+                Número de documento
+                <TextField id="filled-basic" label="Ej. 742056989" variant="filled" sx={{ width: '40%' }}
+                  value={numDocREM} onChange={handleChangeNumDocREM} />
+              </h2>
+              <h2 className="flex flex-row gap-2 text-3m mb-2 text-[#000000] text-left font-bold">
+                <Box
+                  display="flex"
+                  justifyContent="space-between"
+                  width="100%"
+                  mt={1}
+                  gap={2}
+                >
+                  <Box display="flex" flexDirection="column" alignItems="left" width="30%">
+                    <h2 className="flex flex-col gap-3 text-3m mb-2 text-[#000000] text-left font-bold">
+                      Apellido
+                    </h2>
+                    <TextField id="apellido" label="Ej. Cruzalegui" variant="filled" fullWidth
+                      value={apellidoREM} onChange={handleChangeApellidoREM} />
+                  </Box>
+                  <Box display="flex" flexDirection="column" alignItems="left" width="30%">
+                    <h2 className="flex flex-col gap-3 text-3m mb-2 text-[#000000] text-left font-bold">
+                      Nombre
+                    </h2>
+                    <TextField id="nombre" label="Ej. Miguel" variant="filled" fullWidth
+                      value={nombreREM} onChange={handleChangeNombreREM} />
+                  </Box>
+                  <Box display="flex" flexDirection="column" alignItems="left" width="30%">
+                    <h2 className="flex flex-col gap-3 text-3m mb-2 text-[#000000] text-left font-bold">
+                      Segundo nombre
+                    </h2>
+                    <TextField id="segundo-nombre" label="Ej. David" variant="filled" fullWidth
+                      value={segundonombreREM} onChange={handleChangeSegundonombreREM} />
+                  </Box>
+
+                </Box>
+              </h2>
+              <h2 className="flex flex-row gap-2 text-3m mb-2 text-[#000000] text-left font-bold">
+                <Box
+                  display="flex"
+                  justifyContent="flex-start"
+                  width="100%"
+                  gap={1}
+                >
+                  <Box display="flex" flexDirection="column" alignItems="left" width="35%">
+                    <h2 className="flex flex-col gap-3 text-3m mb-2 text-[#000000] text-left font-bold">
+                      Teléfono
+                    </h2>
+                    <SelectVariants numCode={telefonoREM} setnumCode={settelefonoREM} />
+                  </Box>
+                  <Box display="flex" flexDirection="column" alignItems="left" width="30%">
+                    <h2 className="flex flex-col text-3m mb-2 text-[#000000] text-left font-bold">
+                      Número
+                    </h2>
+                    <TextField id="nombre" label="Ej. 985632599" variant="filled" fullWidth
+                      value={numeroREM} onChange={handleChangeNumeroREM} />
+                  </Box>
+
+                </Box>
+              </h2>
+
+              <h2 className="flex flex-row gap-2 text-3m mb-2 text-[#000000] text-left font-bold">
+                <Box
+                  display="flex"
+                  justifyContent="flex-start"
+                  width="100%"
+                  gap={1}
+                >
+                  <Box display="flex" flexDirection="column" alignItems="left" width="50%">
+                    <h2 className="flex flex-col text-3m mb-2 text-[#000000] text-left font-bold">
+                      Correo electrónico
+                    </h2>
+                    <TextField id="nombre" label="Ej. miguel.david@gmail.com" variant="filled" fullWidth
+                      value={emailREM} onChange={handleChangeEmailREM} />
+                  </Box>
+
+                </Box>
+              </h2>
+
+            </div>
+            <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
+
+            </Box>
+          </React.Fragment>
+        )
+      case 1:
+        return (
+          <React.Fragment>
+            <Typography sx={{ mt: 2, mb: 1 }}>Paso {activeStep + 1}</Typography>
+            <h2 className="text-2xl mb-2 text-[#52489C] text-left font-bold">
+              Destino
+            </h2>
+
+            <h2 className="text-3m mb-2 text-[#000000] text-left font-bold">
+              Ciudad de origen
+            </h2>
+
+            <div className="flex flex-col gap-4">
+              <SelectVariantsCity city={ciudadOrigen} setCity={setciudadOrigen} />
+              <h2 className="flex flex-col gap-3 text-3m mb-2 text-[#000000] text-left font-bold">
+                Ciudad de destino
+                <SelectVariantsCity city={ciudadDestino} setCity={setciudadDestino} />
+              </h2>
+
+              <h2 className="text-2xl mb-2 text-[#52489C] text-left font-bold">
+                Paquetes
+              </h2>
+              <Box display="flex" flexDirection="column" alignItems="left" width="30%">
+                <h2 className="flex flex-col gap-3 text-3m mb-2 text-[#000000] text-left font-bold" >
+                  Número de paquetes
+                </h2>
+                <TextField id="apellido" label="Ej. 3" variant="filled" fullWidth
+                  value={numPaquetes} onChange={handleChangeNumPaquetes} />
+              </Box>
+              <h2 className="flex flex-row gap-2 text-3m mb-2 text-[#000000] text-left font-bold">
+
+              </h2>
+
+            </div>
+            <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
+
+            </Box>
+          </React.Fragment>
+        );
+      case 2:
+        return (
+          <React.Fragment>
+            <Typography sx={{ mt: 2, mb: 1 }}>Paso {activeStep + 1}</Typography>
+            <h2 className="text-2xl mb-2 text-[#52489C] text-left font-bold">
+              Datos del receptor
+            </h2>
+            <h2 className="text-3m mb-2 text-[#000000] text-left font-bold">
+              Tipo de documento
+            </h2>
+            <div className="flex flex-col gap-4">
+              <BasicSelect value={tipoDocDES} setValue={settipoDocDES} />
+              <h2 className="flex flex-col gap-3 text-3m mb-2 text-[#000000] text-left font-bold">
+                Número de documento
+                <TextField id="filled-basic" label="Ej. 742056989" variant="filled" sx={{ width: '40%' }}
+                  value={numDocDES} onChange={(handleChangeNumDocDES)} />
+              </h2>
+              <h2 className="flex flex-row gap-2 text-3m mb-2 text-[#000000] text-left font-bold">
+                <Box
+                  display="flex"
+                  justifyContent="space-between"
+                  width="100%"
+                  mt={1}
+                  gap={2}
+                >
+                  <Box display="flex" flexDirection="column" alignItems="left" width="30%">
+                    <h2 className="flex flex-col gap-3 text-3m mb-2 text-[#000000] text-left font-bold">
+                      Apellido
+                    </h2>
+                    <TextField id="apellido" label="Ej. Cruzalegui" variant="filled" fullWidth
+                      value={apellidoDES} onChange={handleChangeApellidoDES} />
+                  </Box>
+                  <Box display="flex" flexDirection="column" alignItems="left" width="30%">
+                    <h2 className="flex flex-col gap-3 text-3m mb-2 text-[#000000] text-left font-bold">
+                      Nombre
+                    </h2>
+                    <TextField id="nombre" label="Ej. Miguel" variant="filled" fullWidth
+                      value={nombreDES} onChange={handleChangeNombreDES} />
+                  </Box>
+                  <Box display="flex" flexDirection="column" alignItems="left" width="30%">
+                    <h2 className="flex flex-col gap-3 text-3m mb-2 text-[#000000] text-left font-bold">
+                      Segundo nombre
+                    </h2>
+                    <TextField id="segundo-nombre" label="Ej. David" variant="filled" fullWidth
+                      value={segundonombreDES} onChange={handleChangeSegundonombreDES} />
+                  </Box>
+
+                </Box>
+              </h2>
+              <h2 className="flex flex-row gap-2 text-3m mb-2 text-[#000000] text-left font-bold">
+                <Box
+                  display="flex"
+                  justifyContent="flex-start"
+                  width="100%"
+                  gap={1}
+                >
+                  <Box display="flex" flexDirection="column" alignItems="left" width="35%">
+                    <h2 className="flex flex-col gap-3 text-3m mb-2 text-[#000000] text-left font-bold">
+                      Teléfono
+                    </h2>
+                    <SelectVariants numCode={telefonoDES} setnumCode={settelefonoDES} />
+                  </Box>
+                  <Box display="flex" flexDirection="column" alignItems="left" width="30%">
+                    <h2 className="flex flex-col text-3m mb-2 text-[#000000] text-left font-bold">
+                      Número
+                    </h2>
+                    <TextField id="nombre" label="Ej. 985632599" variant="filled" fullWidth
+                      value={numeroDES} onChange={handleChangeNumeroDES} />
+                  </Box>
+
+                </Box>
+              </h2>
+
+              <h2 className="flex flex-row gap-2 text-3m mb-2 text-[#000000] text-left font-bold">
+                <Box
+                  display="flex"
+                  justifyContent="flex-start"
+                  width="100%"
+                  gap={1}
+                >
+                  <Box display="flex" flexDirection="column" alignItems="left" width="50%">
+                    <h2 className="flex flex-col text-3m mb-2 text-[#000000] text-left font-bold">
+                      Correo electrónico
+                    </h2>
+                    <TextField id="nombre" label="Ej. miguel.david@gmail.com" variant="filled" fullWidth
+                      value={emailDES} onChange={handleChangeEmailDES} />
+                  </Box>
+
+                </Box>
+              </h2>
+
+            </div>
+            <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
+
+            </Box>
+          </React.Fragment>
+        );
+      case 3:
+        return (
+          <div>
             <React.Fragment>
               <Typography sx={{ mt: 2, mb: 1 }}>Paso {activeStep + 1}</Typography>
               <h2 className="text-2xl mb-2 text-[#52489C] text-left font-bold">
-                        Datos personales del cliente
+                Confirmar envío
               </h2>
               <h2 className="text-3m mb-2 text-[#000000] text-left font-bold">
-                        Tipo de documento
+                Tipo de documento
               </h2>
               <div className="flex flex-col gap-4">
-                <BasicSelect/>
+                <BasicSelect disabled={true} value={tipoDocREM} setValue={settipoDocREM}/>
                 <h2 className="flex flex-col gap-3 text-3m mb-2 text-[#000000] text-left font-bold">
-                        Número de documento
-                        <TextField id="filled-basic" label="Ej. 742056989" variant="filled" sx={{ width: '40%' }}/>
+                  Número de documento
+                  <TextField disabled id="filled-basic" label="Número de documento"variant="filled" sx={{ width: '40%' }}
+                    value={numDocREM} />
                 </h2>
                 <h2 className="flex flex-row gap-2 text-3m mb-2 text-[#000000] text-left font-bold">
                   <Box
@@ -131,24 +369,27 @@ export default function HorizontalLinearStepper() {
                   >
                     <Box display="flex" flexDirection="column" alignItems="left" width="30%">
                       <h2 className="flex flex-col gap-3 text-3m mb-2 text-[#000000] text-left font-bold">
-                          Apellido
+                        Apellido
                       </h2>
-                      <TextField id="apellido" label="Ej. Cruzalegui" variant="filled" fullWidth />
+                      <TextField disabled id="apellido" label="Apellido" variant="filled" fullWidth
+                        value={apellidoREM} />
                     </Box>
                     <Box display="flex" flexDirection="column" alignItems="left" width="30%">
                       <h2 className="flex flex-col gap-3 text-3m mb-2 text-[#000000] text-left font-bold">
-                            Nombre
+                        Nombre
                       </h2>
-                      <TextField id="nombre" label="Ej. Miguel" variant="filled" fullWidth />
+                      <TextField disabled id="nombre" label="Nombre" variant="filled" fullWidth
+                        value={nombreREM} onChange={setnombreREM} />
                     </Box>
                     <Box display="flex" flexDirection="column" alignItems="left" width="30%">
                       <h2 className="flex flex-col gap-3 text-3m mb-2 text-[#000000] text-left font-bold">
-                            Segundo nombre
+                        Segundo nombre
                       </h2>
-                      <TextField id="segundo-nombre" label="Ej. David" variant="filled" fullWidth />
+                      <TextField disabled id="segundo-nombre" label="Segundo nombre" variant="filled" fullWidth
+                        value={segundonombreREM} onChange={setsegundonombreREM} />
                     </Box>
-    
-                  </Box>  
+
+                  </Box>
                 </h2>
                 <h2 className="flex flex-row gap-2 text-3m mb-2 text-[#000000] text-left font-bold">
                   <Box
@@ -159,18 +400,19 @@ export default function HorizontalLinearStepper() {
                   >
                     <Box display="flex" flexDirection="column" alignItems="left" width="35%">
                       <h2 className="flex flex-col gap-3 text-3m mb-2 text-[#000000] text-left font-bold">
-                          Teléfono
+                        Teléfono
                       </h2>
-                      <SelectVariants/>
+                      <SelectVariants disabled={true} numCode={telefonoREM} setnumCode={settelefonoREM} />
                     </Box>
                     <Box display="flex" flexDirection="column" alignItems="left" width="30%">
                       <h2 className="flex flex-col text-3m mb-2 text-[#000000] text-left font-bold">
-                            Número
+                        Número
                       </h2>
-                      <TextField id="nombre" label="Ej. 985632599" variant="filled" fullWidth />
+                      <TextField disabled id="nombre" label="Número" variant="filled" fullWidth
+                        value={numeroREM} />
                     </Box>
-                    
-                  </Box>  
+
+                  </Box>
                 </h2>
 
                 <h2 className="flex flex-row gap-2 text-3m mb-2 text-[#000000] text-left font-bold">
@@ -182,154 +424,151 @@ export default function HorizontalLinearStepper() {
                   >
                     <Box display="flex" flexDirection="column" alignItems="left" width="50%">
                       <h2 className="flex flex-col text-3m mb-2 text-[#000000] text-left font-bold">
-                            Correo electrónico
+                        Correo electrónico
                       </h2>
-                      <TextField id="nombre" label="Ej. miguel.david@gmail.com" variant="filled" fullWidth />
+                      <TextField disabled id="nombre" label="Email" variant="filled" fullWidth
+                        value={emailREM} />
                     </Box>
-                    
-                  </Box>  
+
+                  </Box>
                 </h2>
 
               </div>
               <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
-              
+
               </Box>
             </React.Fragment>
-          )
-      case 1:
-        return (
-          <React.Fragment>
-          <Typography sx={{ mt: 2, mb: 1 }}>Paso {activeStep + 1}</Typography>
-          <h2 className="text-2xl mb-2 text-[#52489C] text-left font-bold">
-                        Destino
-          </h2>
 
-          <h2 className="text-3m mb-2 text-[#000000] text-left font-bold">
-                    Ciudad de origen
-          </h2>
-
-          <div className="flex flex-col gap-4">
-            <SelectVariantsCity/>
-            <h2 className="flex flex-col gap-3 text-3m mb-2 text-[#000000] text-left font-bold">
-                    Ciudad de destino
-                    <SelectVariantsCity/>
-            </h2>
-
+            <React.Fragment>
               <h2 className="text-2xl mb-2 text-[#52489C] text-left font-bold">
-                        Paquetes
-              </h2>  
-              <Box display="flex" flexDirection="column" alignItems="left" width="30%">
-                          <h2 className="flex flex-col gap-3 text-3m mb-2 text-[#000000] text-left font-bold" >
-                              Número de paquetes
-                          </h2>
-                          <TextField id="apellido" label="Ej. 3" variant="filled" fullWidth />
+                Destino
+              </h2>
+
+              <h2 className="text-3m mb-2 text-[#000000] text-left font-bold">
+                Ciudad de origen
+              </h2>
+
+              <div className="flex flex-col gap-4">
+                <SelectVariantsCity disabled={true} city={ciudadOrigen} setCity={setciudadOrigen}  />
+                <h2 className="flex flex-col gap-3 text-3m mb-2 text-[#000000] text-left font-bold">
+                  Ciudad de destino
+                  <SelectVariantsCity disabled={true} city={ciudadDestino} setCity={setciudadDestino} />
+                </h2>
+
+                <h2 className="text-2xl mb-2 text-[#52489C] text-left font-bold">
+                  Paquetes
+                </h2>
+                <Box display="flex" flexDirection="column" alignItems="left" width="30%">
+                  <h2 className="flex flex-col gap-3 text-3m mb-2 text-[#000000] text-left font-bold" >
+                    Número de paquetes
+                  </h2>
+                  <TextField disabled id="apellido" label="Paquetes" variant="filled" fullWidth
+                    value={numPaquetes}  />
+                </Box>
+                <h2 className="flex flex-row gap-2 text-3m mb-2 text-[#000000] text-left font-bold">
+
+                </h2>
+
+              </div>
+              <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
+
               </Box>
-            <h2 className="flex flex-row gap-2 text-3m mb-2 text-[#000000] text-left font-bold">
-               
-            </h2>
+            </React.Fragment>
 
-          </div>
-          <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
-          
-          </Box>
-        </React.Fragment>
-        );
-      case 2:
-        return (
-          <React.Fragment>
-          <Typography sx={{ mt: 2, mb: 1 }}>Paso {activeStep + 1}</Typography>
-          <h2 className="text-2xl mb-2 text-[#52489C] text-left font-bold">
-                    Datos del receptor
-          </h2>
-          <h2 className="text-3m mb-2 text-[#000000] text-left font-bold">
-                    Tipo de documento
-          </h2>
-          <div className="flex flex-col gap-4">
-            <BasicSelect/>
-            <h2 className="flex flex-col gap-3 text-3m mb-2 text-[#000000] text-left font-bold">
-                    Número de documento
-                    <TextField id="filled-basic" label="Ej. 742056989" variant="filled" sx={{ width: '40%' }}/>
-            </h2>
-            <h2 className="flex flex-row gap-2 text-3m mb-2 text-[#000000] text-left font-bold">
-              <Box
-                display="flex"
-                justifyContent="space-between"
-                width="100%"
-                mt={1}
-                gap={2}
-              >
-                <Box display="flex" flexDirection="column" alignItems="left" width="30%">
-                  <h2 className="flex flex-col gap-3 text-3m mb-2 text-[#000000] text-left font-bold">
-                      Apellido
-                  </h2>
-                  <TextField id="apellido" label="Ej. Cruzalegui" variant="filled" fullWidth />
-                </Box>
-                <Box display="flex" flexDirection="column" alignItems="left" width="30%">
-                  <h2 className="flex flex-col gap-3 text-3m mb-2 text-[#000000] text-left font-bold">
+            <React.Fragment>
+              <h2 className="text-2xl mb-2 text-[#52489C] text-left font-bold">
+                Datos del receptor
+              </h2>
+              <h2 className="text-3m mb-2 text-[#000000] text-left font-bold">
+                Tipo de documento
+              </h2>
+              <div className="flex flex-col gap-4">
+                <BasicSelect  disabled ={true} value={tipoDocDES} setValue={settipoDocDES}/>
+                <h2 className="flex flex-col gap-3 text-3m mb-2 text-[#000000] text-left font-bold">
+                  Número de documento
+                  <TextField disabled id="filled-basic" label="Número de documento" variant="filled" sx={{ width: '40%' }}
+                    value={numDocDES} />
+                </h2>
+                <h2 className="flex flex-row gap-2 text-3m mb-2 text-[#000000] text-left font-bold">
+                  <Box
+                    display="flex"
+                    justifyContent="space-between"
+                    width="100%"
+                    mt={1}
+                    gap={2}
+                  >
+                    <Box display="flex" flexDirection="column" alignItems="left" width="30%">
+                      <h2 className="flex flex-col gap-3 text-3m mb-2 text-[#000000] text-left font-bold">
+                        Apellido
+                      </h2>
+                      <TextField disabled id="apellido" label="Apellido" variant="filled" fullWidth
+                        value={apellidoDES}  />
+                    </Box>
+                    <Box display="flex" flexDirection="column" alignItems="left" width="30%">
+                      <h2 className="flex flex-col gap-3 text-3m mb-2 text-[#000000] text-left font-bold">
                         Nombre
-                  </h2>
-                  <TextField id="nombre" label="Ej. Miguel" variant="filled" fullWidth />
-                </Box>
-                <Box display="flex" flexDirection="column" alignItems="left" width="30%">
-                  <h2 className="flex flex-col gap-3 text-3m mb-2 text-[#000000] text-left font-bold">
+                      </h2>
+                      <TextField disabled id="nombre" label="Nombre" variant="filled" fullWidth
+                        value={nombreDES}  />
+                    </Box>
+                    <Box display="flex" flexDirection="column" alignItems="left" width="30%">
+                      <h2 className="flex flex-col gap-3 text-3m mb-2 text-[#000000] text-left font-bold">
                         Segundo nombre
-                  </h2>
-                  <TextField id="segundo-nombre" label="Ej. David" variant="filled" fullWidth />
-                </Box>
+                      </h2>
+                      <TextField disabled id="segundo-nombre" label="Segundo nombre" variant="filled" fullWidth
+                        value={segundonombreDES}  />
+                    </Box>
 
-              </Box>  
-            </h2>
-            <h2 className="flex flex-row gap-2 text-3m mb-2 text-[#000000] text-left font-bold">
-              <Box
-                display="flex"
-                justifyContent="flex-start"
-                width="100%"
-                gap={1}
-              >
-                <Box display="flex" flexDirection="column" alignItems="left" width="35%">
-                  <h2 className="flex flex-col gap-3 text-3m mb-2 text-[#000000] text-left font-bold">
-                      Teléfono
-                  </h2>
-                  <SelectVariants/>
-                </Box>
-                <Box display="flex" flexDirection="column" alignItems="left" width="30%">
-                  <h2 className="flex flex-col text-3m mb-2 text-[#000000] text-left font-bold">
+                  </Box>
+                </h2>
+                <h2 className="flex flex-row gap-2 text-3m mb-2 text-[#000000] text-left font-bold">
+                  <Box
+                    display="flex"
+                    justifyContent="flex-start"
+                    width="100%"
+                    gap={1}
+                  >
+                    <Box display="flex" flexDirection="column" alignItems="left" width="35%">
+                      <h2 className="flex flex-col gap-3 text-3m mb-2 text-[#000000] text-left font-bold">
+                        Teléfono
+                      </h2>
+                      <SelectVariants disabled={true} numCode={telefonoDES} setnumCode={settelefonoDES} />
+                    </Box>
+                    <Box display="flex" flexDirection="column" alignItems="left" width="30%">
+                      <h2 className="flex flex-col text-3m mb-2 text-[#000000] text-left font-bold">
                         Número
-                  </h2>
-                  <TextField id="nombre" label="Ej. 985632599" variant="filled" fullWidth />
-                </Box>
-                
-              </Box>  
-            </h2>
+                      </h2>
+                      <TextField disabled id="nombre" label="Número" variant="filled" fullWidth
+                        value={numeroDES}  />
+                    </Box>
 
-            <h2 className="flex flex-row gap-2 text-3m mb-2 text-[#000000] text-left font-bold">
-              <Box
-                display="flex"
-                justifyContent="flex-start"
-                width="100%"
-                gap={1}
-              >
-                <Box display="flex" flexDirection="column" alignItems="left" width="50%">
-                  <h2 className="flex flex-col text-3m mb-2 text-[#000000] text-left font-bold">
+                  </Box>
+                </h2>
+
+                <h2 className="flex flex-row gap-2 text-3m mb-2 text-[#000000] text-left font-bold">
+                  <Box
+                    display="flex"
+                    justifyContent="flex-start"
+                    width="100%"
+                    gap={1}
+                  >
+                    <Box display="flex" flexDirection="column" alignItems="left" width="50%">
+                      <h2 className="flex flex-col text-3m mb-2 text-[#000000] text-left font-bold">
                         Correo electrónico
-                  </h2>
-                  <TextField id="nombre" label="Ej. miguel.david@gmail.com" variant="filled" fullWidth />
-                </Box>
-                
-              </Box>  
-            </h2>
+                      </h2>
+                      <TextField disabled id="nombre" label="Email" variant="filled" fullWidth
+                        value={emailDES}  />
+                    </Box>
 
-          </div>
-          <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
-          
-          </Box>
-        </React.Fragment>
-        );
-      case 3:
-        return (
-          <div>
-            <Typography>Confirmar envío</Typography>
-            {/* Aquí puedes agregar los campos del formulario correspondientes al Paso 4 */}
+                  </Box>
+                </h2>
+
+              </div>
+              <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
+
+              </Box>
+            </React.Fragment>
+
           </div>
         );
       default:
@@ -377,13 +616,13 @@ export default function HorizontalLinearStepper() {
                 color="inherit"
                 disabled={activeStep === 0}
                 onClick={handleBack}
-                sx={{ mr: 1 , color: '#84A98C'}}
+                sx={{ mr: 1, color: '#84A98C' }}
               >
                 Atrás
               </Button>
               <Box sx={{ flex: '1 1 auto' }} />
-              <Button 
-                sx={{ color: '#52489C', backgroundColor: "#FFFFFF" }} 
+              <Button
+                sx={{ color: '#52489C', backgroundColor: "#FFFFFF" }}
                 variant="contained"
                 onClick={handleNext}>
                 {activeStep === steps.length - 1 ? 'Finalizar' : 'Siguiente'}
@@ -394,7 +633,7 @@ export default function HorizontalLinearStepper() {
       </div>
     </Box>
   );
-  
+
   /* 
   return (
     <Box sx={{ width: '100%' }}>

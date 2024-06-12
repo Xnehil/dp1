@@ -5,11 +5,10 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import Typography from '@mui/material/Typography';
 
-export default function SelectVariants() {
-  const [age, setAge] = React.useState('');
+export default function SelectVariants({disabled=false, numCode, setnumCode}) {
 
   const handleChange = (event) => {
-    setAge(event.target.value);
+    setnumCode(event.target.value);
   };
 
   return (
@@ -19,8 +18,9 @@ export default function SelectVariants() {
         <Select
           labelId="demo-simple-select-filled-label"
           id="demo-simple-select-filled"
-          value={age}
+          value={numCode}
           onChange={handleChange}
+          inputProps={{ readOnly: disabled }}
         >
         
           <MenuItem value={10}>+51 (Perú) </MenuItem>
