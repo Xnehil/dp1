@@ -13,7 +13,7 @@ function ConfiguracionRegistro({ buttonText, activeTab }) {
     const [startDate, setStartDate] = useState(new Date("2024-01-12T05:36:52"));
     
     return (
-        <div className="flex flex-col items-center mt-10 w-full">
+        <div className="flex flex-col items-center mt-5 w-full mb-8">
             <div className="w-full max-w-4xl px-10">
                 <h2 className="text-3xl mb-2 text-[#84A98C] text-left font-bold">
                     Registro de envío
@@ -36,7 +36,7 @@ export default function SimulacionPage() {
     const [activeTab, setActiveTab] = useState("individual");
 
     return (
-        <div className="flex flex-col items-center mt-10 w-full">
+        <div className="flex flex-col items-center mt-5 w-full">
             <div className="w-full max-w-4xl">
                 <div className="flex justify-around mb-4 border-b-2 border-gray-200">
                     <button

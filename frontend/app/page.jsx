@@ -16,7 +16,7 @@ import TextField from '@mui/material/TextField';
 
 export default function Home() {
     return (
-        <main>
+        <main className=" mb-8">
             <div className="w-1/2 mx-auto flex items-center px-3 rounded-2xl">
                 <h1 className="text-6xl  text-black-500 px-4 text-center mt-0 mb-10 font-title">
                     Bienvenid@ al sistema de gestión de envíos de RedEx
