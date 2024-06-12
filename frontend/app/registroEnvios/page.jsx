@@ -5,6 +5,9 @@ import React, { useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { FaCalendarAlt } from "react-icons/fa";
+import TextField from '@mui/material/TextField'; 
+import HorizontalLinearStepper from "@/components/stepper/componenteStepper.jsx";
+
 
 function ConfiguracionRegistro({ buttonText, activeTab }) {
     const [startDate, setStartDate] = useState(new Date("2024-01-12T05:36:52"));
@@ -15,13 +18,15 @@ function ConfiguracionRegistro({ buttonText, activeTab }) {
                 <h2 className="text-3xl mb-2 text-[#161616] text-left">
                     Registro de envío
                 </h2>
-                <p className="mb-4 text-[#525252] text-left">
-                    Elige los parámetros para la simulación
-                </p>
+                <div className="flex flex-col gap-2">
+                <HorizontalLinearStepper/>
+                <TextField id="outlined-basic" label="Outlined" variant="outlined" />
+                <TextField id="outlined-basic" label="Outlined" variant="outlined" />
+
+                </div>
+                
                 <div className="border rounded-md p-4 mb-4 bg-gray-100">
-                    <label className="block mb-2 text-left">
-                        Fecha de inicio (dd/mm/yyyy - hh:mm:ss)
-                    </label>
+                    
                     <div className="flex items-center border rounded-md bg-white">
                         
                         <div
@@ -39,9 +44,7 @@ function ConfiguracionRegistro({ buttonText, activeTab }) {
                     </div>
                 </div>
                 <Link href={`/simulacion/${activeTab}?startDate=${startDate}`} className="w-full">
-                    <button className="bg-[#52489c] text-white py-2 w-full rounded-md text-lg">
-                        {buttonText}
-                    </button>
+                    
                 </Link>
             </div>
         </div>
