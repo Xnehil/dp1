@@ -88,6 +88,7 @@ const Mapa = ({
     const vistaActual = useRef<View | null>(null);
     const fechaFinSemana = new Date(horaInicio.getTime() + 7 * 24 * 60 * 60 * 1000); //suma 7 dias
     const [vuelosABorrar, setVuelosABorrar] = useState<number[]>([]);
+    const [mostrarFinSemanal, setMostrarFinSemanal] = useState(false);
 
     useEffect(() => {
         if (!mapRef.current) {
@@ -226,6 +227,7 @@ const Mapa = ({
         if(simulationTime.getTime() > fechaFinSemana.getTime()){
             clearInterval(intervalId);
             console.log("Fin de la simulación");
+            setMostrarFinSemanal(true);
             //Aquí André activas tus componenetes
         }
         // console.log("Updating coordinates con tiempo: ", simulationTime);
@@ -324,6 +326,7 @@ const Mapa = ({
                 <DatosVuelo vuelo={selectedVuelo} aeropuerto={selectedAeropuerto} programacionVuelos={programacionVuelos} simulationTime={simulationTime}
                     envios={envios} aeropuertos={aeropuertos}
                 />
+                {mostrarFinSemanal && <FinSemanal programacionVuelos={programacionVuelos} vuelos={vuelos}/>}
             </div>{" "}
         </div>
     );
