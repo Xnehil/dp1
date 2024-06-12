@@ -234,8 +234,8 @@ public class ACO {
         int numPaqEjecutados = 0;
         for (Paquete paq : paquetes) {
             numPaqEjecutados++;
-            if(numPaqEjecutados % 50 == 0)
-                System.out.println("Paquete número: " + numPaqEjecutados + ". Fecha: " + envios.get(paq.getCodigoEnvio()).getFechaHoraSalida());
+            // if(numPaqEjecutados % 50 == 0)
+            //     System.out.println("Paquete número: " + numPaqEjecutados + ". Fecha: " + envios.get(paq.getCodigoEnvio()).getFechaHoraSalida());
                     
             // imprimirTabla_v2(tabla, vuelosProgramados,vuelos);
 
@@ -297,9 +297,9 @@ public class ACO {
                                     fechaActualPaquete.toLocalDateTime()) + 1 < aDestino.getCapacidadMaxima();
 
                             if (!quedaEspacioAlmacen) {
-                                System.out.println("No queda espacio." + aDestino.getCapacidadMaxima() + "   "
-                                        + aDestino.paquetesAEstaHoraPlanificacion(
-                                                fechaActualPaquete.toLocalDateTime()));
+                                // System.out.println("No queda espacio." + aDestino.getCapacidadMaxima() + "   "
+                                        // + aDestino.paquetesAEstaHoraPlanificacion(
+                                                // fechaActualPaquete.toLocalDateTime()));
                                 continue;
                             } else {
 

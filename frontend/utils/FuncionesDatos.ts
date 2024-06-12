@@ -10,7 +10,8 @@ export function procesarData(
     programacionVuelos: React.MutableRefObject<Map<string, ProgramacionVuelo>>,
     envios: React.MutableRefObject<Map<string, Envio>>,
     aeropuertos: React.MutableRefObject<Map<string, Aeropuerto>>,
-    simulationTime: Date | null
+    simulationTime: Date | null,
+    cargaInicial: boolean
 ): void {
     console.log("Procesando data");
     for (let key in messageData) {
@@ -24,7 +25,7 @@ export function procesarData(
                 //Añadir paquete a aeropuerto de origen
                 const aeropuertoOrigen: Aeropuerto | undefined =
                     aeropuertos.current.get(envio.origen);
-                if (aeropuertoOrigen) {
+                if (aeropuertoOrigen && !cargaInicial) {
                     aeropuertoOrigen.cantidadActual++;
                     aeropuertoOrigen.paquetes.push(paquete);
                 }
@@ -129,12 +130,13 @@ export function quitarPaquetesAlmacenados(
                     paquete.codigoEnvio.slice(0, 4)
                 );
                 if (aeropuertoOrigen) {
-                    aeropuertoOrigen.cantidadActual--;
-                    aeropuertoOrigen.paquetes =
-                        aeropuertoOrigen.paquetes.filter(
-                            (p) => p.id !== paquete.id
-                        );
-                    cuenta++;
+                    let packageExists = aeropuertoOrigen.paquetes.some(p => p.id === paquete.id);
+
+                    if (packageExists) {
+                        aeropuertoOrigen.cantidadActual--;
+                        aeropuertoOrigen.paquetes = aeropuertoOrigen.paquetes.filter(p => p.id !== paquete.id);
+                        cuenta++;
+                    }
                 }
             }
         }

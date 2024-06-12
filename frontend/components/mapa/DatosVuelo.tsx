@@ -21,6 +21,8 @@ const DatosVuelo: React.FC<DatosVueloProps> = ({ vuelo, aeropuerto, programacion
   const [opcion, setOpcion] = useState<number>(0);
   const [programacionVuelo, setProgramacionVuelo] = useState<ProgramacionVuelo | null>(null);
   const [cargado, setCargado] = useState<boolean>(false);
+  const [busqueda, setBusqueda] = useState<string>("");
+  const [filtros, setFiltros] = useState<{idPaquete: number, ciudad: string, idEnvio: string}>({idPaquete: 0, ciudad: "", idEnvio: ""});
 
   const toggleVisibility = () => {
     setVisible(!visible);
@@ -44,7 +46,25 @@ const DatosVuelo: React.FC<DatosVueloProps> = ({ vuelo, aeropuerto, programacion
     setOpcion(2);
   }, [aeropuerto]);
 
+  function procesarBusqueda() {
+    console.log("Buscando: ", busqueda);
+    //Si es un nu´mero, se busca por ID de paquete
+    if(!isNaN(Number(busqueda))) {
+      setFiltros({idPaquete: Number(busqueda), ciudad: "", idEnvio: ""});
+    } else {
+      //Si no es un número, pero es menor a 4 caracteres, se busca por ciudad
+      if(busqueda.length <= 4) {
+        setFiltros({idPaquete: 0, ciudad: busqueda, idEnvio: ""});
+      } else {
+        //Si no es un número y tiene más 4 caracteres, se busca por ID de envío
+        setFiltros({idPaquete: 0, ciudad: "", idEnvio: busqueda});
+      }
+    }
+  }
 
+  useEffect(() => {
+    console.log("Filtros: ", filtros);
+  } , [filtros]);
 
 
   return (
@@ -90,32 +110,49 @@ const DatosVuelo: React.FC<DatosVueloProps> = ({ vuelo, aeropuerto, programacion
                   type="text"
                   placeholder="Ingrese código paquete, ciudad o ID de envío"
                   className="input-busqueda"
+                  onChange={(e) => setBusqueda(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      procesarBusqueda();
+                    }
+                    }
+                  }
                 />
-                <button className="boton-busqueda">Buscar</button>
+                <button className="boton-busqueda" onClick={procesarBusqueda}>
+                  Buscar
+                </button>
               </div>
               <div className="datos-vuelo-tabla">
                 <table>
                   <thead>
                     <tr>
                       <th>Código</th>
-                      <th>Tiempo restante</th>
                       <th>Origen</th>
                       <th>Destino</th>
                       <th>ID envío</th>
                     </tr>
                   </thead>
                   <tbody>
-                  {programacionVuelo?.paquetes.map((paquete, index) => (
-                        <tr key={index}>
-                            <td>{paquete.id}</td>
-                            <td>{tiempoFaltante(envios.current.get(paquete.codigoEnvio), simulationTime)}</td>
-                            {/* <td>111</td> */}
-                            <td>{envios.current.get(paquete.codigoEnvio)?.origen ?? "NULL"}</td>
-                            <td>{envios.current.get(paquete.codigoEnvio)?.destino ?? "NULL"}</td>
-                            <td>{paquete.codigoEnvio}</td>
-                        </tr>
-                    ))}
-                  </tbody>
+                    {programacionVuelo?.paquetes
+                      .filter(paquete => {
+                        const envio = envios.current.get(paquete.codigoEnvio);
+                          return (filtros.idPaquete === 0 && filtros.ciudad === "" && filtros.idEnvio === "") || 
+                                (filtros.idPaquete !== 0 && paquete.id === filtros.idPaquete) ||
+                                (filtros.ciudad !== "" &&  (envio?.origen === filtros.ciudad || envio?.destino === filtros.ciudad)) ||
+                                (filtros.idEnvio !== "" && paquete.codigoEnvio === filtros.idEnvio);
+                      })
+                      .map((paquete, index) => {
+                          const envio = envios.current.get(paquete.codigoEnvio);
+                          return (
+                              <tr key={index}>
+                                  <td>{paquete.id}</td>
+                                  <td>{envio?.origen ?? "NULL"}</td>
+                                  <td>{envio?.destino ?? "NULL"}</td>
+                                  <td>{paquete.codigoEnvio}</td>
+                              </tr>
+                          );
+                      })}
+                </tbody>
                 </table>
               </div>
             </div>
@@ -148,10 +185,19 @@ const DatosVuelo: React.FC<DatosVueloProps> = ({ vuelo, aeropuerto, programacion
               <div className="datos-vuelo-busqueda">
                 <input
                   type="text"
-                  placeholder="Ingrese código paquete, ciudad o ID de envío"
+                  placeholder="Ingrese código paquete o ID de envío"
                   className="input-busqueda"
+                  onChange={(e) => setBusqueda(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      procesarBusqueda();
+                    }
+                    }
+                  }
                 />
-                <button className="boton-busqueda">Buscar</button>
+                <button className="boton-busqueda" onClick={procesarBusqueda}>
+                  Buscar
+                </button>
               </div>
               <div className="datos-vuelo-tabla">
                 <table>
@@ -164,14 +210,25 @@ const DatosVuelo: React.FC<DatosVueloProps> = ({ vuelo, aeropuerto, programacion
                     </tr>
                   </thead>
                   <tbody>
-                    {aeropuerto.paquetes.map((paquete, index) => (
-                      <tr key={index}>
-                        <td>{paquete.id}</td>
-                        <td>{envios.current.get(paquete.codigoEnvio)?.origen ?? "NULL"}</td>
-                        <td>{envios.current.get(paquete.codigoEnvio)?.destino ?? "NULL"}</td>
-                        <td>{paquete.codigoEnvio}</td>
-                      </tr>
-                    ))}
+                      {aeropuerto.paquetes
+                          .filter(paquete => {
+                              const envio = envios.current.get(paquete.codigoEnvio);
+                              return (filtros.idPaquete === 0 && filtros.ciudad === "" && filtros.idEnvio === "") || 
+                                     (filtros.idPaquete !== 0 && paquete.id === filtros.idPaquete) ||
+                                     (filtros.ciudad !== "" && (envio?.origen.startsWith(filtros.ciudad) || envio?.destino.startsWith(filtros.ciudad))) ||
+                                     (filtros.idEnvio !== "" && paquete.codigoEnvio.startsWith(filtros.idEnvio));
+                          })
+                          .map((paquete, index) => {
+                              const envio = envios.current.get(paquete.codigoEnvio);
+                              return (
+                                  <tr key={index}>
+                                      <td>{paquete.id}</td>
+                                      <td>{envio?.origen ?? "NULL"}</td>
+                                      <td>{envio?.destino ?? "NULL"}</td>
+                                      <td>{paquete.codigoEnvio}</td>
+                                  </tr>
+                              );
+                          })}
                   </tbody>
                 </table>
               </div>
