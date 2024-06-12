@@ -61,14 +61,16 @@ const FinSemanal: React.FC<FinSemanalProps> = ({ programacionVuelos, vuelos }) =
             </TableHead>
             <TableBody>
               {rows.map((row, index) => (
-                <TableRow key={index}>
-                  <TableCell>{row.code}</TableCell>
-                  <TableCell>{row.departure}</TableCell>
-                  <TableCell>{row.arrival}</TableCell>
-                  <TableCell>{row.origin}</TableCell>
-                  <TableCell>{row.destination}</TableCell>
-                  <TableCell>{row.packages}</TableCell>
-                </TableRow>
+                row && (
+                  <TableRow key={index}>
+                    <TableCell>{row.code}</TableCell>
+                    <TableCell>{row.departure}</TableCell>
+                    <TableCell>{row.arrival}</TableCell>
+                    <TableCell>{row.origin}</TableCell>
+                    <TableCell>{row.destination}</TableCell>
+                    <TableCell>{row.packages}</TableCell>
+                  </TableRow>
+                )
               ))}
             </TableBody>
           </Table>
