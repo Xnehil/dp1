@@ -15,34 +15,17 @@ function ConfiguracionRegistro({ buttonText, activeTab }) {
     return (
         <div className="flex flex-col items-center mt-10 w-full">
             <div className="w-full max-w-4xl px-10">
-                <h2 className="text-3xl mb-2 text-[#161616] text-left">
+                <h2 className="text-3xl mb-2 text-[#84A98C] text-left font-bold">
                     Registro de envío
                 </h2>
                 <div className="flex flex-col gap-2">
+                  
                 <HorizontalLinearStepper/>
                 <TextField id="outlined-basic" label="Outlined" variant="outlined" />
                 <TextField id="outlined-basic" label="Outlined" variant="outlined" />
 
                 </div>
                 
-                <div className="border rounded-md p-4 mb-4 bg-gray-100">
-                    
-                    <div className="flex items-center border rounded-md bg-white">
-                        
-                        <div
-                            className="p-2 cursor-pointer flex-shrink-0"
-                            onClick={() =>
-                                document
-                                    .querySelector(
-                                        ".react-datepicker-wrapper input"
-                                    )
-                                    .focus()
-                            }
-                        >
-                            <FaCalendarAlt className="text-lg" />
-                        </div>
-                    </div>
-                </div>
                 <Link href={`/simulacion/${activeTab}?startDate=${startDate}`} className="w-full">
                     
                 </Link>
