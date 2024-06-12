@@ -664,12 +664,18 @@ export default function HorizontalLinearStepper() {
                   p: 4,
                 }}>
                   <h2 className="text-2xl mb-2 text-[#52489C] text-left font-bold">
-                  ¡Códigos de rastreo generados!
+                    ¡Códigos de rastreo generados!
                   </h2>
-                  <Typography id="modal-description" sx={{ mt: 2 }}>
-                    Contenido del modal. Puedes poner aquí cualquier contenido que desees mostrar dentro del modal.
-                  </Typography>
-                  <Button onClick={handleCloseModal} sx={{ mt: 2, color: '#52489C', backgroundColor: "#FFFFFF"  }}>Terminar</Button>
+                  <div id="modal-description" sx={{ mt: 2}}>
+                    Código 000000001
+                    <div id="modal-description" sx={{ mt: 2 }}>
+                      Código 000000002
+                      <div id="modal-description" sx={{ mt: 2 }}>
+                        Código 000000003
+                      </div>
+                    </div>
+                  </div>
+                  <Button onClick={handleCloseModal} sx={{ mt: 2, color: '#52489C', backgroundColor: "#FFFFFF" }}>Terminar</Button>
                 </Box>
               </Modal>
 
