@@ -86,7 +86,7 @@ const Mapa = ({
     const [selectedAeropuerto, setSelectedAeropuerto] = useState<Aeropuerto | null>(null);
     const selectedFeature = useRef<Feature | null>(null);
     const vistaActual = useRef<View | null>(null);
-    const fechaFinSemana = new Date(horaInicio.getTime() + 7 * 24 * 60 * 60 * 1000); //suma 7 dias
+    const fechaFinSemana = new Date(horaInicio.getTime() + 7 * 24 * 60 * 60 * 1000 / 112); //suma 7 dias
     const [vuelosABorrar, setVuelosABorrar] = useState<number[]>([]);
 
     useEffect(() => {
@@ -221,11 +221,13 @@ const Mapa = ({
                 });
                 sendMessage("tiempo: " + limaTime, true);
             }
-            if(simulationTime.getTime() > fechaFinSemana.getTime()){
-                simulationInterval = 0;
-            }
         }, 1000);
 
+        if(simulationTime.getTime() > fechaFinSemana.getTime()){
+            clearInterval(intervalId);
+            console.log("Fin de la simulación");
+            //Aquí André activas tus componenetes
+        }
         // console.log("Updating coordinates con tiempo: ", simulationTime);
 
         if (vectorSourceRef.current.getFeatures().length > 0) {
