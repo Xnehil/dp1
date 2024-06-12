@@ -6,6 +6,7 @@ import StepLabel from '@mui/material/StepLabel';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
+import Modal from '@mui/material/Modal';
 import BasicSelect from "@/components/select/select.jsx";
 import SelectVariants from "@/components/select/selectNumCode.jsx";
 import SelectVariantsCity from "@/components/select/selectCity.jsx"
@@ -18,6 +19,7 @@ export default function HorizontalLinearStepper() {
   const [numCode, setnumCode] = React.useState('');
   const [activeStep, setActiveStep] = React.useState(0);
   const [skipped, setSkipped] = React.useState(new Set());
+  const [openModal, setOpenModal] = React.useState(false);
 
   const [numDocREM, setnumDocREM] = React.useState('');
   const [tipoDocREM, settipoDocREM] = React.useState('');
@@ -83,6 +85,22 @@ export default function HorizontalLinearStepper() {
     setSkipped(newSkipped);
   };
 
+
+  const handleOpenModal = () => {
+    setOpenModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setOpenModal(false);
+    handleNext();
+  };
+
+  const handleFinish = () => {
+    handleOpenModal(); // Abre el modal al hacer clic en 'Finalizar'
+    // Puedes agregar más lógica aquí si es necesario
+  };
+
+
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
@@ -119,7 +137,7 @@ export default function HorizontalLinearStepper() {
               Tipo de documento
             </h2>
             <div className="flex flex-col gap-4">
-              <BasicSelect required value={tipoDocREM} setValue={settipoDocREM}/>
+              <BasicSelect required value={tipoDocREM} setValue={settipoDocREM} />
               <h2 className="flex flex-col gap-3 text-3m mb-2 text-[#000000] text-left font-bold">
                 Número de documento
                 <TextField required id="filled-basic" label="Ej. 742056989" variant="filled" sx={{ width: '40%' }}
@@ -353,10 +371,10 @@ export default function HorizontalLinearStepper() {
                 Tipo de documento
               </h2>
               <div className="flex flex-col gap-4">
-                <BasicSelect disabled={true} value={tipoDocREM} setValue={settipoDocREM}/>
+                <BasicSelect disabled={true} value={tipoDocREM} setValue={settipoDocREM} />
                 <h2 className="flex flex-col gap-3 text-3m mb-2 text-[#000000] text-left font-bold">
                   Número de documento
-                  <TextField disabled id="filled-basic" label="Número de documento"variant="filled" sx={{ width: '40%' }}
+                  <TextField disabled id="filled-basic" label="Número de documento" variant="filled" sx={{ width: '40%' }}
                     value={numDocREM} />
                 </h2>
                 <h2 className="flex flex-row gap-2 text-3m mb-2 text-[#000000] text-left font-bold">
@@ -449,7 +467,7 @@ export default function HorizontalLinearStepper() {
               </h2>
 
               <div className="flex flex-col gap-4">
-                <SelectVariantsCity disabled={true} city={ciudadOrigen} setCity={setciudadOrigen}  />
+                <SelectVariantsCity disabled={true} city={ciudadOrigen} setCity={setciudadOrigen} />
                 <h2 className="flex flex-col gap-3 text-3m mb-2 text-[#000000] text-left font-bold">
                   Ciudad de destino
                   <SelectVariantsCity disabled={true} city={ciudadDestino} setCity={setciudadDestino} />
@@ -463,7 +481,7 @@ export default function HorizontalLinearStepper() {
                     Número de paquetes
                   </h2>
                   <TextField disabled id="apellido" label="Paquetes" variant="filled" fullWidth
-                    value={numPaquetes}  />
+                    value={numPaquetes} />
                 </Box>
                 <h2 className="flex flex-row gap-2 text-3m mb-2 text-[#000000] text-left font-bold">
 
@@ -483,7 +501,7 @@ export default function HorizontalLinearStepper() {
                 Tipo de documento
               </h2>
               <div className="flex flex-col gap-4">
-                <BasicSelect  disabled ={true} value={tipoDocDES} setValue={settipoDocDES}/>
+                <BasicSelect disabled={true} value={tipoDocDES} setValue={settipoDocDES} />
                 <h2 className="flex flex-col gap-3 text-3m mb-2 text-[#000000] text-left font-bold">
                   Número de documento
                   <TextField disabled id="filled-basic" label="Número de documento" variant="filled" sx={{ width: '40%' }}
@@ -502,21 +520,21 @@ export default function HorizontalLinearStepper() {
                         Apellido
                       </h2>
                       <TextField disabled id="apellido" label="Apellido" variant="filled" fullWidth
-                        value={apellidoDES}  />
+                        value={apellidoDES} />
                     </Box>
                     <Box display="flex" flexDirection="column" alignItems="left" width="30%">
                       <h2 className="flex flex-col gap-3 text-3m mb-2 text-[#000000] text-left font-bold">
                         Nombre
                       </h2>
                       <TextField disabled id="nombre" label="Nombre" variant="filled" fullWidth
-                        value={nombreDES}  />
+                        value={nombreDES} />
                     </Box>
                     <Box display="flex" flexDirection="column" alignItems="left" width="30%">
                       <h2 className="flex flex-col gap-3 text-3m mb-2 text-[#000000] text-left font-bold">
                         Segundo nombre
                       </h2>
                       <TextField disabled id="segundo-nombre" label="Segundo nombre" variant="filled" fullWidth
-                        value={segundonombreDES}  />
+                        value={segundonombreDES} />
                     </Box>
 
                   </Box>
@@ -539,7 +557,7 @@ export default function HorizontalLinearStepper() {
                         Número
                       </h2>
                       <TextField disabled id="nombre" label="Número" variant="filled" fullWidth
-                        value={numeroDES}  />
+                        value={numeroDES} />
                     </Box>
 
                   </Box>
@@ -557,7 +575,7 @@ export default function HorizontalLinearStepper() {
                         Correo electrónico
                       </h2>
                       <TextField disabled id="nombre" label="Email" variant="filled" fullWidth
-                        value={emailDES}  />
+                        value={emailDES} />
                     </Box>
 
                   </Box>
@@ -624,9 +642,37 @@ export default function HorizontalLinearStepper() {
               <Button
                 sx={{ color: '#52489C', backgroundColor: "#FFFFFF" }}
                 variant="contained"
-                onClick={handleNext}>
+                onClick={activeStep === steps.length - 1 ? handleFinish : handleNext}>
                 {activeStep === steps.length - 1 ? 'Finalizar' : 'Siguiente'}
               </Button>
+
+              <Modal
+                open={openModal}
+                onClose={handleCloseModal}
+                aria-labelledby="modal-title"
+                aria-describedby="modal-description"
+              >
+                <Box sx={{
+                  position: 'absolute',
+                  top: '50%',
+                  left: '50%',
+                  transform: 'translate(-50%, -50%)',
+                  width: 400,
+                  bgcolor: 'background.paper',
+                  border: '2px solid #000',
+                  boxShadow: 24,
+                  p: 4,
+                }}>
+                  <h2 className="text-2xl mb-2 text-[#52489C] text-left font-bold">
+                  ¡Códigos de rastreo generados!
+                  </h2>
+                  <Typography id="modal-description" sx={{ mt: 2 }}>
+                    Contenido del modal. Puedes poner aquí cualquier contenido que desees mostrar dentro del modal.
+                  </Typography>
+                  <Button onClick={handleCloseModal} sx={{ mt: 2, color: '#52489C', backgroundColor: "#FFFFFF"  }}>Terminar</Button>
+                </Box>
+              </Modal>
+
             </Box>
           </React.Fragment>
         )}
