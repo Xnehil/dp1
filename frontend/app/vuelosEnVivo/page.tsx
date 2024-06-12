@@ -9,7 +9,7 @@ import { Aeropuerto } from "@/types/Aeropuerto";
 import { conectarAWebsocket, enviarMensaje } from "@/utils/FuncionesWebsocket";
 import useWebSocket, { ReadyState } from "react-use-websocket";
 import { ProgramacionVuelo } from "@/types/ProgramacionVuelo";
-import { procesarData } from "@/utils/FuncionesDatos";
+import { procesarData, quitarPaquetesAlmacenados } from "@/utils/FuncionesDatos";
 import { Envio } from "@/types/Envio";
 
 type MessageData = {
@@ -35,11 +35,11 @@ const Page = () => {
         new Map()
     );
     const envios = useRef<Map<string, Envio>>(new Map());
-    const [aeropuertos, setAeropuertos] = useState<Map<string, Aeropuerto>>(
-        new Map()
-    );
+    const aeropuertos = useRef<Map<string, Aeropuerto>>(new Map());
     const [cargado, setCargado] = useState(false);
     const [horaInicio, setHoraInicio] = useState(new Date());
+    const [campana, setCampana] = useState(0);
+    const [simulationTime, setSimulationTime] = useState<Date | null>(null);
     const { sendMessage, lastMessage, readyState, getWebSocket } = useWebSocket(
         process.env.REACT_APP_WS_URL_BASE + "/socket",
         {
@@ -49,7 +49,7 @@ const Page = () => {
                     const params = new URLSearchParams(window.location.search);
                     auxHoraInicio = new Date(
                         params.get("startDate") ||
-                            new Date("2024-01-12T05:36:52")
+                            new Date()
                     );
                 }
                 console.log("Conexión abierta con tiempo: ", auxHoraInicio);
@@ -72,41 +72,45 @@ const Page = () => {
     }, [cargado]);
 
     useEffect(() => {
+        const params = new URLSearchParams(window.location.search);
+        const startDate = params.get("startDate");
+        if (startDate !== null) {
+            setHoraInicio(new Date(startDate));
+        } else {
+            setHoraInicio(new Date());
+        }
+        
         axios
             .get(`${apiURL}/aeropuerto`)
             .then((response) => {
-                const aeropuertos = new Map<string, Aeropuerto>();
-                response.data.forEach((aeropuerto: Aeropuerto) => {
-                    aeropuertos.set(aeropuerto.codigoOACI, aeropuerto);
-                });
-                setAeropuertos(aeropuertos);
+                if (response.data) {
+                    // console.log("Respuesta de aeropuertos: ", response.data);
+                    const auxAeropuertos = new Map<string, Aeropuerto>();
+                    response.data.forEach((aeropuerto: Aeropuerto) => {
+                        aeropuerto.paquetes = [];
+                        aeropuerto.cantidadActual = 0;
+                        auxAeropuertos.set(aeropuerto.codigoOACI, aeropuerto);
+                    });
+                    // console.log("Aeropuertos cargados: ", auxAeropuertos);
+                    aeropuertos.current = auxAeropuertos;
+                    setCampana(campana + 1);
+                } 
             })
             .catch((error) => {
-                console.error(error);
+                console.error("Error fetching data from the API: ", error);
             });
     }, []);
 
     useEffect(() => {
-        if (
-            vuelos.current &&
-            vuelos.current.size > 0 &&
-            aeropuertos.size > 0 &&
-            readyState === ReadyState.OPEN
-        ) {
+        if (campana ==2) {
+            console.log("Campana sonando");
             if (cargado) {
                 return;
             }
             setCargado(true);
+            console.log("Cargando datos");
             // console.log("Aeropuertos cargados: ", aeropuertos);
             if (typeof window !== "undefined") {
-                const params = new URLSearchParams(window.location.search);
-                const startDate = params.get("startDate");
-                if (startDate !== null) {
-                    setHoraInicio(new Date(startDate));
-                } else {
-                    setHoraInicio(new Date());
-                }
-                // Use startDate here
                 //Limpiar la URL del query string
                 window.history.replaceState(
                     {},
@@ -115,7 +119,7 @@ const Page = () => {
                 );
             }
         }
-    }, [vuelos, aeropuertos, readyState]);
+    }, [campana]);
 
     useEffect(() => {
         if (lastMessage) {
@@ -126,11 +130,12 @@ const Page = () => {
             const auxNuevosVuelos: number[] = [];
 
             if (message.metadata.includes("dataVuelos")) {
-                // console.log("Actualizando vuelos");
+                console.log("Actualizando vuelos");
                 // console.log("Vuelos recibidos: ", message.data);
                 console.log("Vuelos actuales tamaño: ", vuelos.current.size);
                 if (cargado) {
                     message.data.forEach((vuelo: Vuelo) => {
+                        vuelo.pintarAuxiliar = false;
                         vuelos.current.set(vuelo.id, {
                             vuelo: vuelo,
                             pointFeature: null,
@@ -140,27 +145,41 @@ const Page = () => {
                         auxNuevosVuelos.push(vuelo.id);
                     });
                     console.log("Vuelos luego tamaño: ", vuelos.current.size);
+                    quitarPaquetesAlmacenados(auxNuevosVuelos, programacionVuelos, aeropuertos, simulationTime);
                     setNuevosVuelos(auxNuevosVuelos);
                     setSemaforo(semaforo + 1);
                     // console.log("Vuelos actualizados: ", vuelos);
                 } else {
+                    console.log("Cargando vuelos con datos: ", message.data);
                     message.data.forEach((vuelo: Vuelo) => {
+                        vuelo.pintarAuxiliar = false;
                         vuelos.current.set(vuelo.id, {
                             vuelo: vuelo,
                             pointFeature: null,
                             lineFeature: null,
                             routeFeature: null,
                         });
+                        auxNuevosVuelos.push(vuelo.id);
                     });
+                    setCampana(campana + 1);
+                    // setNuevosVuelos(auxNuevosVuelos);
+                    // setSemaforo(semaforo + 1);
                     console.log("Vuelos cargados: ", vuelos.current.size);
                 }
             }
+            if(message.metadata.includes("primeraCarga")) {
+                console.log("Mensaje de primera carga");
+                console.log("Datos recibidos: ", message.data);
+                procesarData(message.data, programacionVuelos, envios, aeropuertos, simulationTime?simulationTime:horaInicio, true);
+            }
             if (message.metadata.includes("correrAlgoritmo")) {
                 console.log(message.data);
-                procesarData(message.data, programacionVuelos, envios);
+                procesarData(message.data, programacionVuelos, envios, aeropuertos, simulationTime, false);
             }
         }
     }, [lastMessage]);
+
+    
     return (
         <>
             {cargado && (
@@ -176,6 +195,7 @@ const Page = () => {
                         semaforo={semaforo}
                         setSemaforo={setSemaforo}
                         sendMessage={sendMessage}
+                        onSimulationTimeChange={setSimulationTime}
                     />
                     <div ref={bottomRef}></div>
                 </div>
