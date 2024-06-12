@@ -32,12 +32,15 @@ public class ACOService {
     private DatosEnMemoriaService datosEnMemoriaService;
 
     public String ejecutarAco(ZonedDateTime horaActual) {
+        System.out.println("SIMULACIÓN SIGUIENTE START");
+        System.out.println("Hora actual: " + horaActual);
         paquetes.clear();
 
         HashMap<String, Aeropuerto> aeropuertos = datosEnMemoriaService.getAeropuertos();
         HashMap<Integer, Vuelo> vuelos = datosEnMemoriaService.getVuelos();
         logger.info("Desde - hasta: " + horaActual.minusHours(3) + " - " + horaActual);
-        HashMap<String, Envio> envios = datosEnMemoriaService.devolverEnviosDesdeHasta(horaActual.minusHours(3), horaActual);
+        HashMap<String, Envio> envios = datosEnMemoriaService.devolverEnviosDesdeHasta(horaActual.minusHours(3),
+                horaActual);
         for (Envio e : envios.values()) {
             paquetes.addAll(e.getPaquetes());
         }
@@ -67,16 +70,16 @@ public class ACOService {
             logger.error("Error en ejecutarAco: " + e.getLocalizedMessage());
             return null;
         }
-        //Enviar data en formato JSON (String)
+        // Enviar data en formato JSON (String)
         try {
-            //ArrayList<Vuelo> auxVuelos = new ArrayList<>();
-            //for(Vuelo v: vuelos.values())
-            //    auxVuelos.add(v);   
+            // ArrayList<Vuelo> auxVuelos = new ArrayList<>();
+            // for(Vuelo v: vuelos.values())
+            // auxVuelos.add(v);
             Map<String, Object> messageMap = new HashMap<>();
             messageMap.put("metadata", "correrAlgoritmo");
             messageMap.put("data", envios);
             String paquetesRutasJSON = objectMapper.writeValueAsString(messageMap);
-
+            System.out.println("SIMULACIÓN SIGUIENTE FIN");
             return paquetesRutasJSON;
         } catch (Exception e) {
             logger.error("Error en enviar los vuelos de prueba en formato JSON: " + e.getMessage());
@@ -84,7 +87,11 @@ public class ACOService {
         }
 
     }
+
     public String ejecutarAcoInicial(ZonedDateTime horaInicio, ZonedDateTime horaFin) {
+        System.out.println("SIMULACIÓN INICIAL START");
+        System.out.println("Hora de inicio: " + horaInicio);
+        System.out.println("Hora de fin: " + horaFin);
         paquetes.clear();
 
         HashMap<String, Aeropuerto> aeropuertos = datosEnMemoriaService.getAeropuertos();
@@ -119,16 +126,16 @@ public class ACOService {
             logger.error("Error en ejecutarAco: " + e.getLocalizedMessage());
             return null;
         }
-        //Enviar data en formato JSON (String)
+        // Enviar data en formato JSON (String)
         try {
-            //ArrayList<Vuelo> auxVuelos = new ArrayList<>();
-            //for(Vuelo v: vuelos.values())
-            //    auxVuelos.add(v);   
+            // ArrayList<Vuelo> auxVuelos = new ArrayList<>();
+            // for(Vuelo v: vuelos.values())
+            // auxVuelos.add(v);
             Map<String, Object> messageMap = new HashMap<>();
             messageMap.put("metadata", "primeraCarga");
             messageMap.put("data", envios);
             String paquetesRutasJSON = objectMapper.writeValueAsString(messageMap);
-
+            System.out.println("SIMULACIÓN INICIAL FIN");
             return paquetesRutasJSON;
         } catch (Exception e) {
             logger.error("Error en enviar los vuelos de prueba en formato JSON: " + e.getMessage());
@@ -142,8 +149,9 @@ public class ACOService {
 
         HashMap<String, Aeropuerto> aeropuertos = datosEnMemoriaService.getAeropuertos();
         HashMap<Integer, Vuelo> vuelos = datosEnMemoriaService.getVuelos();
-        HashMap<String, Envio> envios =  new HashMap<String, Envio>();
-        cargarDatos(aeropuertos, envios, paquetes, new String[] { "SKBO", "SEQM", "SUAA", "SCEL", "SABE", "EBCI", "EHAM", "WMKK", "VIDP", "ZBAA" });
+        HashMap<String, Envio> envios = new HashMap<String, Envio>();
+        cargarDatos(aeropuertos, envios, paquetes,
+                new String[] { "SKBO", "SEQM", "SUAA", "SCEL", "SABE", "EBCI", "EHAM", "WMKK", "VIDP", "ZBAA" });
         for (Envio e : envios.values()) {
             paquetes.addAll(e.getPaquetes());
         }
@@ -173,11 +181,11 @@ public class ACOService {
             logger.error("Error en ejecutarAco: " + e.getLocalizedMessage());
             return null;
         }
-        //Enviar data en formato JSON (String)
+        // Enviar data en formato JSON (String)
         try {
-            //ArrayList<Vuelo> auxVuelos = new ArrayList<>();
-            //for(Vuelo v: vuelos.values())
-            //    auxVuelos.add(v);   
+            // ArrayList<Vuelo> auxVuelos = new ArrayList<>();
+            // for(Vuelo v: vuelos.values())
+            // auxVuelos.add(v);
             Map<String, Object> messageMap = new HashMap<>();
             messageMap.put("metadata", "correrAlgoritmo");
             messageMap.put("data", envios);
@@ -207,8 +215,8 @@ public class ACOService {
 
         HashMap<String, Aeropuerto> aeropuertos = datosEnMemoriaService.getAeropuertos();
         HashMap<Integer, Vuelo> vuelos = datosEnMemoriaService.getVuelos();
-        HashMap<String, Envio> envios =  new HashMap<String, Envio>();
-        String [] ciudades = new String[] {codigo};
+        HashMap<String, Envio> envios = new HashMap<String, Envio>();
+        String[] ciudades = new String[] { codigo };
         cargarDatos(aeropuertos, envios, paquetes, ciudades);
         for (Envio e : envios.values()) {
             paquetes.addAll(e.getPaquetes());
@@ -239,11 +247,11 @@ public class ACOService {
             logger.error("Error en ejecutarAco: " + e.getLocalizedMessage());
             return null;
         }
-        //Enviar data en formato JSON (String)
+        // Enviar data en formato JSON (String)
         try {
-            //ArrayList<Vuelo> auxVuelos = new ArrayList<>();
-            //for(Vuelo v: vuelos.values())
-            //    auxVuelos.add(v);   
+            // ArrayList<Vuelo> auxVuelos = new ArrayList<>();
+            // for(Vuelo v: vuelos.values())
+            // auxVuelos.add(v);
             Map<String, Object> messageMap = new HashMap<>();
             messageMap.put("metadata", "correrAlgoritmo");
             messageMap.put("data", envios);
@@ -262,12 +270,16 @@ public class ACOService {
 
         HashMap<String, Aeropuerto> aeropuertos = datosEnMemoriaService.getAeropuertos();
         HashMap<Integer, Vuelo> vuelos = datosEnMemoriaService.getVuelos();
-        HashMap<String, Envio> envios =  new HashMap<String, Envio>();
-        String[] ciudades = new String[] { 
-            "SKBO", "SEQM", "SVMI", "SBBR", "SPIM", "SLLP", "SCEL", "SABE", "SGAS", "SUAA",
-            "LATI", "EDDI", "LOWW", "EBCI", "UMMS", "LBSF", "LKPR", "LDZA", "EKCH", "EHAM",
-            "VIDP", "RKSI", "VTBS", "OMDB", "ZBAA", "RJTT", "WMKK", "WSSS", "WIII", "RPLL"
+        HashMap<String, Envio> envios = new HashMap<String, Envio>();
+        String[] ciudades = new String[] {
+        "SKBO", "SEQM", "SVMI", "SBBR", "SPIM", "SLLP", "SCEL", "SABE", "SGAS",
+        "SUAA",
+        "LATI", "EDDI", "LOWW", "EBCI", "UMMS", "LBSF", "LKPR", "LDZA", "EKCH",
+        "EHAM",
+        "VIDP", "RKSI", "VTBS", "OMDB", "ZBAA", "RJTT", "WMKK", "WSSS", "WIII",
+        "RPLL"
         };
+        
         cargarDatos(aeropuertos, envios, paquetes, ciudades);
         for (Envio e : envios.values()) {
             paquetes.addAll(e.getPaquetes());
@@ -298,11 +310,11 @@ public class ACOService {
             logger.error("Error en ejecutarAco: " + e.getLocalizedMessage());
             return null;
         }
-        //Enviar data en formato JSON (String)
+        // Enviar data en formato JSON (String)
         try {
-            //ArrayList<Vuelo> auxVuelos = new ArrayList<>();
-            //for(Vuelo v: vuelos.values())
-            //    auxVuelos.add(v);   
+            // ArrayList<Vuelo> auxVuelos = new ArrayList<>();
+            // for(Vuelo v: vuelos.values())
+            // auxVuelos.add(v);
             Map<String, Object> messageMap = new HashMap<>();
             messageMap.put("metadata", "correrAlgoritmo");
             messageMap.put("data", envios);
@@ -316,7 +328,8 @@ public class ACOService {
 
     }
 
-    private void cargarDatos(HashMap<String, Aeropuerto> aeropuertos, HashMap<String, Envio> envios, ArrayList<Paquete> paquetes,
+    private void cargarDatos(HashMap<String, Aeropuerto> aeropuertos, HashMap<String, Envio> envios,
+            ArrayList<Paquete> paquetes,
             String[] ciudades) {
         // Ahora mismo está leyendo datos de archivos, pero debería leer de la base de
         // datos

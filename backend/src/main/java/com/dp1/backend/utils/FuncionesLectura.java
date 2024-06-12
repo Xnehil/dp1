@@ -149,6 +149,7 @@ public class FuncionesLectura {
                 LocalTime horaOrigen = LocalTime.parse(parts[3]);
                 String[] destinoParts = parts[4].split(":");
                 String ciudadDestino = destinoParts[0];
+                //if(!ciudadDestino.equals("VIDP") && !ciudadDestino.equals("SVMI") && !ciudadDestino.equals("VTBS")) continue; 
                 int cantidadPaquetes = Integer.parseInt(destinoParts[1]);
 
                 Aeropuerto origen = aeropuertos.getOrDefault(ciudadOrigenEnvio, aeropuertos.get("EKCH"));
@@ -180,11 +181,11 @@ public class FuncionesLectura {
                         paquete.setTiempoRestanteDinamico(Duration.ofDays(1));
                         paquete.setTiempoRestante(Duration.ofDays(1));
                     }
-                    
+
                     paquetes.add(paquete);
                     
                     // Meter paquetes al aeropuerto de origen
-                    origen.paqueteEntraReal(horaOrigenZoned.toLocalDateTime());
+                    //origen.paqueteEntraReal(horaOrigenZoned.toLocalDateTime());
                 }
                 Envio nuevoEnvio = new Envio(ciudadOrigenEnvio, ciudadDestino, horaOrigenZoned, cantidadPaquetes, paquetes);
                 nuevoEnvio.setIdEnvio(envioId);
@@ -262,7 +263,7 @@ public class FuncionesLectura {
                     paquetes.add(paquete);
                     
                     // Meter paquetes al aeropuerto de origen
-                    origen.paqueteEntraReal(horaOrigenZoned.toLocalDateTime());
+                    //origen.paqueteEntraReal(horaOrigenZoned.toLocalDateTime());
                 }
                 Envio nuevoEnvio = new Envio(ciudadOrigenEnvio, ciudadDestino, horaOrigenZoned, cantidadPaquetes, paquetes);
                 nuevoEnvio.setIdEnvio(envioId);

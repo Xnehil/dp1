@@ -498,7 +498,7 @@ public class Auxiliares {
                 }
                 if (!datosEnMemoriaService.seTieneruta(cadenaABuscar)) {
                     // Por ahora no se inserta en la base de datos
-                    // datosEnMemoriaService.insertarRuta(envio, paquete);
+                    datosEnMemoriaService.insertarRuta(envio, paquete);
                     rutasNuevas++;
                 }
                 paquetesEntregados++;
