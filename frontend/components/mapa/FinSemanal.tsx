@@ -45,7 +45,7 @@ const FinSemanal: React.FC<FinSemanalProps> = ({ programacionVuelos, vuelos }) =
 
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
-      <DialogTitle>La planificación es la siguiente:</DialogTitle>
+      <DialogTitle>La planificación semanal fue la siguiente:</DialogTitle>
       <DialogContent>
         <TableContainer component={Paper}>
           <Table>
