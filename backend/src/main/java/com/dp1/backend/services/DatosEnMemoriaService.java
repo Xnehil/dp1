@@ -221,8 +221,8 @@ public class DatosEnMemoriaService {
         }
         rutasPosiblesSet.add(llave2);
         // Guardar llave2 en bd
-        rutaPosibleService.createRutaPosible(rp);
-        logger.info("Ruta agregada en set: " + llave2);
+        //rutaPosibleService.createRutaPosible(rp);
+        //logger.info("Ruta agregada en set: " + llave2);
 
         //
     }

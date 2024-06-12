@@ -10,7 +10,8 @@ export function procesarData(
     programacionVuelos: React.MutableRefObject<Map<string, ProgramacionVuelo>>,
     envios: React.MutableRefObject<Map<string, Envio>>,
     aeropuertos: React.MutableRefObject<Map<string, Aeropuerto>>,
-    simulationTime: Date | null
+    simulationTime: Date | null,
+    cargaInicial: boolean
 ): void {
     console.log("Procesando data");
     for (let key in messageData) {
@@ -24,7 +25,7 @@ export function procesarData(
                 //Añadir paquete a aeropuerto de origen
                 const aeropuertoOrigen: Aeropuerto | undefined =
                     aeropuertos.current.get(envio.origen);
-                if (aeropuertoOrigen) {
+                if (aeropuertoOrigen && !cargaInicial) {
                     aeropuertoOrigen.cantidadActual++;
                     aeropuertoOrigen.paquetes.push(paquete);
                 }
@@ -129,12 +130,13 @@ export function quitarPaquetesAlmacenados(
                     paquete.codigoEnvio.slice(0, 4)
                 );
                 if (aeropuertoOrigen) {
-                    aeropuertoOrigen.cantidadActual--;
-                    aeropuertoOrigen.paquetes =
-                        aeropuertoOrigen.paquetes.filter(
-                            (p) => p.id !== paquete.id
-                        );
-                    cuenta++;
+                    let packageExists = aeropuertoOrigen.paquetes.some(p => p.id === paquete.id);
+
+                    if (packageExists) {
+                        aeropuertoOrigen.cantidadActual--;
+                        aeropuertoOrigen.paquetes = aeropuertoOrigen.paquetes.filter(p => p.id !== paquete.id);
+                        cuenta++;
+                    }
                 }
             }
         }
@@ -143,34 +145,67 @@ export function quitarPaquetesAlmacenados(
 }
 
 //agregarPaquetesAlmacen(idVuelo, programacionVuelos, aeropuertos, simulationTime);
-export function agregarPaquetesAlmacen(
+export async function agregarPaquetesAlmacen(
     idVuelo: number,
     programacionVuelos: React.MutableRefObject<Map<string, ProgramacionVuelo>>,
     aeropuertos: React.MutableRefObject<Map<string, Aeropuerto>>,
     simulationTime: Date | null,
-    envios: React.MutableRefObject<Map<string, Envio>>
+    envios: React.MutableRefObject<Map<string, Envio>>,
+    vuelos: React.RefObject<Map<number,{vuelo: Vuelo;pointFeature: any;lineFeature: any;routeFeature: any;}>>
 ) {
+    let verbose = false;
     if (!simulationTime) return;
     // console.log("Simulation time: ", simulationTime);
     const diaDeSimulacion = simulationTime.toISOString().slice(0, 10);
     const claveProgramacion = idVuelo + "-" + diaDeSimulacion;
-    const programacion = programacionVuelos.current.get(claveProgramacion);
+    const programacion: ProgramacionVuelo | undefined = programacionVuelos.current.get(claveProgramacion);
     let cuenta = 0;
+    if(idVuelo == 624){
+        verbose = true;
+        console.log("Programación: ", programacion);
+        console.log("claveProgramacion: ", claveProgramacion);
+        console.log("diaDeSimulacion: ", diaDeSimulacion);
+    }
     //Si es que existe la programación de vuelo para ese día
     if (programacion) {
-        for (let paquete of programacion.paquetes) {
-            const envio = envios.current.get(paquete.codigoEnvio);
-            if (!envio) {
-                console.log("No se encontró el envío para sacar el destino del paquete");
-                continue;
+        return new Promise<void>((resolve, reject) => {
+            try {
+                for (let paquete of programacion.paquetes) {
+                    const envio = envios.current.get(paquete.codigoEnvio);
+                    if (!envio) {
+                        console.log("No se encontró el envío para sacar el destino del paquete");
+                        continue;
+                    }
+                    if (verbose) {
+                        console.log("Envío: ", envio);
+                    }
+                    const ciudadDestino = vuelos.current?.get(idVuelo)!.vuelo.destino;
+                    if (ciudadDestino === undefined) {
+                        console.log("No se encontró la ciudad destino");
+                        continue;
+                    }
+                    const aeropuertoDestino = aeropuertos.current.get(ciudadDestino);
+                    if (verbose) {
+                        console.log("Aeropuerto destino: ", aeropuertoDestino);
+                    }
+                    if (verbose) {
+                        console.log("Paquete: ", paquete);
+                    }
+                    if (aeropuertoDestino) {
+                        aeropuertoDestino.cantidadActual++;
+                        aeropuertoDestino.paquetes.push(paquete);
+                        if (verbose) {
+                            console.log("Paquete: ", paquete);
+                            console.log("Aeropuerto destino: ", aeropuertoDestino);
+                        }
+                        cuenta++;
+                    }
+                }
+                resolve();
+            } catch (error) {
+                reject(error);
             }
-            const aeropuertoDestino = aeropuertos.current.get(envio.destino);
-            if (aeropuertoDestino) {
-                aeropuertoDestino.cantidadActual++;
-                aeropuertoDestino.paquetes.push(paquete);
-                cuenta++;
-            }
-        }
+        });
     }
     // console.log("Se agregaron ", cuenta, " paquetes a aeropuertos");
 }
