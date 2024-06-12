@@ -1,7 +1,9 @@
-export default function Page (){
+import RegistrarEnvio  from "@/components/envio/registrarEnvio";
 
-
-    return (
-        <p>Soy una pantalla de GESTION Y ALTA DIRECCION</p>
-    );
+export default function Page() {
+  return (
+    <div>
+        <RegistrarEnvio/>
+    </div>
+  );
 }
