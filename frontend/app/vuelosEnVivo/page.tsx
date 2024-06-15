@@ -53,11 +53,7 @@ const Page = () => {
                     );
                 }
                 console.log("Conexión abierta con tiempo: ", auxHoraInicio);
-                sendMessage(
-                    "tiempo: " +
-                        auxHoraInicio.toLocaleString("en-US", {
-                            timeZone: "America/Lima",
-                        }),
+                sendMessage("vuelosEnVivo: tiempo: " +auxHoraInicio.toLocaleString("en-US", {timeZone: "America/Lima",}),
                     true
                 );
             },

@@ -72,21 +72,25 @@ public class DatosEnMemoriaService {
     @Transactional
     public void init() {
         logger.info("Leyendo rutas posibles");
-        coleccionRutaService.getAllColeccionRutas().forEach(cr -> {
-            rutasPosibles.put(cr.getCodigoRuta(), cr);
-            String ruta = cr.getCodigoRuta();
-            for (RutaPosible rp : cr.getRutasPosibles()) {
-                String sucesionVuelos = "";
-                for (ItemRutaPosible itemVuelo : rp.getFlights()) {
-                    int vueloId = itemVuelo.getIdVuelo();
-                    sucesionVuelos += ("-" + vueloId);
-                }
-                ruta += sucesionVuelos;
-                if (!rutasPosiblesSet.contains(ruta)) {
-                    rutasPosiblesSet.add(ruta);
-                }
-            }
-        });
+        
+        // coleccionRutaService.getAllColeccionRutas().forEach(cr -> {
+        //     logger.info("Coleccion ruta: " + cr.getCodigoRuta());
+        //     rutasPosibles.put(cr.getCodigoRuta(), cr);
+        //     String ruta = cr.getCodigoRuta();
+        //     for (RutaPosible rp : cr.getRutasPosibles()) {
+                
+        //         String sucesionVuelos = "";
+        //         for (ItemRutaPosible itemVuelo : rp.getFlights()) {
+        //             int vueloId = itemVuelo.getIdVuelo();
+        //             sucesionVuelos += ("-" + vueloId);
+        //         }
+        //         logger.info("Ruta posible: " + sucesionVuelos);
+        //         ruta += sucesionVuelos;
+        //         if (!rutasPosiblesSet.contains(ruta)) {
+        //             rutasPosiblesSet.add(ruta);
+        //         }
+        //     }
+        // });
 
         logger.info("Colecciones rutas: " + rutasPosibles.size());
         logger.info("Rutas posibles set: " + rutasPosiblesSet.size());
@@ -208,7 +212,7 @@ public class DatosEnMemoriaService {
             rutasPosibles.put(llave, cr);
             // logger.info("Ruta creada: " + llave);
             // Guardar cr en bd
-            coleccionRutaService.createColeccionRuta(cr);
+            // coleccionRutaService.createColeccionRuta(cr);
         }
         RutaPosible rp = new RutaPosible();
         rp.setColeccionRuta(cr);

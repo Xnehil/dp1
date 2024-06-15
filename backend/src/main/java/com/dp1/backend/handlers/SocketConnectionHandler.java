@@ -43,6 +43,8 @@ public class SocketConnectionHandler extends TextWebSocketHandler {
     private HashMap<WebSocketSession, ZonedDateTime> simulatedTimes = new HashMap<>();
     private ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy, h:mm:ss a", Locale.ENGLISH);
+    private int tipoConexion = 0;
+    //0: no se ha conectado, 1: se ha conectado en simulacion, 2: se ha conectado en tiempo real
 
     // En esta lista se almacenarán todas las conexiones. Luego se usará para
     // transmitir el mensaje
@@ -94,45 +96,123 @@ public class SocketConnectionHandler extends TextWebSocketHandler {
         // Si el mensaje contiene "tiempo", se imprimirá en el log
         if (message.getPayload().toString().contains("tiempo")) 
         { 
-            // logger.info("Mensaje recibido: " + message.getPayload().toString()); 
-            String tiempo = message.getPayload().toString().split(": ")[1]; // assuming the message is in the format "tiempo: <time>"
+            // Assuming `message` is the incoming message
+            String[] parts = message.getPayload().toString().split(":", 2); // Split the message into two parts
+
+            String identifier = parts[0].trim(); // The identifier is the first part
+            String timeMessage = parts[1].trim(); // The rest of the message is the second part
+            String tiempo = timeMessage.split(": ")[1]; // assuming the message is in the format "tiempo: <time>"
             //Parsear tiempo que llega en el formato "6/2/2024, 3:57:01 PM
             ZonedDateTime simulatedTime = LocalDateTime.parse(tiempo, formatter).atZone(ZoneId.of("America/Lima"));
-            ArrayList<Vuelo> diferenciaVuelos;
+            ArrayList<Vuelo> diferenciaVuelos = new ArrayList<>();
             ZonedDateTime lastMessageTime = lastMessageTimes.get(session);
             ZonedDateTime algorLastTime = lastAlgorTimes.get(session);
-            // If this is the first received time, store it
-            if (lastMessageTime == null) {
-                lastMessageTime = simulatedTime;
-                algorLastTime = simulatedTime;
-                vuelosEnElAire.put(session, datosEnMemoriaService.getVuelosEnElAireMap(simulatedTime));
-                lastMessageTimes.put(session, lastMessageTime);
-                algorLastTime = simulatedTime;
-                lastAlgorTimes.put(session, algorLastTime);
 
-                //Enviamos la data por primera vez
-                datosEnMemoriaService.cargarEnviosDesdeHasta(lastMessageTime);//cargamos todos los envios de la semana
-                String paquetesConRutas = acoService.ejecutarAcoInicial(simulatedTime.minusDays(1),simulatedTime);
-                session.sendMessage(new TextMessage(paquetesConRutas));
+            if(identifier.equals("vuelosEnVivo")){
+                tipoConexion = 2;
+            }
+            else if(identifier.equals("simulacionSemanal")){
+                tipoConexion = 1;
+            }
 
-                diferenciaVuelos = new ArrayList<>();
-                for (Vuelo vuelo : vuelosEnElAire.get(session).values()) {
-                    diferenciaVuelos.add(vuelo);
+            if(tipoConexion == 1){
+                if (lastMessageTime == null) {
+                    handlePrimerContactoSimulacion(simulatedTime, session, lastMessageTime, algorLastTime, diferenciaVuelos);
+                    return;
                 }
+                handleDifferenceSimulacion(lastMessageTime, simulatedTime, session, diferenciaVuelos, algorLastTime);
+            }
+            else if(tipoConexion == 2){
+                logger.info("Conexión en tiempo real");
+            }
+            else{
+                logger.error("Tipo de conexión no reconocido");
+            }
+        }
+    }
+
+    private void handlePrimerContactoReal(ZonedDateTime time, WebSocketSession session, ZonedDateTime lastMessageTime, ArrayList<Vuelo> diferenciaVuelos) throws IOException {
+        lastMessageTime = time;
+        vuelosEnElAire.put(session, datosEnMemoriaService.getVuelosEnElAireMap(time));
+        lastMessageTimes.put(session, lastMessageTime);
+
+        //Enviamos la data por primera vez
+        String paquetesConRutas =  "";
+        session.sendMessage(new TextMessage(paquetesConRutas));
+
+        diferenciaVuelos = new ArrayList<>();
+        for (Vuelo vuelo : vuelosEnElAire.get(session).values()) {
+            diferenciaVuelos.add(vuelo);
+        }
+        Map<String, Object> messageMap = new HashMap<>();
+        messageMap.put("metadata", "dataVuelos");
+        messageMap.put("data", diferenciaVuelos);
+        String messageJson = objectMapper.writeValueAsString(messageMap);
+        session.sendMessage(new TextMessage(messageJson));           
+        logger.info("Enviando # de vuelos en el aire: inicio" + diferenciaVuelos.size());
+        return;
+    }
+
+    private void handleDifferenceReal(ZonedDateTime lastMessageTime, ZonedDateTime time, WebSocketSession session, ArrayList<Vuelo> diferenciaVuelos) throws IOException {
+        long difference = Duration.between(lastMessageTime, time).toMinutes();
+        try {
+            if (difference > 1) {
+                HashMap<Integer, Vuelo> nuevosVuelosMap = datosEnMemoriaService.getVuelosEnElAireMap(time);
+                // Vuelos nuevos que se han agregado
+                diferenciaVuelos = new ArrayList<>();
+                // Determinar los vuelos nuevos
+                for (Vuelo vuelo : nuevosVuelosMap.values()) {
+                    if (!vuelosEnElAire.get(session).containsKey(vuelo.getId())) {
+                        diferenciaVuelos.add(vuelo);
+                    }
+                }
+                vuelosEnElAire.put(session, nuevosVuelosMap);
                 Map<String, Object> messageMap = new HashMap<>();
                 messageMap.put("metadata", "dataVuelos");
                 messageMap.put("data", diferenciaVuelos);
                 String messageJson = objectMapper.writeValueAsString(messageMap);
-                session.sendMessage(new TextMessage(messageJson));           
-                logger.info("Enviando # de vuelos en el aire: inicio" + diferenciaVuelos.size());
-                return;
-            }
+                session.sendMessage(new TextMessage(messageJson));
+                logger.info("Enviando # de vuelos en el aire: " + diferenciaVuelos.size());
+                lastMessageTimes.put(session, time);
 
-            // System.out.println("Last message time: " + lastMessageTime+ " zona horaria:
-            // "+lastMessageTime.getZone());
-            // System.out.println("Simulated time: " + simulatedTime + " zona horaria:
-            // "+simulatedTime.getZone());
-            long difference = Duration.between(lastMessageTime, simulatedTime).toMinutes();
+                //Por cada nuevo vuelo, se buscan en la BD las programacionesVuelo correspondientes, se sacan sus paquetes y se mandan esos paquetes
+            }
+        } catch (Exception e) {
+            logger.error("Error en diferencia de vuelos: " + e.getLocalizedMessage());
+        }
+    }
+
+    private void handlePrimerContactoSimulacion(ZonedDateTime simulatedTime, WebSocketSession session, ZonedDateTime lastMessageTime, ZonedDateTime algorLastTime, ArrayList<Vuelo> diferenciaVuelos) throws IOException {
+        lastMessageTime = simulatedTime;
+        algorLastTime = simulatedTime;
+        vuelosEnElAire.put(session, datosEnMemoriaService.getVuelosEnElAireMap(simulatedTime));
+        lastMessageTimes.put(session, lastMessageTime);
+        algorLastTime = simulatedTime;
+        lastAlgorTimes.put(session, algorLastTime);
+
+        //Enviamos la data por primera vez
+        datosEnMemoriaService.cargarEnviosDesdeHasta(lastMessageTime);//cargamos todos los envios de la semana
+        String paquetesConRutas = acoService.ejecutarAcoInicial(simulatedTime.minusDays(1),simulatedTime);
+        session.sendMessage(new TextMessage(paquetesConRutas));
+
+        diferenciaVuelos = new ArrayList<>();
+        for (Vuelo vuelo : vuelosEnElAire.get(session).values()) {
+            diferenciaVuelos.add(vuelo);
+        }
+        Map<String, Object> messageMap = new HashMap<>();
+        messageMap.put("metadata", "dataVuelos");
+        messageMap.put("data", diferenciaVuelos);
+        String messageJson = objectMapper.writeValueAsString(messageMap);
+        session.sendMessage(new TextMessage(messageJson));           
+        logger.info("Enviando # de vuelos en el aire: inicio" + diferenciaVuelos.size());
+        return;
+    }
+
+    private void handleDifferenceSimulacion(ZonedDateTime lastMessageTime, ZonedDateTime simulatedTime, WebSocketSession session,
+            ArrayList<Vuelo> diferenciaVuelos, ZonedDateTime algorLastTime
+    ) throws IOException {
+            
+        long difference = Duration.between(lastMessageTime, simulatedTime).toMinutes();
             // System.out.println("Difference: " + difference);
             try {
                 if (difference > 20) {
@@ -172,19 +252,6 @@ public class SocketConnectionHandler extends TextWebSocketHandler {
             } catch (Exception e) {
                 logger.error("Error en ejecución del algoritmo: " + e.getLocalizedMessage());
             }
-
-        }
-        // if (message.getPayload().toString().contains("tiempo")) {
-        //     // Puede que no sea necesario que envie mensajes desde el front para poder
-        //     // recien ejecutar el algoritmo,
-        //     // sino que esto se hace de manera automatica y es envia al front cuando se
-        //     // defina.
-        //     // La estructura de la información que se enviará de los paquetes la debo
-        //     // definir en el front tal como
-        //     // hace para los vuelos.
-        //     // Luego tengo que resolver el cómo guardaré esto en al bbdd
-        //     // Y con eso iriamos god
-
-        // }
     }
+
 }

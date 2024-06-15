@@ -220,7 +220,7 @@ const Mapa = ({
                 const limaTime = simulationTime.toLocaleString("en-US", {
                     timeZone: "America/Lima",
                 });
-                sendMessage("tiempo: " + limaTime, true);
+                sendMessage("mensaje: tiempo: " + limaTime, true);
             }
         }, 1000);
 
