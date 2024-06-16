@@ -136,7 +136,7 @@ public class SocketConnectionHandler extends TextWebSocketHandler {
         vuelosEnElAire.put(session, datosEnMemoriaService.getVuelosEnElAireMap(time));
         lastMessageTimes.put(session, lastMessageTime);
 
-        //Enviamos la data por primera vez
+        //Enviamos la data por primera vez. Tenemos que enviar los paquetes de los últimos dos días. Tal vez todos o solo los que faltan llegar
         String paquetesConRutas =  "";
         session.sendMessage(new TextMessage(paquetesConRutas));
 
@@ -174,7 +174,7 @@ public class SocketConnectionHandler extends TextWebSocketHandler {
                 session.sendMessage(new TextMessage(messageJson));
                 logger.info("Enviando # de vuelos en el aire: " + diferenciaVuelos.size());
                 lastMessageTimes.put(session, time);
-
+                
                 //Por cada nuevo vuelo, se buscan en la BD las programacionesVuelo correspondientes, se sacan sus paquetes y se mandan esos paquetes
             }
         } catch (Exception e) {

@@ -53,9 +53,11 @@ if(typeof window !== 'undefined') {
     });
 }
 
-export function dinamicPlaneStyle(item: { vuelo: Vuelo, pointFeature: any, lineFeature: any} | undefined){
+export function dinamicPlaneStyle(item: { vuelo: Vuelo, pointFeature: any, lineFeature: any} | undefined, angulo: number | null){
     if(item==undefined) return planeStyle;
-    const angulo = calcularAngulo(item );
+    let auxAngulo=0;
+    if (angulo==null) auxAngulo=calcularAngulo(item);
+    else auxAngulo=angulo;
     return new Style({
         image: new Icon({
             anchor: [0.5, 0.5],
@@ -64,14 +66,14 @@ export function dinamicPlaneStyle(item: { vuelo: Vuelo, pointFeature: any, lineF
             src: '/logos/vueloEnhanced.png', //mas grande para aumentar el area de click
             scale: 0.17,
             //color: 'red', //por alguna razon, si asignas un color cualquiera, mostrara solo en negro
-            rotation: angulo
+            rotation: auxAngulo
         }),
     });
 }
 
 export function dinamicSelectedPlaneStle(item: {vuelo:Vuelo, pointFeature:any, lineFeature:any}| undefined){
     if(item==undefined) return selectedPlaneStyle;
-    const angulo=calcularAngulo(item );
+    const angulo: number=item.pointFeature.get("angulo");
     return new Style({
         image: new Icon({
             anchor: [0.5, 0.5],
@@ -85,7 +87,55 @@ export function dinamicSelectedPlaneStle(item: {vuelo:Vuelo, pointFeature:any, l
 
 }
 
-function calcularAngulo(item: {vuelo:Vuelo, pointFeature:any, lineFeature:any} , rotacion:number=-Math.PI/4){
+export function greenPlaneStyle(item: {vuelo:Vuelo, pointFeature:any, lineFeature:any}| undefined){
+    if(item==undefined) return selectedPlaneStyle;
+    const angulo: number=item.pointFeature.get("angulo");
+    return new Style({
+        image: new Icon({
+            anchor: [0.5, 0.5],
+            anchorXUnits: 'fraction',
+            anchorYUnits: 'fraction',
+            src: '/logos/vuelo.svg',
+            scale: 0.17,
+            rotation: angulo,
+            color: 'green'
+        }),
+    });
+}
+
+export function yellowPlaneStyle(item: {vuelo:Vuelo, pointFeature:any, lineFeature:any}| undefined){
+    if(item==undefined) return selectedPlaneStyle;
+    const angulo: number=item.pointFeature.get("angulo");
+    return new Style({
+        image: new Icon({
+            anchor: [0.5, 0.5],
+            anchorXUnits: 'fraction',
+            anchorYUnits: 'fraction',
+            src: '/logos/vuelo.svg',
+            scale: 0.17,
+            rotation: angulo,
+            color: 'yellow'
+        }),
+    });
+}
+
+export function redPlaneStyle(item: {vuelo:Vuelo, pointFeature:any, lineFeature:any}| undefined){
+    if(item==undefined) return selectedPlaneStyle;
+    const angulo: number=item.pointFeature.get("angulo");
+    return new Style({
+        image: new Icon({
+            anchor: [0.5, 0.5],
+            anchorXUnits: 'fraction',
+            anchorYUnits: 'fraction',
+            src: '/logos/vuelo.svg',
+            scale: 0.17,
+            rotation: angulo,
+            color: 'red'
+        }),
+    });
+}
+
+export function calcularAngulo(item: {vuelo:Vuelo, pointFeature:any, lineFeature:any} , rotacion:number=-Math.PI/4){
     const coordinates = item.lineFeature.getGeometry().getCoordinates();
     const start = coordinates[0];
     const end = coordinates[1];

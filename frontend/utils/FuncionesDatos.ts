@@ -1,4 +1,4 @@
-import { dinamicPlaneStyle } from "@/components/mapa/EstilosMapa";
+import { dinamicPlaneStyle, greenPlaneStyle, redPlaneStyle, yellowPlaneStyle } from "@/components/mapa/EstilosMapa";
 import { Aeropuerto } from "@/types/Aeropuerto";
 import { Envio } from "@/types/Envio";
 import { Paquete } from "@/types/Paquete";
@@ -11,7 +11,8 @@ export function procesarData(
     envios: React.MutableRefObject<Map<string, Envio>>,
     aeropuertos: React.MutableRefObject<Map<string, Aeropuerto>>,
     simulationTime: Date | null,
-    cargaInicial: boolean
+    cargaInicial: boolean,
+    vuelos: React.RefObject<Map<number,{vuelo: Vuelo;pointFeature: any;lineFeature: any;routeFeature: any;}>>,
 ): void {
     console.log("Procesando data");
     for (let key in messageData) {
@@ -38,11 +39,6 @@ export function procesarData(
                     //Para rutas salvadas tenemos que calcular la fecha de vuelo 
                     let fechaVuelo = new Date();
                     if(auxFechaRuta < 10) {
-                        // console.log("Se detectó una ruta guardada");
-                        // console.log("auxFechaRuta: ", auxFechaRuta);
-                        // console.log("Simulation time: ", simulationTime);
-                        // auxFechaRuta es la cantidad de días desde la fecha de simulación
-
                         fechaVuelo = new Date(simulationTime!.getTime() + auxFechaRuta * 24 * 60 * 60 * 1000);
                         // console.log("Fecha vuelo: ", fechaVuelo);
                     }
@@ -65,11 +61,27 @@ export function procesarData(
                             paquetes: [paquete],
                         });
                     } else {
-                        const programacion =
-                            programacionVuelos.current.get(claveProgramacion);
+                        const programacion = programacionVuelos.current.get(claveProgramacion);
                         if (programacion) {
                             programacion.cantPaquetes++;
                             programacion.paquetes.push(paquete);
+                            const item = vuelos.current?.get(idVuelo);
+                            if (item) {
+                                //Cambiar el estilo del avión
+                                let razon = programacion.cantPaquetes / item.vuelo.capacidad;
+                                //Verde, menos del 33% de la capacidad
+                                if (razon < 0.33) {
+                                    item.pointFeature.setStyle(greenPlaneStyle(item));
+                                }
+                                //Amarillo, entre 33% y 66% de la capacidad
+                                else if (razon < 0.66) {
+                                    item.pointFeature.setStyle(yellowPlaneStyle(item));
+                                }
+                                //Rojo, más del 66% de la capacidad
+                                else {
+                                    item.pointFeature.setStyle(redPlaneStyle(item));
+                                }
+                            }
                         }
                     }
                 }

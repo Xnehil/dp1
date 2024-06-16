@@ -4,7 +4,7 @@ import { Coordinate } from 'ol/coordinate';
 import { Point, LineString } from 'ol/geom';
 import { tiempoEntreAhoraYSalida } from './FuncionesTiempo';
 import { fromLonLat } from 'ol/proj';
-import { dinamicPlaneStyle, dinamicSelectedPlaneStle, invisibleStyle, planeStyle, selectedLineStyle, selectedPlaneStyle, selectedAirportStyle, airportStyle } from '@/components/mapa/EstilosMapa';
+import { dinamicPlaneStyle, dinamicSelectedPlaneStle, invisibleStyle, planeStyle, selectedLineStyle, selectedPlaneStyle, selectedAirportStyle, airportStyle, calcularAngulo } from '@/components/mapa/EstilosMapa';
 import { Feature } from 'ol';
 import { getVectorContext } from 'ol/render';
 import Icon from 'ol/style/Icon';
@@ -182,13 +182,14 @@ export function crearPuntoDeVuelo(aeropuertos: Map<String, Aeropuerto>, item: an
     const llaveBusqueda = item.vuelo.id + "-" + simulationTime.toISOString().slice(0, 10);
     const programacion = programacionVuelos.get(llaveBusqueda);
     const tienePaquetes = programacion?.paquetes.length ?? 0 > 0;
-
+    const angulo = calcularAngulo(item);
     if (tienePaquetes) {
-        feature.setStyle(dinamicPlaneStyle(item));
+        feature.setStyle(dinamicPlaneStyle(item, angulo));
     } else {
         feature.setStyle(invisibleStyle);
     }
     feature.set('vueloId', item.vuelo.id); // Agregar el ID del vuelo
+    feature.set('angulo', angulo);
     return feature;
 }
 
@@ -202,7 +203,7 @@ export function seleccionarVuelo(vueloId:number, setSelectedVuelo: any ,selected
             `Vuelo seleccionado setteado: Vuelo ID${vuelo.id}`
         );
         if (selectedFeature.current != null) {
-            selectedFeature.current.setStyle(dinamicPlaneStyle(vuelos.current?.get(selectedFeature.current.get("vueloId"))));
+            selectedFeature.current.setStyle(dinamicPlaneStyle(vuelos.current?.get(selectedFeature.current.get("vueloId")), null));
             vuelos.current?.get(selectedFeature.current.get("vueloId"))?.lineFeature.setStyle(invisibleStyle);
         }
 
@@ -260,7 +261,7 @@ export function seleccionarElemento(
             console.log("Item del vuelo: ", vuelos.current?.get(vueloId));
             if (selectedFeature.current != null) {
                 if (selectedFeature.current.get("vueloId")) {
-                    selectedFeature.current.setStyle(dinamicPlaneStyle(vuelos.current?.get(selectedFeature.current.get("vueloId"))));
+                    selectedFeature.current.setStyle(dinamicPlaneStyle(vuelos.current?.get(selectedFeature.current.get("vueloId")), null));
                     vuelos.current?.get(selectedFeature.current.get("vueloId"))?.lineFeature.setStyle(invisibleStyle);
                 } else if (selectedFeature.current.get("aeropuertoId")) {
                     selectedFeature.current.setStyle(airportStyle);
@@ -283,7 +284,7 @@ export function seleccionarElemento(
             // console.log("SelectedFeature: ", selectedFeature.current);
             if (selectedFeature.current != null) {
                 if (selectedFeature.current.get("vueloId")) {
-                    selectedFeature.current.setStyle(dinamicPlaneStyle(vuelos.current?.get(selectedFeature.current.get("vueloId"))));
+                    selectedFeature.current.setStyle(dinamicPlaneStyle(vuelos.current?.get(selectedFeature.current.get("vueloId")), null));
                     vuelos.current?.get(selectedFeature.current.get("vueloId"))?.lineFeature.setStyle(invisibleStyle);
                 } else if (selectedFeature.current.get("aeropuertoId")) {
                     selectedFeature.current.setStyle(airportStyle);
