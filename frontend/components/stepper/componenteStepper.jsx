@@ -96,8 +96,12 @@ export default function HorizontalLinearStepper() {
   };
 
   const handleFinish = () => {
+    //Guardar datos en clientes
+
+
+
     handleOpenModal(); // Abre el modal al hacer clic en 'Finalizar'
-    // Puedes agregar más lógica aquí si es necesario
+    
   };
 
 

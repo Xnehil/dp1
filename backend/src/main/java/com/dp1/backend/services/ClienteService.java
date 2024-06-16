@@ -2,6 +2,8 @@ package com.dp1.backend.services;
 
 import java.util.ArrayList;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +15,8 @@ public class ClienteService {
     @Autowired
     private ClienteRepository clienteRepository;
 
+    private static final Logger logger = LogManager.getLogger(ClienteService.class);
+
     public ClienteService(ClienteRepository clienteRepository) {
         this.clienteRepository = clienteRepository;
     }
@@ -20,6 +24,7 @@ public class ClienteService {
     public Cliente createCliente(Cliente cliente)
     {
         try {
+            logger.info("Creando cliente con datos: " + cliente.toString());
             return clienteRepository.save(cliente);
         } catch (Exception e) {
             return null;
