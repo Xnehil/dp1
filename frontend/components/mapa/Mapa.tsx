@@ -39,7 +39,7 @@ import {
 import BarraMapa from "./BarraMapa";
 import { ProgramacionVuelo } from "@/types/ProgramacionVuelo";
 import { Envio } from "@/types/Envio";
-import { agregarPaquetesAlmacen, limpiarMapasDeDatos } from "@/utils/FuncionesDatos";
+import { agregarPaquetesAlmacen, decidirEstiloAeropuerto, limpiarMapasDeDatos } from "@/utils/FuncionesDatos";
 
 type MapaProps = {
     vuelos: React.RefObject<
@@ -53,7 +53,7 @@ type MapaProps = {
             }
         >
     >;
-    aeropuertos: React.MutableRefObject<Map<string, Aeropuerto>>;
+    aeropuertos: React.MutableRefObject<Map<string, { aeropuerto: Aeropuerto; pointFeature: any }>>;
     programacionVuelos: React.MutableRefObject<Map<string, ProgramacionVuelo>>;
     envios: React.MutableRefObject<Map<string, Envio>>;
     simulationInterval: number;
@@ -135,15 +135,16 @@ const Mapa = ({
         });
 
         const aeropuertoFeatures = Array.from(aeropuertos.current.values()).map(
-            (aeropuerto) => {
+            (item) => {
                 const point = new Point(
-                    fromLonLat([aeropuerto.longitud, aeropuerto.latitud])
+                    fromLonLat([item.aeropuerto.longitud, item.aeropuerto.latitud])
                 );
                 const feature = new Feature({
                     geometry: point,
                 });
-                feature.setStyle(airportStyle);
-                feature.set('aeropuertoId', aeropuerto.codigoOACI);// era OACI y no id, 1h para darme cuenta
+                feature.set('aeropuertoId', item.aeropuerto.codigoOACI);// era OACI y no id, 1h para darme cuenta
+                aeropuertos.current.set(item.aeropuerto.codigoOACI, {...item, pointFeature: feature});
+                decidirEstiloAeropuerto(aeropuertos.current.get(item.aeropuerto.codigoOACI));
                 return feature;
             }
         );
@@ -182,7 +183,7 @@ const Mapa = ({
                         selectedFeature,
                         vuelos,
                         aeropuertos,
-                        feature
+                        feature,
                     );
                 }
             };
@@ -234,7 +235,6 @@ const Mapa = ({
 
         if (vectorSourceRef.current.getFeatures().length > 0) {
             const aBorrar: number[] = updateCoordinates(
-                aeropuertos.current,
                 vuelos.current,
                 simulationTime
             );
@@ -278,6 +278,9 @@ const Mapa = ({
 
         if(vuelosABorrar.length > 0){
              processItems(vuelosABorrar);
+             for (let key in aeropuertos.current.keys()) {
+                decidirEstiloAeropuerto(aeropuertos.current.get(key));
+            } 
         }
     } ,[vuelosABorrar]);
 

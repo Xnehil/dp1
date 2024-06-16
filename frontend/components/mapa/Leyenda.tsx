@@ -61,18 +61,18 @@ interface InfoVuelosProps {
               <span className="carga-titulo">Capacidad</span>
             </div>
             <div className="leyenda-item">
-              <img src="/logos/vuelo.png" alt="0-30%" className="icono-leyenda" style={{ backgroundColor: '#24A148' }} />
-              <img src="/logos/oficinas.png" alt="Oficina 0-30%" className="icono-leyenda" style={{ backgroundColor: '#166A08' }} />
+              <img src="/logos/avionVerde.png" alt="0-30%" className="icono-leyenda" />
+              <img src="/logos/edificioVerde.png" alt="Oficina 0-30%" className="icono-leyenda"/>
               <span className="leyenda-etiqueta">0-30%</span>
             </div>
             <div className="leyenda-item">
-              <img src="/logos/vuelo.png" alt="30-70%" className="icono-leyenda" style={{ backgroundColor: '#DBB42B' }} />
-              <img src="/logos/oficinas.png" alt="Oficina 30-70%" className="icono-leyenda" style={{ backgroundColor: '#B0A114' }} />
+              <img src="/logos/avionAmarillo.png" alt="30-70%" className="icono-leyenda" />
+              <img src="/logos/edificioAmarillo.png" alt="Oficina 30-70%" className="icono-leyenda" />
               <span className="leyenda-etiqueta">30-70%</span>
             </div>
             <div className="leyenda-item">
-              <img src="/logos/vuelo.png" alt="70-100%" className="icono-leyenda" style={{ backgroundColor: '#B70B14' }} />
-              <img src="/logos/oficinas.png" alt="Oficina 70-100%" className="icono-leyenda" style={{ backgroundColor: '#B4425D' }} />
+              <img src="/logos/avionRojo.png" alt="70-100%" className="icono-leyenda" />
+              <img src="/logos/edificioRojo.png" alt="Oficina 70-100%" className="icono-leyenda" />
               <span className="leyenda-etiqueta">70-100%</span>
             </div>
           </div>

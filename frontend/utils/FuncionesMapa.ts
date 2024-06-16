@@ -4,7 +4,7 @@ import { Coordinate } from 'ol/coordinate';
 import { Point, LineString } from 'ol/geom';
 import { tiempoEntreAhoraYSalida } from './FuncionesTiempo';
 import { fromLonLat } from 'ol/proj';
-import { dinamicPlaneStyle, dinamicSelectedPlaneStle, invisibleStyle, planeStyle, selectedLineStyle, selectedPlaneStyle, selectedAirportStyle, airportStyle, calcularAngulo } from '@/components/mapa/EstilosMapa';
+import { dinamicPlaneStyle, dinamicSelectedPlaneStle, invisibleStyle, planeStyle, selectedLineStyle, selectedPlaneStyle, selectedAirportStyle, airportStyle, calcularAngulo, greenPlaneStyle, yellowPlaneStyle, redPlaneStyle } from '@/components/mapa/EstilosMapa';
 import { Feature } from 'ol';
 import { getVectorContext } from 'ol/render';
 import Icon from 'ol/style/Icon';
@@ -12,7 +12,7 @@ import Style from 'ol/style/Style';
 import { ProgramacionVuelo } from '@/types/ProgramacionVuelo';
 import React from 'react';
 
-export function updateCoordinates(aeropuertos: Map<String, Aeropuerto>, vuelos: Map<number, { vuelo: Vuelo, pointFeature: any, lineFeature: any}> | null, simulationTime: Date):
+export function updateCoordinates(vuelos: Map<number, { vuelo: Vuelo, pointFeature: any, lineFeature: any}> | null, simulationTime: Date):
     number[]{
     let aBorrar:number[] = [];
     //Iterar por cada vuelo
@@ -50,7 +50,7 @@ export function updateCoordinates(aeropuertos: Map<String, Aeropuerto>, vuelos: 
             const destinationCoordinates = coordinates[1] as Coordinate;
             const originCoordinates = coordinates[0] as Coordinate;
             // console.log("simulationTime: ", simulationTime);
-            const tiempoPasadoMinutos = tiempoEntreAhoraYSalida(vuelo, aeropuertos, simulationTime);
+            const tiempoPasadoMinutos = tiempoEntreAhoraYSalida(vuelo, simulationTime);
             // console.log("tiempoPasadoMinutos: ", tiempoPasadoMinutos);
 
             const distanciaRecorrida = speed * tiempoPasadoMinutos;
@@ -94,7 +94,7 @@ export function updateCoordinates(aeropuertos: Map<String, Aeropuerto>, vuelos: 
 
 }
 
-export function coordenadasIniciales(aeropuertos: Map<String, Aeropuerto>, item: any, simulationTime: Date): Point {
+export function coordenadasIniciales(aeropuertos: Map<String, {aeropuerto: Aeropuerto; pointFeature:any}>, item: any, simulationTime: Date): Point {
     const lineFeature = item.lineFeature;
     const line = lineFeature.getGeometry() as LineString;
     const coordinates = line.getCoordinates();
@@ -111,7 +111,7 @@ export function coordenadasIniciales(aeropuertos: Map<String, Aeropuerto>, item:
     }
 
     // Calculate the elapsed time in minutes
-    const tiempoPasadoMinutos = tiempoEntreAhoraYSalida(item.vuelo, aeropuertos, simulationTime, verbose);
+    const tiempoPasadoMinutos = tiempoEntreAhoraYSalida(item.vuelo,  simulationTime, verbose);
 
     if (verbose) {
         console.log("tiempoPasadoMinutos: ", tiempoPasadoMinutos);
@@ -148,16 +148,16 @@ export function coordenadasIniciales(aeropuertos: Map<String, Aeropuerto>, item:
     return punto;
 }
 
-export function crearLineaDeVuelo(aeropuertos: Map<String, Aeropuerto>, item: any): any {
+export function crearLineaDeVuelo(aeropuertos: Map<String, {aeropuerto: Aeropuerto; pointFeature: any}>, item: any): any {
     const aeropuertoOrigen = aeropuertos.get(item.vuelo.origen);
     const aeropuertoDestino = aeropuertos.get(item.vuelo.destino);
     const lonlatInicio = [
-        aeropuertoOrigen?.longitud ?? 0,
-        aeropuertoOrigen?.latitud ?? 0,
+        aeropuertoOrigen?.aeropuerto.longitud ?? 0,
+        aeropuertoOrigen?.aeropuerto.latitud ?? 0,
     ];
     const lonlatFin = [
-        aeropuertoDestino?.longitud ?? 0,
-        aeropuertoDestino?.latitud ?? 0,
+        aeropuertoDestino?.aeropuerto.longitud ?? 0,
+        aeropuertoDestino?.aeropuerto.latitud ?? 0,
     ];
 
     const line = new LineString([
@@ -172,7 +172,7 @@ export function crearLineaDeVuelo(aeropuertos: Map<String, Aeropuerto>, item: an
     return feature;
 }
 
-export function crearPuntoDeVuelo(aeropuertos: Map<String, Aeropuerto>, item: any, simulationTime: Date,
+export function crearPuntoDeVuelo(aeropuertos: Map<String, {aeropuerto:Aeropuerto; pointFeature: any}>, item: any, simulationTime: Date,
     programacionVuelos: Map<string, ProgramacionVuelo>): any {
     const point = coordenadasIniciales(aeropuertos, item, simulationTime);
     const feature = new Feature({
@@ -181,10 +181,19 @@ export function crearPuntoDeVuelo(aeropuertos: Map<String, Aeropuerto>, item: an
 
     const llaveBusqueda = item.vuelo.id + "-" + simulationTime.toISOString().slice(0, 10);
     const programacion = programacionVuelos.get(llaveBusqueda);
-    const tienePaquetes = programacion?.paquetes.length ?? 0 > 0;
+    const paquetes = programacion?.cantPaquetes ?? 0;
     const angulo = calcularAngulo(item);
-    if (tienePaquetes) {
-        feature.setStyle(dinamicPlaneStyle(item, angulo));
+    if (paquetes > 0) {
+        let razon = paquetes / item.vuelo.capacidad;
+        if (razon < 0.33){
+            feature.setStyle(greenPlaneStyle(item, angulo));
+        }
+        else if (razon < 0.66){
+            feature.setStyle(yellowPlaneStyle(item, angulo));
+        }
+        else{
+            feature.setStyle(redPlaneStyle(item, angulo));
+        }
     } else {
         feature.setStyle(invisibleStyle);
     }
@@ -249,8 +258,8 @@ export function seleccionarElemento(
     setSelectedAeropuerto: any,
     selectedFeature: any,
     vuelos: React.RefObject<Map<number, { vuelo: Vuelo, pointFeature: any, lineFeature: any }>>,
-    aeropuertos: React.RefObject<Map<string, Aeropuerto>>,
-    feature: any
+    aeropuertos: React.RefObject<Map<string, { aeropuerto: Aeropuerto; pointFeature: any }>>,
+    feature: any,
 ) {
     if (vueloId) {
         const vuelo = vuelos.current?.get(vueloId)?.vuelo;
@@ -261,13 +270,15 @@ export function seleccionarElemento(
             console.log("Item del vuelo: ", vuelos.current?.get(vueloId));
             if (selectedFeature.current != null) {
                 if (selectedFeature.current.get("vueloId")) {
-                    selectedFeature.current.setStyle(dinamicPlaneStyle(vuelos.current?.get(selectedFeature.current.get("vueloId")), null));
+                    selectedFeature.current.setStyle(selectedFeature.current.get("estiloAnterior"));
                     vuelos.current?.get(selectedFeature.current.get("vueloId"))?.lineFeature.setStyle(invisibleStyle);
                 } else if (selectedFeature.current.get("aeropuertoId")) {
                     selectedFeature.current.setStyle(airportStyle);
                 }
             }
+            (feature as Feature).set("estiloAnterior", (feature as Feature).getStyle());
             (feature as Feature).setStyle(dinamicSelectedPlaneStle(vuelos.current?.get(vueloId)));
+            
             selectedFeature.current = feature as Feature;
             vuelos.current?.get(vueloId)?.lineFeature.setStyle(selectedLineStyle);
         } else {
@@ -276,7 +287,7 @@ export function seleccionarElemento(
     } else if (aeropuertoId) {
         const aeropuerto = aeropuertos.current?.get(aeropuertoId);
         if (aeropuerto) {
-            setSelectedAeropuerto(aeropuerto);
+            setSelectedAeropuerto(aeropuerto.aeropuerto);
             setSelectedVuelo(null);
             // console.log(`Aeropuerto seleccionado setteado: Aeropuerto ID ${aeropuerto.id}`);
             console.log("Aero: ", aeropuerto);
@@ -284,12 +295,14 @@ export function seleccionarElemento(
             // console.log("SelectedFeature: ", selectedFeature.current);
             if (selectedFeature.current != null) {
                 if (selectedFeature.current.get("vueloId")) {
-                    selectedFeature.current.setStyle(dinamicPlaneStyle(vuelos.current?.get(selectedFeature.current.get("vueloId")), null));
+                    selectedFeature.current.setStyle(selectedFeature.current.get("estiloAnterior"));
                     vuelos.current?.get(selectedFeature.current.get("vueloId"))?.lineFeature.setStyle(invisibleStyle);
                 } else if (selectedFeature.current.get("aeropuertoId")) {
-                    selectedFeature.current.setStyle(airportStyle);
+                    selectedFeature.current.setStyle(selectedFeature.current.get("estiloAnterior"));
+
                 }
             }
+            (feature as Feature).set("estiloAnterior", (feature as Feature).getStyle());
             (feature as Feature).setStyle(selectedAirportStyle);
             selectedFeature.current = feature as Feature;
         } else {
@@ -297,3 +310,4 @@ export function seleccionarElemento(
         }
     }
 }
+

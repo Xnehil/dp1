@@ -9,6 +9,9 @@ let airportStyle: Style;
 let selectedAirportStyle: Style;
 let planeStyle: Style;
 let selectedPlaneStyle: Style;
+let greenAirportStyle: Style;
+let yellowAirportStyle: Style;
+let redAirportStyle: Style;
 
 if(typeof window !== 'undefined') {
     airportStyle = new Style({
@@ -17,6 +20,36 @@ if(typeof window !== 'undefined') {
             anchorXUnits: 'fraction',
             anchorYUnits: 'fraction',
             src: '/logos/oficinasEnhanced.png',
+            scale: 0.15,
+        }),
+    });
+
+    greenAirportStyle = new Style({
+        image: new Icon({
+            anchor: [0.5, 1],
+            anchorXUnits: 'fraction',
+            anchorYUnits: 'fraction',
+            src: '/logos/edificioVerde.png',
+            scale: 0.15,
+        }),
+    });
+
+    yellowAirportStyle = new Style({
+        image: new Icon({
+            anchor: [0.5, 1],
+            anchorXUnits: 'fraction',
+            anchorYUnits: 'fraction',
+            src: '/logos/edificioAmarillo.png',
+            scale: 0.15,
+        }),
+    });
+
+    redAirportStyle = new Style({
+        image: new Icon({
+            anchor: [0.5, 1],
+            anchorXUnits: 'fraction',
+            anchorYUnits: 'fraction',
+            src: '/logos/edificioRojo.png',
             scale: 0.15,
         }),
     });
@@ -65,7 +98,7 @@ export function dinamicPlaneStyle(item: { vuelo: Vuelo, pointFeature: any, lineF
             anchorYUnits: 'fraction',
             src: '/logos/vueloEnhanced.png', //mas grande para aumentar el area de click
             scale: 0.17,
-            //color: 'red', //por alguna razon, si asignas un color cualquiera, mostrara solo en negro
+            color: 'red', //por alguna razon, si asignas un color cualquiera, mostrara solo en negro
             rotation: auxAngulo
         }),
     });
@@ -87,53 +120,57 @@ export function dinamicSelectedPlaneStle(item: {vuelo:Vuelo, pointFeature:any, l
 
 }
 
-export function greenPlaneStyle(item: {vuelo:Vuelo, pointFeature:any, lineFeature:any}| undefined){
+export function greenPlaneStyle(item: {vuelo:Vuelo, pointFeature:any, lineFeature:any}| undefined, angulo:number | null){
     if(item==undefined) return selectedPlaneStyle;
-    const angulo: number=item.pointFeature.get("angulo");
+    let auxAngulo=0;
+    if (angulo==null) auxAngulo=item.pointFeature.get("angulo");
+    else auxAngulo=angulo;
     return new Style({
         image: new Icon({
             anchor: [0.5, 0.5],
             anchorXUnits: 'fraction',
             anchorYUnits: 'fraction',
-            src: '/logos/vuelo.svg',
+            src: '/logos/avionVerde.png',
             scale: 0.17,
-            rotation: angulo,
-            color: 'green'
+            rotation: auxAngulo,
         }),
     });
 }
 
-export function yellowPlaneStyle(item: {vuelo:Vuelo, pointFeature:any, lineFeature:any}| undefined){
+export function yellowPlaneStyle(item: {vuelo:Vuelo, pointFeature:any, lineFeature:any}| undefined, angulo: number | null){
     if(item==undefined) return selectedPlaneStyle;
-    const angulo: number=item.pointFeature.get("angulo");
+    let auxAngulo=0;
+    if (angulo==null) auxAngulo=item.pointFeature.get("angulo");
+    else auxAngulo=angulo;
     return new Style({
         image: new Icon({
             anchor: [0.5, 0.5],
             anchorXUnits: 'fraction',
             anchorYUnits: 'fraction',
-            src: '/logos/vuelo.svg',
+            src: '/logos/avionAmarillo.png',
             scale: 0.17,
-            rotation: angulo,
-            color: 'yellow'
+            rotation: auxAngulo,
         }),
     });
 }
 
-export function redPlaneStyle(item: {vuelo:Vuelo, pointFeature:any, lineFeature:any}| undefined){
+export function redPlaneStyle(item: {vuelo:Vuelo, pointFeature:any, lineFeature:any}| undefined, angulo: number | null){
     if(item==undefined) return selectedPlaneStyle;
-    const angulo: number=item.pointFeature.get("angulo");
+    let auxAngulo=0;
+    if (angulo==null) auxAngulo=item.pointFeature.get("angulo");
+    else auxAngulo=angulo;
     return new Style({
         image: new Icon({
             anchor: [0.5, 0.5],
             anchorXUnits: 'fraction',
             anchorYUnits: 'fraction',
-            src: '/logos/vuelo.svg',
+            src: '/logos/avionRojo.png',
             scale: 0.17,
-            rotation: angulo,
-            color: 'red'
+            rotation: auxAngulo,
         }),
     });
 }
+
 
 export function calcularAngulo(item: {vuelo:Vuelo, pointFeature:any, lineFeature:any} , rotacion:number=-Math.PI/4){
     const coordinates = item.lineFeature.getGeometry().getCoordinates();
@@ -145,7 +182,7 @@ export function calcularAngulo(item: {vuelo:Vuelo, pointFeature:any, lineFeature
 }
 
 
-export { airportStyle, selectedAirportStyle, planeStyle, selectedPlaneStyle};
+export { airportStyle, selectedAirportStyle, planeStyle, selectedPlaneStyle, greenAirportStyle, yellowAirportStyle, redAirportStyle };
 
 // Invisible line style
 export const invisibleStyle = new Style({

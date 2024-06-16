@@ -26,7 +26,7 @@ export function actualmenteEnVuelo(vuelo: Vuelo, aeropuertos: Map<string, Aeropu
     //Creo que esto mejor no
 }
 
-export function tiempoEntreAhoraYSalida(vuelo: Vuelo, aeropuertos: Map<String, Aeropuerto>, simulationTime: Date, verbose?: boolean): number {
+export function tiempoEntreAhoraYSalida(vuelo: Vuelo, simulationTime: Date, verbose?: boolean): number {
     const [ , time] = vuelo.fechaHoraSalida.split('T');
     const [ hour, minute ] = time.split(':');
 

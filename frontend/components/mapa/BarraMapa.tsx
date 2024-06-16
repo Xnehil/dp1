@@ -24,7 +24,7 @@ type BarraMapaProps = {
             }
         >
     >;
-    aeropuertos: Map<string, Aeropuerto>;
+    aeropuertos: Map<string, {aeropuerto: Aeropuerto; pointFeature: any}>;
 };
 const BarraMapa = ({
     setSelectedVuelo,
@@ -77,14 +77,14 @@ const BarraMapa = ({
             }
         } else {
             console.log("Buscando por nombre de aeropuerto: ", aBuscar);
-            let aeropuerto = aeropuertos.get(aBuscar.toUpperCase());
-            if (aeropuerto) {
-                setSelectedAeropuerto(aeropuerto);
+            let item = aeropuertos.get(aBuscar.toUpperCase());
+            if (item) {
+                setSelectedAeropuerto(item.aeropuerto);
                 if (mapRef.current) {
                     const view = mapRef.current.getView();
                     if (view) {
                         view.animate({
-                            center: fromLonLat  ([aeropuerto.longitud, aeropuerto.latitud]),
+                            center: fromLonLat  ([item.aeropuerto.longitud, item.aeropuerto.latitud]),
                             zoom: 6,
                             duration: 1000,
                         });
