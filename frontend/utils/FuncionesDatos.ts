@@ -1,4 +1,4 @@
-import { dinamicPlaneStyle, greenPlaneStyle, redPlaneStyle, yellowPlaneStyle } from "@/components/mapa/EstilosMapa";
+import { dinamicPlaneStyle, greenAirportStyle, greenPlaneStyle, redAirportStyle, redPlaneStyle, yellowAirportStyle, yellowPlaneStyle } from "@/components/mapa/EstilosMapa";
 import { Aeropuerto } from "@/types/Aeropuerto";
 import { Envio } from "@/types/Envio";
 import { Paquete } from "@/types/Paquete";
@@ -9,7 +9,7 @@ export function procesarData(
     messageData: any,
     programacionVuelos: React.MutableRefObject<Map<string, ProgramacionVuelo>>,
     envios: React.MutableRefObject<Map<string, Envio>>,
-    aeropuertos: React.MutableRefObject<Map<string, Aeropuerto>>,
+    aeropuertos: React.MutableRefObject<Map<string, {aeropuerto: Aeropuerto; pointFeature: any}>>,
     simulationTime: Date | null,
     cargaInicial: boolean,
     vuelos: React.RefObject<Map<number,{vuelo: Vuelo;pointFeature: any;lineFeature: any;routeFeature: any;}>>,
@@ -25,7 +25,7 @@ export function procesarData(
                 if (!paquete.llegoDestino) continue;
                 //Añadir paquete a aeropuerto de origen
                 const aeropuertoOrigen: Aeropuerto | undefined =
-                    aeropuertos.current.get(envio.origen);
+                    aeropuertos.current.get(envio.origen)?.aeropuerto;
                 if (aeropuertoOrigen && !cargaInicial) {
                     aeropuertoOrigen.cantidadActual++;
                     aeropuertoOrigen.paquetes.push(paquete);
@@ -53,40 +53,52 @@ export function procesarData(
                         .slice(0, 10);
                     const claveProgramacion =
                         idVuelo + "-" + fechaVueloFormatted;
+                    let programacion:ProgramacionVuelo | undefined;
                     if (!programacionVuelos.current.has(claveProgramacion)) {
-                        programacionVuelos.current.set(claveProgramacion, {
+                        programacion = {
                             fechaSalida: fechaVuelo,
                             idVuelo: idVuelo,
                             cantPaquetes: 1,
                             paquetes: [paquete],
-                        });
+                        };
+                        programacionVuelos.current.set(claveProgramacion, programacion);
                     } else {
-                        const programacion = programacionVuelos.current.get(claveProgramacion);
+                        programacion = programacionVuelos.current.get(claveProgramacion);
                         if (programacion) {
                             programacion.cantPaquetes++;
                             programacion.paquetes.push(paquete);
-                            const item = vuelos.current?.get(idVuelo);
-                            if (item) {
-                                //Cambiar el estilo del avión
-                                let razon = programacion.cantPaquetes / item.vuelo.capacidad;
-                                //Verde, menos del 33% de la capacidad
-                                if (razon < 0.33) {
-                                    item.pointFeature.setStyle(greenPlaneStyle(item));
-                                }
-                                //Amarillo, entre 33% y 66% de la capacidad
-                                else if (razon < 0.66) {
-                                    item.pointFeature.setStyle(yellowPlaneStyle(item));
-                                }
-                                //Rojo, más del 66% de la capacidad
-                                else {
-                                    item.pointFeature.setStyle(redPlaneStyle(item));
-                                }
-                            }
+                        }
+                    }
+                    const item = vuelos.current?.get(idVuelo);
+                    // console.log("Se busca el vuelo para calcular la razón de ocupación - ", idVuelo, item);
+                    if (item) {
+                        //Cambiar el estilo del avión
+                        let razon = (programacion?.cantPaquetes ?? 0) / item.vuelo.capacidad;
+                        //Verde, menos del 33% de la capacidad
+                        if (razon < 0.33) {
+                            item.pointFeature.setStyle(greenPlaneStyle(item, null));
+                        }
+                        //Amarillo, entre 33% y 66% de la capacidad
+                        else if (razon < 0.66) {
+                            item.pointFeature.setStyle(yellowPlaneStyle(item, null));
+                        }
+                        //Rojo, más del 66% de la capacidad
+                        else {
+                            item.pointFeature.setStyle(redPlaneStyle(item, null));
                         }
                     }
                 }
             }
         }
+    }
+    for (let key in aeropuertos.current) {
+        // if (aeropuertos.current.hasOwnProperty(key)) {
+        //     let aeropuerto = aeropuertos.current.get(key);
+        //     if (aeropuerto) {
+        //         aeropuerto.paquetes = [];
+        //         aeropuerto.cantidadActual = 0;
+        //     }
+        // }
     }
     console.log("Data procesada");
 }
@@ -126,7 +138,7 @@ export function limpiarMapasDeDatos(
 export function quitarPaquetesAlmacenados(
     nuevosVuelos: number[],
     programacionVuelos: React.MutableRefObject<Map<string, ProgramacionVuelo>>,
-    aeropuertos: React.MutableRefObject<Map<string, Aeropuerto>>,
+    aeropuertos: React.MutableRefObject<Map<string, {aeropuerto: Aeropuerto; pointFeature: any}>>,
     simulationTime: Date | null
 ) {
     if (!simulationTime) return;
@@ -142,17 +154,18 @@ export function quitarPaquetesAlmacenados(
                     paquete.codigoEnvio.slice(0, 4)
                 );
                 if (aeropuertoOrigen) {
-                    let packageExists = aeropuertoOrigen.paquetes.some(p => p.id === paquete.id);
+                    let packageExists = aeropuertoOrigen.aeropuerto.paquetes.some(p => p.id === paquete.id);
 
                     if (packageExists) {
-                        aeropuertoOrigen.cantidadActual--;
-                        aeropuertoOrigen.paquetes = aeropuertoOrigen.paquetes.filter(p => p.id !== paquete.id);
+                        aeropuertoOrigen.aeropuerto.cantidadActual--;
+                        aeropuertoOrigen.aeropuerto.paquetes = aeropuertoOrigen.aeropuerto.paquetes.filter(p => p.id !== paquete.id);
                         cuenta++;
                     }
                 }
             }
         }
     }
+
     console.log("Se eliminaron ", cuenta, " paquetes de aeropuertos");
 }
 
@@ -160,7 +173,7 @@ export function quitarPaquetesAlmacenados(
 export async function agregarPaquetesAlmacen(
     idVuelo: number,
     programacionVuelos: React.MutableRefObject<Map<string, ProgramacionVuelo>>,
-    aeropuertos: React.MutableRefObject<Map<string, Aeropuerto>>,
+    aeropuertos: React.MutableRefObject<Map<string, {aeropuerto: Aeropuerto; pointFeature: any}>>,
     simulationTime: Date | null,
     envios: React.MutableRefObject<Map<string, Envio>>,
     vuelos: React.RefObject<Map<number,{vuelo: Vuelo;pointFeature: any;lineFeature: any;routeFeature: any;}>>
@@ -174,9 +187,9 @@ export async function agregarPaquetesAlmacen(
     let cuenta = 0;
     if(idVuelo == 624){
         verbose = true;
-        console.log("Programación: ", programacion);
-        console.log("claveProgramacion: ", claveProgramacion);
-        console.log("diaDeSimulacion: ", diaDeSimulacion);
+        // console.log("Programación: ", programacion);
+        // console.log("claveProgramacion: ", claveProgramacion);
+        // console.log("diaDeSimulacion: ", diaDeSimulacion);
     }
     //Si es que existe la programación de vuelo para ese día
     if (programacion) {
@@ -198,17 +211,17 @@ export async function agregarPaquetesAlmacen(
                     }
                     const aeropuertoDestino = aeropuertos.current.get(ciudadDestino);
                     if (verbose) {
-                        console.log("Aeropuerto destino: ", aeropuertoDestino);
+                        // console.log("Aeropuerto destino: ", aeropuertoDestino);
                     }
                     if (verbose) {
-                        console.log("Paquete: ", paquete);
+                        // console.log("Paquete: ", paquete);
                     }
                     if (aeropuertoDestino) {
-                        aeropuertoDestino.cantidadActual++;
-                        aeropuertoDestino.paquetes.push(paquete);
+                        aeropuertoDestino.aeropuerto.cantidadActual++;
+                        aeropuertoDestino.aeropuerto.paquetes.push(paquete);
                         if (verbose) {
-                            console.log("Paquete: ", paquete);
-                            console.log("Aeropuerto destino: ", aeropuertoDestino);
+                            // console.log("Paquete: ", paquete);
+                            // console.log("Aeropuerto destino: ", aeropuertoDestino);
                         }
                         cuenta++;
                     }
@@ -220,4 +233,20 @@ export async function agregarPaquetesAlmacen(
         });
     }
     // console.log("Se agregaron ", cuenta, " paquetes a aeropuertos");
+}
+
+export function decidirEstiloAeropuerto(aeropuerto: Aeropuerto) {
+    let razon = aeropuerto.cantidadActual / aeropuerto.capacidadMaxima;
+    //Verde, menos del 33% de la capacidad
+    if (razon < 0.33) {
+        return greenAirportStyle;
+    }
+    //Amarillo, entre 33% y 66% de la capacidad
+    else if (razon < 0.66) {
+        return yellowAirportStyle;
+    }
+    //Rojo, más del 66% de la capacidad
+    else {
+        return redAirportStyle;
+    }
 }

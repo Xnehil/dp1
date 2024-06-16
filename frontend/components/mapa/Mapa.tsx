@@ -53,7 +53,7 @@ type MapaProps = {
             }
         >
     >;
-    aeropuertos: React.MutableRefObject<Map<string, Aeropuerto>>;
+    aeropuertos: React.MutableRefObject<Map<string, { aeropuerto: Aeropuerto; pointFeature: any }>>;
     programacionVuelos: React.MutableRefObject<Map<string, ProgramacionVuelo>>;
     envios: React.MutableRefObject<Map<string, Envio>>;
     simulationInterval: number;
@@ -135,15 +135,15 @@ const Mapa = ({
         });
 
         const aeropuertoFeatures = Array.from(aeropuertos.current.values()).map(
-            (aeropuerto) => {
+            (item) => {
                 const point = new Point(
-                    fromLonLat([aeropuerto.longitud, aeropuerto.latitud])
+                    fromLonLat([item.aeropuerto.longitud, item.aeropuerto.latitud])
                 );
                 const feature = new Feature({
                     geometry: point,
                 });
                 feature.setStyle(airportStyle);
-                feature.set('aeropuertoId', aeropuerto.codigoOACI);// era OACI y no id, 1h para darme cuenta
+                feature.set('aeropuertoId', item.aeropuerto.codigoOACI);// era OACI y no id, 1h para darme cuenta
                 return feature;
             }
         );
@@ -182,7 +182,7 @@ const Mapa = ({
                         selectedFeature,
                         vuelos,
                         aeropuertos,
-                        feature
+                        feature,
                     );
                 }
             };
@@ -234,7 +234,6 @@ const Mapa = ({
 
         if (vectorSourceRef.current.getFeatures().length > 0) {
             const aBorrar: number[] = updateCoordinates(
-                aeropuertos.current,
                 vuelos.current,
                 simulationTime
             );

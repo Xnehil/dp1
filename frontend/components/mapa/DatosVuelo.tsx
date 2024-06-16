@@ -13,7 +13,7 @@ type DatosVueloProps = {
   programacionVuelos: React.MutableRefObject<Map<string, ProgramacionVuelo>>;
   simulationTime: Date;
   envios: React.MutableRefObject<Map<string, Envio>>;
-  aeropuertos: React.MutableRefObject<Map<string, Aeropuerto>>;
+  aeropuertos: React.MutableRefObject<Map<string, {aeropuerto: Aeropuerto; pointFeature: any}>>;
 };
 
 const DatosVuelo: React.FC<DatosVueloProps> = ({ vuelo, aeropuerto, programacionVuelos, simulationTime, envios, aeropuertos }) => {
@@ -86,11 +86,11 @@ const DatosVuelo: React.FC<DatosVueloProps> = ({ vuelo, aeropuerto, programacion
                 <h2 className="vuelo-codigo">Vuelo {vuelo.id}</h2>
                 <p className="vuelo-horario">
                   Salida: {vuelo.origen} -{" "}
-                  {utcStringToZonedDate(vuelo.fechaHoraSalida, aeropuertos.current.get(vuelo.origen)?.gmt ?? 0)}
+                  {utcStringToZonedDate(vuelo.fechaHoraSalida, aeropuertos.current.get(vuelo.origen)?.aeropuerto.gmt ?? 0)}
                 </p>
                 <p className="vuelo-horario">
                   Llegada: {vuelo.destino} -{" "}
-                  {utcStringToZonedDate(vuelo.fechaHoraLlegada, aeropuertos.current.get(vuelo.destino)?.gmt ?? 0)}
+                  {utcStringToZonedDate(vuelo.fechaHoraLlegada, aeropuertos.current.get(vuelo.destino)?.aeropuerto.gmt ?? 0)}
                 </p>
               </div>
               <div className="datos-vuelo-capacidad">

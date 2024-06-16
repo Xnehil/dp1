@@ -35,7 +35,7 @@ const Page = () => {
         new Map()
     );
     const envios = useRef<Map<string, Envio>>(new Map());
-    const aeropuertos = useRef<Map<string, Aeropuerto>>(new Map());
+    const aeropuertos = useRef<Map<string, {aeropuerto: Aeropuerto; pointFeature: any}>>(new Map());
     const [cargado, setCargado] = useState(false);
     const [horaInicio, setHoraInicio] = useState(new Date());
     const [campana, setCampana] = useState(0);
@@ -85,11 +85,11 @@ const Page = () => {
             .then((response) => {
                 if (response.data) {
                     // console.log("Respuesta de aeropuertos: ", response.data);
-                    const auxAeropuertos = new Map<string, Aeropuerto>();
+                    const auxAeropuertos = new Map<string, {aeropuerto: Aeropuerto; pointFeature: any}>();
                     response.data.forEach((aeropuerto: Aeropuerto) => {
                         aeropuerto.paquetes = [];
                         aeropuerto.cantidadActual = 0;
-                        auxAeropuertos.set(aeropuerto.codigoOACI, aeropuerto);
+                        auxAeropuertos.set(aeropuerto.codigoOACI, {aeropuerto: aeropuerto, pointFeature: null});
                     });
                     // console.log("Aeropuertos cargados: ", auxAeropuertos);
                     aeropuertos.current = auxAeropuertos;
