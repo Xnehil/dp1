@@ -298,7 +298,8 @@ export function seleccionarElemento(
                     selectedFeature.current.setStyle(selectedFeature.current.get("estiloAnterior"));
                     vuelos.current?.get(selectedFeature.current.get("vueloId"))?.lineFeature.setStyle(invisibleStyle);
                 } else if (selectedFeature.current.get("aeropuertoId")) {
-                    selectedFeature.current.setStyle(airportStyle);
+                    selectedFeature.current.setStyle(selectedFeature.current.get("estiloAnterior"));
+
                 }
             }
             (feature as Feature).set("estiloAnterior", (feature as Feature).getStyle());

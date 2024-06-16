@@ -24,8 +24,7 @@ export function procesarData(
             for (let paquete of envio.paquetes) {
                 if (!paquete.llegoDestino) continue;
                 //Añadir paquete a aeropuerto de origen
-                const aeropuertoOrigen: Aeropuerto | undefined =
-                    aeropuertos.current.get(envio.origen)?.aeropuerto;
+                const aeropuertoOrigen: Aeropuerto | undefined =aeropuertos.current.get(envio.origen)?.aeropuerto;
                 if (aeropuertoOrigen && !cargaInicial) {
                     aeropuertoOrigen.cantidadActual++;
                     aeropuertoOrigen.paquetes.push(paquete);
@@ -91,14 +90,9 @@ export function procesarData(
             }
         }
     }
-    for (let key in aeropuertos.current) {
-        // if (aeropuertos.current.hasOwnProperty(key)) {
-        //     let aeropuerto = aeropuertos.current.get(key);
-        //     if (aeropuerto) {
-        //         aeropuerto.paquetes = [];
-        //         aeropuerto.cantidadActual = 0;
-        //     }
-        // }
+    for (let key of aeropuertos.current.keys()) {
+        console.log("Decidiendo estilo de aeropuerto con clave: ", key);
+        decidirEstiloAeropuerto(aeropuertos.current.get(key));
     }
     console.log("Data procesada");
 }
@@ -164,6 +158,10 @@ export function quitarPaquetesAlmacenados(
                 }
             }
         }
+    }
+
+    for (let key in aeropuertos.current) {
+        decidirEstiloAeropuerto(aeropuertos.current.get(key));
     }
 
     console.log("Se eliminaron ", cuenta, " paquetes de aeropuertos");
@@ -235,18 +233,23 @@ export async function agregarPaquetesAlmacen(
     // console.log("Se agregaron ", cuenta, " paquetes a aeropuertos");
 }
 
-export function decidirEstiloAeropuerto(aeropuerto: Aeropuerto) {
-    let razon = aeropuerto.cantidadActual / aeropuerto.capacidadMaxima;
+export function decidirEstiloAeropuerto(item: {aeropuerto: Aeropuerto; pointFeature: any} | undefined) {
+    // console.log("Decidiendo estilo de aeropuerto", item);
+    if (!item) return;
+    if (item.pointFeature === null) return;
+    let razon = item.aeropuerto.cantidadActual / item.aeropuerto.capacidadMaxima;
+    // console.log("Razón de ocupación: ", razon);
+    // console.log("Aeropuerto: ", item.aeropuerto);
     //Verde, menos del 33% de la capacidad
     if (razon < 0.33) {
-        return greenAirportStyle;
+        item.pointFeature.setStyle(greenAirportStyle);
     }
     //Amarillo, entre 33% y 66% de la capacidad
     else if (razon < 0.66) {
-        return yellowAirportStyle;
+        item.pointFeature.setStyle(yellowAirportStyle);
     }
     //Rojo, más del 66% de la capacidad
     else {
-        return redAirportStyle;
+        item.pointFeature.setStyle(redAirportStyle);
     }
 }

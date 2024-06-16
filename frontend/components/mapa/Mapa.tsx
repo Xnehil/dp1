@@ -39,7 +39,7 @@ import {
 import BarraMapa from "./BarraMapa";
 import { ProgramacionVuelo } from "@/types/ProgramacionVuelo";
 import { Envio } from "@/types/Envio";
-import { agregarPaquetesAlmacen, limpiarMapasDeDatos } from "@/utils/FuncionesDatos";
+import { agregarPaquetesAlmacen, decidirEstiloAeropuerto, limpiarMapasDeDatos } from "@/utils/FuncionesDatos";
 
 type MapaProps = {
     vuelos: React.RefObject<
@@ -142,8 +142,9 @@ const Mapa = ({
                 const feature = new Feature({
                     geometry: point,
                 });
-                feature.setStyle(airportStyle);
                 feature.set('aeropuertoId', item.aeropuerto.codigoOACI);// era OACI y no id, 1h para darme cuenta
+                aeropuertos.current.set(item.aeropuerto.codigoOACI, {...item, pointFeature: feature});
+                decidirEstiloAeropuerto(aeropuertos.current.get(item.aeropuerto.codigoOACI));
                 return feature;
             }
         );
@@ -277,6 +278,9 @@ const Mapa = ({
 
         if(vuelosABorrar.length > 0){
              processItems(vuelosABorrar);
+             for (let key in aeropuertos.current) {
+                decidirEstiloAeropuerto(aeropuertos.current.get(key));
+            } 
         }
     } ,[vuelosABorrar]);
 
