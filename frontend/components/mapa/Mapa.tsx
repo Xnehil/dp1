@@ -278,7 +278,7 @@ const Mapa = ({
 
         if(vuelosABorrar.length > 0){
              processItems(vuelosABorrar);
-             for (let key in aeropuertos.current) {
+             for (let key in aeropuertos.current.keys()) {
                 decidirEstiloAeropuerto(aeropuertos.current.get(key));
             } 
         }
