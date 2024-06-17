@@ -53,25 +53,25 @@ public class Envio extends BaseModel {
     private Cliente receptor;
 
     @Column(name = "emisor_id")
-    private String emisorID;
+    private int emisorID;
 
     @Column(name = "receptor_id")
-    private String receptorID;
+    private int receptorID;
 
 
-    public String getEmisorID() {
+    public int getEmisorID() {
         return this.emisorID;
     }
 
-    public void setEmisorID(String emisorID) {
+    public void setEmisorID(int emisorID) {
         this.emisorID = emisorID;
     }
 
-    public String getReceptorID() {
+    public int getReceptorID() {
         return this.receptorID;
     }
 
-    public void setReceptorID(String receptorID) {
+    public void setReceptorID(int receptorID) {
         this.receptorID = receptorID;
     }
 

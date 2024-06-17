@@ -43,8 +43,9 @@ public class Paquete extends BaseModel{
     // @OrderColumn(name = "ruta_index")  // Changed from "index" to "ruta_index"
     private ArrayList<Integer> ruta;
 
-    @Column(name = "id_ruta")
-    private int idRutaPosible;
+    @ManyToOne
+    @JoinColumn(name = "id_ruta", referencedColumnName = "id")
+    private RutaPosible rutaPosible;
 
     //Tiempo restante para que el paquete llegue a su destino
     private Duration tiempoRestanteDinamico;

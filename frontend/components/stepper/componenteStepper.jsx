@@ -188,9 +188,15 @@ export default function HorizontalLinearStepper() {
       .then((response) => {
         console.log(response.data);
         envio.id = response.data.id;
+
         //Los codigos llegan en una string separados por espacios
-        let codigos = response.data.split(" ");
-        codigos = codigos.filter((codigo) => codigo !== "");
+        let codigos;
+        if (typeof response.data === 'number') {
+          codigos = [response.data];
+        } else if (typeof response.data === 'string') {
+          codigos = response.data.split(" ");
+          codigos = codigos.filter((codigo) => codigo !== "");
+        }
         console.log(codigos);
         setCodigosPaquetes(codigos);
       })
