@@ -283,4 +283,84 @@ public class FuncionesLectura {
         return envios;
     }
 
+    public static String leerEnviosGuardarBD(String archivo, HashMap<String, Aeropuerto> aeropuertos, int maxEnvios){
+        System.out.println("Leyendo envios desde " + archivo);
+        HashMap<String, Envio> envios = new HashMap<>();
+        int counter=0;
+        try (BufferedReader br = Files.newBufferedReader(Paths.get(archivo), Charset.forName("UTF-8"))) {
+            String line;
+            while ((line = br.readLine()) != null && counter < maxEnvios) {
+                if (line.trim().isEmpty()) {
+                    continue; // Skip empty lines
+                }
+                String[] parts = line.split("-");
+                String ciudadOrigenEnvio = parts[0];
+                int envioId = Integer.parseInt(parts[1]);
+                LocalDate fechaOrigen = LocalDate.parse(parts[2], DateTimeFormatter.ofPattern("yyyyMMdd"));
+                LocalTime horaOrigen = LocalTime.parse(parts[3]);
+                String[] destinoParts = parts[4].split(":");
+                String ciudadDestino = destinoParts[0];
+                //if(!ciudadDestino.equals("VIDP") && !ciudadDestino.equals("SVMI") && !ciudadDestino.equals("VTBS")) continue; 
+                int cantidadPaquetes = Integer.parseInt(destinoParts[1]);
+
+                Aeropuerto origen = aeropuertos.getOrDefault(ciudadOrigenEnvio, aeropuertos.get("EKCH"));
+                Aeropuerto destino = aeropuertos.getOrDefault(ciudadDestino, aeropuertos.get("EKCH"));
+
+                ZoneId zonaOrigen = origen.getZoneId();
+                ZoneId zonaDestino = destino.getZoneId();
+
+                ZonedDateTime horaOrigenZoned = ZonedDateTime.of(fechaOrigen, horaOrigen, zonaOrigen);
+                ZonedDateTime horaDestinoZoned;
+
+                // El tiempo para enviar será de dos días si es continente distsinto y de un día
+                // si es el mismo continente
+                if (!origen.getContinente().equals(destino.getContinente())) {
+                    horaDestinoZoned = horaOrigenZoned.plusDays(2).withZoneSameInstant(zonaDestino);
+                } else {
+                    horaDestinoZoned = horaOrigenZoned.plusDays(1).withZoneSameInstant(zonaDestino);
+                }
+                ArrayList<Paquete> paquetes = new ArrayList<>();
+                for (int i = 0; i < cantidadPaquetes; i++) {
+                    Paquete paquete = new Paquete();
+                    paquete.setCodigoEnvio(ciudadOrigenEnvio + envioId);
+                    paquete.setIdPaquete(1000000*origen.getIdAeropuerto() + 100*envioId + (i+1));//un envió no tiene más de 99 paquetes en principio
+                    // Add more properties to the package if needed
+                    if (!origen.getContinente().equals(destino.getContinente())) {
+                        paquete.setTiempoRestanteDinamico(Duration.ofDays(2));
+                        paquete.setTiempoRestante(Duration.ofDays(2));
+                    } else {
+                        paquete.setTiempoRestanteDinamico(Duration.ofDays(1));
+                        paquete.setTiempoRestante(Duration.ofDays(1));
+                    }
+
+                    paquetes.add(paquete);
+                    
+                    // Meter paquetes al aeropuerto de origen
+                    //origen.paqueteEntraReal(horaOrigenZoned.toLocalDateTime());
+                }
+                Envio nuevoEnvio = new Envio(ciudadOrigenEnvio, ciudadDestino, horaOrigenZoned, cantidadPaquetes, paquetes);
+                nuevoEnvio.setIdEnvio(envioId);
+                nuevoEnvio.setFechaHoraLlegadaPrevista(horaDestinoZoned);
+
+                String codigo=ciudadOrigenEnvio+envioId;
+                nuevoEnvio.setCodigoEnvio(codigo);
+                envios.put(codigo, nuevoEnvio);
+
+                //Guardar envío en base de datos
+                //envioREpository.save 
+
+                //Por cada pauqete
+                //paqueteRepository.save
+                counter++;
+            }
+            //System.out.println("Numero de envios: " + counter);
+        } catch (IOException e) {
+            System.err.println("Error reading file: " + e);
+        }
+        // for(int id: envios.keySet()){
+        //     System.out.println(envios.get(id).getIdEnvio());
+        // }
+        return "Numero de envios: " + counter;
+    }
+
 }

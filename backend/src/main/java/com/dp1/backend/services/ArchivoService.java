@@ -14,6 +14,12 @@ public class ArchivoService {
     @Autowired
     private ArchivoRepository archivoRepository;
 
+    @Autowired
+    private EnvioService envioService;
+
+    @Autowired
+    private PaqueteService paqueteService;
+
     public Archivo saveFile(MultipartFile file) throws IOException {
         Archivo archivo = new Archivo();
         archivo.setName(file.getOriginalFilename());
@@ -21,6 +27,12 @@ public class ArchivoService {
         archivo.setData(file.getBytes());
 
         return archivoRepository.save(archivo);
+
+        //Guardar archivo en el servidor en cierta ruta
+
+        //Pasarle esa ruta a FuncionesLectura.leerEnviosGuardarBD
+
+        //Borrar el archivo del servidor
     }
 
     public Archivo getFile(Long id) {
