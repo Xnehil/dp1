@@ -1,3 +1,5 @@
+"use client";
+
 import * as React from 'react';
 import Box from '@mui/material/Box';
 import Stepper from '@mui/material/Stepper';
@@ -10,6 +12,7 @@ import Modal from '@mui/material/Modal';
 import BasicSelect from "@/components/select/select.jsx";
 import SelectVariants from "@/components/select/selectNumCode.jsx";
 import SelectVariantsCity from "@/components/select/selectCity.jsx"
+import axios from 'axios';
 
 const steps = ['Datos del cliente', 'Destino y paquetes', 'Datos del receptor', 'Confirmar envío'];
 
@@ -42,6 +45,8 @@ export default function HorizontalLinearStepper() {
   const [telefonoDES, settelefonoDES] = React.useState('');
   const [numeroDES, setnumeroDES] = React.useState('');
   const [emailDES, setemailDES] = React.useState('');
+
+  const apiURL = process.env.REACT_APP_API_URL_BASE;
 
   // Funciones handleChange
   const handleChangeNumDocREM = (e) => setnumDocREM(e.target.value);
@@ -95,10 +100,65 @@ export default function HorizontalLinearStepper() {
     handleNext();
   };
 
-  const handleFinish = () => {
+  const handleFinish = async () => {
     //Guardar datos en clientes
+    let clienteEmisor = {
+      username: emailREM,
+      password: numDocREM,
+      email: emailREM,
+      numeroDocumento: numDocREM,
+      tipoDocumento: tipoDocREM,
+      nombre: nombreREM,
+      apellido: apellidoREM,
+      segundoNombre: segundonombreREM,
+      codigoPais: telefonoREM,
+      telefono: numeroREM
+    };
 
+    let clienteReceptor = {
+      username: emailDES,
+      password: numDocDES,
+      email: emailDES,
+      numeroDocumento: numDocDES,
+      tipoDocumento: tipoDocDES,
+      nombre: nombreDES,
+      apellido: apellidoDES,
+      segundoNombre: segundonombreDES,
+      codigoPais: telefonoDES,
+      telefono: numeroDES
+    };
 
+    let envio = {
+      origen: ciudadOrigen,
+      destino: ciudadDestino,
+      cantidadPaquetes: numPaquetes,
+    };
+
+    //Guardar clientes
+    console.log("guardando clientes en ", apiURL);
+    await axios.post(`${apiURL}/cliente`, clienteEmisor)
+      .then((response) => {
+        console.log(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+
+    await axios.post(`${apiURL}/cliente`, clienteReceptor)
+      .then((response) => {
+        console.log(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+
+    await axios.post(`${apiURL}/envio`, envio)
+      .then((response) => {
+        console.log(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
 
     handleOpenModal(); // Abre el modal al hacer clic en 'Finalizar'
     
@@ -646,7 +706,13 @@ export default function HorizontalLinearStepper() {
               <Button
                 sx={{ color: '#52489C', backgroundColor: "#FFFFFF" }}
                 variant="contained"
-                onClick={activeStep === steps.length - 1 ? handleFinish : handleNext}>
+                onClick={async () => {
+                  if (activeStep === steps.length - 1) {
+                    await handleFinish();
+                  } else {
+                    await handleNext();
+                  }
+                }}>
                 {activeStep === steps.length - 1 ? 'Finalizar' : 'Siguiente'}
               </Button>
 

@@ -23,17 +23,17 @@ export default function SelectVariants({disabled=false, numCode, setnumCode}) {
           inputProps={{ readOnly: disabled }}
         >
         
-          <MenuItem value={10}>+51 (Perú) </MenuItem>
-          <MenuItem value={20}>+52 (Mexico) </MenuItem>
-          <MenuItem value={30}>+502 (Guatemala) </MenuItem>
-          <MenuItem value={40}>+593 (Ecuador) </MenuItem>
-          <MenuItem value={50}>+809 (República Dominicana) </MenuItem>
-          <MenuItem value={60}>+53 (Cuba) </MenuItem>
-          <MenuItem value={70}>+506 (Costa Rica) </MenuItem>
-          <MenuItem value={80}>+56 (Chile) </MenuItem>
-          <MenuItem value={90}>+54 (Argentina) </MenuItem>
-          <MenuItem value={100}>+591 (Bolivia) </MenuItem>
-          <MenuItem value={110}>+86 (China) </MenuItem>
+          <MenuItem value={51}>+51 (Perú) </MenuItem>
+          <MenuItem value={52}>+52 (Mexico) </MenuItem>
+          <MenuItem value={205}>+502 (Guatemala) </MenuItem>
+          <MenuItem value={593}>+593 (Ecuador) </MenuItem>
+          <MenuItem value={809}>+809 (República Dominicana) </MenuItem>
+          <MenuItem value={53}>+53 (Cuba) </MenuItem>
+          <MenuItem value={506}>+506 (Costa Rica) </MenuItem>
+          <MenuItem value={56}>+56 (Chile) </MenuItem>
+          <MenuItem value={54}>+54 (Argentina) </MenuItem>
+          <MenuItem value={591}>+591 (Bolivia) </MenuItem>
+          <MenuItem value={86}>+86 (China) </MenuItem>
 
         </Select>
       </FormControl>

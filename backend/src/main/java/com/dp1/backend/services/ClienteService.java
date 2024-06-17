@@ -24,7 +24,7 @@ public class ClienteService {
     public Cliente createCliente(Cliente cliente)
     {
         try {
-            logger.info("Creando cliente con datos: " + cliente.toString());
+            logger.info("Creando cliente con datos: " + cliente.getNombre() + " " + cliente.getApellido() + " " + cliente.getEmail() + " " );
             return clienteRepository.save(cliente);
         } catch (Exception e) {
             return null;
