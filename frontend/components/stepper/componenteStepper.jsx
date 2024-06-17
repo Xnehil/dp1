@@ -240,7 +240,7 @@ export default function HorizontalLinearStepper() {
       case 0:
         return (
           <React.Fragment>
-            <Typography sx={{ mt: 2, mb: 1 }}>Paso {activeStep + 1}</Typography>
+            <Typography sx={{ mt: 2, mb: 1 }} component="div">Paso {activeStep + 1}</Typography>
             <h2 className="text-2xl mb-2 text-[#52489C] text-left font-bold">
               Datos personales del cliente
             </h2>
@@ -249,12 +249,13 @@ export default function HorizontalLinearStepper() {
             </h2>
             <div className="flex flex-col gap-4">
               <BasicSelect required value={tipoDocREM} setValue={settipoDocREM} />
-              <h2 className="flex flex-col gap-3 text-3m mb-2 text-[#000000] text-left font-bold">
-                Número de documento
+              <div className="text-3m mb-2 text-[#000000] text-left font-bold">
+                <h2>Número de documento</h2>
                 <TextField required id="filled-basic" label="Ej. 742056989" variant="filled" sx={{ width: '40%' }}
                   value={numDocREM} onChange={handleChangeNumDocREM} />
-              </h2>
-              <h2 className="flex flex-row gap-2 text-3m mb-2 text-[#000000] text-left font-bold">
+              </div>
+
+              <div className="flex flex-row gap-2 text-3m mb-2 text-[#000000] text-left font-bold">
                 <Box
                   display="flex"
                   justifyContent="space-between"
@@ -285,8 +286,8 @@ export default function HorizontalLinearStepper() {
                   </Box>
 
                 </Box>
-              </h2>
-              <h2 className="flex flex-row gap-2 text-3m mb-2 text-[#000000] text-left font-bold">
+              </div>
+              <div className="flex flex-row gap-2 text-3m mb-2 text-[#000000] text-left font-bold">
                 <Box
                   display="flex"
                   justifyContent="flex-start"
@@ -308,9 +309,9 @@ export default function HorizontalLinearStepper() {
                   </Box>
 
                 </Box>
-              </h2>
+              </div>
 
-              <h2 className="flex flex-row gap-2 text-3m mb-2 text-[#000000] text-left font-bold">
+              <div className="flex flex-row gap-2 text-3m mb-2 text-[#000000] text-left font-bold">
                 <Box
                   display="flex"
                   justifyContent="flex-start"
@@ -326,7 +327,7 @@ export default function HorizontalLinearStepper() {
                   </Box>
 
                 </Box>
-              </h2>
+              </div>
 
             </div>
             <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
@@ -337,7 +338,7 @@ export default function HorizontalLinearStepper() {
       case 1:
         return (
           <React.Fragment>
-            <Typography sx={{ mt: 2, mb: 1 }}>Paso {activeStep + 1}</Typography>
+            <Typography sx={{ mt: 2, mb: 1 }} component="div">Paso {activeStep + 1}</Typography>
             <h2 className="text-2xl mb-2 text-[#52489C] text-left font-bold">
               Destino
             </h2>
@@ -348,10 +349,10 @@ export default function HorizontalLinearStepper() {
 
             <div className="flex flex-col gap-4">
               <SelectVariantsCity required city={ciudadOrigen} setCity={setciudadOrigen} />
-              <h2 className="flex flex-col gap-3 text-3m mb-2 text-[#000000] text-left font-bold">
-                Ciudad de destino
+              <div className="flex flex-col gap-3 text-3m mb-2 text-[#000000] text-left font-bold">
+                <h2>Ciudad de destino</h2>
                 <SelectVariantsCity required city={ciudadDestino} setCity={setciudadDestino} />
-              </h2>
+              </div>
 
               <h2 className="text-2xl mb-2 text-[#52489C] text-left font-bold">
                 Paquetes
@@ -364,7 +365,6 @@ export default function HorizontalLinearStepper() {
                   value={numPaquetes} onChange={handleChangeNumPaquetes} />
               </Box>
               <h2 className="flex flex-row gap-2 text-3m mb-2 text-[#000000] text-left font-bold">
-
               </h2>
 
             </div>
@@ -376,7 +376,7 @@ export default function HorizontalLinearStepper() {
       case 2:
         return (
           <React.Fragment>
-            <Typography sx={{ mt: 2, mb: 1 }}>Paso {activeStep + 1}</Typography>
+            <Typography sx={{ mt: 2, mb: 1 }} component="div">Paso {activeStep + 1}</Typography>
             <h2 className="text-2xl mb-2 text-[#52489C] text-left font-bold">
               Datos del receptor
             </h2>
@@ -385,12 +385,13 @@ export default function HorizontalLinearStepper() {
             </h2>
             <div className="flex flex-col gap-4">
               <BasicSelect required value={tipoDocDES} setValue={settipoDocDES} />
-              <h2 className="flex flex-col gap-3 text-3m mb-2 text-[#000000] text-left font-bold">
-                Número de documento
+              <div className="flex flex-col gap-3 text-3m mb-2 text-[#000000] text-left font-bold">
+                <h2>Número de documento</h2>
                 <TextField required id="filled-basic" label="Ej. 742056989" variant="filled" sx={{ width: '40%' }}
                   value={numDocDES} onChange={(handleChangeNumDocDES)} />
-              </h2>
-              <h2 className="flex flex-row gap-2 text-3m mb-2 text-[#000000] text-left font-bold">
+              </div>
+
+              <div className="flex flex-row gap-2 text-3m mb-2 text-[#000000] text-left font-bold">
                 <Box
                   display="flex"
                   justifyContent="space-between"
@@ -421,8 +422,8 @@ export default function HorizontalLinearStepper() {
                   </Box>
 
                 </Box>
-              </h2>
-              <h2 className="flex flex-row gap-2 text-3m mb-2 text-[#000000] text-left font-bold">
+              </div>
+              <div className="flex flex-row gap-2 text-3m mb-2 text-[#000000] text-left font-bold">
                 <Box
                   display="flex"
                   justifyContent="flex-start"
@@ -444,9 +445,9 @@ export default function HorizontalLinearStepper() {
                   </Box>
 
                 </Box>
-              </h2>
+              </div>
 
-              <h2 className="flex flex-row gap-2 text-3m mb-2 text-[#000000] text-left font-bold">
+              <div className="flex flex-row gap-2 text-3m mb-2 text-[#000000] text-left font-bold">
                 <Box
                   display="flex"
                   justifyContent="flex-start"
@@ -462,7 +463,7 @@ export default function HorizontalLinearStepper() {
                   </Box>
 
                 </Box>
-              </h2>
+              </div>
 
             </div>
             <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
@@ -474,7 +475,7 @@ export default function HorizontalLinearStepper() {
         return (
           <div>
             <React.Fragment>
-              <Typography sx={{ mt: 2, mb: 1 }}>Paso {activeStep + 1}</Typography>
+              <Typography sx={{ mt: 2, mb: 1 }} component="div">Paso {activeStep + 1}</Typography>
               <h2 className="text-2xl mb-2 text-[#52489C] text-left font-bold">
                 Confirmar envío
               </h2>
@@ -483,12 +484,12 @@ export default function HorizontalLinearStepper() {
               </h2>
               <div className="flex flex-col gap-4">
                 <BasicSelect disabled={true} value={tipoDocREM} setValue={settipoDocREM} />
-                <h2 className="flex flex-col gap-3 text-3m mb-2 text-[#000000] text-left font-bold">
-                  Número de documento
+                <div className="flex flex-col gap-3 text-3m mb-2 text-[#000000] text-left font-bold">
+                  <h2>Número de documento </h2>
                   <TextField disabled id="filled-basic" label="Número de documento" variant="filled" sx={{ width: '40%' }}
                     value={numDocREM} />
-                </h2>
-                <h2 className="flex flex-row gap-2 text-3m mb-2 text-[#000000] text-left font-bold">
+                </div>
+                <div className="flex flex-row gap-2 text-3m mb-2 text-[#000000] text-left font-bold">
                   <Box
                     display="flex"
                     justifyContent="space-between"
@@ -519,8 +520,8 @@ export default function HorizontalLinearStepper() {
                     </Box>
 
                   </Box>
-                </h2>
-                <h2 className="flex flex-row gap-2 text-3m mb-2 text-[#000000] text-left font-bold">
+                </div>
+                <div className="flex flex-row gap-2 text-3m mb-2 text-[#000000] text-left font-bold">
                   <Box
                     display="flex"
                     justifyContent="flex-start"
@@ -542,9 +543,9 @@ export default function HorizontalLinearStepper() {
                     </Box>
 
                   </Box>
-                </h2>
+                </div>
 
-                <h2 className="flex flex-row gap-2 text-3m mb-2 text-[#000000] text-left font-bold">
+                <div className="flex flex-row gap-2 text-3m mb-2 text-[#000000] text-left font-bold">
                   <Box
                     display="flex"
                     justifyContent="flex-start"
@@ -560,7 +561,7 @@ export default function HorizontalLinearStepper() {
                     </Box>
 
                   </Box>
-                </h2>
+                </div>
 
               </div>
               <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
@@ -579,10 +580,10 @@ export default function HorizontalLinearStepper() {
 
               <div className="flex flex-col gap-4">
                 <SelectVariantsCity disabled={true} city={ciudadOrigen} setCity={setciudadOrigen} />
-                <h2 className="flex flex-col gap-3 text-3m mb-2 text-[#000000] text-left font-bold">
-                  Ciudad de destino
+                <div className="flex flex-col gap-3 text-3m mb-2 text-[#000000] text-left font-bold">
+                  <h2>Ciudad de destino </h2>
                   <SelectVariantsCity disabled={true} city={ciudadDestino} setCity={setciudadDestino} />
-                </h2>
+                </div>
 
                 <h2 className="text-2xl mb-2 text-[#52489C] text-left font-bold">
                   Paquetes
@@ -613,12 +614,12 @@ export default function HorizontalLinearStepper() {
               </h2>
               <div className="flex flex-col gap-4">
                 <BasicSelect disabled={true} value={tipoDocDES} setValue={settipoDocDES} />
-                <h2 className="flex flex-col gap-3 text-3m mb-2 text-[#000000] text-left font-bold">
-                  Número de documento
+                <div className="flex flex-col gap-3 text-3m mb-2 text-[#000000] text-left font-bold">
+                  <h2>Número de documento </h2>
                   <TextField disabled id="filled-basic" label="Número de documento" variant="filled" sx={{ width: '40%' }}
                     value={numDocDES} />
-                </h2>
-                <h2 className="flex flex-row gap-2 text-3m mb-2 text-[#000000] text-left font-bold">
+                </div>
+                <div className="flex flex-row gap-2 text-3m mb-2 text-[#000000] text-left font-bold">
                   <Box
                     display="flex"
                     justifyContent="space-between"
@@ -649,8 +650,8 @@ export default function HorizontalLinearStepper() {
                     </Box>
 
                   </Box>
-                </h2>
-                <h2 className="flex flex-row gap-2 text-3m mb-2 text-[#000000] text-left font-bold">
+                </div>
+                <div className="flex flex-row gap-2 text-3m mb-2 text-[#000000] text-left font-bold">
                   <Box
                     display="flex"
                     justifyContent="flex-start"
@@ -672,9 +673,9 @@ export default function HorizontalLinearStepper() {
                     </Box>
 
                   </Box>
-                </h2>
+                </div>
 
-                <h2 className="flex flex-row gap-2 text-3m mb-2 text-[#000000] text-left font-bold">
+                <div className="flex flex-row gap-2 text-3m mb-2 text-[#000000] text-left font-bold">
                   <Box
                     display="flex"
                     justifyContent="flex-start"
@@ -690,7 +691,7 @@ export default function HorizontalLinearStepper() {
                     </Box>
 
                   </Box>
-                </h2>
+                </div>
 
               </div>
               <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
@@ -713,7 +714,7 @@ export default function HorizontalLinearStepper() {
           const labelProps = {};
           if (isStepOptional(index)) {
             labelProps.optional = (
-              <Typography variant="caption"></Typography>
+              <Typography variant="caption" component="div"></Typography>
             );
           }
           if (isStepSkipped(index)) {
@@ -729,7 +730,7 @@ export default function HorizontalLinearStepper() {
       <div>
         {activeStep === steps.length ? (
           <React.Fragment>
-            <Typography className="flex flex-col text-3l mb-2 text-[#000000] text-center font-bold" sx={{ mt: 2, mb: 1 }}>
+            <Typography className="flex flex-col text-3l mb-2 text-[#000000] text-center font-bold" sx={{ mt: 2, mb: 1 }} component="div">
               Tu envío fue registrado con éxito
             </Typography>
             <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
@@ -739,7 +740,7 @@ export default function HorizontalLinearStepper() {
           </React.Fragment>
         ) : (
           <React.Fragment>
-            <Typography sx={{ mt: 2, mb: 1 }}>{getStepContent(activeStep)}</Typography>
+            <Typography sx={{ mt: 2, mb: 1 }} component="div">{getStepContent(activeStep)}</Typography>
             <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
               <Button
                 color="inherit"
