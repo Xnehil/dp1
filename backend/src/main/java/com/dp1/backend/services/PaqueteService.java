@@ -2,6 +2,8 @@ package com.dp1.backend.services;
 
 import java.util.ArrayList;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,11 +15,14 @@ public class PaqueteService {
     @Autowired
     private PaqueteRepository paqueteRepository;
 
+    private final static Logger logger = LogManager.getLogger(PaqueteService.class); 
+
     public Paquete createPaquete(Paquete paquete)
     {
         try {
             return paqueteRepository.save(paquete);
         } catch (Exception e) {
+            logger.error(e.getMessage());
             return null;
         }
     }

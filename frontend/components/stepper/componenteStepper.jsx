@@ -47,28 +47,58 @@ export default function HorizontalLinearStepper() {
   const [emailDES, setemailDES] = React.useState('');
 
   const apiURL = process.env.REACT_APP_API_URL_BASE;
+  const [codigosPaquetes, setCodigosPaquetes] = React.useState([]);
 
   // Funciones handleChange
-  const handleChangeNumDocREM = (e) => setnumDocREM(e.target.value);
+  const handleChangeNumDocREM = (e) =>{
+    //Solo permite ingresar números
+    const re = /^[0-9\b]+$/;
+    if (e.target.value === '' || re.test(e.target.value)) {
+     setnumDocREM(e.target.value);
+    }
+  }
   const handleChangeTipoDocREM = (e) => settipoDocREM(e.target.value);
   const handleChangeApellidoREM = (e) => setapellidoREM(e.target.value);
   const handleChangeNombreREM = (e) => setnombreREM(e.target.value);
   const handleChangeSegundonombreREM = (e) => setsegundonombreREM(e.target.value);
   const handleChangeTelefonoREM = (e) => settelefonoREM(e.target.value);
-  const handleChangeNumeroREM = (e) => setnumeroREM(e.target.value);
+  const handleChangeNumeroREM = (e) => {
+    //Solo permite ingresar números
+    const re = /^[0-9\b]+$/;
+    if (e.target.value === '' || re.test(e.target.value)) {
+      setnumeroREM(e.target.value);
+    }
+  }
+
   const handleChangeEmailREM = (e) => setemailREM(e.target.value);
 
   const handleChangeCiudadOrigen = (e) => setciudadOrigen(e.target.value);
   const handleChangeCiudadDestino = (e) => setciudadDestino(e.target.value);
-  const handleChangeNumPaquetes = (e) => setnumPaquetes(e.target.value);
+  const handleChangeNumPaquetes = (e) =>{
+    //Solo permite ingresar números
+    const re = /^[0-9\b]+$/;
+    if (e.target.value === '' || re.test(e.target.value)) {
+    setnumPaquetes(e.target.value);
+  }}
 
-  const handleChangeNumDocDES = (e) => setnumDocDES(e.target.value);
+  const handleChangeNumDocDES = (e) => {
+    //Solo permite ingresar números
+    const re = /^[0-9\b]+$/;
+    if (e.target.value === '' || re.test(e.target.value)) {
+    setnumDocDES(e.target.value);
+  }}
+
   const handleChangeTipoDocDES = (e) => settipoDocDES(e.target.value);
   const handleChangeApellidoDES = (e) => setapellidoDES(e.target.value);
   const handleChangeNombreDES = (e) => setnombreDES(e.target.value);
   const handleChangeSegundonombreDES = (e) => setsegundonombreDES(e.target.value);
   const handleChangeTelefonoDES = (e) => settelefonoDES(e.target.value);
-  const handleChangeNumeroDES = (e) => setnumeroDES(e.target.value);
+  const handleChangeNumeroDES = (e) => {
+    //Solo permite ingresar números
+    const re = /^[0-9\b]+$/;
+    if (e.target.value === '' || re.test(e.target.value)) {
+    setnumeroDES(e.target.value);
+  }}
   const handleChangeEmailDES = (e) => setemailDES(e.target.value);
 
   const isStepOptional = (step) => {
@@ -157,14 +187,23 @@ export default function HorizontalLinearStepper() {
     await axios.post(`${apiURL}/envio`, envio)
       .then((response) => {
         console.log(response.data);
+        envio.id = response.data.id;
+        //Los codigos llegan en una string separados por espacios
+        let codigos = response.data.split(" ");
+        codigos = codigos.filter((codigo) => codigo !== "");
+        console.log(codigos);
+        setCodigosPaquetes(codigos);
       })
       .catch((error) => {
         console.log(error);
       });
-
-    handleOpenModal(); // Abre el modal al hacer clic en 'Finalizar'
-    
   };
+
+  React.useEffect(() => {
+    if(codigosPaquetes.length > 0){
+      handleOpenModal(); // Abre el modal al hacer clic en 'Finalizar'
+    }
+  }, [codigosPaquetes]);
 
 
   const handleBack = () => {
@@ -736,17 +775,15 @@ export default function HorizontalLinearStepper() {
                   p: 4,
                 }}>
                   <h2 className="text-2xl mb-2 text-[#52489C] text-left font-bold">
-                    ¡Códigos de rastreo generados!
+                    ¡Códigos de rastreo para los paquetes generados!
                   </h2>
-                  <div id="modal-description" sx={{ mt: 2}}>
-                    Código 000000001
-                    <div id="modal-description" sx={{ mt: 2 }}>
-                      Código 000000002
-                      <div id="modal-description" sx={{ mt: 2 }}>
-                        Código 000000003
+                  <>
+                    {codigosPaquetes.map((codigo, index) => (
+                      <div key={index} id="modal-description" sx={{ mt: 2 }}>
+                        Código {codigo}
                       </div>
-                    </div>
-                  </div>
+                    ))}
+                  </>
                   <Button onClick={handleCloseModal} sx={{ mt: 2, color: '#52489C', backgroundColor: "#FFFFFF" }}>Terminar</Button>
                 </Box>
               </Modal>

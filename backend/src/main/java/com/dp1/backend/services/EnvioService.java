@@ -3,6 +3,8 @@ package com.dp1.backend.services;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +24,8 @@ public class EnvioService {
     @Autowired
     private PaqueteService paqueteService;
 
+    private final static Logger logger = LogManager.getLogger(EnvioService.class);
+
     public String createEnvio(Envio envio)
     {
         try {
@@ -37,19 +41,30 @@ public class EnvioService {
             fechaHoraLlegadaPrevista.withZoneSameLocal(destino.getZoneId());
 
             envio.setFechaHoraSalida(fechaHoraSalida);
+            envio.setFechaHoraLlegadaPrevista(fechaHoraLlegadaPrevista);
             envio = envioRepository.save(envio);
             envio.setCodigoEnvio(envio.getOrigen()+envio.getId());
+            envio.setPaquetes(null);
+            envioRepository.save(envio);
 
+            String codigosPaquetes = "";
             for (int i = 0; i < envio.getCantidadPaquetes(); i++) {
                 //Guardar paquetes
                 Paquete paquete = new Paquete();
                 paquete.setCodigoEnvio(envio.getCodigoEnvio());
+                int codigoPaquete = 1000000*origen.getIdAeropuerto() + 100*envio.getId() + (i+1) ;
+                paquete.setIdPaquete(codigoPaquete);
+                codigosPaquetes += codigoPaquete + " ";
+                paquete.setCostosRuta(null);
+                paquete.setFechasRuta(null);
+                paquete.setRuta(null);
                 paqueteService.createPaquete(paquete);
             }
-            envioRepository.save(envio);
-            return "Envio creado";
+            
+            return codigosPaquetes;
         } catch (Exception e) {
-            return e.getMessage();
+            logger.error(e.getMessage());
+            return e.getMessage();  
         }
     }
 

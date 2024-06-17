@@ -21,7 +21,7 @@ import jakarta.persistence.Table;
 @SQLDelete(sql = "UPDATE envio SET active = false WHERE id = ?")
 @SQLRestriction(value = "active = true")
 public class Envio extends BaseModel {
-    @Column(name = "codigo_envio", nullable = false, unique = true)
+    @Column(name = "codigo_envio",  unique = true)
     private String codigoEnvio;
 
     @Column(name = "origen")
