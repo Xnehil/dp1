@@ -10,5 +10,5 @@ import jakarta.transaction.Transactional;
 @Repository
 @Transactional
 public interface ClienteRepository extends JpaRepository<Cliente, Integer>{
-    
+    Cliente findByEmail(String email);
 }

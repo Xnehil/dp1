@@ -139,6 +139,7 @@ export default function HorizontalLinearStepper() {
     await axios.post(`${apiURL}/cliente`, clienteEmisor)
       .then((response) => {
         console.log(response.data);
+        envio.emisorID = response.data.id;
       })
       .catch((error) => {
         console.log(error);
@@ -147,6 +148,7 @@ export default function HorizontalLinearStepper() {
     await axios.post(`${apiURL}/cliente`, clienteReceptor)
       .then((response) => {
         console.log(response.data);
+        envio.receptorID = response.data.id;
       })
       .catch((error) => {
         console.log(error);

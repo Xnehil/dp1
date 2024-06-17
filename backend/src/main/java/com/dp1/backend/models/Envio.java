@@ -9,6 +9,8 @@ import org.hibernate.annotations.SQLRestriction;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
@@ -41,6 +43,53 @@ public class Envio extends BaseModel {
     private int cantidadPaquetes;
     
     private ArrayList<Paquete> paquetes;
+
+    @ManyToOne
+    @JoinColumn(name = "emisor_id", insertable = false, updatable = false, referencedColumnName = "id")
+    private Cliente emisor;
+
+    @ManyToOne
+    @JoinColumn(name = "receptor_id", insertable = false, updatable = false, referencedColumnName = "id")
+    private Cliente receptor;
+
+    @Column(name = "emisor_id")
+    private String emisorID;
+
+    @Column(name = "receptor_id")
+    private String receptorID;
+
+
+    public String getEmisorID() {
+        return this.emisorID;
+    }
+
+    public void setEmisorID(String emisorID) {
+        this.emisorID = emisorID;
+    }
+
+    public String getReceptorID() {
+        return this.receptorID;
+    }
+
+    public void setReceptorID(String receptorID) {
+        this.receptorID = receptorID;
+    }
+
+    public Cliente getEmisor() {
+        return this.emisor;
+    }
+
+    public void setEmisor(Cliente emisor) {
+        this.emisor = emisor;
+    }
+
+    public Cliente getReceptor() {
+        return this.receptor;
+    }
+
+    public void setReceptor(Cliente receptor) {
+        this.receptor = receptor;
+    }
 
 
     public ZonedDateTime getFechaHoraLlegadaReal() {

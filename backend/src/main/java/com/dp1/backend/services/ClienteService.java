@@ -24,6 +24,11 @@ public class ClienteService {
     public Cliente createCliente(Cliente cliente)
     {
         try {
+            Cliente existingCliente = clienteRepository.findByEmail(cliente.getEmail());
+            if (existingCliente != null) {
+                // If a client with the same email already exists, return that client
+                return existingCliente;
+            }
             logger.info("Creando cliente con datos: " + cliente.getNombre() + " " + cliente.getApellido() + " " + cliente.getEmail() + " " );
             return clienteRepository.save(cliente);
         } catch (Exception e) {

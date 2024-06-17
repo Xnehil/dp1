@@ -42,7 +42,7 @@ public class EnvioController {
     }
 
     @PostMapping
-    public Envio createEnvio(@RequestBody Envio envio) {
+    public String createEnvio(@RequestBody Envio envio) {
         return envioService.createEnvio(envio);
     }
 

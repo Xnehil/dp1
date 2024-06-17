@@ -22,9 +22,9 @@ export default function SelectVariantsCity({disabled=false, city, setCity}) {
           inputProps={{ readOnly: disabled }}
         >
         
-          <MenuItem value={10}>Lima</MenuItem>
-          <MenuItem value={20}>Sao Paulo</MenuItem>
-          <MenuItem value={30}>Lisboa</MenuItem>
+          <MenuItem value={"SPIM"}>Lima</MenuItem>
+          <MenuItem value={"LATI"}>Albania</MenuItem>
+          <MenuItem value={"VIDP"}>Delhi</MenuItem>
         </Select>
       </FormControl>
     </div>
