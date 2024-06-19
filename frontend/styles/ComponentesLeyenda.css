@@ -11,14 +11,14 @@
     display: flex;
     flex: 1;
     flex-direction: column;
-}
+  }
 
-.info-vuelos-contenedor.visible {
+  .info-vuelos-contenedor.visible {
     transform: translateX(0);
     opacity: 1;
-}
-
-.info-vuelos-contenedor.hidden {
+  }
+  
+  .info-vuelos-contenedor.hidden {
     transform: translateX(-100%);
     opacity: 0;
   }
@@ -128,36 +128,35 @@
     cursor: pointer;
     color: black;
     box-shadow: 0 0px 0px rgba(0, 0, 0, 0.1);
-    margin: 0px; /**/
+    margin: 0px;
     transition: transform 0.3s ease;
     z-index: 9;
-}
+  }
 
-.toggle-button:hover {
+  .toggle-button:hover {
     transform: scale(1.1);
-}
-
-.info-vuelos-contenedor.hidden + .toggle-button {
-    
-    transform: translateX(-100%);
-    transition: transform 0.5s ease, opacity 0.5s ease;
-}
-
-.info-vuelos-contenedor.hidden + .toggle-button:hover {
-    transform: translate(-100%) scale(1.1);
-    transition: transform 0.3s ease;
-}
-
-.info-vuelos-contenedor.visible + .toggle-button {
-    margin-left: -1px; /**/
+  }
+  
+  .info-vuelos-contenedor.hidden + .toggle-button {
     transform: translateX(0);
     transition: transform 0.5s ease, opacity 0.5s ease;
-}
-
-.info-vuelos-contenedor.visible + .toggle-button:hover {
-    transform: translateX(0) scale(1.1);
+  }
+  
+  .info-vuelos-contenedor.hidden + .toggle-button:hover {
+    transform: scale(1.1);
     transition: transform 0.3s ease;
-}
+  }
+  
+  .info-vuelos-contenedor.visible + .toggle-button {
+    margin-left: -1px;
+    transform: translateX(-100%);
+    transition: transform 0.5s ease, opacity 0.5s ease;
+  }
+  
+  .info-vuelos-contenedor.visible + .toggle-button:hover {
+    transform: translateX(-100%) scale(1.1);
+    transition: transform 0.3s ease;
+  }
 
 .info-vuelos-wrapper {
     position: absolute;
