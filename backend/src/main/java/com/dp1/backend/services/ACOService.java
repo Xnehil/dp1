@@ -1,5 +1,6 @@
 package com.dp1.backend.services;
 
+import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import com.dp1.backend.models.Aeropuerto;
 import com.dp1.backend.models.Envio;
 import com.dp1.backend.models.Paquete;
+import com.dp1.backend.models.ProgramacionVuelo;
 import com.dp1.backend.models.Vuelo;
 import com.dp1.backend.models.ColeccionRuta;
 import com.dp1.backend.utils.ACO;
@@ -271,15 +273,19 @@ public class ACOService {
         HashMap<String, Aeropuerto> aeropuertos = datosEnMemoriaService.getAeropuertos();
         HashMap<Integer, Vuelo> vuelos = datosEnMemoriaService.getVuelos();
         HashMap<String, Envio> envios = new HashMap<String, Envio>();
+
+        HashMap<Integer, Double[]> tabla = datosEnMemoriaService.getTabla();
+        HashMap<Integer, ProgramacionVuelo> vuelosProgramados = datosEnMemoriaService.getVuelosProgramados();
+        ArrayList<LocalDate> fechasVuelos = datosEnMemoriaService.getFechasVuelos();
         String[] ciudades = new String[] {
-        "SKBO", "SEQM", "SVMI", "SBBR", "SPIM", "SLLP", "SCEL", "SABE", "SGAS",
-        "SUAA",
-        "LATI", "EDDI", "LOWW", "EBCI", "UMMS", "LBSF", "LKPR", "LDZA", "EKCH",
-        "EHAM",
-        "VIDP", "RKSI", "VTBS", "OMDB", "ZBAA", "RJTT", "WMKK", "WSSS", "WIII",
-        "RPLL"
+                "SKBO", "SEQM", "SVMI", "SBBR", "SPIM", "SLLP", "SCEL", "SABE", "SGAS",
+                "SUAA",
+                "LATI", "EDDI", "LOWW", "EBCI", "UMMS", "LBSF", "LKPR", "LDZA", "EKCH",
+                "EHAM",
+                "VIDP", "RKSI", "VTBS", "OMDB", "ZBAA", "RJTT", "WMKK", "WSSS", "WIII",
+                "RPLL"
         };
-        
+
         cargarDatos(aeropuertos, envios, paquetes, ciudades);
         for (Envio e : envios.values()) {
             paquetes.addAll(e.getPaquetes());
@@ -294,7 +300,7 @@ public class ACOService {
         try {
             // Medit tiempo de ejecución
             Long startTime = System.currentTimeMillis();
-            paquetes = ACO.run_v2(aeropuertos, vuelos, envios, paquetes, 20);
+            paquetes = ACO.run_v3(aeropuertos, vuelos, envios, paquetes, 20, tabla, vuelosProgramados, fechasVuelos);
             Long endTime = System.currentTimeMillis();
             Long totalTime = endTime - startTime;
             logger.info("Tiempo de ejecución: " + totalTime + " ms");
