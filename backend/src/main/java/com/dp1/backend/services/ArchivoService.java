@@ -72,7 +72,7 @@ public class ArchivoService {
             // paqueteService);
 
             // 3. Borrar el archivo del servidor después de procesarlo
-            // Files.delete(filePath);
+            Files.delete(filePath);
 
             // Guardar detalles del archivo en la base de datos
             Archivo archivo = new Archivo();
