@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -25,6 +26,7 @@ import com.dp1.backend.models.ColeccionRuta;
 import com.dp1.backend.models.Envio;
 import com.dp1.backend.models.ItemRutaPosible;
 import com.dp1.backend.models.Paquete;
+import com.dp1.backend.models.ProgramacionVuelo;
 import com.dp1.backend.models.RutaPosible;
 import com.dp1.backend.models.Vuelo;
 import com.dp1.backend.utils.FuncionesLectura;
@@ -43,6 +45,14 @@ public class DatosEnMemoriaService {
     private HashSet<String> rutasPosiblesSet = new HashSet<>();
 
     // Services para ColeccionRuta y RutaPosible
+    // Estructuras que se usarán en la planificación (ejecución del algoritmo)
+    //HashMap<Integer, Double[]>tabla, HashMap<Integer, ProgramacionVuelo> vuelosProgramados, ArrayList<LocalDate>fechasVuelos)
+    private HashMap<Integer, Double[]> tabla = new HashMap<>();
+    private HashMap<Integer, ProgramacionVuelo> vuelosProgramados = new HashMap<>();
+    private ArrayList<LocalDate>fechasVuelos = new ArrayList<>();
+
+
+    //Services para ColeccionRuta y RutaPosible
     @Autowired
     private ColeccionRutaService coleccionRutaService;
 
@@ -96,6 +106,24 @@ public class DatosEnMemoriaService {
         logger.info("Rutas posibles set: " + rutasPosiblesSet.size());
     }
 
+    public HashMap<Integer, Double[]> getTabla() {
+        return this.tabla;
+    }
+    public void setTabla(HashMap<Integer, Double[]> tabla) {
+        this.tabla = tabla;
+    }
+    public HashMap<Integer, ProgramacionVuelo> getVuelosProgramados() {
+        return this.vuelosProgramados;
+    }
+    public void setVuelosProgramados(HashMap<Integer, ProgramacionVuelo> vuelosProgramados) {
+        this.vuelosProgramados = vuelosProgramados;
+    }
+    public ArrayList<LocalDate> getFechasVuelos() {
+        return this.fechasVuelos;
+    }
+    public void setFechasVuelos(ArrayList<LocalDate> fechasVuelos) {
+        this.fechasVuelos = fechasVuelos;
+    }
     public HashSet<String> getRutasPosiblesSet() {
         return this.rutasPosiblesSet;
     }
