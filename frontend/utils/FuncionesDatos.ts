@@ -25,11 +25,7 @@ export function procesarData(
                 if (!paquete.llegoDestino) continue;
                 //Añadir paquete a aeropuerto de origen
                 const aeropuertoOrigen: Aeropuerto | undefined =aeropuertos.current.get(envio.origen)?.aeropuerto;
-                if (aeropuertoOrigen && !cargaInicial) {
-                    aeropuertoOrigen.cantidadActual++;
-                    aeropuertoOrigen.paquetes.push(paquete);
-                }
-
+                let vueloSalio=false;
                 // console.log("paquete: ", paquete);
                 for (let i = 0; i < paquete.fechasRuta.length; i++) {
                     const idVuelo = paquete.ruta[i];
@@ -53,6 +49,16 @@ export function procesarData(
                     const claveProgramacion =
                         idVuelo + "-" + fechaVueloFormatted;
                     let programacion:ProgramacionVuelo | undefined;
+
+                    let horaSalidaVuelo =new Date(vuelos.current?.get(idVuelo)?.vuelo.fechaHoraSalida ?? 0);
+                    fechaVuelo.setHours(horaSalidaVuelo.getHours(), horaSalidaVuelo.getMinutes(), horaSalidaVuelo.getSeconds());
+                    //Si el vuelo ya ha salido, no se puede agregar el paquete
+                    if (fechaVuelo < simulationTime! && !cargaInicial) {
+                        console.log("El vuelo ya ha salido, no se puede agregar el paquete");
+                        console.log("horaSalidaVuelo: ", horaSalidaVuelo);
+                        console.log("vue: ", vuelos.current?.get(idVuelo)?.vuelo);
+                        continue;
+                    }
                     if (!programacionVuelos.current.has(claveProgramacion)) {
                         programacion = {
                             fechaSalida: fechaVuelo,
@@ -68,24 +74,11 @@ export function procesarData(
                             programacion.paquetes.push(paquete);
                         }
                     }
-                    const item = vuelos.current?.get(idVuelo);
-                    // console.log("Se busca el vuelo para calcular la razón de ocupación - ", idVuelo, item);
-                    if (item) {
-                        //Cambiar el estilo del avión
-                        let razon = (programacion?.cantPaquetes ?? 0) / item.vuelo.capacidad;
-                        //Verde, menos del 33% de la capacidad
-                        if (razon < 0.33) {
-                            item.pointFeature.setStyle(greenPlaneStyle(item, null));
-                        }
-                        //Amarillo, entre 33% y 66% de la capacidad
-                        else if (razon < 0.66) {
-                            item.pointFeature.setStyle(yellowPlaneStyle(item, null));
-                        }
-                        //Rojo, más del 66% de la capacidad
-                        else {
-                            item.pointFeature.setStyle(redPlaneStyle(item, null));
-                        }
-                    }
+                }
+
+                if (aeropuertoOrigen && !cargaInicial) {
+                    aeropuertoOrigen.cantidadActual++;
+                    aeropuertoOrigen.paquetes.push(paquete);
                 }
             }
         }

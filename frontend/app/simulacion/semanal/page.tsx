@@ -49,7 +49,7 @@ const Page = () => {
                     const params = new URLSearchParams(window.location.search);
                     auxHoraInicio = new Date(
                         params.get("startDate") ||
-                            new Date("2024-01-12T05:36:52")
+                            new Date()
                     );
                 }
                 console.log("Conexión abierta con tiempo: ", auxHoraInicio);
