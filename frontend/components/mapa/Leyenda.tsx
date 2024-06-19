@@ -23,6 +23,9 @@ interface InfoVuelosProps {
   
     return (
       <div className="info-vuelos-wrapper">
+        <button className="toggle-button" onClick={toggleVisibility}>
+          {visible ? '◀' : '▶'}
+        </button>
         <div className={`info-vuelos-contenedor ${visible ? 'visible' : 'hidden'}`}>
           <div className="resumen-vuelos">
             <div className="resumen-item">
@@ -47,7 +50,7 @@ interface InfoVuelosProps {
           <div className="leyenda">
             <span className="leyenda-titulo">Leyenda</span>
             <div className="leyenda-item">
-              <img src="/logos/vuelo.png" alt="Vuelo seleccionado" className="icono-leyenda vuelo-seleccionado" />
+              <img src="/logos/vueloEnhancedBlue.png" alt="Vuelo seleccionado" className="icono-leyenda" />
               <span className="leyenda-etiqueta">Vuelo seleccionado</span>
             </div>
             <div className="leyenda-item">
@@ -77,9 +80,6 @@ interface InfoVuelosProps {
             </div>
           </div>
         </div>
-        <button className="toggle-button" onClick={toggleVisibility}>
-          {visible ? '◀' : '▶'}
-        </button>
       </div>
     );
   };

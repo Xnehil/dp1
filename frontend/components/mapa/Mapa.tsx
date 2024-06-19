@@ -2,6 +2,7 @@
 import Leyenda from "@/components/mapa/Leyenda";
 import DatosVuelo from "@/components/mapa/DatosVuelo";
 import FinSemanal from "@/components/mapa/FinSemanal";
+import VuelosAlmacen from "@/components/mapa/VuelosAlmacen";
 import React, { useEffect, useRef, useState } from "react";
 import "ol/ol.css";
 import { Map as OLMap } from "ol";
@@ -330,6 +331,7 @@ const Mapa = ({
                     envios={envios} aeropuertos={aeropuertos}
                 />
                 {mostrarFinSemanal && <FinSemanal programacionVuelos={programacionVuelos} vuelos={vuelos}/>}
+                <VuelosAlmacen selectedAeropuerto={selectedAeropuerto} vuelos={vuelos} />
             </div>{" "}
         </div>
     );
