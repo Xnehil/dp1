@@ -44,11 +44,11 @@ public class Envio extends BaseModel {
     
     private ArrayList<Paquete> paquetes;
 
-    @ManyToOne
+    @ManyToOne(optional = true)
     @JoinColumn(name = "emisor_id", insertable = false, updatable = false, referencedColumnName = "id")
     private Cliente emisor;
 
-    @ManyToOne
+    @ManyToOne(optional = true)
     @JoinColumn(name = "receptor_id", insertable = false, updatable = false, referencedColumnName = "id")
     private Cliente receptor;
 
