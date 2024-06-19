@@ -2,11 +2,16 @@ package com.dp1.backend.services;
 
 import com.dp1.backend.models.Archivo;
 import com.dp1.backend.repository.ArchivoRepository;
+import com.dp1.backend.utils.FuncionesLectura;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.Path;
 
 @Service
 public class ArchivoService {
@@ -21,18 +26,34 @@ public class ArchivoService {
     private PaqueteService paqueteService;
 
     public Archivo saveFile(MultipartFile file) throws IOException {
+
+        // 1. Guardar archivo en el servidor en cierta ruta
+        String uploadDir = "/path/to/upload/directory"; // Reemplaza con la ruta donde deseas guardar los archivos
+        Path uploadPath = Paths.get(uploadDir);
+
+        // Crear el directorio si no existe
+        if (!Files.exists(uploadPath)) {
+            Files.createDirectories(uploadPath);
+        }
+
+        String fileName = file.getOriginalFilename();
+        Path filePath = uploadPath.resolve(fileName);
+        Files.write(filePath, file.getBytes());
+
+        // 2. Pasar la ruta del archivo a FuncionesLectura.leerEnviosGuardarBD
+        //FuncionesLectura.leerEnviosGuardarBD(filePath.toString(), envioService, paqueteService);
+
+        // 3. Borrar el archivo del servidor después de procesarlo
+        Files.delete(filePath);
+
+        // Guardar detalles del archivo en la base de datos
         Archivo archivo = new Archivo();
-        archivo.setName(file.getOriginalFilename());
+        archivo.setName(fileName);
         archivo.setType(file.getContentType());
         archivo.setData(file.getBytes());
 
         return archivoRepository.save(archivo);
 
-        //Guardar archivo en el servidor en cierta ruta
-
-        //Pasarle esa ruta a FuncionesLectura.leerEnviosGuardarBD
-
-        //Borrar el archivo del servidor
     }
 
     public Archivo getFile(Long id) {
