@@ -64,6 +64,17 @@ const DatosVuelo: React.FC<DatosVueloProps> = ({ vuelo, aeropuerto, programacion
     }
   }
 
+  function renderImage(percentage: number, tipo: string) {
+    if (percentage < 33) {
+      return <img src={`/logos/${tipo}Verde.png`} alt="Paquete" className="icono-paquete" />
+    } else if (percentage < 66) {
+      return <img src={`/logos/${tipo}Amarillo.png`} alt="Paquete" className="icono-paquete" />
+    }
+    else {
+      return <img src={`/logos/${tipo}Rojo.png`} alt="Paquete" className="icono-paquete" />
+    }
+  }
+
   useEffect(() => {
     console.log("Filtros: ", filtros);
   } , [filtros]);
@@ -81,7 +92,7 @@ const DatosVuelo: React.FC<DatosVueloProps> = ({ vuelo, aeropuerto, programacion
         {(vuelo)? (
           <>
             <div className="datos-vuelo-header">
-              <img src="/logos/avionCeleste.png" alt="Avión" className="icono-vuelo" />
+              <img src="/logos/vueloEnhancedBlue.png" alt="Avión" className="icono-vuelo" />
               <div className="datos-vuelo-info">
                 <h2 className="vuelo-codigo">Vuelo {vuelo.id}</h2>
                 <p className="vuelo-horario">
@@ -99,11 +110,7 @@ const DatosVuelo: React.FC<DatosVueloProps> = ({ vuelo, aeropuerto, programacion
                   {(((programacionVuelo?.cantPaquetes ?? 0) / vuelo.capacidad) * 100).toFixed(2)}
                   % lleno
                 </p>
-                <img
-                  src="/logos/paquete.png"
-                  alt="Paquete"
-                  className="icono-paquete"
-                />
+                {renderImage(((programacionVuelo?.cantPaquetes ?? 0) / vuelo.capacidad) * 100, "avion")}
               </div>
             </div>
             <div className="datos-vuelo-content">
@@ -162,7 +169,7 @@ const DatosVuelo: React.FC<DatosVueloProps> = ({ vuelo, aeropuerto, programacion
         ) : aeropuerto ? (
           <>
             <div className="datos-vuelo-header">
-              <img src="/logos/edificioCeleste.png" alt="Oficina" className="icono-vuelo" />
+              <img src="/logos/oficinasEnhancedBlue.png" alt="Oficina" className="icono-vuelo" />
               <div className="datos-vuelo-info">
                 <h2 className="vuelo-codigo">Almacén {aeropuerto.pais}</h2>
                 <h2 className="vuelo-codigo"> {aeropuerto.codigoOACI}</h2>
@@ -180,12 +187,7 @@ const DatosVuelo: React.FC<DatosVueloProps> = ({ vuelo, aeropuerto, programacion
                   {(aeropuerto.cantidadActual  / aeropuerto.capacidadMaxima * 100).toFixed(2)}
                   % lleno
                 </p>
-                <img
-                  src="/logos/paquete.png"
-                  alt="Paquete"
-
-                  className="icono-paquete"
-                />
+                {renderImage((aeropuerto.cantidadActual  / aeropuerto.capacidadMaxima) * 100, "edificio")}
               </div>
             </div>
             <div className="datos-vuelo-content">

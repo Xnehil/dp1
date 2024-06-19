@@ -93,7 +93,7 @@ const Mapa = ({
 
     useEffect(() => {
         if (!mapRef.current) {
-            const initialCoordinates = fromLonLat([-77.0428, -12.0464]);
+            const initialCoordinates = fromLonLat([0, 0]);
             mapRef.current = new OLMap({
                 target: "map",
                 layers: [
@@ -103,7 +103,7 @@ const Mapa = ({
                 ],
                 view: new View({
                     center: initialCoordinates,
-                    zoom: 5,
+                    zoom: 0,
                 }),
             });
             vistaActual.current = mapRef.current.getView();

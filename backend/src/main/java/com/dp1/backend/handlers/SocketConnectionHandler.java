@@ -43,7 +43,7 @@ public class SocketConnectionHandler extends TextWebSocketHandler {
     private HashMap<WebSocketSession, ZonedDateTime> simulatedTimes = new HashMap<>();
     private ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy, h:mm:ss a", Locale.ENGLISH);
-    private int tipoConexion = 0;
+    private HashMap<WebSocketSession, Integer> tipoConexion = new HashMap<>();
     //0: no se ha conectado, 1: se ha conectado en simulacion, 2: se ha conectado en tiempo real
 
     // En esta lista se almacenarán todas las conexiones. Luego se usará para
@@ -83,6 +83,7 @@ public class SocketConnectionHandler extends TextWebSocketHandler {
         webSocketSessions.remove(session);
         datosEnMemoriaService.limpiarMemoria();
         // executorService.shutdown();
+        tipoConexion.remove(session);
     }
 
     // Se encargará de intercambiar mensajes en la red
@@ -109,20 +110,20 @@ public class SocketConnectionHandler extends TextWebSocketHandler {
             ZonedDateTime algorLastTime = lastAlgorTimes.get(session);
 
             if(identifier.equals("vuelosEnVivo")){
-                tipoConexion = 2;
+                tipoConexion.put(session, 2);
             }
             else if(identifier.equals("simulacionSemanal")){
-                tipoConexion = 1;
+                tipoConexion.put(session, 1);
             }
 
-            if(tipoConexion == 1){
+            if(tipoConexion.get(session) == 1){
                 if (lastMessageTime == null) {
                     handlePrimerContactoSimulacion(simulatedTime, session, lastMessageTime, algorLastTime, diferenciaVuelos);
                     return;
                 }
                 handleDifferenceSimulacion(lastMessageTime, simulatedTime, session, diferenciaVuelos, algorLastTime);
             }
-            else if(tipoConexion == 2){
+            else if(tipoConexion.get(session) == 2){
                 logger.info("Conexión en tiempo real");
             }
             else{

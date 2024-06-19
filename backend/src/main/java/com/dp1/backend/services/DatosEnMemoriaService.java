@@ -173,6 +173,8 @@ public class DatosEnMemoriaService {
                 horaAterrizaje = horaAterrizaje.plusDays(vuelo.getCambioDeDia());
 
                 if (horaActual.isAfter(horaDespegue) && horaActual.isBefore(horaAterrizaje)) {
+                    logger.info("Vuelo en el aire: " + vuelo.getId());
+                    logger.info("porque hora actual:  y hora despegue:  y hora aterrizaje: "+horaActual+" "+horaDespegue+" "+horaAterrizaje);
                     vuelosEnElAire.put(vuelo.getId(), vuelo);
 
                 }

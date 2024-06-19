@@ -7,7 +7,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { FaCalendarAlt } from "react-icons/fa";
 
 function ConfiguracionSimulacion({ buttonText, activeTab }) {
-    const [startDate, setStartDate] = useState(new Date("2024-01-12T05:36:52"));
+    const [startDate, setStartDate] = useState(new Date());
     return (
         <div className="flex flex-col items-center mt-10 w-full">
             <div className="w-full max-w-4xl px-10">
