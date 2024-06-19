@@ -4,6 +4,7 @@ import com.dp1.backend.models.Archivo;
 import com.dp1.backend.models.Envio;
 import com.dp1.backend.models.Aeropuerto;
 import com.dp1.backend.repository.ArchivoRepository;
+import com.dp1.backend.repository.EnvioRepository;
 import com.dp1.backend.utils.FuncionesLectura;
 import com.dp1.backend.services.DatosEnMemoriaService;
 
@@ -24,6 +25,9 @@ public class ArchivoService {
 
     @Autowired
     private ArchivoRepository archivoRepository;
+
+    @Autowired
+    private EnvioRepository envioRepository;
 
     @Autowired
     private EnvioService envioService;
@@ -67,7 +71,7 @@ public class ArchivoService {
             // 2. Pasar la ruta del archivo a FuncionesLectura.leerEnviosGuardarBD
             // 2. Pasar la ruta del archivo a FuncionesLectura.leerEnviosGuardarBD
             HashMap<String, Aeropuerto> aeropuertos = datosenmemoriaService.getAeropuertos();
-            FuncionesLectura.leerEnviosGuardarBD(filePath.toString(), aeropuertos, 10000, envioService, paqueteService);
+            FuncionesLectura.leerEnviosGuardarBD(filePath.toString(), aeropuertos, 10000, envioRepository, paqueteService);
             // FuncionesLectura.leerEnviosGuardarBD(filePath.toString(), envioService,
             // paqueteService);
 
