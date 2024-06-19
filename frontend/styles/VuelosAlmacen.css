@@ -1,0 +1,81 @@
+.vuelos-almacen-contenedor {
+    width: 360px;
+    background-color: white;
+    padding: 20px;
+    border-bottom-left-radius: 15px;
+    border-top-left-radius: 15px;
+    box-shadow: 0 0px 0px rgba(0, 0, 0, 0.1);
+    transition: transform 0.5s ease, opacity 0.5s ease;
+    transform: translateX(0);
+    opacity: 0;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    max-height: 750px;
+    overflow-y: auto;
+  }
+  
+  .vuelos-almacen-contenedor.visible {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  
+  .vuelos-almacen-contenedor.hidden {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  
+  .vuelos-almacen-tabla {
+    max-height: 750px;
+  }
+  
+  .toggle-button {
+    background-color: #fff;
+    border-radius: 50% 0 0 50%;
+    width: 30px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: black;
+    box-shadow: 0 0px 0px rgba(0, 0, 0, 0.1);
+    margin: 0px;
+    transition: transform 0.3s ease;
+    z-index: 9;
+  }
+  
+  .toggle-button:hover {
+    transform: scale(1.1);
+  }
+  
+  .vuelos-almacen-contenedor.hidden + .toggle-button {
+    transform: translateX(100%);
+    transition: transform 0.5s ease, opacity 0.5s ease;
+  }
+  
+  .vuelos-almacen-contenedor.hidden + .toggle-button:hover {
+    transform: translate(100%) scale(1.1);
+    transition: transform 0.3s ease;
+  }
+  
+  .vuelos-almacen-contenedor.visible + .toggle-button {
+    margin-right: -1px;
+    transform: translateX(0);
+    transition: transform 0.5s ease, opacity 0.5s ease;
+  }
+  
+  .vuelos-almacen-contenedor.visible + .toggle-button:hover {
+    transform: translateX(0) scale(1.1);
+    transition: transform 0.3s ease;
+  }
+  
+  .vuelos-almacen-wrapper {
+    position: absolute;
+    top: 25%;
+    right: 2.5%;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+  }
