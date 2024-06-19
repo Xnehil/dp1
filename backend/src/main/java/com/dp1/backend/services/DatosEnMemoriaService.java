@@ -42,7 +42,7 @@ public class DatosEnMemoriaService {
     private HashMap<String, ColeccionRuta> rutasPosibles = new HashMap<>();
     private HashSet<String> rutasPosiblesSet = new HashSet<>();
 
-    //Services para ColeccionRuta y RutaPosible
+    // Services para ColeccionRuta y RutaPosible
     @Autowired
     private ColeccionRutaService coleccionRutaService;
 
@@ -51,10 +51,6 @@ public class DatosEnMemoriaService {
 
     private final static Logger logger = LogManager.getLogger(DatosEnMemoriaService.class);
     private String workingDirectory = System.getProperty("user.dir");
-
-    
-   
-
 
     public DatosEnMemoriaService() {
         logger.info("Inicializando DatosEnMemoriaService con working directory: " + workingDirectory);
@@ -72,25 +68,29 @@ public class DatosEnMemoriaService {
     @Transactional
     public void init() {
         logger.info("Leyendo rutas posibles");
-        
-        coleccionRutaService.getAllColeccionRutas().forEach(cr -> {
-            // logger.info("Coleccion ruta: " + cr.getCodigoRuta());
-            rutasPosibles.put(cr.getCodigoRuta(), cr);
-            String ruta = cr.getCodigoRuta();
-            for (RutaPosible rp : cr.getRutasPosibles()) {
-                
-                String sucesionVuelos = "";
-                for (ItemRutaPosible itemVuelo : rp.getFlights()) {
-                    int vueloId = itemVuelo.getIdVuelo();
-                    sucesionVuelos += ("-" + vueloId);
+
+        try {
+            coleccionRutaService.getAllColeccionRutas().forEach(cr -> {
+                // logger.info("Coleccion ruta: " + cr.getCodigoRuta());
+                rutasPosibles.put(cr.getCodigoRuta(), cr);
+                String ruta = cr.getCodigoRuta();
+                for (RutaPosible rp : cr.getRutasPosibles()) {
+
+                    String sucesionVuelos = "";
+                    for (ItemRutaPosible itemVuelo : rp.getFlights()) {
+                        int vueloId = itemVuelo.getIdVuelo();
+                        sucesionVuelos += ("-" + vueloId);
+                    }
+                    // logger.info("Ruta posible: " + sucesionVuelos);
+                    ruta += sucesionVuelos;
+                    if (!rutasPosiblesSet.contains(ruta)) {
+                        rutasPosiblesSet.add(ruta);
+                    }
                 }
-                // logger.info("Ruta posible: " + sucesionVuelos);
-                ruta += sucesionVuelos;
-                if (!rutasPosiblesSet.contains(ruta)) {
-                    rutasPosiblesSet.add(ruta);
-                }
-            }
-        });
+            });
+        } catch (Exception e) {
+            logger.error("Error al leer rutas posibles: " + e.getLocalizedMessage());
+        }
 
         logger.info("Colecciones rutas: " + rutasPosibles.size());
         logger.info("Rutas posibles set: " + rutasPosiblesSet.size());
@@ -119,7 +119,6 @@ public class DatosEnMemoriaService {
     public void setColeccionRutaService(ColeccionRutaService coleccionRutaService) {
         this.coleccionRutaService = coleccionRutaService;
     }
-
 
     public HashMap<String, Aeropuerto> getAeropuertos() {
         return this.aeropuertos;
@@ -167,16 +166,29 @@ public class DatosEnMemoriaService {
             for (Vuelo vuelo : vuelos.values()) {
                 ZonedDateTime horaDespegue = vuelo.getFechaHoraSalida();
                 ZonedDateTime horaAterrizaje = vuelo.getFechaHoraLlegada();
-
+                if (vuelo.getIdVuelo()==128){
+                    logger.debug("ola");
+                }
                 horaDespegue = horaDespegue.with(horaActual.toLocalDate());
                 horaAterrizaje = horaAterrizaje.with(horaActual.toLocalDate());
-                horaAterrizaje = horaAterrizaje.plusDays(vuelo.getCambioDeDia());
+                if (vuelo.getCambioDeDia() != 0){
+                    // Si la hora despegue es menor a la hora actual, estamos en caso izquierda
+                    if (horaActual.isAfter(horaDespegue) && horaActual.isAfter(horaAterrizaje)) {
+                        horaAterrizaje = horaAterrizaje.plusDays(vuelo.getCambioDeDia());
+                    } else if (horaActual.isBefore(horaDespegue) && horaActual.isBefore(horaAterrizaje)) {
+                        horaDespegue = horaDespegue.minusDays(vuelo.getCambioDeDia());
+                    }
+                }
 
-                if (horaActual.isAfter(horaDespegue) && horaActual.isBefore(horaAterrizaje)) {
-                    logger.info("Vuelo en el aire: " + vuelo.getId());
-                    logger.info("porque hora actual:  y hora despegue:  y hora aterrizaje: "+horaActual+" "+horaDespegue+" "+horaAterrizaje);
+                if ((horaActual.isAfter(horaDespegue) && horaActual.isBefore(horaAterrizaje))
+                    || (horaActual.minusDays(1).isAfter(horaDespegue) && horaActual.minusDays(1).isBefore(horaAterrizaje))){
+                    // logger.info("Vuelo en el aire: " + vuelo.getId());
+                    // logger.info("porque hora actual: y hora despegue: y hora aterrizaje");
+                    // //Print in utc
+                    // logger.info(horaActual.withZoneSameInstant(ZoneId.of("UTC")));
+                    // logger.info(horaDespegue.withZoneSameInstant(ZoneId.of("UTC")));
+                    // logger.info(horaAterrizaje.withZoneSameInstant(ZoneId.of("UTC")));
                     vuelosEnElAire.put(vuelo.getId(), vuelo);
-
                 }
             }
             // logger.info("Vuelos en el aire: " + vuelosEnElAire.size());
@@ -208,7 +220,7 @@ public class DatosEnMemoriaService {
             cr.setRutasPosibles(new ArrayList<RutaPosible>());
             RutaPosible rp = new RutaPosible();
             rp.setColeccionRuta(cr);
-    
+
             rp.setFlights(cargarVuelosARutaPosible(paquete));
             cr.getRutasPosibles().add(rp);
             rutasPosibles.put(llave, cr);
@@ -227,17 +239,17 @@ public class DatosEnMemoriaService {
         }
         rutasPosiblesSet.add(llave2);
         // Guardar llave2 en bd
-        //rutaPosibleService.createRutaPosible(rp);
-        //logger.info("Ruta agregada en set: " + llave2);
+        // rutaPosibleService.createRutaPosible(rp);
+        // logger.info("Ruta agregada en set: " + llave2);
 
         //
     }
 
-    private ArrayList<ItemRutaPosible> cargarVuelosARutaPosible(Paquete paquete){
+    private ArrayList<ItemRutaPosible> cargarVuelosARutaPosible(Paquete paquete) {
         ArrayList<ItemRutaPosible> items = new ArrayList<>();
-        ZonedDateTime inicio=paquete.getFechasRuta().get(0);
-        try{
-            int index=0;
+        ZonedDateTime inicio = paquete.getFechasRuta().get(0);
+        try {
+            int index = 0;
             for (int i : paquete.getRuta()) {
                 ZonedDateTime fechaVuelo = paquete.getFechasRuta().get(index);
                 ItemRutaPosible irp = new ItemRutaPosible();
@@ -246,8 +258,8 @@ public class DatosEnMemoriaService {
                 items.add(irp);
                 index++;
             }
-        }catch(Exception e){
-            logger.error("Error al cargar vuelos a ruta posible: "+e.getLocalizedMessage());
+        } catch (Exception e) {
+            logger.error("Error al cargar vuelos a ruta posible: " + e.getLocalizedMessage());
         }
         return items;
     }
@@ -266,7 +278,8 @@ public class DatosEnMemoriaService {
                     .forEach(p -> {
                         logger.info("Leyendo archivo: " + p.toString());
                         envios.putAll(
-                                FuncionesLectura.leerEnviosDesdeHasta(p.toString(), aeropuertos, horaActualMenos3Dias, horaFin));
+                                FuncionesLectura.leerEnviosDesdeHasta(p.toString(), aeropuertos, horaActualMenos3Dias,
+                                        horaFin));
                     });
         } catch (IOException e) {
             e.printStackTrace();
