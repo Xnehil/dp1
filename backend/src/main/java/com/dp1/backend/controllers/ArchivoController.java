@@ -21,8 +21,8 @@ public class ArchivoController {
     @PostMapping("/upload")
     public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) {
         try {
-            Archivo savedFile = archivoService.saveFile(file);
-            return ResponseEntity.ok("Archivo subido exitosamente: " + savedFile.getId());
+            String savedFile = archivoService.saveFile(file);
+            return ResponseEntity.ok(savedFile);
         } catch (IOException e) {
             return ResponseEntity.status(500).body("No se pudo cargar el archivo: " + e.getMessage());
         }

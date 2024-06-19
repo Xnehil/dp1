@@ -1,13 +1,30 @@
 import React from 'react';
 import Button from '@mui/material/Button';
 import FileUploadButton from "@/components/buttonUpload/buttonUpload.jsx"
+import axios from 'axios';
 
 function UploadFile() {
     const [file, setFile] = React.useState(null);
+    const baseUrl = process.env.REACT_APP_API_URL_BASE;
 
     const handleFileChange = (event) => {
-        setFile(event.target.files[0]);
-        console.log('Archivo seleccionado:', event.target.files[0]);
+        const file = event.target.files[0];
+        console.log('Archivo seleccionado:', file);
+    
+        const formData = new FormData();
+        formData.append('file', file);
+    
+        axios.post(`${baseUrl}/archivo/upload`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        })
+        .then((response) => {
+            console.log('Archivo subido:', response);
+        })
+        .catch((error) => {
+            console.error('Error al subir el archivo:', error);
+        });
     };
 
     return (

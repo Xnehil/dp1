@@ -283,7 +283,7 @@ public class FuncionesLectura {
         return envios;
     }
 
-    public static String leerEnviosGuardarBD(String archivo, HashMap<String, Aeropuerto> aeropuertos, int maxEnvios){
+    public static String leerEnviosGuardarBD(String archivo, HashMap<String, Aeropuerto> aeropuertos, int maxEnvios){ //AGregar argumentos de servicios
         System.out.println("Leyendo envios desde " + archivo);
         HashMap<String, Envio> envios = new HashMap<>();
         int counter=0;
@@ -347,7 +347,7 @@ public class FuncionesLectura {
                 envios.put(codigo, nuevoEnvio);
 
                 //Guardar envío en base de datos
-                //envioREpository.save 
+                //envioService.save 
 
                 //Por cada pauqete
                 //paqueteRepository.save
