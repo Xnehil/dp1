@@ -1,8 +1,11 @@
 package com.dp1.backend.services;
 
 import com.dp1.backend.models.Archivo;
+import com.dp1.backend.models.Envio;
+import com.dp1.backend.models.Aeropuerto;
 import com.dp1.backend.repository.ArchivoRepository;
 import com.dp1.backend.utils.FuncionesLectura;
+import com.dp1.backend.services.DatosEnMemoriaService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.nio.file.Path;
 
 @Service
@@ -24,6 +28,9 @@ public class ArchivoService {
 
     @Autowired
     private PaqueteService paqueteService;
+
+    @Autowired
+    private DatosEnMemoriaService datosenmemoriaService;
 
     public Archivo saveFile(MultipartFile file) throws IOException {
 
@@ -41,7 +48,8 @@ public class ArchivoService {
         Files.write(filePath, file.getBytes());
 
         // 2. Pasar la ruta del archivo a FuncionesLectura.leerEnviosGuardarBD
-        //FuncionesLectura.leerEnviosGuardarBD(filePath.toString(), envioService, paqueteService);
+        HashMap<String, Aeropuerto> aeropuertos = datosenmemoriaService.getAeropuertos();
+        FuncionesLectura.leerEnviosGuardarBD(filePath.toString(), aeropuertos ,10000, envioService, paqueteService);
 
         // 3. Borrar el archivo del servidor después de procesarlo
         Files.delete(filePath);

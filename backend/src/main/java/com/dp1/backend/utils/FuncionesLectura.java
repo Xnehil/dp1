@@ -21,6 +21,8 @@ import com.dp1.backend.models.Vuelo;
 
 import java.time.format.DateTimeFormatter;
 import java.time.Duration;
+import com.dp1.backend.services.EnvioService;
+import com.dp1.backend.services.PaqueteService;
 
 public class FuncionesLectura {
 
@@ -283,7 +285,7 @@ public class FuncionesLectura {
         return envios;
     }
 
-    public static String leerEnviosGuardarBD(String archivo, HashMap<String, Aeropuerto> aeropuertos, int maxEnvios){
+    public static String leerEnviosGuardarBD(String archivo, HashMap<String, Aeropuerto> aeropuertos, int maxEnvios, EnvioService envioService, PaqueteService paqueteService){
         System.out.println("Leyendo envios desde " + archivo);
         HashMap<String, Envio> envios = new HashMap<>();
         int counter=0;
@@ -346,11 +348,13 @@ public class FuncionesLectura {
                 nuevoEnvio.setCodigoEnvio(codigo);
                 envios.put(codigo, nuevoEnvio);
 
-                //Guardar envío en base de datos
-                //envioREpository.save 
+                envioService.createEnvio(nuevoEnvio);
 
-                //Por cada pauqete
-                //paqueteRepository.save
+                // Por cada paquete, establecer la relación con el envío y guardar en base de datos
+                for (Paquete paquete : paquetes) {
+                    paquete.setCodigoEnvio(nuevoEnvio.getCodigoEnvio());
+                    paqueteService.createPaquete(paquete);
+                }
                 counter++;
             }
             //System.out.println("Numero de envios: " + counter);
