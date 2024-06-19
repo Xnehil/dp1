@@ -364,6 +364,8 @@ public class FuncionesLectura {
 
                 String codigo = ciudadOrigenEnvio + envioId;
                 nuevoEnvio.setCodigoEnvio(codigo);
+                nuevoEnvio.setEmisorID(23);
+                nuevoEnvio.setReceptorID(23);
                 envios.put(codigo, nuevoEnvio);
 
                 envioService.createEnvio(nuevoEnvio);
