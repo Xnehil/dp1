@@ -43,6 +43,6 @@ server:
 
 logging:
     level:
-        org.hibernate.SQL: DEBUG
+        org.hibernate.SQL: INFO
         org.hibernate.type.descriptor.sql.BasicBinder: TRACE
         backend: INFO
