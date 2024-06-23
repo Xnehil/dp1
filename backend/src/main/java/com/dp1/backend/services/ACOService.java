@@ -278,12 +278,7 @@ public class ACOService {
         HashMap<Integer, ProgramacionVuelo> vuelosProgramados = datosEnMemoriaService.getVuelosProgramados();
         ArrayList<LocalDate> fechasVuelos = datosEnMemoriaService.getFechasVuelos();
         String[] ciudades = new String[] {
-                "SKBO", "SEQM", "SVMI", "SBBR", "SPIM", "SLLP", "SCEL", "SABE", "SGAS",
-                "SUAA",
-                "LATI", "EDDI", "LOWW", "EBCI", "UMMS", "LBSF", "LKPR", "LDZA", "EKCH",
-                "EHAM",
-                "VIDP", "RKSI", "VTBS", "OMDB", "ZBAA", "RJTT", "WMKK", "WSSS", "WIII",
-                "RPLL"
+                "SKBO", "SEQM", "SVMI", "SBBR", "SPIM", "SLLP", "SCEL", "SABE", "SGAS", "SUAA", "LATI", "EDDI", "LOWW", "EBCI", "UMMS", "LBSF", "LKPR", "LDZA", "EKCH", "EHAM", "VIDP", "OSDI", "OERK", "OMDB", "OAKB", "OOMS", "OYSN", "OPKC", "UBBB", "OJAI"
         };
 
         cargarDatos(aeropuertos, envios, paquetes, ciudades);
@@ -347,7 +342,7 @@ public class ACOService {
         }
         String rutaArchivos = "data/pack_enviado_";
         for (int i = 0; i < ciudades.length; i++) {
-            envios.putAll(FuncionesLectura.leerEnvios(rutaArchivos + ciudades[i] + ".txt", aeropuertos, 20));
+            envios.putAll(FuncionesLectura.leerEnvios(rutaArchivos + ciudades[i] + ".txt", aeropuertos,40));
         }
 
         for (Envio e : envios.values()) {

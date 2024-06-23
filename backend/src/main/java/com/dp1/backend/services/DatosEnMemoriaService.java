@@ -66,9 +66,16 @@ public class DatosEnMemoriaService {
         } else {
             workingDirectory = "";
         }
-
-        aeropuertos.putAll(FuncionesLectura.leerAeropuertos(workingDirectory + "data/Aeropuerto.husos.v3.20240619.txt"));
-        vuelos.putAll(FuncionesLectura.leerVuelos(workingDirectory + "data/planes_vuelo.v4.20240619.txt", aeropuertos));
+        try{
+            aeropuertos.putAll(FuncionesLectura.leerAeropuertos(workingDirectory + "data/Aeropuerto.husos.v3.20240619.txt"));
+            logger.info("Aeropuertos cargados: " + aeropuertos.size());
+            vuelos.putAll(FuncionesLectura.leerVuelos(workingDirectory + "data/planes_vuelo.v4.20240619.txt", aeropuertos));
+            logger.info("Vuelos cargados: " + vuelos.size());
+        }
+        catch (Exception e){
+            logger.error("Error al cargar aeropuertos y vuelos: " + e.getLocalizedMessage());
+            e.printStackTrace();
+        }
     }
 
     @PostConstruct
@@ -77,24 +84,24 @@ public class DatosEnMemoriaService {
         logger.info("Leyendo rutas posibles");
 
         try {
-            // coleccionRutaService.getAllColeccionRutas().forEach(cr -> {
-            //     // logger.info("Coleccion ruta: " + cr.getCodigoRuta());
-            //     rutasPosibles.put(cr.getCodigoRuta(), cr);
-            //     String ruta = cr.getCodigoRuta();
-            //     for (RutaPosible rp : cr.getRutasPosibles()) {
+            coleccionRutaService.getAllColeccionRutas().forEach(cr -> {
+                // logger.info("Coleccion ruta: " + cr.getCodigoRuta());
+                rutasPosibles.put(cr.getCodigoRuta(), cr);
+                String ruta = cr.getCodigoRuta();
+                for (RutaPosible rp : cr.getRutasPosibles()) {
 
-            //         String sucesionVuelos = "";
-            //         for (ItemRutaPosible itemVuelo : rp.getFlights()) {
-            //             int vueloId = itemVuelo.getIdVuelo();
-            //             sucesionVuelos += ("-" + vueloId);
-            //         }
-            //         // logger.info("Ruta posible: " + sucesionVuelos);
-            //         ruta += sucesionVuelos;
-            //         if (!rutasPosiblesSet.contains(ruta)) {
-            //             rutasPosiblesSet.add(ruta);
-            //         }
-            //     }
-            // });
+                    String sucesionVuelos = "";
+                    for (ItemRutaPosible itemVuelo : rp.getFlights()) {
+                        int vueloId = itemVuelo.getIdVuelo();
+                        sucesionVuelos += ("-" + vueloId);
+                    }
+                    // logger.info("Ruta posible: " + sucesionVuelos);
+                    ruta += sucesionVuelos;
+                    if (!rutasPosiblesSet.contains(ruta)) {
+                        rutasPosiblesSet.add(ruta);
+                    }
+                }
+            });
         } catch (Exception e) {
             logger.error("Error al leer rutas posibles: " + e.getLocalizedMessage());
         }
@@ -251,7 +258,7 @@ public class DatosEnMemoriaService {
             rutasPosibles.put(llave, cr);
             // logger.info("Ruta creada: " + llave);
             // Guardar cr en bd
-            // coleccionRutaService.createColeccionRuta(cr);
+            coleccionRutaService.createColeccionRuta(cr);
         }
         RutaPosible rp = new RutaPosible();
         rp.setColeccionRuta(cr);
@@ -264,7 +271,7 @@ public class DatosEnMemoriaService {
         }
         rutasPosiblesSet.add(llave2);
         // Guardar llave2 en bd
-        // rutaPosibleService.createRutaPosible(rp);
+        rutaPosibleService.createRutaPosible(rp);
         // logger.info("Ruta agregada en set: " + llave2);
 
         //

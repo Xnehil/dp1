@@ -23,7 +23,7 @@ spring:
     jpa:
         hibernate:
             ddl-auto: update
-            show-sql: true
+            show-sql: false
             format-sql: false
             use_sql_comments: false
         generate-ddl: true
