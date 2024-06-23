@@ -500,6 +500,7 @@ public class Auxiliares {
                     // datosEnMemoriaService.insertarRuta(envio, paquete);
                     // rutasNuevas++;
                 }
+                paquete.setLlegoDestino(true);
                 paquetesEntregados++;
             } else {
                 // Buscar la ruta en la base de datos
