@@ -2,8 +2,6 @@ package com.dp1.backend.utils;
 
 import org.apache.commons.math3.distribution.NormalDistribution;
 import org.apache.commons.math3.special.Gamma;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -22,7 +20,6 @@ import com.dp1.backend.models.RutaPosible;
 import com.dp1.backend.models.Vuelo;
 import com.dp1.backend.services.DatosEnMemoriaService;
 
-import jakarta.annotation.PostConstruct;
 
 public class Auxiliares {
     public static double[] levy(int n, double beta) {
@@ -500,8 +497,8 @@ public class Auxiliares {
                 }
                 if (!datosEnMemoriaService.seTieneruta(cadenaABuscar)) {
                     // Por ahora no se inserta en la base de datos
-                    //datosEnMemoriaService.insertarRuta(envio, paquete);
-                    //rutasNuevas++;
+                    // datosEnMemoriaService.insertarRuta(envio, paquete);
+                    // rutasNuevas++;
                 }
                 paquetesEntregados++;
             } else {

@@ -12,6 +12,7 @@ import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
@@ -23,7 +24,7 @@ import jakarta.persistence.Table;
 @SQLDelete(sql = "UPDATE paquete SET active = false WHERE id = ?")
 @SQLRestriction(value = "active = true")
 public class Paquete extends BaseModel{
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "codigo_envio", insertable = false, updatable = false, referencedColumnName = "codigo_envio")
     private Envio envio;
 
@@ -77,7 +78,7 @@ public class Paquete extends BaseModel{
     }
     
     public ZonedDateTime getFechaLlegadaUltimoVuelo(){
-        if (fechasRuta.isEmpty()) {
+        if (fechasRuta==null || fechasRuta.isEmpty()) {
             return null; // or return a default value
         }
         return fechasRuta.get(fechasRuta.size()-1);

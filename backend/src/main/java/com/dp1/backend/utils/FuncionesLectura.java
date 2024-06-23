@@ -39,7 +39,7 @@ public class FuncionesLectura {
                 if (line.trim().isEmpty() || lineCount <= 7) {
                     continue; // Skip empty lines and headers
                 }
-                if (line.contains("America del Sur") || line.contains("Europa") || line.contains("ASIA")) {
+                if (line.contains("America del Sur") || line.contains("Europa") || line.contains("Asia")) {
                     currentContinent = line.trim();
                     if (currentContinent.contains("America")) {
                         currentContinent = "America del Sur";
@@ -50,6 +50,7 @@ public class FuncionesLectura {
                 // Eliminar espacios en blanco
                 for (int i = 0; i < parts.length; i++) {
                     parts[i] = parts[i].trim();
+                    // System.out.println(parts[i]);
                 }
                 int number = Integer.parseInt(parts[0]);
                 String oaciCode = parts[1];

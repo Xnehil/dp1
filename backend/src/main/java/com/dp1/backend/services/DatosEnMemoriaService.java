@@ -6,14 +6,11 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.TreeMap;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 
 import org.apache.logging.log4j.LogManager;
@@ -69,9 +66,16 @@ public class DatosEnMemoriaService {
         } else {
             workingDirectory = "";
         }
-
-        aeropuertos.putAll(FuncionesLectura.leerAeropuertos(workingDirectory + "data/Aeropuerto.husos.v2.txt"));
-        vuelos.putAll(FuncionesLectura.leerVuelos(workingDirectory + "data/planes_vuelo.v3.txt", aeropuertos));
+        try{
+            aeropuertos.putAll(FuncionesLectura.leerAeropuertos(workingDirectory + "data/Aeropuerto.husos.v3.20240619.txt"));
+            logger.info("Aeropuertos cargados: " + aeropuertos.size());
+            vuelos.putAll(FuncionesLectura.leerVuelos(workingDirectory + "data/planes_vuelo.v4.20240619.txt", aeropuertos));
+            logger.info("Vuelos cargados: " + vuelos.size());
+        }
+        catch (Exception e){
+            logger.error("Error al cargar aeropuertos y vuelos: " + e.getLocalizedMessage());
+            e.printStackTrace();
+        }
     }
 
     @PostConstruct
@@ -254,7 +258,7 @@ public class DatosEnMemoriaService {
             rutasPosibles.put(llave, cr);
             // logger.info("Ruta creada: " + llave);
             // Guardar cr en bd
-            // coleccionRutaService.createColeccionRuta(cr);
+            coleccionRutaService.createColeccionRuta(cr);
         }
         RutaPosible rp = new RutaPosible();
         rp.setColeccionRuta(cr);
@@ -267,7 +271,7 @@ public class DatosEnMemoriaService {
         }
         rutasPosiblesSet.add(llave2);
         // Guardar llave2 en bd
-        // rutaPosibleService.createRutaPosible(rp);
+        rutaPosibleService.createRutaPosible(rp);
         // logger.info("Ruta agregada en set: " + llave2);
 
         //

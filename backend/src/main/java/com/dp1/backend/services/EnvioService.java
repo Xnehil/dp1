@@ -2,16 +2,22 @@ package com.dp1.backend.services;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import com.dp1.backend.models.Aeropuerto;
 import com.dp1.backend.models.Envio;
 import com.dp1.backend.models.Paquete;
 import com.dp1.backend.repository.EnvioRepository;
+
+import jakarta.transaction.Transactional;
 
 @Service
 public class EnvioService {
@@ -33,19 +39,23 @@ public class EnvioService {
             Aeropuerto destino = datosEnMemoriaService.getAeropuertos().get(envio.getDestino());
             //Agregar fecha de salida considerando la hora actual y la diferencia horaria
             ZonedDateTime fechaHoraSalida = ZonedDateTime.now();
-            fechaHoraSalida.withZoneSameInstant(origen.getZoneId());
+            fechaHoraSalida=fechaHoraSalida.withZoneSameInstant(origen.getZoneId());
 
             Boolean mismoContinente = origen.getContinente().equals(destino.getContinente());
             //Agregar fecha de llegada prevista considerando la hora de salida y la distancia entre los aeropuertos
             ZonedDateTime fechaHoraLlegadaPrevista = fechaHoraSalida.plusDays(mismoContinente ? 1 : 2);
-            fechaHoraLlegadaPrevista.withZoneSameLocal(destino.getZoneId());
+            fechaHoraLlegadaPrevista=fechaHoraLlegadaPrevista.withZoneSameLocal(destino.getZoneId());
 
             envio.setFechaHoraSalida(fechaHoraSalida);
             envio.setFechaHoraLlegadaPrevista(fechaHoraLlegadaPrevista);
+            logger.info("Todo bien hasta fechas. Guardando envio");
+            logger.info(envio.toString());
             envio = envioRepository.save(envio);
+            logger.info("Todo bien hasta primer guardado");
             envio.setCodigoEnvio(envio.getOrigen()+envio.getId());
             envio.setPaquetes(null);
             envioRepository.save(envio);
+            logger.info("Todo bien hasta segundo guardado");
 
             String codigosPaquetes = "";
             for (int i = 0; i < envio.getCantidadPaquetes(); i++) {
@@ -60,10 +70,11 @@ public class EnvioService {
                 paquete.setRuta(null);
                 paqueteService.createPaquete(paquete);
             }
-            
+            logger.info("Todo bien hasta guardado de paquetes");
             return codigosPaquetes;
         } catch (Exception e) {
-            logger.error(e.getMessage());
+            logger.error("Error al crear envio: ");
+            e.printStackTrace();
             return e.getMessage();  
         }
     }
@@ -107,5 +118,34 @@ public class EnvioService {
     public ArrayList<Envio> getEnvios()
     {
         return (ArrayList<Envio>) envioRepository.findAll();
+    }
+
+    public List<Envio> getMostRecentEnvios(int limit) {
+        return envioRepository.findTopByOrderByFechaHoraSalidaDesc(PageRequest.of(0, limit));
+    }
+
+    public List<Envio> getEnviosBeforeDate(ZonedDateTime limitDate) {
+        return envioRepository.findByFechaHoraSalidaBefore(limitDate);
+    }
+
+    public List<Envio> getEnviosAfterDate(ZonedDateTime limitDate) {
+        return envioRepository.findByFechaHoraSalidaAfter(limitDate);
+    }
+
+    @Transactional
+    public HashMap<String, Envio> getEnviosEntre(ZonedDateTime fechaHoraInicio, ZonedDateTime fechaHoraFin)
+    {
+        HashMap<String, Envio> enviosEntre = new HashMap<>();
+        List <Envio> envios = getEnviosAfterDate(fechaHoraInicio);
+
+        for (Envio envio : envios) {
+            logger.info(envio.getFechaHoraSalida());
+            logger.info(fechaHoraInicio);
+            if (envio.getFechaHoraSalida().isAfter(fechaHoraInicio) && envio.getFechaHoraSalida().isBefore(fechaHoraFin)) {
+                Hibernate.initialize(envio.getPaquetes());
+                enviosEntre.put(envio.getCodigoEnvio(), envio);
+            }
+        }
+        return enviosEntre;
     }
 }
