@@ -93,7 +93,7 @@ const Page = () => {
                 } 
             })
             .catch((error) => {
-                console.error("Error fetching data from the API: ", error);
+                console.error("Error cargando aeropuertos: ", error);
             });
     }, []);
 
@@ -166,11 +166,11 @@ const Page = () => {
             if(message.metadata.includes("primeraCarga")) {
                 console.log("Mensaje de primera carga");
                 console.log("Datos recibidos: ", message.data);
-                procesarData(message.data, programacionVuelos, envios, aeropuertos, simulationTime?simulationTime:horaInicio, true, vuelos);
+                procesarData(message.data, programacionVuelos, envios, aeropuertos, simulationTime?simulationTime:horaInicio, false, vuelos, false);
             }
             if (message.metadata.includes("correrAlgoritmo")) {
                 console.log(message.data);
-                procesarData(message.data, programacionVuelos, envios, aeropuertos, simulationTime, false, vuelos);
+                procesarData(message.data, programacionVuelos, envios, aeropuertos, simulationTime, false, vuelos, false);
             }
         }
     }, [lastMessage]);

@@ -2,12 +2,15 @@ package com.dp1.backend.models;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -42,7 +45,8 @@ public class Envio extends BaseModel {
     @Column(name = "cantidad_paquetes")
     private int cantidadPaquetes;
     
-    private ArrayList<Paquete> paquetes;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "codigoEnvio", cascade = CascadeType.REMOVE)
+    private List<Paquete> paquetes = new ArrayList<Paquete>();
 
     @ManyToOne(optional = true)
     @JoinColumn(name = "emisor_id", insertable = false, updatable = false, referencedColumnName = "id")
@@ -177,12 +181,16 @@ public class Envio extends BaseModel {
         this.cantidadPaquetes = cantidadPaquetes;
     }
 
-    public ArrayList<Paquete> getPaquetes() {
+    public List<Paquete> getPaquetes() {
         return this.paquetes;
     }
 
-    public void setPaquetes(ArrayList<Paquete> paquetes) {
+    public void setPaquetes(List<Paquete> paquetes) {
         this.paquetes = paquetes;
+    }
+
+    public String toString() {
+        return "Envio: " + this.getId() + " Origen: " + this.origen + " Destino: " + this.destino + " FechaHoraSalida: " + this.fechaHoraSalida + " FechaHoraLlegadaPrevista: " + this.fechaHoraLlegadaPrevista + " CantidadPaquetes: " + this.cantidadPaquetes ;
     }
 
 }

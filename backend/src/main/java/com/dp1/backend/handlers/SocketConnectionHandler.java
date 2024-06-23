@@ -21,6 +21,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.couchbase.CouchbaseProperties.Env;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
@@ -29,9 +30,11 @@ import org.springframework.web.socket.WebSocketMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
+import com.dp1.backend.models.Envio;
 import com.dp1.backend.models.Vuelo;
 import com.dp1.backend.services.ACOService;
 import com.dp1.backend.services.DatosEnMemoriaService;
+import com.dp1.backend.services.EnvioService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
@@ -53,11 +56,17 @@ public class SocketConnectionHandler extends TextWebSocketHandler {
     // Por cada conexión, se guarda una lista paralela de vuelos en el aire
     private HashMap<WebSocketSession, HashMap<Integer, Vuelo>> vuelosEnElAire = new HashMap<>();
 
+    //Para los envíos en operaciones en tiempo real se guardar un mapa de envíos
+    private HashMap<WebSocketSession, HashMap<String, Envio>> enviosEnOperacion = new HashMap<>();
+
     @Autowired
     private DatosEnMemoriaService datosEnMemoriaService;
     
     @Autowired
     private ACOService acoService;
+
+    @Autowired
+    private EnvioService envioService;
     
     // Este método se ejecuta cuando el cliente intenta conectarse a los sockets
     @Override
@@ -124,7 +133,11 @@ public class SocketConnectionHandler extends TextWebSocketHandler {
                 handleDifferenceSimulacion(lastMessageTime, simulatedTime, session, diferenciaVuelos, algorLastTime);
             }
             else if(tipoConexion.get(session) == 2){
-                logger.info("Conexión en tiempo real");
+                if (lastMessageTime == null) {
+                    handlePrimerContactoReal(simulatedTime, session, lastMessageTime, diferenciaVuelos);
+                    return;
+                }
+                handleDifferenceReal(lastMessageTime, simulatedTime, session, diferenciaVuelos);
             }
             else{
                 logger.error("Tipo de conexión no reconocido");
@@ -138,14 +151,20 @@ public class SocketConnectionHandler extends TextWebSocketHandler {
         lastMessageTimes.put(session, lastMessageTime);
 
         //Enviamos la data por primera vez. Tenemos que enviar los paquetes de los últimos dos días. Tal vez todos o solo los que faltan llegar
-        String paquetesConRutas =  "";
-        session.sendMessage(new TextMessage(paquetesConRutas));
+        enviosEnOperacion.put(session, envioService.getEnviosEntre(lastMessageTime.minusDays(1), lastMessageTime));//cargamos todos los envios de 2 días atrás
+
+        Map<String, Object> messageMap = new HashMap<>();
+        messageMap.put("metadata", "primeraCarga");
+        messageMap.put("data", enviosEnOperacion.get(session));
+        String paquetesRutasJSON = objectMapper.writeValueAsString(messageMap);
+        session.sendMessage(new TextMessage(paquetesRutasJSON));
+        logger.info("Enviando # de envios en operación: inicio" + enviosEnOperacion.get(session).size());
 
         diferenciaVuelos = new ArrayList<>();
         for (Vuelo vuelo : vuelosEnElAire.get(session).values()) {
             diferenciaVuelos.add(vuelo);
         }
-        Map<String, Object> messageMap = new HashMap<>();
+        messageMap = new HashMap<>();
         messageMap.put("metadata", "dataVuelos");
         messageMap.put("data", diferenciaVuelos);
         String messageJson = objectMapper.writeValueAsString(messageMap);
@@ -174,9 +193,18 @@ public class SocketConnectionHandler extends TextWebSocketHandler {
                 String messageJson = objectMapper.writeValueAsString(messageMap);
                 session.sendMessage(new TextMessage(messageJson));
                 logger.info("Enviando # de vuelos en el aire: " + diferenciaVuelos.size());
-                lastMessageTimes.put(session, time);
                 
-                //Por cada nuevo vuelo, se buscan en la BD las programacionesVuelo correspondientes, se sacan sus paquetes y se mandan esos paquetes
+                
+                HashMap<String, Envio> enviosNuevos = envioService.getEnviosEntre(lastMessageTime, time);
+                messageMap = new HashMap<>();
+                messageMap.put("metadata", "correrAlgoritmo");
+                messageMap.put("data", enviosNuevos);
+
+                messageJson = objectMapper.writeValueAsString(messageMap);
+                session.sendMessage(new TextMessage(messageJson));
+                logger.info("Enviando # de envios nuevos: " + enviosNuevos.size());
+
+                lastMessageTimes.put(session, time);
             }
         } catch (Exception e) {
             logger.error("Error en diferencia de vuelos: " + e.getLocalizedMessage());

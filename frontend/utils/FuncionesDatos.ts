@@ -13,6 +13,7 @@ export function procesarData(
     simulationTime: Date | null,
     cargaInicial: boolean,
     vuelos: React.RefObject<Map<number,{vuelo: Vuelo;pointFeature: any;lineFeature: any;routeFeature: any;}>>,
+    esSimulacion: boolean
 ): void {
     console.log("Procesando data");
     for (let key in messageData) {
@@ -22,12 +23,12 @@ export function procesarData(
             // console.log("Envio: ", envio);
             envios.current.set(envio.codigoEnvio, envio);
             for (let paquete of envio.paquetes) {
-                if (!paquete.llegoDestino) continue;
+                if (!paquete.llegoDestino && esSimulacion) continue;
                 //Añadir paquete a aeropuerto de origen
                 const aeropuertoOrigen: Aeropuerto | undefined =aeropuertos.current.get(envio.origen)?.aeropuerto;
                 let vueloSalio=false;
                 // console.log("paquete: ", paquete);
-                for (let i = 0; i < paquete.fechasRuta.length; i++) {
+                for (let i = 0; i < paquete.fechasRuta?.length ?? 0; i++) {
                     const idVuelo = paquete.ruta[i];
                     const auxFechaRuta = paquete.fechasRuta[i];
 

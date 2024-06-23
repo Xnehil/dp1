@@ -23,7 +23,7 @@ spring:
     jpa:
         hibernate:
             ddl-auto: update
-            show-sql: false
+            show-sql: true
             format-sql: false
             use_sql_comments: false
         generate-ddl: true
@@ -43,6 +43,6 @@ server:
 
 logging:
     level:
-        org.hibernate.SQL: INFO
+        org.hibernate.SQL: DEBUG
         org.hibernate.type.descriptor.sql.BasicBinder: TRACE
         backend: INFO
