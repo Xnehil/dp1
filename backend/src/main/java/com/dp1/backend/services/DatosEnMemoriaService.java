@@ -67,8 +67,8 @@ public class DatosEnMemoriaService {
             workingDirectory = "";
         }
 
-        aeropuertos.putAll(FuncionesLectura.leerAeropuertos(workingDirectory + "data/Aeropuerto.husos.v2.txt"));
-        vuelos.putAll(FuncionesLectura.leerVuelos(workingDirectory + "data/planes_vuelo.v3.txt", aeropuertos));
+        aeropuertos.putAll(FuncionesLectura.leerAeropuertos(workingDirectory + "data/Aeropuerto.husos.v3.20240619.txt"));
+        vuelos.putAll(FuncionesLectura.leerVuelos(workingDirectory + "data/planes_vuelo.v4.20240619.txt", aeropuertos));
     }
 
     @PostConstruct

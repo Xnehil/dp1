@@ -124,8 +124,8 @@ public class VueloService {
     public int guardarVuelosArchivo() {
         HashMap<Integer, Vuelo> vuelos = new HashMap<Integer, Vuelo>();
         // Leer vuelos de un archivo
-        HashMap<String, Aeropuerto> aeropuertos = FuncionesLectura.leerAeropuertos("data/Aeropuerto.husos.v2.txt");
-        vuelos = FuncionesLectura.leerVuelos("data/planes_vuelo.v3.txt", aeropuertos);
+        HashMap<String, Aeropuerto> aeropuertos = FuncionesLectura.leerAeropuertos("data/Aeropuerto.husos.v3.20240619.txt");
+        vuelos = FuncionesLectura.leerVuelos("data/planes_vuelo.v4.20240619.txt", aeropuertos);
         try {
             vueloRepository.saveAll(vuelos.values());
             logger.info("Vuelos guardados en la base de datos: " + vuelos.size());
