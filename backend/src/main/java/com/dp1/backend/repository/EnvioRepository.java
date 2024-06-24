@@ -29,5 +29,9 @@ public interface EnvioRepository extends JpaRepository<Envio, Integer>{
     // Encontrar envios por fecha de salida
     List<Envio> findByFechaHoraSalidaBefore(ZonedDateTime fechaHoraSalida);
     List<Envio> findByFechaHoraSalidaAfter(ZonedDateTime fechaHoraSalida);
+
+    // Encontrar envios por codigo de envio
+    Envio findByCodigoEnvio(String codigoEnvio);
+    
 }
 
