@@ -365,14 +365,22 @@ public class FuncionesLectura {
                 nuevoEnvio.setFechaHoraLlegadaPrevista(horaDestinoZoned);
 
                 String codigo = ciudadOrigenEnvio + envioId;
-                nuevoEnvio.setCodigoEnvio(codigo);
+                
                 nuevoEnvio.setEmisorID(23);
                 nuevoEnvio.setReceptorID(23);
                 envios.put(codigo, nuevoEnvio);
+                
 
+                //Revisar si el envío ya existe
+                Envio envioExistente = envioRepository.findByCodigoEnvio(codigo);
+                if(envioExistente != null){
+                    continue;
+                }
+                nuevoEnvio.setId(0);
+                nuevoEnvio.setCodigoEnvio(null);
+                nuevoEnvio.setPaquetes(null);
                 envioRepository.save(nuevoEnvio);
                 nuevoEnvio.setCodigoEnvio(nuevoEnvio.getOrigen() + nuevoEnvio.getId());
-                nuevoEnvio.setPaquetes(null);
                 envioRepository.save(nuevoEnvio);
 
                 // Por cada paquete, establecer la relación con el envío y guardar en base de
