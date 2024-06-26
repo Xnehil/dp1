@@ -331,7 +331,7 @@ const Mapa = ({
                     envios={envios} aeropuertos={aeropuertos}
                 />
                 {mostrarFinSemanal && <FinSemanal programacionVuelos={programacionVuelos} vuelos={vuelos}/>}
-                <VuelosAlmacen selectedAeropuerto={selectedAeropuerto} vuelos={vuelos} />
+                <VuelosAlmacen selectedAeropuerto={selectedAeropuerto} vuelos={vuelos} simulationTime={simulationTime} programacionVuelos={programacionVuelos} />
             </div>{" "}
         </div>
     );
