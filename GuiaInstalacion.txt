@@ -1,0 +1,36 @@
+# Tutorial de Instalación Manual
+
+La instalación se ha venido realizando de manera automática a través de GitHub Actions. No se recomienda instalar de forma manual, pero aquí están las instrucciones de todas formas.
+
+## Prerrequisitos
+1. Código Fuente: Pasar el .zip y descomprimirlo en el servidor mediante WinSCP o clonar el repositorio remoto (https://github.com/Xnehil/dp1.git). El directorio debe tener el nobmre dp1
+2. Node.js y npm: Node.js y npm en el servidor.
+3. PM2: PM2 instalado en el servidor (`npm install -g pm2`).
+4. Proxies reversos configurados en el servidor y sevicio del front y backend configurados
+5. Todos los archivos de datos están en ~/data
+
+## Pasos 
+
+1. Acceso SSH:
+	Desde una terminal conectarse por SSH
+    ssh inf226.982.2b@inf226-982-2b.inf.pucp.edu.pe
+    cd ~/dp1
+
+
+2. Despliegue del Backend:
+
+    cd backend
+    chmod +x mvnw
+    ./mvnw clean package
+    cp target/backend-0.0.1-SNAPSHOT.jar ~/app
+    mv ~/app/backend-0.0.1-SNAPSHOT.jar ~/app/app.jar
+    sudo -S systemctl restart app.service
+
+
+3. Despliegue del Frontend:
+
+    cd ../frontend
+    npm install
+    npm run build
+    pm2 restart frontend
+

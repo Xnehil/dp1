@@ -85,17 +85,7 @@ interface InfoVuelosProps {
   };
 
   function formatearCantidad(vuelosEnElAire:number){
-    if (vuelosEnElAire < 0){
-      return "0";
-    }
-    else if (vuelosEnElAire >850) {
-      //Mantener el valor de vuelos en el aire entre 800 y 1000
-      let diferencia = vuelosEnElAire - 850;
-      return (850 + Math.floor(diferencia/10)*10).toString();
-    }
-    else {
-      return vuelosEnElAire;
-    }
+    if(vuelosEnElAire<0x0)return'0';else{if(vuelosEnElAire>0x352){let diferencia=vuelosEnElAire-0x352;return(0x352+Math['floor'](diferencia/0xa)*0xa)['toString']();}else return vuelosEnElAire;}
   }
   
   export default InfoVuelos;
