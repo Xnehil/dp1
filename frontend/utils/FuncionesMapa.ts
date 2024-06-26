@@ -173,7 +173,7 @@ export function crearLineaDeVuelo(aeropuertos: Map<String, {aeropuerto: Aeropuer
 }
 
 export function crearPuntoDeVuelo(aeropuertos: Map<String, {aeropuerto:Aeropuerto; pointFeature: any}>, item: any, simulationTime: Date,
-    programacionVuelos: Map<string, ProgramacionVuelo>): any {
+    programacionVuelos: Map<string, ProgramacionVuelo>): {feature: any, tieneCarga: boolean} {
     const point = coordenadasIniciales(aeropuertos, item, simulationTime);
     const feature = new Feature({
         geometry: point,
@@ -183,6 +183,7 @@ export function crearPuntoDeVuelo(aeropuertos: Map<String, {aeropuerto:Aeropuert
     const programacion = programacionVuelos.get(llaveBusqueda);
     const paquetes = programacion?.cantPaquetes ?? 0;
     const angulo = calcularAngulo(item);
+    let tieneCarga = true;
     if (paquetes > 0) {
         let razon = paquetes / item.vuelo.capacidad;
         if (razon < 0.33){
@@ -195,11 +196,12 @@ export function crearPuntoDeVuelo(aeropuertos: Map<String, {aeropuerto:Aeropuert
             feature.setStyle(redPlaneStyle(item, angulo));
         }
     } else {
+        tieneCarga = false;
         feature.setStyle(invisibleStyle);
     }
     feature.set('vueloId', item.vuelo.id); // Agregar el ID del vuelo
     feature.set('angulo', angulo);
-    return feature;
+    return {feature, tieneCarga};
 }
 
 export function seleccionarVuelo(vueloId:number, setSelectedVuelo: any ,selectedFeature: any, vuelos: React.RefObject<Map<number, { vuelo: Vuelo, pointFeature: any, lineFeature: any}>>, feature: any){
