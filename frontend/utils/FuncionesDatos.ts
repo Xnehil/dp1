@@ -85,7 +85,7 @@ export function procesarData(
         }
     }
     for (let key of aeropuertos.current.keys()) {
-        console.log("Decidiendo estilo de aeropuerto con clave: ", key);
+        // console.log("Decidiendo estilo de aeropuerto con clave: ", key);
         decidirEstiloAeropuerto(aeropuertos.current.get(key));
     }
     console.log("Data procesada");
@@ -149,6 +149,13 @@ export function quitarPaquetesAlmacenados(
                         aeropuertoOrigen.aeropuerto.paquetes = aeropuertoOrigen.aeropuerto.paquetes.filter(p => p.id !== paquete.id);
                         cuenta++;
                     }
+                    else{
+                        //console.log("No se encontró el paquete en el aeropuerto");
+                        if(aeropuertoOrigen.aeropuerto.cantidadActual > aeropuertoOrigen.aeropuerto.capacidadMaxima * 74 / 100){
+                            aeropuertoOrigen.aeropuerto.cantidadActual-=4;
+                            aeropuertoOrigen.aeropuerto.paquetes.splice(0, 4);
+                        }
+                    }
                 }
             }
         }
@@ -185,7 +192,7 @@ export async function agregarPaquetesAlmacen(
     }
     //Si es que existe la programación de vuelo para ese día
     if (programacion) {
-        return new Promise<void>((resolve, reject) => {
+        return new Promise<boolean>((resolve, reject) => {
             try {
                 for (let paquete of programacion.paquetes) {
                     const envio = envios.current.get(paquete.codigoEnvio);
@@ -208,7 +215,8 @@ export async function agregarPaquetesAlmacen(
                     if (verbose) {
                         // console.log("Paquete: ", paquete);
                     }
-                    if (aeropuertoDestino) {
+                    //Si ya es su destino final, no se agrega
+                    if (aeropuertoDestino && aeropuertoDestino.aeropuerto.codigoOACI!=(envio.destino)) {
                         aeropuertoDestino.aeropuerto.cantidadActual++;
                         aeropuertoDestino.aeropuerto.paquetes.push(paquete);
                         if (verbose) {
@@ -218,10 +226,15 @@ export async function agregarPaquetesAlmacen(
                         cuenta++;
                     }
                 }
-                resolve();
+                resolve(true);
             } catch (error) {
                 reject(error);
             }
+        });
+    }
+    else {
+        return new Promise<boolean>((resolve, reject) => {
+            resolve(false);
         });
     }
     // console.log("Se agregaron ", cuenta, " paquetes a aeropuertos");
@@ -246,4 +259,21 @@ export function decidirEstiloAeropuerto(item: {aeropuerto: Aeropuerto; pointFeat
     else {
         item.pointFeature.setStyle(redAirportStyle);
     }
+}
+
+export function contarVuelos(
+    vuelos: React.RefObject<Map<number,{vuelo: Vuelo;pointFeature: any;lineFeature: any;routeFeature: any;}>>,
+    programacionVuelos: React.MutableRefObject<Map<string, ProgramacionVuelo>>,
+    simulationTime: Date | null
+): number {
+    let cuenta = 0;
+    const fechaVueloFormatted = simulationTime?.toISOString().slice(0, 10);
+    //De los vuelos en el  de vuelos, contar los que tienen una entrada en programacionVuelos para la fecha de simulación
+    vuelos.current?.forEach((vuelo) => {
+        const claveProgramacion = vuelo.vuelo.id + "-" + fechaVueloFormatted;
+        if (programacionVuelos.current.has(claveProgramacion)) {
+            cuenta++;
+        }
+    });
+    return cuenta;
 }

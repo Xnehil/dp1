@@ -5,6 +5,7 @@ import axios from 'axios';
 
 function UploadFile() {
     const [file, setFile] = React.useState(null);
+    const [estado, setEstado] = React.useState(null); //1: exito, 2: error
     const baseUrl = process.env.REACT_APP_API_URL_BASE;
 
     const handleFileChange = (event) => {
@@ -21,9 +22,11 @@ function UploadFile() {
         })
         .then((response) => {
             console.log('Archivo subido:', response);
+            setEstado(1);
         })
         .catch((error) => {
             console.error('Error al subir el archivo:', error);
+            setEstado(2);
         });
     };
 

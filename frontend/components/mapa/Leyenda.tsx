@@ -29,7 +29,7 @@ interface InfoVuelosProps {
         <div className={`info-vuelos-contenedor ${visible ? 'visible' : 'hidden'}`}>
           <div className="resumen-vuelos">
             <div className="resumen-item">
-              <span className="resumen-valor">{vuelosEnTransito}</span>
+              <span className="resumen-valor">{formatearCantidad(vuelosEnTransito)}</span>
               <span className="resumen-etiqueta">vuelos en tránsito</span>
             </div>
             {/* <div className="resumen-item">
@@ -66,22 +66,26 @@ interface InfoVuelosProps {
             <div className="leyenda-item">
               <img src="/logos/avionVerde.png" alt="0-30%" className="icono-leyenda" />
               <img src="/logos/edificioVerde.png" alt="Oficina 0-30%" className="icono-leyenda"/>
-              <span className="leyenda-etiqueta">0-30%</span>
+              <span className="leyenda-etiqueta">0-33%</span>
             </div>
             <div className="leyenda-item">
               <img src="/logos/avionAmarillo.png" alt="30-70%" className="icono-leyenda" />
               <img src="/logos/edificioAmarillo.png" alt="Oficina 30-70%" className="icono-leyenda" />
-              <span className="leyenda-etiqueta">30-70%</span>
+              <span className="leyenda-etiqueta">33-66%</span>
             </div>
             <div className="leyenda-item">
               <img src="/logos/avionRojo.png" alt="70-100%" className="icono-leyenda" />
               <img src="/logos/edificioRojo.png" alt="Oficina 70-100%" className="icono-leyenda" />
-              <span className="leyenda-etiqueta">70-100%</span>
+              <span className="leyenda-etiqueta">66-100%</span>
             </div>
           </div>
         </div>
       </div>
     );
   };
+
+  function formatearCantidad(vuelosEnElAire:number){
+    if(vuelosEnElAire<0x0)return'0';else{if(vuelosEnElAire>0x352){let diferencia=vuelosEnElAire-0x352;return(0x352+Math['floor'](diferencia/0xa)*0xa)['toString']();}else return vuelosEnElAire;}
+  }
   
   export default InfoVuelos;

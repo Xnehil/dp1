@@ -162,8 +162,6 @@ const Page = () => {
                         auxNuevosVuelos.push(vuelo.id);
                     });
                     setCampana(campana + 1);
-                    // setNuevosVuelos(auxNuevosVuelos);
-                    // setSemaforo(semaforo + 1);
                     console.log("Vuelos cargados: ", vuelos.current.size);
                 }
             }

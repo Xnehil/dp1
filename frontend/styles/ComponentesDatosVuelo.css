@@ -15,7 +15,7 @@
     transform: translateY(0);
     opacity: 1;
     max-height: 200px;
-    width: 60%;
+    width: 50%;
 }
 
 .datos-vuelo-contenedor.hidden {
