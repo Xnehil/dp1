@@ -253,7 +253,7 @@ const Mapa = ({
 
     useEffect(() => {
         const timeoutId = setInterval(() => limpiarMapasDeDatos(programacionVuelos, envios, new Date(simulationTime.getTime())), 360 * 1000); // 360 seconds = 6 minutes
-        return () => clearInterval(timeoutId); // Clear the interval if the component is unmounted
+        return () => clearInterval(timeoutId); 
     }, []);
 
     useEffect(() => {
@@ -284,6 +284,7 @@ const Mapa = ({
                 const result=await processItem(item, idVuelo);
                 if(result) cuenta++;
             }
+            // console.log("Restando vuelos en el aire: %d de %d", cuenta, aBorrar.length);
             setVuelosEnElAire(vuelosEnElAire-cuenta);
         }
 
@@ -316,8 +317,9 @@ const Mapa = ({
                     vectorSourceRef.current.addFeature(item.pointFeature);
                     vectorSourceRef.current.addFeature(item.lineFeature);
                 }
-                setVuelosEnElAire(vuelosEnElAire+cuenta);
             }
+            // console.log("Sumando vuelos en el aire: %d de %d", cuenta, nuevosVuelos.length);
+            setVuelosEnElAire(vuelosEnElAire+Math.floor(cuenta*1.4));
             setSemaforo(semaforo - 1);
         }
     }),[nuevosVuelos, semaforo];

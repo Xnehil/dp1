@@ -85,7 +85,7 @@ export function procesarData(
         }
     }
     for (let key of aeropuertos.current.keys()) {
-        console.log("Decidiendo estilo de aeropuerto con clave: ", key);
+        // console.log("Decidiendo estilo de aeropuerto con clave: ", key);
         decidirEstiloAeropuerto(aeropuertos.current.get(key));
     }
     console.log("Data procesada");
@@ -148,6 +148,13 @@ export function quitarPaquetesAlmacenados(
                         aeropuertoOrigen.aeropuerto.cantidadActual--;
                         aeropuertoOrigen.aeropuerto.paquetes = aeropuertoOrigen.aeropuerto.paquetes.filter(p => p.id !== paquete.id);
                         cuenta++;
+                    }
+                    else{
+                        //console.log("No se encontró el paquete en el aeropuerto");
+                        if(aeropuertoOrigen.aeropuerto.cantidadActual > aeropuertoOrigen.aeropuerto.capacidadMaxima * 74 / 100){
+                            aeropuertoOrigen.aeropuerto.cantidadActual-=4;
+                            aeropuertoOrigen.aeropuerto.paquetes.splice(0, 4);
+                        }
                     }
                 }
             }

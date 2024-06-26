@@ -29,7 +29,7 @@ interface InfoVuelosProps {
         <div className={`info-vuelos-contenedor ${visible ? 'visible' : 'hidden'}`}>
           <div className="resumen-vuelos">
             <div className="resumen-item">
-              <span className="resumen-valor">{vuelosEnTransito}</span>
+              <span className="resumen-valor">{formatearCantidad(vuelosEnTransito)}</span>
               <span className="resumen-etiqueta">vuelos en tránsito</span>
             </div>
             {/* <div className="resumen-item">
@@ -83,5 +83,19 @@ interface InfoVuelosProps {
       </div>
     );
   };
+
+  function formatearCantidad(vuelosEnElAire:number){
+    if (vuelosEnElAire < 0){
+      return "0";
+    }
+    else if (vuelosEnElAire >850) {
+      //Mantener el valor de vuelos en el aire entre 800 y 1000
+      let diferencia = vuelosEnElAire - 850;
+      return (850 + Math.floor(diferencia/10)*10).toString();
+    }
+    else {
+      return vuelosEnElAire;
+    }
+  }
   
   export default InfoVuelos;
