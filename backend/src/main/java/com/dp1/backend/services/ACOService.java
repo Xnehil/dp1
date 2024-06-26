@@ -32,6 +32,10 @@ public class ACOService {
 
     @Autowired
     private DatosEnMemoriaService datosEnMemoriaService;
+    @Autowired
+    private EnvioService envioService;
+    @Autowired
+    private PaqueteService paqueteService;
 
     public String ejecutarAco(ZonedDateTime horaActual) {
         System.out.println("SIMULACIÓN SIGUIENTE START");
@@ -281,7 +285,7 @@ public class ACOService {
                 "SKBO", "SEQM", "SVMI", "SBBR", "SPIM", "SLLP", "SCEL", "SABE", "SGAS", "SUAA", "LATI", "EDDI", "LOWW", "EBCI", "UMMS", "LBSF", "LKPR", "LDZA", "EKCH", "EHAM", "VIDP", "OSDI", "OERK", "OMDB", "OAKB", "OOMS", "OYSN", "OPKC", "UBBB", "OJAI"
         };
 
-        cargarDatos(aeropuertos, envios, paquetes, ciudades);
+        cargarDatosDesdeBD(aeropuertos, envios, paquetes, ciudades);
         for (Envio e : envios.values()) {
             paquetes.addAll(e.getPaquetes());
         }
@@ -348,6 +352,16 @@ public class ACOService {
         for (Envio e : envios.values()) {
             paquetes.addAll(e.getPaquetes());
         }
+    }
+
+    private void cargarDatosDesdeBD(HashMap<String, Aeropuerto> aeropuertos, HashMap<String, Envio> envios,
+            ArrayList<Paquete> paquetes,
+            String[] ciudades) {
+        ArrayList<Envio> enviosDesdeBD = envioService.getEnvios();
+        for (int i = 0; i < enviosDesdeBD.size(); i++)
+            envios.put(enviosDesdeBD.get(i).getCodigoEnvio(), enviosDesdeBD.get(i));
+
+        paquetes = paqueteService.getPaquetes();
     }
 
     private void cargarDatosV2(HashMap<String, Aeropuerto> aeropuertos, HashMap<Integer, Vuelo> vuelos,

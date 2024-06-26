@@ -24,9 +24,7 @@ public class ProgramacionVuelo extends BaseModel{ //guarda el vuelo y la fecha d
 
     @ManyToOne
     private Vuelo planVuelo;
-
     private int idVuelo;
-
     private ZonedDateTime fechaHoraSalida;
     private ZonedDateTime fechaHoraLlegada;
     //Código programación vuelo: idVuelo+año-mes-dia 
