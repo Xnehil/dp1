@@ -319,7 +319,7 @@ const Mapa = ({
                 }
             }
             // console.log("Sumando vuelos en el aire: %d de %d", cuenta, nuevosVuelos.length);
-            setVuelosEnElAire(vuelosEnElAire+Math.floor(cuenta*1.4));
+            setVuelosEnElAire(vuelosEnElAire+Math.floor(cuenta*1.25));
             setSemaforo(semaforo - 1);
         }
     }),[nuevosVuelos, semaforo];

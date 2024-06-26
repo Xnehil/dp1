@@ -215,7 +215,8 @@ export async function agregarPaquetesAlmacen(
                     if (verbose) {
                         // console.log("Paquete: ", paquete);
                     }
-                    if (aeropuertoDestino) {
+                    //Si ya es su destino final, no se agrega
+                    if (aeropuertoDestino && aeropuertoDestino.aeropuerto.codigoOACI!=(envio.destino)) {
                         aeropuertoDestino.aeropuerto.cantidadActual++;
                         aeropuertoDestino.aeropuerto.paquetes.push(paquete);
                         if (verbose) {
