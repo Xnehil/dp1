@@ -4,14 +4,14 @@ import "@/styles/ComponentesLeyenda.css"
 
 interface InfoVuelosProps {
     vuelosEnTransito: number;
-    enviosEnElAire: number;
+    capacidadAlmacenes: number;
     fechaHoraActual: string;
     fechaHoraSimulada: string;
   }
   
   const InfoVuelos: React.FC<InfoVuelosProps> = ({ 
     vuelosEnTransito, 
-    enviosEnElAire, 
+    capacidadAlmacenes, 
     fechaHoraActual, 
     fechaHoraSimulada 
   }) => {
@@ -32,10 +32,10 @@ interface InfoVuelosProps {
               <span className="resumen-valor">{formatearCantidad(vuelosEnTransito)}</span>
               <span className="resumen-etiqueta">vuelos en tránsito</span>
             </div>
-            {/* <div className="resumen-item">
-              <span className="resumen-valor">{enviosEnElAire}</span>
-              <span className="resumen-etiqueta">envíos en el aire</span>
-            </div> */}
+            <div className="resumen-item">
+              <span className="resumen-valor">{`${(capacidadAlmacenes * 100).toFixed(2)}%`}</span>
+              <span className="resumen-etiqueta">capacidad de almacenes usada</span>
+            </div>
           </div>
           <div className="info-fecha">
             <div className="fecha-item">
@@ -48,7 +48,7 @@ interface InfoVuelosProps {
             </div>
           </div>
           <div className="leyenda">
-            <span className="leyenda-titulo">Leyenda</span>
+            <div className="leyenda-titulo">Leyenda</div>
             <div className="leyenda-item">
               <img src="/logos/vueloEnhancedBlue.png" alt="Vuelo seleccionado" className="icono-leyenda" />
               <span className="leyenda-etiqueta">Vuelo seleccionado</span>
@@ -59,23 +59,35 @@ interface InfoVuelosProps {
             </div>
             <div className="leyenda-titulo">Carga</div>
             <div className="carga-titulos">
-              <span className="carga-titulo">Vuelos</span>
-              <span className="carga-titulo">Oficinas</span>
+              <span className="carga-titulo">Vuelo</span>
+              <span className="carga-titulo">Almacén</span>
               <span className="carga-titulo">Capacidad</span>
             </div>
             <div className="leyenda-item">
+              <span className="leyenda-etiqueta">
               <img src="/logos/avionVerde.png" alt="0-30%" className="icono-leyenda" />
+              </span>
+              <span className="leyenda-etiqueta">
               <img src="/logos/edificioVerde.png" alt="Oficina 0-30%" className="icono-leyenda"/>
+              </span>
               <span className="leyenda-etiqueta">0-33%</span>
             </div>
             <div className="leyenda-item">
+            <span className="leyenda-etiqueta">
               <img src="/logos/avionAmarillo.png" alt="30-70%" className="icono-leyenda" />
+              </span>
+              <span className="leyenda-etiqueta">
               <img src="/logos/edificioAmarillo.png" alt="Oficina 30-70%" className="icono-leyenda" />
+              </span>
               <span className="leyenda-etiqueta">33-66%</span>
             </div>
             <div className="leyenda-item">
+              <span className="leyenda-etiqueta">
               <img src="/logos/avionRojo.png" alt="70-100%" className="icono-leyenda" />
+              </span>
+              <span className="leyenda-etiqueta">
               <img src="/logos/edificioRojo.png" alt="Oficina 70-100%" className="icono-leyenda" />
+              </span>
               <span className="leyenda-etiqueta">66-100%</span>
             </div>
           </div>
@@ -85,7 +97,12 @@ interface InfoVuelosProps {
   };
 
   function formatearCantidad(vuelosEnElAire:number){
-    if(vuelosEnElAire<0x0)return'0';else{if(vuelosEnElAire>0x352){let diferencia=vuelosEnElAire-0x352;return(0x352+Math['floor'](diferencia/0xa)*0xa)['toString']();}else return vuelosEnElAire;}
+    if (vuelosEnElAire < 0){
+      return "0";
+    }
+    else {
+      return vuelosEnElAire;
+    }
   }
   
   export default InfoVuelos;

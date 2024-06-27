@@ -78,7 +78,7 @@ const BarraMapa = ({
             const claveProgramacion = idVuelo + "-" + fechaVueloFormatted;
             const programacion = programacionVuelos.get(claveProgramacion);
             if (programacion && programacion.paquetes.some(paquete => paquete.id === Number(aBuscar))) {
-                seleccionarVuelo(key, setSelectedVuelo, selectedFeature, vuelos, value.pointFeature);
+                seleccionarVuelo(key, setSelectedVuelo, setSelectedAeropuerto, selectedFeature, vuelos, value.pointFeature);
                 animateMapView(value.pointFeature);
                 return true;
             }
@@ -89,7 +89,7 @@ const BarraMapa = ({
     function searchInAirports(aBuscar:number) {
         for (const [key, value] of aeropuertos.entries()) {
             if (value.aeropuerto.paquetes.some(paquete => paquete.id === Number(aBuscar))) {
-                seleccionarAeropuerto(key, setSelectedAeropuerto, selectedFeature, aeropuertos, value.pointFeature, vuelos);
+                seleccionarAeropuerto(key, setSelectedAeropuerto, setSelectedVuelo, selectedFeature, aeropuertos, value.pointFeature, vuelos);
                 animateMapView(value.pointFeature);
                 return true;
             }
@@ -103,7 +103,7 @@ const BarraMapa = ({
             if(Number(aBuscar) < 3000){
                 console.log("Buscando por código de vuelo: ", aBuscar);
                 if(vuelos.current?.has(Number(aBuscar))){
-                    seleccionarVuelo(Number(aBuscar), setSelectedVuelo, selectedFeature, vuelos, vuelos.current?.get(Number(aBuscar))?.pointFeature);
+                    seleccionarVuelo(Number(aBuscar), setSelectedVuelo, setSelectedAeropuerto, selectedFeature, vuelos, vuelos.current?.get(Number(aBuscar))?.pointFeature);
                     const item = vuelos.current?.get(Number(aBuscar));
                     if (item && mapRef.current) {
                         const view = mapRef.current.getView();
@@ -142,7 +142,7 @@ const BarraMapa = ({
             console.log("Buscando por nombre de aeropuerto: ", aBuscar);
             let item = aeropuertos.get(aBuscar.toUpperCase());
             if (item) {
-                seleccionarAeropuerto(aBuscar.toUpperCase(), setSelectedAeropuerto, selectedFeature, aeropuertos, item.pointFeature, vuelos);
+                seleccionarAeropuerto(aBuscar.toUpperCase(), setSelectedAeropuerto, setSelectedVuelo , selectedFeature, aeropuertos, item.pointFeature, vuelos);
                 if (mapRef.current) {
                     const view = mapRef.current.getView();
                     if (view) {

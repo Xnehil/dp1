@@ -55,9 +55,9 @@ export function procesarData(
                     fechaVuelo.setHours(horaSalidaVuelo.getHours(), horaSalidaVuelo.getMinutes(), horaSalidaVuelo.getSeconds());
                     //Si el vuelo ya ha salido, no se puede agregar el paquete
                     if (fechaVuelo < simulationTime! && !cargaInicial) {
-                        console.log("El vuelo ya ha salido, no se puede agregar el paquete");
-                        console.log("horaSalidaVuelo: ", horaSalidaVuelo);
-                        console.log("vue: ", vuelos.current?.get(idVuelo)?.vuelo);
+                        // console.log("El vuelo ya ha salido, no se puede agregar el paquete");
+                        // console.log("horaSalidaVuelo: ", horaSalidaVuelo);
+                        // console.log("vue: ", vuelos.current?.get(idVuelo)?.vuelo);
                         continue;
                     }
                     if (!programacionVuelos.current.has(claveProgramacion)) {
@@ -97,9 +97,8 @@ export function limpiarMapasDeDatos(
     horaSimuladaActual: Date
 ) {
     const dayBefore = new Date(
-        horaSimuladaActual.getTime() - 24 * 60 * 60 * 1000 * 1
-    ); // 24 hours before the current simulated time
-
+        horaSimuladaActual.getTime() - 24 * 60 * 60 * 1000 * 2
+    ); // 48 horas antes
     let cuenta = 0;
     programacionVuelos.current.forEach((programacionVuelo, key) => {
         // console.log("Fecha salida: ", programacionVuelo.fechaSalida);
@@ -151,10 +150,10 @@ export function quitarPaquetesAlmacenados(
                     }
                     else{
                         //console.log("No se encontró el paquete en el aeropuerto");
-                        if(aeropuertoOrigen.aeropuerto.cantidadActual > aeropuertoOrigen.aeropuerto.capacidadMaxima * 74 / 100){
-                            aeropuertoOrigen.aeropuerto.cantidadActual-=4;
-                            aeropuertoOrigen.aeropuerto.paquetes.splice(0, 4);
-                        }
+                        // if(aeropuertoOrigen.aeropuerto.cantidadActual > aeropuertoOrigen.aeropuerto.capacidadMaxima * 74 / 100){
+                        //     aeropuertoOrigen.aeropuerto.cantidadActual-=4;
+                        //     aeropuertoOrigen.aeropuerto.paquetes.splice(0, 4);
+                        // }
                     }
                 }
             }
@@ -169,73 +168,41 @@ export function quitarPaquetesAlmacenados(
 }
 
 //agregarPaquetesAlmacen(idVuelo, programacionVuelos, aeropuertos, simulationTime);
-export async function agregarPaquetesAlmacen(
+export function agregarPaquetesAlmacen(
     idVuelo: number,
     programacionVuelos: React.MutableRefObject<Map<string, ProgramacionVuelo>>,
     aeropuertos: React.MutableRefObject<Map<string, {aeropuerto: Aeropuerto; pointFeature: any}>>,
     simulationTime: Date | null,
     envios: React.MutableRefObject<Map<string, Envio>>,
     vuelos: React.RefObject<Map<number,{vuelo: Vuelo;pointFeature: any;lineFeature: any;routeFeature: any;}>>
-) {
-    let verbose = false;
-    if (!simulationTime) return;
-    // console.log("Simulation time: ", simulationTime);
+): boolean {
+    if (!simulationTime) return false;
     const diaDeSimulacion = simulationTime.toISOString().slice(0, 10);
     const claveProgramacion = idVuelo + "-" + diaDeSimulacion;
     const programacion: ProgramacionVuelo | undefined = programacionVuelos.current.get(claveProgramacion);
     let cuenta = 0;
-    if(idVuelo == 624){
-        verbose = true;
-        // console.log("Programación: ", programacion);
-        // console.log("claveProgramacion: ", claveProgramacion);
-        // console.log("diaDeSimulacion: ", diaDeSimulacion);
-    }
-    //Si es que existe la programación de vuelo para ese día
     if (programacion) {
-        return new Promise<boolean>((resolve, reject) => {
-            try {
-                for (let paquete of programacion.paquetes) {
-                    const envio = envios.current.get(paquete.codigoEnvio);
-                    if (!envio) {
-                        console.log("No se encontró el envío para sacar el destino del paquete");
-                        continue;
-                    }
-                    if (verbose) {
-                        console.log("Envío: ", envio);
-                    }
-                    const ciudadDestino = vuelos.current?.get(idVuelo)!.vuelo.destino;
-                    if (ciudadDestino === undefined) {
-                        console.log("No se encontró la ciudad destino");
-                        continue;
-                    }
-                    const aeropuertoDestino = aeropuertos.current.get(ciudadDestino);
-                    if (verbose) {
-                        // console.log("Aeropuerto destino: ", aeropuertoDestino);
-                    }
-                    if (verbose) {
-                        // console.log("Paquete: ", paquete);
-                    }
-                    //Si ya es su destino final, no se agrega
-                    if (aeropuertoDestino && aeropuertoDestino.aeropuerto.codigoOACI!=(envio.destino)) {
-                        aeropuertoDestino.aeropuerto.cantidadActual++;
-                        aeropuertoDestino.aeropuerto.paquetes.push(paquete);
-                        if (verbose) {
-                            // console.log("Paquete: ", paquete);
-                            // console.log("Aeropuerto destino: ", aeropuertoDestino);
-                        }
-                        cuenta++;
-                    }
-                }
-                resolve(true);
-            } catch (error) {
-                reject(error);
+        for (let paquete of programacion.paquetes) {
+            const envio = envios.current.get(paquete.codigoEnvio);
+            if (!envio) {
+                console.log("No se encontró el envío para sacar el destino del paquete");
+                continue;
             }
-        });
-    }
-    else {
-        return new Promise<boolean>((resolve, reject) => {
-            resolve(false);
-        });
+            const ciudadDestino = vuelos.current?.get(idVuelo)?.vuelo.destino;
+            if (ciudadDestino === undefined) {
+                console.log("No se encontró la ciudad destino");
+                continue;
+            }
+            const aeropuertoDestino = aeropuertos.current.get(ciudadDestino);
+            if (aeropuertoDestino && aeropuertoDestino.aeropuerto.codigoOACI != envio.destino) {
+                aeropuertoDestino.aeropuerto.cantidadActual++;
+                aeropuertoDestino.aeropuerto.paquetes.push(paquete);
+                cuenta++;
+            }
+        }
+        return true;
+    } else {
+        return false;
     }
     // console.log("Se agregaron ", cuenta, " paquetes a aeropuertos");
 }
@@ -262,18 +229,26 @@ export function decidirEstiloAeropuerto(item: {aeropuerto: Aeropuerto; pointFeat
 }
 
 export function contarVuelos(
-    vuelos: React.RefObject<Map<number,{vuelo: Vuelo;pointFeature: any;lineFeature: any;routeFeature: any;}>>,
-    programacionVuelos: React.MutableRefObject<Map<string, ProgramacionVuelo>>,
-    simulationTime: Date | null
+    vuelos: React.RefObject<Map<number,{vuelo: Vuelo;pointFeature: any;lineFeature: any;routeFeature: any;}>>
 ): number {
     let cuenta = 0;
-    const fechaVueloFormatted = simulationTime?.toISOString().slice(0, 10);
     //De los vuelos en el  de vuelos, contar los que tienen una entrada en programacionVuelos para la fecha de simulación
     vuelos.current?.forEach((vuelo) => {
-        const claveProgramacion = vuelo.vuelo.id + "-" + fechaVueloFormatted;
-        if (programacionVuelos.current.has(claveProgramacion)) {
+        const feature = vuelo.pointFeature;
+        if(feature?.get("pintarAuxiliar")){
             cuenta++;
         }
     });
     return cuenta;
+}
+
+export function capacidadAlmacenesUsada(aeropuertos: React.MutableRefObject<Map<string, {aeropuerto: Aeropuerto; pointFeature: any}>>): number {
+    let capacidadUsada = 0;
+    let capacidadTotal = 0;
+    for (let key of aeropuertos.current.keys()) {
+        // console.log("Key: ", key);
+        capacidadUsada += aeropuertos.current.get(key)?.aeropuerto.cantidadActual ?? 0;
+        capacidadTotal += aeropuertos.current.get(key)?.aeropuerto.capacidadMaxima ?? 0;
+    }
+    return capacidadUsada/capacidadTotal;
 }

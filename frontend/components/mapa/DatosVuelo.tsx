@@ -29,15 +29,14 @@ const DatosVuelo: React.FC<DatosVueloProps> = ({ vuelo, aeropuerto, programacion
   };
 
   useEffect(() => {
-    if(vuelo == null) return;
+    if (!vuelo) return;
     console.log("Vuelo: ", vuelo);
-    //En base al día de la simulación, se obtiene la programación de vuelo correspondiente
-    const claveProgramacion = vuelo.id + "-" + simulationTime.toISOString().slice(0,10);
-    // console.log("Clave programación: ", claveProgramacion);
-    // console.log("Programaciones de vuelo: ", programacionVuelos.current);
-    const auxProgramacion = programacionVuelos.current.get(claveProgramacion);
-    // console.log("Programación de vuelo: ", auxProgramacion);
-    setProgramacionVuelo(auxProgramacion ?? null);
+    const claveProgramacion = `${vuelo.id}-${simulationTime.toISOString().slice(0,10)}`;
+    console.log("Programación de vuelo: ", programacionVuelos.current.get(claveProgramacion) ?? null);
+    const fechaAyer = new Date(simulationTime);
+    fechaAyer.setDate(fechaAyer.getDate() - 1);
+    const claveProgramacionManana = `${vuelo.id}-${fechaAyer.toISOString().slice(0,10)}`;
+    setProgramacionVuelo(programacionVuelos.current.get(claveProgramacion) ?? programacionVuelos.current.get(claveProgramacionManana) ?? null);
     setVisible(true);
     setOpcion(1);
   }, [vuelo]);
