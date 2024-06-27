@@ -186,6 +186,7 @@ export function crearPuntoDeVuelo(aeropuertos: Map<String, {aeropuerto:Aeropuert
     let tieneCarga = true;
     if (paquetes > 0) {
         let razon = paquetes / item.vuelo.capacidad;
+        feature.set('pintarAuxiliar', true); 
         if (razon < 0.33){
             feature.setStyle(greenPlaneStyle(item, angulo));
         }
@@ -204,25 +205,27 @@ export function crearPuntoDeVuelo(aeropuertos: Map<String, {aeropuerto:Aeropuert
     return {feature, tieneCarga};
 }
 
-export function seleccionarVuelo(vueloId:number, setSelectedVuelo: any ,selectedFeature: any, vuelos: React.RefObject<Map<number, { vuelo: Vuelo, pointFeature: any, lineFeature: any}>>, feature: any){
+export function seleccionarVuelo(vueloId:number, setSelectedVuelo: any , setSelectedAeropuerto: any,
+    selectedFeature: any, vuelos: React.RefObject<Map<number, { vuelo: Vuelo, pointFeature: any, lineFeature: any}>>, feature: any){
     // console.log("vueloId: ", vueloId);
     // console.log("vuelos: ", vuelos.current);
     const vuelo = vuelos.current?.get(vueloId)?.vuelo;
     if (vuelo) {
         setSelectedVuelo(vuelo);
+        setSelectedAeropuerto(null);
         console.log(
             `Vuelo seleccionado setteado: Vuelo ID${vuelo.id}`
         );
         if (selectedFeature.current != null) {
-            selectedFeature.current.setStyle(dinamicPlaneStyle(vuelos.current?.get(selectedFeature.current.get("vueloId")), null));
-            vuelos.current?.get(selectedFeature.current.get("vueloId"))?.lineFeature.setStyle(invisibleStyle);
+            if (selectedFeature.current.get("vueloId")) {
+                selectedFeature.current.setStyle(selectedFeature.current.get("estiloAnterior"));
+                vuelos.current?.get(selectedFeature.current.get("vueloId"))?.lineFeature.setStyle(invisibleStyle);
+            } else if (selectedFeature.current.get("aeropuertoId")) {
+                selectedFeature.current.setStyle(selectedFeature.current.get("estiloAnterior"));
+            }
         }
-
-        (feature as Feature).setStyle(
-            dinamicSelectedPlaneStle(
-                vuelos.current?.get(vueloId)
-            )
-        );
+        (feature as Feature).set("estiloAnterior", (feature as Feature).getStyle());
+        (feature as Feature).setStyle(dinamicSelectedPlaneStle(vuelos.current?.get(vueloId)));
         selectedFeature.current = feature as Feature;
 
         vuelos.current?.get(vueloId)?.lineFeature.setStyle(selectedLineStyle);
@@ -233,17 +236,25 @@ export function seleccionarVuelo(vueloId:number, setSelectedVuelo: any ,selected
     }
 }
 
-export function seleccionarAeropuerto(aeropuertoId: string, setSelectedAeropuerto: any, selectedFeature: any, aeropuertos: Map<string, Aeropuerto>, feature: any) {
-    const aeropuerto = aeropuertos.get(aeropuertoId);
+export function seleccionarAeropuerto(aeropuertoId: string, setSelectedAeropuerto: any, setSelectedVuelo: any,
+    selectedFeature: any, aeropuertos: Map<string, {aeropuerto: Aeropuerto; pointFeature:any}>, feature: any, vuelos: React.RefObject<Map<number, { vuelo: Vuelo, pointFeature: any, lineFeature: any }>>) {
+    const aeropuerto = aeropuertos.get(aeropuertoId)?.aeropuerto
     if (aeropuerto) {
         setSelectedAeropuerto(aeropuerto);
+        setSelectedVuelo(null);
         console.log(
-            `Aeropuerto seleccionado setteado: Aeropuerto ID ${aeropuerto.id}`
+            `Aeropuerto seleccionado setteado: Aeropuerto ID ${aeropuerto.codigoOACI}`
         );
         if (selectedFeature.current != null) {
-            selectedFeature.current.setStyle(airportStyle);
-        }
+            if (selectedFeature.current.get("vueloId")) {
+                selectedFeature.current.setStyle(selectedFeature.current.get("estiloAnterior"));
+                vuelos.current?.get(selectedFeature.current.get("vueloId"))?.lineFeature.setStyle(invisibleStyle);
+            } else if (selectedFeature.current.get("aeropuertoId")) {
+                selectedFeature.current.setStyle(selectedFeature.current.get("estiloAnterior"));
 
+            }
+        }
+        (feature as Feature).set("estiloAnterior", (feature as Feature).getStyle());
         (feature as Feature).setStyle(selectedAirportStyle);
         selectedFeature.current = feature as Feature;
     } else {
@@ -312,4 +323,3 @@ export function seleccionarElemento(
         }
     }
 }
-

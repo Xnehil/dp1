@@ -40,7 +40,7 @@ import {
 import BarraMapa from "./BarraMapa";
 import { ProgramacionVuelo } from "@/types/ProgramacionVuelo";
 import { Envio } from "@/types/Envio";
-import { agregarPaquetesAlmacen, contarVuelos, decidirEstiloAeropuerto, limpiarMapasDeDatos } from "@/utils/FuncionesDatos";
+import { agregarPaquetesAlmacen, capacidadAlmacenesUsada, contarVuelos, decidirEstiloAeropuerto, limpiarMapasDeDatos } from "@/utils/FuncionesDatos";
 
 type MapaProps = {
     vuelos: React.RefObject<
@@ -90,7 +90,7 @@ const Mapa = ({
     const fechaFinSemana = new Date(horaInicio.getTime() + 7 * 24 * 60 * 60 * 1000); //suma 7 dias
     const [vuelosABorrar, setVuelosABorrar] = useState<number[]>([]);
     const [mostrarFinSemanal, setMostrarFinSemanal] = useState(false);
-    const [vuelosEnElAire, setVuelosEnElAire] = useState(0);
+    const vuelosEnElAire = useRef<number>(0);
 
     useEffect(() => {
         if (!mapRef.current) {
@@ -137,7 +137,7 @@ const Mapa = ({
             auxPointFeatures.push(objeto.feature)
             if(objeto.tieneCarga) cuenta++;
         });
-        setVuelosEnElAire(cuenta);
+        vuelosEnElAire.current = cuenta;
 
         const aeropuertoFeatures = Array.from(aeropuertos.current.values()).map(
             (item) => {
@@ -251,13 +251,13 @@ const Mapa = ({
         return () => clearInterval(intervalId);
     }, [simulationTime, simulationInterval]);
 
-    useEffect(() => {
-        const timeoutId = setInterval(() => limpiarMapasDeDatos(programacionVuelos, envios, new Date(simulationTime.getTime())), 360 * 1000); // 360 seconds = 6 minutes
-        return () => clearInterval(timeoutId); 
-    }, []);
+    // useEffect(() => {
+    //     const timeoutId = setInterval(() => limpiarMapasDeDatos(programacionVuelos, envios, new Date(simulationTime.getTime())), 360 * 1000); // 360 seconds = 6 minutes
+    //     return () => clearInterval(timeoutId); 
+    // }, []);
 
     useEffect(() => {
-        async function processItem(item: any, idVuelo: number) {
+        function processItem(item: any, idVuelo: number) {
             if (item) {
                 vectorSourceRef.current.removeFeature(item.pointFeature);
                 vectorSourceRef.current.removeFeature(item.lineFeature);
@@ -266,7 +266,7 @@ const Mapa = ({
                 item.routeFeature = null;
                 let result=false;
                 try {
-                    result = await agregarPaquetesAlmacen(idVuelo, programacionVuelos, aeropuertos, simulationTime, envios, vuelos) ?? false;
+                    result = agregarPaquetesAlmacen(idVuelo, programacionVuelos, aeropuertos, simulationTime, envios, vuelos) ?? false;
                 } catch (error) {
                     console.error('Promesa rechazada: ', error);
                 }
@@ -276,16 +276,16 @@ const Mapa = ({
             return false;
         }
 
-        async function processItems(aBorrar: number[]) {
+        function processItems(aBorrar: number[]) {
             let cuenta=0;
             for (let i = 0; i < aBorrar.length; i++) {
                 const idVuelo = aBorrar[i];
                 const item = vuelos.current?.get(idVuelo);
-                const result=await processItem(item, idVuelo);
+                const result= processItem(item, idVuelo);
                 if(result) cuenta++;
             }
             // console.log("Restando vuelos en el aire: %d de %d", cuenta, aBorrar.length);
-            setVuelosEnElAire(vuelosEnElAire-cuenta);
+            vuelosEnElAire.current = vuelosEnElAire.current - cuenta;
         }
 
         if(vuelosABorrar.length > 0){
@@ -319,7 +319,7 @@ const Mapa = ({
                 }
             }
             // console.log("Sumando vuelos en el aire: %d de %d", cuenta, nuevosVuelos.length);
-            setVuelosEnElAire(vuelosEnElAire+Math.floor(cuenta*1.25));
+            vuelosEnElAire.current = vuelosEnElAire.current + cuenta;
             setSemaforo(semaforo - 1);
         }
     }),[nuevosVuelos, semaforo];
@@ -337,10 +337,12 @@ const Mapa = ({
                     selectedFeature={selectedFeature}
                     vuelos={vuelos}
                     aeropuertos={aeropuertos.current}
+                    programacionVuelos={programacionVuelos.current}
+                    simulatedTime={simulationTime}
                 />
                 <Leyenda
-                    vuelosEnTransito={vuelosEnElAire}
-                    enviosEnElAire={0}
+                    vuelosEnTransito={contarVuelos(vuelos)}
+                    capacidadAlmacenes={capacidadAlmacenesUsada(aeropuertos)}
                     fechaHoraActual={currentTime.toLocaleString()}
                     fechaHoraSimulada={simulationTime.toLocaleString()}
                 />

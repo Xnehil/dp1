@@ -47,7 +47,7 @@
 }
 
 .info-fecha {
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 }
 
 .fecha-item {
@@ -67,7 +67,7 @@
 }
 
 .leyenda {
-    margin-top: 20px;
+    margin-top: 5px;
 }
 
 .leyenda-titulo {
@@ -78,14 +78,14 @@
 
 .leyenda-item {
     display: flex;
-    align-items: center;
+    justify-content: space-between;
     margin-bottom: 10px;
 }
 
 .icono-leyenda {
     width: 20px;
     height: 20px;
-    margin-right: 10px;
+    place-self: center;
 }
 
 .vuelo-seleccionado {
@@ -98,12 +98,13 @@
     background-color: #FF7F09;
     border-top: 2px dotted #FF7F09;
     margin-right: 10px;
+    place-self: center;
 }
 
 .carga-titulos {
     display: flex;
     justify-content: space-between;
-    font-weight: bold;
+    font-weight: 500;
     margin-bottom: 10px;
 }
 
@@ -113,6 +114,9 @@
 }
 
 .leyenda-etiqueta {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     flex: 1;
     text-align: center;
 }

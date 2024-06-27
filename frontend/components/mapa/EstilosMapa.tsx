@@ -32,6 +32,7 @@ if(typeof window !== 'undefined') {
             src: '/logos/edificioVerde.png',
             scale: 0.15,
         }),
+        zIndex: 500,
     });
 
     yellowAirportStyle = new Style({
@@ -42,6 +43,7 @@ if(typeof window !== 'undefined') {
             src: '/logos/edificioAmarillo.png',
             scale: 0.15,
         }),
+        zIndex: 500,
     });
 
     redAirportStyle = new Style({
@@ -52,6 +54,7 @@ if(typeof window !== 'undefined') {
             src: '/logos/edificioRojo.png',
             scale: 0.15,
         }),
+        zIndex: 500,
     });
 
     selectedAirportStyle = new Style({
@@ -62,6 +65,7 @@ if(typeof window !== 'undefined') {
             src: '/logos/oficinasEnhancedBlue.png',
             scale: 0.20,
         }),
+        zIndex: Infinity,
     });
 
     planeStyle = new Style({
@@ -116,6 +120,7 @@ export function dinamicSelectedPlaneStle(item: {vuelo:Vuelo, pointFeature:any, l
             scale: 0.30,
             rotation: angulo
         }),
+        zIndex: Infinity
     });
 
 }
@@ -195,4 +200,5 @@ export const selectedLineStyle = new Style({
       lineDash: [4],
       width: 2, // Increase width for the selected line
     }),
+    zIndex: Infinity,
 });
