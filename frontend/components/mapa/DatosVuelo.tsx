@@ -89,7 +89,7 @@ const DatosVuelo: React.FC<DatosVueloProps> = ({ vuelo, aeropuerto, programacion
       <div
         className={`datos-vuelo-contenedor ${visible ? "visible" : "hidden"}`}
       >
-        {(vuelo)? (
+        {(vuelo && opcion==1)? (
           <>
             <div className="datos-vuelo-header">
               <img src="/logos/vueloEnhancedBlue.png" alt="Avión" className="icono-vuelo" />
@@ -135,10 +135,10 @@ const DatosVuelo: React.FC<DatosVueloProps> = ({ vuelo, aeropuerto, programacion
                 <table>
                   <thead>
                     <tr>
-                      <th>Código</th>
+                      <th>Cód. paquete</th>
                       <th>Origen</th>
                       <th>Destino</th>
-                      <th>ID envío</th>
+                      <th>Cód. envío</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -166,7 +166,7 @@ const DatosVuelo: React.FC<DatosVueloProps> = ({ vuelo, aeropuerto, programacion
               </div>
             </div>
           </>
-        ) : aeropuerto ? (
+        ) : (aeropuerto && opcion==2) ? (
           <>
             <div className="datos-vuelo-header">
               <img src="/logos/oficinasEnhancedBlue.png" alt="Oficina" className="icono-vuelo" />
@@ -212,10 +212,10 @@ const DatosVuelo: React.FC<DatosVueloProps> = ({ vuelo, aeropuerto, programacion
                 <table>
                   <thead>
                     <tr>
-                      <th>Código</th>
+                      <th>Cód. paquete</th>
                       <th>Origen</th>
                       <th>Destino</th>
-                      <th>ID envío</th>
+                      <th>Cód. envío</th>
                     </tr>
                   </thead>
                   <tbody>

@@ -214,10 +214,14 @@ export function seleccionarVuelo(vueloId:number, setSelectedVuelo: any ,selected
             `Vuelo seleccionado setteado: Vuelo ID${vuelo.id}`
         );
         if (selectedFeature.current != null) {
-            selectedFeature.current.setStyle(dinamicPlaneStyle(vuelos.current?.get(selectedFeature.current.get("vueloId")), null));
-            vuelos.current?.get(selectedFeature.current.get("vueloId"))?.lineFeature.setStyle(invisibleStyle);
+            if (selectedFeature.current.get("vueloId")) {
+                selectedFeature.current.setStyle(selectedFeature.current.get("estiloAnterior"));
+                vuelos.current?.get(selectedFeature.current.get("vueloId"))?.lineFeature.setStyle(invisibleStyle);
+            } else if (selectedFeature.current.get("aeropuertoId")) {
+                selectedFeature.current.setStyle(selectedFeature.current.get("estiloAnterior"));
+            }
         }
-
+        (feature as Feature).set("estiloAnterior", (feature as Feature).getStyle());
         (feature as Feature).setStyle(
             dinamicSelectedPlaneStle(
                 vuelos.current?.get(vueloId)
@@ -233,17 +237,23 @@ export function seleccionarVuelo(vueloId:number, setSelectedVuelo: any ,selected
     }
 }
 
-export function seleccionarAeropuerto(aeropuertoId: string, setSelectedAeropuerto: any, selectedFeature: any, aeropuertos: Map<string, Aeropuerto>, feature: any) {
-    const aeropuerto = aeropuertos.get(aeropuertoId);
+export function seleccionarAeropuerto(aeropuertoId: string, setSelectedAeropuerto: any, selectedFeature: any, aeropuertos: Map<string, {aeropuerto: Aeropuerto; pointFeature:any}>, feature: any, vuelos: React.RefObject<Map<number, { vuelo: Vuelo, pointFeature: any, lineFeature: any }>>) {
+    const aeropuerto = aeropuertos.get(aeropuertoId)?.aeropuerto
     if (aeropuerto) {
         setSelectedAeropuerto(aeropuerto);
         console.log(
-            `Aeropuerto seleccionado setteado: Aeropuerto ID ${aeropuerto.id}`
+            `Aeropuerto seleccionado setteado: Aeropuerto ID ${aeropuerto.codigoOACI}`
         );
         if (selectedFeature.current != null) {
-            selectedFeature.current.setStyle(airportStyle);
-        }
+            if (selectedFeature.current.get("vueloId")) {
+                selectedFeature.current.setStyle(selectedFeature.current.get("estiloAnterior"));
+                vuelos.current?.get(selectedFeature.current.get("vueloId"))?.lineFeature.setStyle(invisibleStyle);
+            } else if (selectedFeature.current.get("aeropuertoId")) {
+                selectedFeature.current.setStyle(selectedFeature.current.get("estiloAnterior"));
 
+            }
+        }
+        (feature as Feature).set("estiloAnterior", (feature as Feature).getStyle());
         (feature as Feature).setStyle(selectedAirportStyle);
         selectedFeature.current = feature as Feature;
     } else {
@@ -312,4 +322,3 @@ export function seleccionarElemento(
         }
     }
 }
-

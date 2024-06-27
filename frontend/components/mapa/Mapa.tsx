@@ -337,6 +337,8 @@ const Mapa = ({
                     selectedFeature={selectedFeature}
                     vuelos={vuelos}
                     aeropuertos={aeropuertos.current}
+                    programacionVuelos={programacionVuelos.current}
+                    simulatedTime={simulationTime}
                 />
                 <Leyenda
                     vuelosEnTransito={vuelosEnElAire}
