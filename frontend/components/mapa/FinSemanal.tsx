@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Box, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import { styled } from '@mui/system';
 import { Vuelo } from "@/types/Vuelo";
@@ -27,36 +27,42 @@ const FinSemanal: React.FC<FinSemanalProps> = ({ programacionVuelos, vuelos }) =
     setOpen(false);
   };
 
-  const rows = Array.from(programacionVuelos.current.values()).map((programacion) => {
-    if (!vuelos.current) return null;
-    const vueloInfo = vuelos.current.get(programacion.idVuelo);
-    if (!vueloInfo) {
-      return null;
-    }
-    return {
-      code: programacion.idVuelo,
-      departure: formatTime(vueloInfo.vuelo.fechaHoraSalida),
-      arrival: formatTime(vueloInfo.vuelo.fechaHoraLlegada),
-      origin: vueloInfo.vuelo.origen,
-      destination: vueloInfo.vuelo.destino,
-      packages: programacion.cantPaquetes,
-    };
-  }).filter(row => row !== null);
+  const rows = useMemo(() => {
+    const allRows = Array.from(programacionVuelos.current.values())
+      .map((programacion) => {
+        if (!vuelos.current) return null;
+        const vueloInfo = vuelos.current.get(programacion.idVuelo);
+        if (!vueloInfo) return null;
+        
+        return {
+          code: programacion.idVuelo,
+          departure: formatTime(vueloInfo.vuelo.fechaHoraSalida),
+          arrival: formatTime(vueloInfo.vuelo.fechaHoraLlegada),
+          origin: vueloInfo.vuelo.origen,
+          destination: vueloInfo.vuelo.destino,
+          packages: programacion.cantPaquetes,
+        };
+      })
+      .filter(row => row !== null);
+
+    // Return only the last 300 items
+    return allRows.slice(-300);
+  }, [programacionVuelos, vuelos]);
 
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
-      <DialogTitle>La planificación semanal fue la siguiente:</DialogTitle>
+      <DialogTitle>Últimos vuelos de la planificación semanal:</DialogTitle>
       <DialogContent>
         <TableContainer component={Paper}>
           <Table>
             <TableHead>
               <TableRow>
-                <StyledTableCell>Código</StyledTableCell>
+                <StyledTableCell>Código vuelo</StyledTableCell>
                 <StyledTableCell>Hora salida</StyledTableCell>
-                <StyledTableCell>Llegada estimada</StyledTableCell>
+                <StyledTableCell>Hora llegada</StyledTableCell>
                 <StyledTableCell>Ciudad origen</StyledTableCell>
                 <StyledTableCell>Ciudad destino</StyledTableCell>
-                <StyledTableCell>Paquetes</StyledTableCell>
+                <StyledTableCell>Paquetes asignados</StyledTableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -77,11 +83,11 @@ const FinSemanal: React.FC<FinSemanalProps> = ({ programacionVuelos, vuelos }) =
         </TableContainer>
       </DialogContent>
       <DialogActions>
-        <Button variant="contained" color="success" sx={{ backgroundColor: '#28a745' }}>
+        {/* <Button variant="contained" color="success" sx={{ backgroundColor: '#28a745' }}>
           DESCARGAR
-        </Button>
+        </Button> */}
         <Button variant="contained" color="primary" sx={{ backgroundColor: '#007bff' }} onClick={handleClose}>
-          CONTINUAR
+          Continuar
         </Button>
       </DialogActions>
     </Dialog>
