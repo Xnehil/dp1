@@ -175,12 +175,11 @@ export function crearLineaDeVuelo(aeropuertos: Map<String, {aeropuerto: Aeropuer
 }
 
 export function crearPuntoDeVuelo(aeropuertos: Map<String, {aeropuerto:Aeropuerto; pointFeature: any}>, item: any, simulationTime: Date,
-    programacionVuelos: Map<string, ProgramacionVuelo>): {feature: any, tieneCarga: boolean} {
+    programacionVuelos: Map<string, ProgramacionVuelo>, setColapso: any): {feature: any, tieneCarga: boolean} {
     const point = coordenadasIniciales(aeropuertos, item, simulationTime);
     const feature = new Feature({
         geometry: point,
     });
-
     const llaveBusqueda = item.vuelo.id + "-" + simulationTime.toISOString().slice(0, 10);
     const programacion = programacionVuelos.get(llaveBusqueda);
     const paquetes = programacion?.cantPaquetes ?? 0;
@@ -196,8 +195,11 @@ export function crearPuntoDeVuelo(aeropuertos: Map<String, {aeropuerto:Aeropuert
         else if (razon < 0.66){
             feature.setStyle(yellowPlaneStyle(item, angulo));
         }
-        else{
+        else if (razon <= 1){
             feature.setStyle(redPlaneStyle(item, angulo));
+        } else {
+            console.error("Error en la cantidad de paquetes");
+            setColapso(true);
         }
     } else {
         tieneCarga = false;

@@ -94,6 +94,7 @@ const Mapa = ({
     const [mostrarFinSemanal, setMostrarFinSemanal] = useState(false);
     const aBorrarEnvios = useRef<string[]>([]);
     const vuelosEnElAire = useRef<number>(0);
+    const [colapso, setColapso] = useState(false);
 
     useEffect(() => {
         if (!mapRef.current) {
@@ -134,7 +135,8 @@ const Mapa = ({
                 aeropuertos.current,
                 item,
                 simulationTime,
-                programacionVuelos.current
+                programacionVuelos.current,
+                setColapso
             );
             item.pointFeature = objeto.feature;
             auxPointFeatures.push(objeto.feature)
@@ -249,7 +251,7 @@ const Mapa = ({
             }
         }, 1000);
 
-        if(simulationTime.getTime() > fechaFinSemana.getTime()){
+        if(simulationTime.getTime() > fechaFinSemana.getTime() || colapso){
             clearInterval(intervalId);
             console.log("Fin de la simulación");
             setMostrarFinSemanal(true);
@@ -285,7 +287,7 @@ const Mapa = ({
                 item.routeFeature = null;
                 let result=false;
                 try {
-                    result = agregarPaquetesAlmacen(idVuelo, programacionVuelos, aeropuertos, simulationTime, envios, vuelos) ?? false;
+                    result = agregarPaquetesAlmacen(idVuelo, programacionVuelos, aeropuertos, simulationTime, envios, vuelos, setColapso) ?? false;
                 } catch (error) {
                     console.error('Promesa rechazada: ', error);
                 }
@@ -329,7 +331,8 @@ const Mapa = ({
                         aeropuertos.current,
                         item,
                         simulationTime,
-                        programacionVuelos.current
+                        programacionVuelos.current,
+                        setColapso
                     );
                     item.pointFeature = objeto.feature;
                     if(objeto.tieneCarga) cuenta++;

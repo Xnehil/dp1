@@ -174,7 +174,8 @@ export function agregarPaquetesAlmacen(
     aeropuertos: React.MutableRefObject<Map<string, {aeropuerto: Aeropuerto; pointFeature: any}>>,
     simulationTime: Date | null,
     envios: React.MutableRefObject<Map<string, Envio>>,
-    vuelos: React.RefObject<Map<number,{vuelo: Vuelo;pointFeature: any;lineFeature: any;routeFeature: any;}>>
+    vuelos: React.RefObject<Map<number,{vuelo: Vuelo;pointFeature: any;lineFeature: any;routeFeature: any;}>>,
+    setColapso: React.Dispatch<React.SetStateAction<boolean>>
 ): boolean {
     if (!simulationTime) return false;
     const diaDeSimulacion = simulationTime.toISOString().slice(0, 10);
@@ -198,6 +199,10 @@ export function agregarPaquetesAlmacen(
                 aeropuertoDestino.aeropuerto.cantidadActual++;
                 aeropuertoDestino.aeropuerto.paquetes.push(paquete);
                 cuenta++;
+                if (aeropuertoDestino.aeropuerto.cantidadActual > aeropuertoDestino.aeropuerto.capacidadMaxima) {
+                    setColapso(true);
+                    return false;
+                }
             }
         }
         return true;
