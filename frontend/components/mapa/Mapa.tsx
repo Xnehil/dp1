@@ -191,6 +191,11 @@ const Mapa = ({
                         feature,
                     );
                 }
+                else {
+                    console.log("No se seleccionó ningún elemento");
+                    setSelectedVuelo(null);
+                    setSelectedAeropuerto(null);
+                }
             };
     
             mapRef.current.on("click", clickHandler);
@@ -338,6 +343,7 @@ const Mapa = ({
                     vuelos={vuelos}
                     aeropuertos={aeropuertos.current}
                     programacionVuelos={programacionVuelos.current}
+                    envios={envios.current}
                     simulatedTime={simulationTime}
                 />
                 <Leyenda

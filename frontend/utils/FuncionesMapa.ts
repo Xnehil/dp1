@@ -323,4 +323,7 @@ export function seleccionarElemento(
             console.error(`Aeropuerto no encontrado: Aeropuerto ID ${aeropuertoId}`);
         }
     }
+    else{
+        console.log("No se seleccionó nada");
+    }
 }

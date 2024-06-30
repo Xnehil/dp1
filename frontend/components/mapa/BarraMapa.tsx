@@ -8,6 +8,7 @@ import { seleccionarAeropuerto, seleccionarVuelo } from "@/utils/FuncionesMapa";
 import { Map as OLMap } from "ol";
 import { fromLonLat } from "ol/proj";
 import { ProgramacionVuelo } from "@/types/ProgramacionVuelo";
+import { Envio } from "@/types/Envio";
 
 type BarraMapaProps = {
     setSelectedVuelo: (value: Vuelo | null) => void,
@@ -27,6 +28,7 @@ type BarraMapaProps = {
     >;
     aeropuertos: Map<string, {aeropuerto: Aeropuerto; pointFeature: any}>;
     programacionVuelos: Map<string, ProgramacionVuelo>;
+    envios: Map<string, Envio>;
     simulatedTime: Date;
 };
 const BarraMapa = ({
