@@ -7,7 +7,7 @@ interface InfoVuelosProps {
     vuelosEnTransito: {cuenta:number; porcentaje:number};
     capacidadAlmacenes: number;
     fechaHoraActual: string;
-    fechaHoraSimulada: string;
+    fechaHoraSimulada: Date;
     fechaHoraInicio: Date;
     simulacion?: boolean;
   }
@@ -37,15 +37,18 @@ interface InfoVuelosProps {
               <span className="resumen-valor">{formatearCantidad(vuelosEnTransito.cuenta)}</span>
               <span className="resumen-etiqueta">vuelos en tránsito</span>
             </div>
-            <div className="resumen-item">
-              <span className="resumen-valor">{`${(capacidadAlmacenes * 100).toFixed(2)}%`}</span>
-              <span className="resumen-etiqueta">capacidad de almacenes usada</span>
-            </div>
-            <div className="resumen-item">
-              <span className="resumen-valor">{`${(vuelosEnTransito.porcentaje * 100).toFixed(2)}%`}</span>
-              <span className="resumen-etiqueta">capacidad de vuelos usada</span>
+            <div className="column">
+              <div className="resumen-item">
+                <span className="resumen-valor">{`${(capacidadAlmacenes * 100).toFixed(2)}%`}</span>
+                <span className="resumen-etiqueta">capacidad de almacenes usada</span>
+              </div>
+              <div className="resumen-item">
+                <span className="resumen-valor">{`${(vuelosEnTransito.porcentaje * 100).toFixed(2)}%`}</span>
+                <span className="resumen-etiqueta">capacidad de vuelos usada</span>
+              </div>
             </div>
           </div>
+          <hr />
           <div className="info-fecha">
             <div className="fecha-item">
               <span className="fecha-etiqueta">Fecha y hora actual</span>
@@ -55,11 +58,11 @@ interface InfoVuelosProps {
               <>
                 <div className="fecha-item">
                   <span className="fecha-etiqueta">Fecha y hora simulada</span>
-                  <span className="fecha-valor">{fechaHoraSimulada}</span>
+                  <span className="fecha-valor">{fechaHoraSimulada.toLocaleString()}</span>
                 </div>
                 <div className="fecha-item">
                   <span className="fecha-etiqueta">Tiempo transcurrido</span>
-                  <span className="fecha-valor">{tiempoNumeroADiasHorasMinutos(tiempoEntre(fechaHoraInicio, new Date(fechaHoraSimulada)))}</span>
+                  <span className="fecha-valor">{tiempoNumeroADiasHorasMinutos(tiempoEntre(fechaHoraInicio, fechaHoraSimulada))}</span>
                 </div>
               </>
             )}

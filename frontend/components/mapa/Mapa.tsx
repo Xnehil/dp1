@@ -344,7 +344,7 @@ const Mapa = ({
                     vuelosEnTransito={contarVuelos(vuelos)}
                     capacidadAlmacenes={capacidadAlmacenesUsada(aeropuertos)}
                     fechaHoraActual={currentTime.toLocaleString()}
-                    fechaHoraSimulada={simulationTime.toLocaleString()}
+                    fechaHoraSimulada={simulationTime}
                     fechaHoraInicio={horaInicio}
                     simulacion={simulationInterval!==1/60}
                 />
