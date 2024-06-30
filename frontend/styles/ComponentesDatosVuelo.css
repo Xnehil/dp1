@@ -15,7 +15,7 @@
     transform: translateY(0);
     opacity: 1;
     max-height: 200px;
-    width: 50%;
+    width: 53%;
 }
 
 .datos-vuelo-contenedor.hidden {
@@ -26,9 +26,21 @@
 .datos-vuelo-header {
     display: flex;
     align-items: center;
-    padding: 20px;
+    justify-content: space-between ;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    padding-left: 20px;
     border-bottom: 1px solid #ccc;
+    width: 45%;
 }
+
+.datos-vuelo-content {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    max-width: 600px;
+    width: 60%;
+  }
 
 .icono-vuelo {
     width: 75px;
@@ -157,14 +169,6 @@
     transition: transform 0.3s ease;
 }
 
-
-
-.datos-vuelo-content {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    max-width: 600px;
-  }
 
 .datos-vuelo-busqueda {
     display: flex;

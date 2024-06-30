@@ -230,16 +230,20 @@ export function decidirEstiloAeropuerto(item: {aeropuerto: Aeropuerto; pointFeat
 
 export function contarVuelos(
     vuelos: React.RefObject<Map<number,{vuelo: Vuelo;pointFeature: any;lineFeature: any;routeFeature: any;}>>
-): number {
+): {cuenta:number; porcentaje:number} {
     let cuenta = 0;
+    let capacidadTotal = 0;
+    let capacidadUsada = 0;
     //De los vuelos en el  de vuelos, contar los que tienen una entrada en programacionVuelos para la fecha de simulación
     vuelos.current?.forEach((vuelo) => {
         const feature = vuelo.pointFeature;
         if(feature?.get("pintarAuxiliar")){
             cuenta++;
+            capacidadTotal += vuelo.vuelo.capacidad;
+            capacidadUsada += feature.get("cantPaquetes") ?? 0;
         }
     });
-    return cuenta;
+    return {cuenta, porcentaje: capacidadUsada/capacidadTotal};
 }
 
 export function capacidadAlmacenesUsada(aeropuertos: React.MutableRefObject<Map<string, {aeropuerto: Aeropuerto; pointFeature: any}>>): number {

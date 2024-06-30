@@ -187,6 +187,7 @@ export function crearPuntoDeVuelo(aeropuertos: Map<String, {aeropuerto:Aeropuert
     if (paquetes > 0) {
         let razon = paquetes / item.vuelo.capacidad;
         feature.set('pintarAuxiliar', true); 
+        feature.set('cantPaquetes', paquetes);
         if (razon < 0.33){
             feature.setStyle(greenPlaneStyle(item, angulo));
         }

@@ -104,7 +104,7 @@ const DatosVuelo: React.FC<DatosVueloProps> = ({ vuelo, aeropuerto, programacion
                 </p>
               </div>
               <div className="datos-vuelo-capacidad">
-                <h2>Carga: {programacionVuelo?.cantPaquetes ?? 0} Paquetes</h2>
+                <h2>Carga: <br /> {programacionVuelo?.cantPaquetes ?? 0} / {vuelo.capacidad} paquetes</h2>
                 <p>
                   {(((programacionVuelo?.cantPaquetes ?? 0) / vuelo.capacidad) * 100).toFixed(2)}
                   % lleno
@@ -178,9 +178,9 @@ const DatosVuelo: React.FC<DatosVueloProps> = ({ vuelo, aeropuerto, programacion
                 </p>
               </div>
               <div className="datos-vuelo-capacidad">
-                <h2>Capacidad máxima:</h2>
+                <h2>Capacidad:</h2>
                 <h2>
-                   {aeropuerto.capacidadMaxima} Paquetes
+                   {aeropuerto.cantidadActual}/{aeropuerto.capacidadMaxima} paquetes
                 </h2>
                 <p>
                   {(aeropuerto.cantidadActual  / aeropuerto.capacidadMaxima * 100).toFixed(2)}

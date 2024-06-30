@@ -345,6 +345,8 @@ const Mapa = ({
                     capacidadAlmacenes={capacidadAlmacenesUsada(aeropuertos)}
                     fechaHoraActual={currentTime.toLocaleString()}
                     fechaHoraSimulada={simulationTime.toLocaleString()}
+                    fechaHoraInicio={horaInicio}
+                    simulacion={simulationInterval!==1/60}
                 />
                 <DatosVuelo vuelo={selectedVuelo} aeropuerto={selectedAeropuerto} programacionVuelos={programacionVuelos} simulationTime={simulationTime}
                     envios={envios} aeropuertos={aeropuertos}
