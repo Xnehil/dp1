@@ -192,9 +192,17 @@ const Mapa = ({
                     );
                 }
                 else {
-                    console.log("No se seleccionó ningún elemento");
                     setSelectedVuelo(null);
                     setSelectedAeropuerto(null);
+                    if (selectedFeature.current != null) {
+                        if (selectedFeature.current.get("vueloId")) {
+                            selectedFeature.current.setStyle(selectedFeature.current.get("estiloAnterior"));
+                            vuelos.current?.get(selectedFeature.current.get("vueloId"))?.lineFeature.setStyle(invisibleStyle);
+                        } else if (selectedFeature.current.get("aeropuertoId")) {
+                            selectedFeature.current.setStyle(selectedFeature.current.get("estiloAnterior"));
+        
+                        }
+                    }
                 }
             };
     
