@@ -102,7 +102,7 @@ public class FuncionesLectura {
                 ZonedDateTime horaOrigenZoned = ZonedDateTime.of(localDate, origenLocalTime, zonaOrigen);
                 ZonedDateTime horaDestinoZoned = ZonedDateTime.of(localDate, destinoLocalTime, zonaDestino);
 
-                int capacidadCarga = Integer.parseInt(parts[4]) -250;
+                int capacidadCarga = Integer.parseInt(parts[4]) -250 + 100;
                 double distancia = Auxiliares.calculateHaversineDistance(aeropuertos.get(ciudadOrigen),
                         aeropuertos.get(ciudadDestino));
 

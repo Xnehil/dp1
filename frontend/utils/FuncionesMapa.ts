@@ -4,13 +4,15 @@ import { Coordinate } from 'ol/coordinate';
 import { Point, LineString } from 'ol/geom';
 import { tiempoEntreAhoraYSalida } from './FuncionesTiempo';
 import { fromLonLat } from 'ol/proj';
-import { dinamicPlaneStyle, dinamicSelectedPlaneStle, invisibleStyle, planeStyle, selectedLineStyle, selectedPlaneStyle, selectedAirportStyle, airportStyle, calcularAngulo, greenPlaneStyle, yellowPlaneStyle, redPlaneStyle } from '@/components/mapa/EstilosMapa';
+import { dinamicPlaneStyle, dinamicSelectedPlaneStle, invisibleStyle, planeStyle, selectedLineStyle, selectedPlaneStyle, selectedAirportStyle, airportStyle, calcularAngulo, greenPlaneStyle, yellowPlaneStyle, redPlaneStyle, mulitpleSelectedLineStyle } from '@/components/mapa/EstilosMapa';
 import { Feature } from 'ol';
 import { getVectorContext } from 'ol/render';
 import Icon from 'ol/style/Icon';
 import Style from 'ol/style/Style';
 import { ProgramacionVuelo } from '@/types/ProgramacionVuelo';
 import React from 'react';
+import { Envio } from '@/types/Envio';
+import { Paquete } from '@/types/Paquete';
 
 export function updateCoordinates(vuelos: Map<number, { vuelo: Vuelo, pointFeature: any, lineFeature: any}> | null, simulationTime: Date):
     number[]{
@@ -270,6 +272,7 @@ export function seleccionarElemento(
     aeropuertoId: string | null,
     setSelectedVuelo: any,
     setSelectedAeropuerto: any,
+    setSelectedEnvio: any,
     selectedFeature: any,
     vuelos: React.RefObject<Map<number, { vuelo: Vuelo, pointFeature: any, lineFeature: any }>>,
     aeropuertos: React.RefObject<Map<string, { aeropuerto: Aeropuerto; pointFeature: any }>>,
@@ -280,6 +283,7 @@ export function seleccionarElemento(
         if (vuelo) {
             setSelectedVuelo(vuelo);
             setSelectedAeropuerto(null);
+            setSelectedEnvio(null);
             // console.log(`Vuelo seleccionado setteado: Vuelo ID${vuelo.id}`);
             console.log("Item del vuelo: ", vuelos.current?.get(vueloId));
             if (selectedFeature.current != null) {
@@ -303,6 +307,7 @@ export function seleccionarElemento(
         if (aeropuerto) {
             setSelectedAeropuerto(aeropuerto.aeropuerto);
             setSelectedVuelo(null);
+            setSelectedEnvio(null);
             // console.log(`Aeropuerto seleccionado setteado: Aeropuerto ID ${aeropuerto.id}`);
             console.log("Aero: ", aeropuerto);
             // console.log("Feature: ", feature);
@@ -327,3 +332,99 @@ export function seleccionarElemento(
         console.log("No se seleccionó nada");
     }
 }
+
+export function procesarSeleccionEnvio(
+    envio: Envio ,
+    setSelectedVuelo: any,
+    setSelectedAeropuerto: any,
+    setSelectedEnvio: any,
+    selectedFeature: any,
+    vuelos: React.RefObject<Map<number, { vuelo: Vuelo, pointFeature: any, lineFeature: any }>>,
+    aeropuertos: Map<string, { aeropuerto: Aeropuerto; pointFeature: any }>,
+) {
+    let aDesactivar: string[] = [];
+
+    setSelectedAeropuerto(null);
+    setSelectedVuelo(null);
+    setSelectedEnvio(envio);
+    if (selectedFeature.current != null) {
+        if (selectedFeature.current.get("vueloId")) {
+            selectedFeature.current.setStyle(selectedFeature.current.get("estiloAnterior"));
+            vuelos.current?.get(selectedFeature.current.get("vueloId"))?.lineFeature.setStyle(invisibleStyle);
+        } else if (selectedFeature.current.get("aeropuertoId")) {
+            selectedFeature.current.setStyle(selectedFeature.current.get("estiloAnterior"));
+        }
+    }
+
+    activarUnAeropuerto(aeropuertos, envio.origen);
+    aDesactivar.push(envio.origen);
+    activarUnAeropuerto(aeropuertos, envio.destino);
+    aDesactivar.push(envio.destino);
+
+    for(let paquete of envio.paquetes){
+        for (let idVuelo of paquete.ruta){
+            const vuelo = vuelos.current?.get(idVuelo);
+            if (vuelo) {
+                activarUnVuelo(vuelo);
+                aDesactivar.push(idVuelo.toString());
+                break;
+            }
+        }
+    }
+
+    return aDesactivar;
+}
+
+export function desactivarEnvio(aDesactivar : React.RefObject<string[]>,
+    aeropuertos : Map<string, { aeropuerto: Aeropuerto; pointFeature: any }>, 
+    vuelos: React.RefObject<Map<number, { vuelo: Vuelo, pointFeature: any, lineFeature: any }>>) 
+{
+    if (aDesactivar.current == null) {
+        return;
+    }
+    for (let id of aDesactivar.current) {
+        //Si es numérico, es un vuelo
+        if (!isNaN(Number(id))) {
+            const vuelo = vuelos.current?.get(Number(id));
+            if (vuelo) {
+                desactivarUnVuelo(vuelo);
+            }
+        } else {
+            //Si no, es un aeropuerto
+            const aeropuerto = aeropuertos.get(id);
+            if (aeropuerto) {
+                desactivarUnAeropuerto(aeropuerto);
+            }
+        }
+    }
+}
+
+function desactivarUnAeropuerto(aeropuerto : { aeropuerto: Aeropuerto; pointFeature: any }) {
+    aeropuerto.pointFeature.setStyle(aeropuerto.pointFeature.get('estiloAnterior'));
+    aeropuerto.pointFeature.set('seleccionado', false);
+}
+
+function desactivarUnVuelo(vuelo: { vuelo: Vuelo, pointFeature: any, lineFeature: any }) {
+    vuelo.pointFeature.setStyle(vuelo.pointFeature.get('estiloAnterior'));
+    vuelo.pointFeature.set('seleccionado', false);
+    vuelo.lineFeature.setStyle(invisibleStyle);
+}
+
+function activarUnAeropuerto(aeropuertos: Map<string, { aeropuerto: Aeropuerto; pointFeature: any }>, aeropuertoId: string) {
+    const aeropuerto = aeropuertos.get(aeropuertoId);
+    if (aeropuerto) {
+        aeropuerto.pointFeature.set('estiloAnterior', aeropuerto.pointFeature.getStyle());
+        aeropuerto.pointFeature.set('seleccionado', true);
+        aeropuerto.pointFeature.setStyle(selectedAirportStyle);
+    }
+}
+
+function activarUnVuelo(vuelo: { vuelo: Vuelo, pointFeature: any, lineFeature: any }) {
+    if(!vuelo.pointFeature.get('seleccionado')){
+        vuelo.pointFeature.set('estiloAnterior', vuelo.pointFeature.getStyle());
+        vuelo.pointFeature.setStyle(dinamicSelectedPlaneStle(vuelo));
+        vuelo.lineFeature.setStyle(mulitpleSelectedLineStyle);
+        vuelo.pointFeature.set('seleccionado', true);
+    }
+}
+

@@ -36,6 +36,7 @@ import {
     seleccionarAeropuerto,
     updateCoordinates,
     seleccionarElemento,
+    desactivarEnvio,
 } from "@/utils/FuncionesMapa";
 import BarraMapa from "./BarraMapa";
 import { ProgramacionVuelo } from "@/types/ProgramacionVuelo";
@@ -85,11 +86,13 @@ const Mapa = ({
     const [currentTime, setCurrentTime] = useState(new Date());
     const [selectedVuelo, setSelectedVuelo] = useState<Vuelo | null>(null);
     const [selectedAeropuerto, setSelectedAeropuerto] = useState<Aeropuerto | null>(null);
+    const [selectedEnvio, setSelectedEnvio] = useState<Envio | null>(null);
     const selectedFeature = useRef<Feature | null>(null);
     const vistaActual = useRef<View | null>(null);
     const fechaFinSemana = new Date(horaInicio.getTime() + 7 * 24 * 60 * 60 * 1000); //suma 7 dias
     const [vuelosABorrar, setVuelosABorrar] = useState<number[]>([]);
     const [mostrarFinSemanal, setMostrarFinSemanal] = useState(false);
+    const aBorrarEnvios = useRef<string[]>([]);
     const vuelosEnElAire = useRef<number>(0);
 
     useEffect(() => {
@@ -177,6 +180,7 @@ const Mapa = ({
             const clickHandler = (event: any) => {
                 const feature = mapRef.current?.getFeaturesAtPixel(event.pixel)[0];
                 // console.log("Feature clicked: ", feature);
+                desactivarEnvio(aBorrarEnvios, aeropuertos.current, vuelos);
                 if (feature) {
                     const vueloId = feature.get("vueloId");
                     const aeropuertoId = feature.get("aeropuertoId");
@@ -185,6 +189,7 @@ const Mapa = ({
                         aeropuertoId,
                         setSelectedVuelo,
                         setSelectedAeropuerto,
+                        setSelectedEnvio,
                         selectedFeature,
                         vuelos,
                         aeropuertos,
@@ -194,6 +199,7 @@ const Mapa = ({
                 else {
                     setSelectedVuelo(null);
                     setSelectedAeropuerto(null);
+                    setSelectedEnvio(null);
                     if (selectedFeature.current != null) {
                         if (selectedFeature.current.get("vueloId")) {
                             selectedFeature.current.setStyle(selectedFeature.current.get("estiloAnterior"));
@@ -346,6 +352,7 @@ const Mapa = ({
                 <BarraMapa
                     setSelectedVuelo={setSelectedVuelo}
                     setSelectedAeropuerto={setSelectedAeropuerto}
+                    setSelectedEnvio={setSelectedEnvio}
                     mapRef={mapRef}
                     selectedFeature={selectedFeature}
                     vuelos={vuelos}
@@ -353,6 +360,7 @@ const Mapa = ({
                     programacionVuelos={programacionVuelos.current}
                     envios={envios.current}
                     simulatedTime={simulationTime}
+                    aBorrarEnvios={aBorrarEnvios}
                 />
                 <Leyenda
                     vuelosEnTransito={contarVuelos(vuelos)}
@@ -363,7 +371,7 @@ const Mapa = ({
                     simulacion={simulationInterval!==1/60}
                 />
                 <DatosVuelo vuelo={selectedVuelo} aeropuerto={selectedAeropuerto} programacionVuelos={programacionVuelos} simulationTime={simulationTime}
-                    envios={envios} aeropuertos={aeropuertos}
+                    envios={envios} aeropuertos={aeropuertos} envio = {selectedEnvio} vuelos = {vuelos}
                 />
                 {mostrarFinSemanal && <FinSemanal programacionVuelos={programacionVuelos} vuelos={vuelos}/>}
                 <VuelosAlmacen selectedAeropuerto={selectedAeropuerto} vuelos={vuelos} simulationTime={simulationTime} programacionVuelos={programacionVuelos} />

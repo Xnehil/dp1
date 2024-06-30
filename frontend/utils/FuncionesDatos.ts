@@ -210,7 +210,7 @@ export function agregarPaquetesAlmacen(
 export function decidirEstiloAeropuerto(item: {aeropuerto: Aeropuerto; pointFeature: any} | undefined) {
     // console.log("Decidiendo estilo de aeropuerto", item);
     if (!item) return;
-    if (item.pointFeature === null) return;
+    if (item.pointFeature === null || item.pointFeature.get('seleccionado')) return;
     let razon = item.aeropuerto.cantidadActual / item.aeropuerto.capacidadMaxima;
     // console.log("Razón de ocupación: ", razon);
     // console.log("Aeropuerto: ", item.aeropuerto);
