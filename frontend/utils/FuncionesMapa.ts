@@ -366,7 +366,7 @@ export function procesarSeleccionEnvio(
     for(let paquete of envio.paquetes){
         for (let idVuelo of paquete.ruta){
             const vuelo = vuelos.current?.get(idVuelo);
-            if (vuelo) {
+            if (vuelo && vuelo.pointFeature.get('pintarAuxiliar')) {
                 activarUnVuelo(vuelo);
                 aDesactivar.push(idVuelo.toString());
                 break;

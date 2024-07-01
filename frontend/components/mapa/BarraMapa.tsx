@@ -110,7 +110,8 @@ const BarraMapa = ({
         if (!isNaN(Number(aBuscar))) {
             if(Number(aBuscar) < 3000){
                 console.log("Buscando por código de vuelo: ", aBuscar);
-                if(vuelos.current?.has(Number(aBuscar))){
+                let vuelo = vuelos.current?.get(Number(aBuscar));
+                if(vuelo && vuelo.pointFeature.get('pintarAuxiliar')){
                     seleccionarVuelo(Number(aBuscar), setSelectedVuelo, setSelectedAeropuerto, selectedFeature, vuelos, vuelos.current?.get(Number(aBuscar))?.pointFeature);
                     setSelectedEnvio(null);
                     desactivarEnvio(aDesactivar, aeropuertos, vuelos);
@@ -177,6 +178,7 @@ const BarraMapa = ({
                 console.log("Buscando por código de envío: ", aBuscar);
                 let envio : Envio | undefined= envios.get(aBuscar);
                 if (envio) {
+                    desactivarEnvio(aDesactivar, aeropuertos, vuelos);
                     aDesactivar.current=procesarSeleccionEnvio(envio, setSelectedVuelo, setSelectedAeropuerto, setSelectedEnvio,selectedFeature, vuelos, aeropuertos);
                     aBorrarEnvios.current=aDesactivar.current;
                 }
