@@ -300,10 +300,11 @@ public class FuncionesLectura {
     }
 
     public static String leerEnviosGuardarBD(String archivo, HashMap<String, Aeropuerto> aeropuertos, int maxEnvios,
-            EnvioRepository envioRepository, PaqueteService paqueteService) {
+            EnvioRepository envioRepository, PaqueteService paqueteService) throws IOException {
         System.out.println("Leyendo envios desde " + archivo);
         HashMap<String, Envio> envios = new HashMap<>();
         int counter = 0;
+        String codigosPaquete = "";
         try (BufferedReader br = Files.newBufferedReader(Paths.get(archivo), Charset.forName("UTF-8"))) {
             String line;
             while ((line = br.readLine()) != null && counter < maxEnvios) {
@@ -387,18 +388,20 @@ public class FuncionesLectura {
                 // datos
                 for (Paquete paquete : paquetes) {
                     paquete.setCodigoEnvio(nuevoEnvio.getCodigoEnvio());
-                    paqueteService.createPaquete(paquete);
+                    Paquete nuevoPaquete= paqueteService.createPaquete(paquete);
+                    codigosPaquete += nuevoPaquete.getIdPaquete() + " ";
                 }
                 counter++;
             }
             // System.out.println("Numero de envios: " + counter);
         } catch (IOException e) {
             System.err.println("Error reading file: " + e);
+            throw e;
         }
         // for(int id: envios.keySet()){
         // System.out.println(envios.get(id).getIdEnvio());
         // }
-        return "Numero de envios: " + counter;
+        return codigosPaquete;
     }
 
 }

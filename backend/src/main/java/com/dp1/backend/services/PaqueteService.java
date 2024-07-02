@@ -21,7 +21,7 @@ public class PaqueteService {
     {
         try {
             Paquete paqueteNuevo = paqueteRepository.save(paquete);
-            logger.info("Paquete guardado con id: " + paqueteNuevo.getId()+ " y codigo de envio: " + paqueteNuevo.getCodigoEnvio());
+            // logger.info("Paquete guardado con id: " + paqueteNuevo.getId()+ " y codigo de envio: " + paqueteNuevo.getCodigoEnvio());
             return paqueteNuevo;
         } catch (Exception e) {
             logger.error(e.getMessage());
