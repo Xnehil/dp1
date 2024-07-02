@@ -151,7 +151,7 @@ public class SocketConnectionHandler extends TextWebSocketHandler {
         lastMessageTimes.put(session, lastMessageTime);
 
         //Enviamos la data por primera vez. Tenemos que enviar los paquetes de los últimos dos días. Tal vez todos o solo los que faltan llegar
-        enviosEnOperacion.put(session, envioService.getEnviosEntre(lastMessageTime.minusDays(1), lastMessageTime));//cargamos todos los envios de 2 días atrás
+        enviosEnOperacion.put(session, envioService.getEnviosEntre(lastMessageTime.minusDays(1), lastMessageTime));//cargamos todos los envios de 1 día atrás
 
         Map<String, Object> messageMap = new HashMap<>();
         messageMap.put("metadata", "primeraCarga");
@@ -197,13 +197,20 @@ public class SocketConnectionHandler extends TextWebSocketHandler {
                 
                 HashMap<String, Envio> enviosNuevos = envioService.getEnviosEntre(lastMessageTime, time);
                 messageMap = new HashMap<>();
-                messageMap.put("metadata", "correrAlgoritmo");
+                messageMap.put("metadata", "nuevosEnvios");
                 messageMap.put("data", enviosNuevos);
 
                 messageJson = objectMapper.writeValueAsString(messageMap);
                 session.sendMessage(new TextMessage(messageJson));
                 logger.info("Enviando # de envios nuevos: " + enviosNuevos.size());
 
+                HashMap<String, Envio> enviosEnOperacion = envioService.getEnviosEntre(lastMessageTime.minusDays(1), lastMessageTime);
+                messageMap.put("metadata", "enviosEnOperacion");
+                messageMap.put("data", enviosEnOperacion);
+
+                messageJson = objectMapper.writeValueAsString(messageMap);
+                session.sendMessage(new TextMessage(messageJson));
+                logger.info("Enviando # de envios en operación: " + enviosEnOperacion.size());
                 lastMessageTimes.put(session, time);
             }
         } catch (Exception e) {

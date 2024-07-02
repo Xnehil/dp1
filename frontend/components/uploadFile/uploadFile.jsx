@@ -21,7 +21,8 @@ function UploadFile() {
     const handleFileChange = (event) => {
         const file = event.target.files[0];
         console.log('Archivo seleccionado:', file);
-    
+        //Cambiar cursor a cargando
+        document.body.style.cursor = 'wait';
         const formData = new FormData();
         formData.append('file', file);
     
@@ -31,6 +32,7 @@ function UploadFile() {
             }
         })
         .then((response) => {
+            document.body.style.cursor = 'default';
             if (response.status === 200) {
                 console.log('Archivo subido correctamente:', response.data);
                 setEstado(1);

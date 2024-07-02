@@ -137,12 +137,13 @@ public class EnvioService {
     {
         HashMap<String, Envio> enviosEntre = new HashMap<>();
         List <Envio> envios = getEnviosAfterDate(fechaHoraInicio);
-
+        // logger.info("Envios despues de fecha inicio");
         for (Envio envio : envios) {
-            logger.info(envio.getFechaHoraSalida());
-            logger.info(fechaHoraInicio);
+            // logger.info(envio.getFechaHoraSalida());
+            // logger.info(fechaHoraInicio);
             if (envio.getFechaHoraSalida().isAfter(fechaHoraInicio) && envio.getFechaHoraSalida().isBefore(fechaHoraFin)) {
-                Hibernate.initialize(envio.getPaquetes());
+                List<Paquete> paquetes = paqueteService.getPaquetesByCodigoEnvio(envio.getCodigoEnvio());
+                envio.setPaquetes(paquetes);
                 enviosEntre.put(envio.getCodigoEnvio(), envio);
             }
         }

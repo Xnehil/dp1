@@ -9,7 +9,7 @@ import { Aeropuerto } from "@/types/Aeropuerto";
 import { conectarAWebsocket, enviarMensaje } from "@/utils/FuncionesWebsocket";
 import useWebSocket, { ReadyState } from "react-use-websocket";
 import { ProgramacionVuelo } from "@/types/ProgramacionVuelo";
-import { procesarData, quitarPaquetesAlmacenados } from "@/utils/FuncionesDatos";
+import { actualizarDataReal, procesarData, procesarDataReal, quitarPaquetesAlmacenados } from "@/utils/FuncionesDatos";
 import { Envio } from "@/types/Envio";
 
 type MessageData = {
@@ -166,11 +166,14 @@ const Page = () => {
             if(message.metadata.includes("primeraCarga")) {
                 console.log("Mensaje de primera carga");
                 console.log("Datos recibidos: ", message.data);
-                procesarData(message.data, programacionVuelos, envios, aeropuertos, simulationTime?simulationTime:horaInicio, false, vuelos, false);
+                procesarDataReal(message.data, programacionVuelos, envios, aeropuertos, simulationTime?simulationTime:horaInicio, true, vuelos);
             }
-            if (message.metadata.includes("correrAlgoritmo")) {
+            if (message.metadata.includes("nuevosEnvios")) {
                 console.log(message.data);
-                procesarData(message.data, programacionVuelos, envios, aeropuertos, simulationTime, false, vuelos, false);
+                procesarDataReal(message.data, programacionVuelos, envios, aeropuertos, simulationTime, false, vuelos);
+            }
+            if (message.metadata.includes("enviosEnOperacion")) {
+                actualizarDataReal(message.data, programacionVuelos, envios, aeropuertos, simulationTime?simulationTime:horaInicio, false, vuelos);
             }
         }
     }, [lastMessage]);
