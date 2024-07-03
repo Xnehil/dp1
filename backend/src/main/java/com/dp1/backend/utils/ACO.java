@@ -11,20 +11,25 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.hibernate.sql.results.graph.FetchStyleAccess;
-import org.springframework.cglib.core.Local;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.dp1.backend.models.Aeropuerto;
 import com.dp1.backend.models.Envio;
 import com.dp1.backend.models.Paquete;
 import com.dp1.backend.models.ProgramacionVuelo;
 import com.dp1.backend.models.Vuelo;
-
+import com.dp1.backend.services.PaqueteService;
+@Component
 public class ACO {
+
+    @Autowired
+    PaqueteService paqueteService;
+
     public static double[] minYMaxTiempoVuelo;
     public static double[] minYMaxDistanciaAeropuertos;
 
-    public static void run(HashMap<String, Aeropuerto> aeropuertos, HashMap<Integer, Vuelo> vuelos,
+    public void run(HashMap<String, Aeropuerto> aeropuertos, HashMap<Integer, Vuelo> vuelos,
             HashMap<String, Envio> envios,
             ArrayList<Paquete> paquetes, int numeroIteraciones) {
         // Definir una matriz que defina Vuelo, Costo, Visibilidad() y Fermonas
@@ -189,7 +194,7 @@ public class ACO {
 
     }
 
-    public static ArrayList<Paquete> run_v2(HashMap<String, Aeropuerto> aeropuertos, HashMap<Integer, Vuelo> vuelos,
+    public ArrayList<Paquete> run_v2(HashMap<String, Aeropuerto> aeropuertos, HashMap<Integer, Vuelo> vuelos,
             HashMap<String, Envio> envios,
             ArrayList<Paquete> paquetes, int numeroIteraciones) {
         // Definir una matriz que defina Vuelo, Costo, Visibilidad() y Fermonas
@@ -471,7 +476,7 @@ public class ACO {
         return paquetes;
     }
 
-    public static ArrayList<Paquete> run_v3(HashMap<String, Aeropuerto> aeropuertos, HashMap<Integer, Vuelo> vuelos,
+    public ArrayList<Paquete> run_v3(HashMap<String, Aeropuerto> aeropuertos, HashMap<Integer, Vuelo> vuelos,
             HashMap<String, Envio> envios, ArrayList<Paquete> paquetes, int numeroIteraciones,
             HashMap<Integer, Double[]> tabla, HashMap<Integer, ProgramacionVuelo> vuelosProgramados,
             ArrayList<LocalDate> fechasVuelos) {
