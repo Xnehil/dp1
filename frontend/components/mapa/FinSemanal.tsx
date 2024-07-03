@@ -1,6 +1,6 @@
 "use client";
 import React, { useMemo, useState } from 'react';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Box, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Box, Dialog, DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material';
 import { styled } from '@mui/system';
 import { Vuelo } from "@/types/Vuelo";
 import { ProgramacionVuelo } from "@/types/ProgramacionVuelo";
@@ -13,6 +13,7 @@ const StyledTableCell = styled(TableCell)({
 type FinSemanalProps = {
   programacionVuelos: React.MutableRefObject<Map<string, ProgramacionVuelo>>;
   vuelos: React.RefObject<Map<number, { vuelo: Vuelo }>>;
+  colapso: boolean;
 };
 
 const formatTime = (timeString: string) => {
@@ -20,7 +21,7 @@ const formatTime = (timeString: string) => {
   return date.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
 };
 
-const FinSemanal: React.FC<FinSemanalProps> = ({ programacionVuelos, vuelos }) => {
+const FinSemanal: React.FC<FinSemanalProps> = ({ programacionVuelos, vuelos, colapso =false }) => {
   const [open, setOpen] = useState(true);
 
   const handleClose = () => {
@@ -53,6 +54,11 @@ const FinSemanal: React.FC<FinSemanalProps> = ({ programacionVuelos, vuelos }) =
     <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
       <DialogTitle>Últimos vuelos de la planificación semanal:</DialogTitle>
       <DialogContent>
+      {colapso && (
+          <Typography color="error" style={{ marginBottom: 16 }}>
+            Se ha detectado un colapso en la planificación.
+          </Typography>
+        )}
         <TableContainer component={Paper}>
           <Table>
             <TableHead>
