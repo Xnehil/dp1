@@ -31,6 +31,8 @@ public class ACOService {
     private ArrayList<Paquete> paquetes = new ArrayList<Paquete>();
 
     @Autowired
+    private ACO aco;
+    @Autowired
     private DatosEnMemoriaService datosEnMemoriaService;
     @Autowired
     private EnvioService envioService;
@@ -60,7 +62,7 @@ public class ACOService {
         try {
             // Medit tiempo de ejecución
             Long startTime = System.currentTimeMillis();
-            paquetes = ACO.run_v2(aeropuertos, vuelos, envios, paquetes, 20);
+            paquetes = aco.run_v2(aeropuertos, vuelos, envios, paquetes, 20);
             Long endTime = System.currentTimeMillis();
             Long totalTime = endTime - startTime;
             logger.info("Tiempo de ejecución: " + totalTime + " ms");
@@ -116,7 +118,7 @@ public class ACOService {
         try {
             // Medit tiempo de ejecución
             Long startTime = System.currentTimeMillis();
-            paquetes = ACO.run_v2(aeropuertos, vuelos, envios, paquetes, 20);
+            paquetes = aco.run_v2(aeropuertos, vuelos, envios, paquetes, 20);
             Long endTime = System.currentTimeMillis();
             Long totalTime = endTime - startTime;
             logger.info("Tiempo de ejecución: " + totalTime + " ms");
@@ -157,7 +159,7 @@ public class ACOService {
         HashMap<Integer, Vuelo> vuelos = datosEnMemoriaService.getVuelos();
         HashMap<String, Envio> envios = new HashMap<String, Envio>();
         cargarDatos(aeropuertos, envios, paquetes,
-                new String[] { "SKBO", "SEQM", "SUAA", "SCEL", "SABE", "EBCI", "EHAM", "WMKK", "VIDP", "ZBAA" });
+                new String[] { "SKBO", "SEQM", "SVMI", "SBBR", "SPIM", "SLLP", "SCEL", "SABE", "SGAS", "SUAA", "LATI", "EDDI", "LOWW", "EBCI", "UMMS", "LBSF", "LKPR", "LDZA", "EKCH", "EHAM", "VIDP", "OSDI", "OERK", "OMDB", "OAKB", "OOMS", "OYSN", "OPKC", "UBBB", "OJAI" });
         for (Envio e : envios.values()) {
             paquetes.addAll(e.getPaquetes());
         }
@@ -171,7 +173,7 @@ public class ACOService {
         try {
             // Medit tiempo de ejecución
             Long startTime = System.currentTimeMillis();
-            paquetes = ACO.run_v2(aeropuertos, vuelos, envios, paquetes, 20);
+            paquetes = aco.run_v2(aeropuertos, vuelos, envios, paquetes, 20);
             Long endTime = System.currentTimeMillis();
             Long totalTime = endTime - startTime;
             logger.info("Tiempo de ejecución: " + totalTime + " ms");
@@ -237,7 +239,7 @@ public class ACOService {
         try {
             // Medit tiempo de ejecución
             Long startTime = System.currentTimeMillis();
-            paquetes = ACO.run_v2(aeropuertos, vuelos, envios, paquetes, 20);
+            paquetes = aco.run_v2(aeropuertos, vuelos, envios, paquetes, 20);
             Long endTime = System.currentTimeMillis();
             Long totalTime = endTime - startTime;
             logger.info("Tiempo de ejecución: " + totalTime + " ms");
@@ -282,7 +284,9 @@ public class ACOService {
         HashMap<Integer, ProgramacionVuelo> vuelosProgramados = datosEnMemoriaService.getVuelosProgramados();
         ArrayList<LocalDate> fechasVuelos = datosEnMemoriaService.getFechasVuelos();
         String[] ciudades = new String[] {
-                "SKBO", "SEQM", "SVMI", "SBBR", "SPIM", "SLLP", "SCEL", "SABE", "SGAS", "SUAA", "LATI", "EDDI", "LOWW", "EBCI", "UMMS", "LBSF", "LKPR", "LDZA", "EKCH", "EHAM", "VIDP", "OSDI", "OERK", "OMDB", "OAKB", "OOMS", "OYSN", "OPKC", "UBBB", "OJAI"
+                "SKBO", "SEQM", "SVMI", "SBBR", "SPIM", "SLLP", "SCEL", "SABE", "SGAS", "SUAA", "LATI", "EDDI", "LOWW",
+                "EBCI", "UMMS", "LBSF", "LKPR", "LDZA", "EKCH", "EHAM", "VIDP", "OSDI", "OERK", "OMDB", "OAKB", "OOMS",
+                "OYSN", "OPKC", "UBBB", "OJAI"
         };
 
         cargarDatosDesdeBD(aeropuertos, envios, paquetes, ciudades);
@@ -299,7 +303,7 @@ public class ACOService {
         try {
             // Medit tiempo de ejecución
             Long startTime = System.currentTimeMillis();
-            paquetes = ACO.run_v3(aeropuertos, vuelos, envios, paquetes, 20, tabla, vuelosProgramados, fechasVuelos);
+            paquetes = aco.run_v3(aeropuertos, vuelos, envios, paquetes, 20, tabla, vuelosProgramados, fechasVuelos);
             Long endTime = System.currentTimeMillis();
             Long totalTime = endTime - startTime;
             logger.info("Tiempo de ejecución: " + totalTime + " ms");
@@ -346,7 +350,7 @@ public class ACOService {
         }
         String rutaArchivos = "data/pack_enviado_";
         for (int i = 0; i < ciudades.length; i++) {
-            envios.putAll(FuncionesLectura.leerEnvios(rutaArchivos + ciudades[i] + ".txt", aeropuertos,40));
+            envios.putAll(FuncionesLectura.leerEnvios(rutaArchivos + ciudades[i] + ".txt", aeropuertos, 40));
         }
 
         for (Envio e : envios.values()) {
@@ -375,7 +379,8 @@ public class ACOService {
         } else {
             workingDirectory = "";
         }
-        aeropuertos.putAll(FuncionesLectura.leerAeropuertos(workingDirectory + "data/Aeropuerto.husos.v3.20240619.txt"));
+        aeropuertos
+                .putAll(FuncionesLectura.leerAeropuertos(workingDirectory + "data/Aeropuerto.husos.v3.20240619.txt"));
         vuelos.putAll(FuncionesLectura.leerVuelos(workingDirectory + "data/planes_vuelo.v4.20240619.txt", aeropuertos));
         String rutaArchivos = "data/pack_enviado_";
         String[] ciudades = { "SKBO", "SEQM", "SUAA", "SCEL", "SABE", "EBCI", "EHAM", "WMKK", "VIDP", "ZBAA" };
