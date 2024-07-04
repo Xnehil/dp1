@@ -25,7 +25,8 @@ import jakarta.persistence.Table;
 @SQLRestriction(value = "active = true")
 public class Paquete extends BaseModel{
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "codigo_envio", insertable = false, updatable = false, referencedColumnName = "codigo_envio")
+    // @JoinColumn(name = "codigo_envio", insertable = false, updatable = false, referencedColumnName = "codigo_envio")
+    @JoinColumn(name = "envio_id")
     private Envio envio;
 
     @Column(name = "codigo_envio")
@@ -33,7 +34,7 @@ public class Paquete extends BaseModel{
 
     private ArrayList<ZonedDateTime> fechasRuta;
     private ArrayList<Double> costosRuta;
-
+    
     @Column(name = "llego_destino")
     private boolean llegoDestino;
     //Se almacena la lista de ids de los vuelos a seguir
@@ -47,6 +48,14 @@ public class Paquete extends BaseModel{
     @ManyToOne
     @JoinColumn(name = "id_ruta", referencedColumnName = "id")
     private RutaPosible rutaPosible;
+
+    public RutaPosible getRutaPosible() {
+        return rutaPosible;
+    }
+
+    public void setRutaPosible(RutaPosible rutaPosible) {
+        this.rutaPosible = rutaPosible;
+    }
 
     //Tiempo restante para que el paquete llegue a su destino
     private Duration tiempoRestanteDinamico;
@@ -145,6 +154,7 @@ public class Paquete extends BaseModel{
         this.ruta = new ArrayList<Integer>();
         this.fechasRuta = new ArrayList<ZonedDateTime>();
         this.costosRuta = new ArrayList<>();
+        this.rutaPosible = new RutaPosible();   
         this.tiempoRestante = Duration.ZERO;
         this.tiempoRestanteDinamico = Duration.ZERO;
         this.llegoDestino = false;
