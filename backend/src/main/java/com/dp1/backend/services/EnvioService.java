@@ -49,9 +49,12 @@ public class EnvioService {
             envio.setFechaHoraSalida(fechaHoraSalida);
             envio.setFechaHoraLlegadaPrevista(fechaHoraLlegadaPrevista);
             logger.info("Todo bien hasta fechas. Guardando envio");
-            for(Paquete paq: envio.getPaquetes())
-                System.out.println("Codigo: " + paq.getId() + " "  + paq.getIdPaquete());
+
             logger.info(envio.toString());
+            //Nueva precaución
+            envio.setReceptor(null);
+            envio.setEmisor(null);
+            envio.setPaquetes(null);
             envio = envioRepository.save(envio);
             logger.info("Todo bien hasta primer guardado");
             envio.setCodigoEnvio(envio.getOrigen()+envio.getId());
@@ -70,6 +73,7 @@ public class EnvioService {
                 paquete.setCostosRuta(null);
                 paquete.setFechasRuta(null);
                 paquete.setRuta(null);
+                paquete.setRutaPosible(null);
                 paqueteService.createPaquete(paquete);
             }
             logger.info("Todo bien hasta guardado de paquetes");

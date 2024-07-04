@@ -380,6 +380,8 @@ public class FuncionesLectura {
                 nuevoEnvio.setId(0);
                 nuevoEnvio.setCodigoEnvio(null);
                 nuevoEnvio.setPaquetes(null);
+                nuevoEnvio.setEmisor(null);
+                nuevoEnvio.setReceptor(null);
                 envioRepository.save(nuevoEnvio);
                 nuevoEnvio.setCodigoEnvio(nuevoEnvio.getOrigen() + nuevoEnvio.getId());
                 envioRepository.save(nuevoEnvio);
@@ -388,6 +390,7 @@ public class FuncionesLectura {
                 // datos
                 for (Paquete paquete : paquetes) {
                     paquete.setCodigoEnvio(nuevoEnvio.getCodigoEnvio());
+                    paquete.setRutaPosible(null);
                     Paquete nuevoPaquete= paqueteService.createPaquete(paquete);
                     codigosPaquete += nuevoPaquete.getIdPaquete() + " ";
                 }
