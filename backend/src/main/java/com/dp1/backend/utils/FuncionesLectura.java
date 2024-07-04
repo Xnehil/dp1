@@ -58,7 +58,7 @@ public class FuncionesLectura {
                 String country = parts[3];
                 String shortName = parts[4];
                 int gmt = Integer.parseInt(parts[5].replace("+", ""));
-                int capacity = Integer.parseInt(parts[6]) + 1000;
+                int capacity = Integer.parseInt(parts[6]) + 1;
                 double longitud = convertToDecimalDegrees(parts[8]);
                 double latitud = convertToDecimalDegrees(parts[7]);
 
