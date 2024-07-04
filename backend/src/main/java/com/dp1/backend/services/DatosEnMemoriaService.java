@@ -83,28 +83,28 @@ public class DatosEnMemoriaService {
     public void init() {
         logger.info("Leyendo rutas posibles");
 
-        try {
-            coleccionRutaService.getAllColeccionRutas().forEach(cr -> {
-                // logger.info("Coleccion ruta: " + cr.getCodigoRuta());
-                rutasPosibles.put(cr.getCodigoRuta(), cr);
-                String ruta = cr.getCodigoRuta();
-                for (RutaPosible rp : cr.getRutasPosibles()) {
+        // try {
+        //     coleccionRutaService.getAllColeccionRutas().forEach(cr -> {
+        //         // logger.info("Coleccion ruta: " + cr.getCodigoRuta());
+        //         rutasPosibles.put(cr.getCodigoRuta(), cr);
+        //         String ruta = cr.getCodigoRuta();
+        //         for (RutaPosible rp : cr.getRutasPosibles()) {
 
-                    String sucesionVuelos = "";
-                    for (ItemRutaPosible itemVuelo : rp.getFlights()) {
-                        int vueloId = itemVuelo.getIdVuelo();
-                        sucesionVuelos += ("-" + vueloId);
-                    }
-                    // logger.info("Ruta posible: " + sucesionVuelos);
-                    ruta += sucesionVuelos;
-                    if (!rutasPosiblesSet.contains(ruta)) {
-                        rutasPosiblesSet.add(ruta);
-                    }
-                }
-            });
-        } catch (Exception e) {
-            logger.error("Error al leer rutas posibles: " + e.getLocalizedMessage());
-        }
+        //             String sucesionVuelos = "";
+        //             for (ItemRutaPosible itemVuelo : rp.getFlights()) {
+        //                 int vueloId = itemVuelo.getIdVuelo();
+        //                 sucesionVuelos += ("-" + vueloId);
+        //             }
+        //             // logger.info("Ruta posible: " + sucesionVuelos);
+        //             ruta += sucesionVuelos;
+        //             if (!rutasPosiblesSet.contains(ruta)) {
+        //                 rutasPosiblesSet.add(ruta);
+        //             }
+        //         }
+        //     });
+        // } catch (Exception e) {
+        //     logger.error("Error al leer rutas posibles: " + e.getLocalizedMessage());
+        // }
 
         logger.info("Colecciones rutas: " + rutasPosibles.size());
         logger.info("Rutas posibles set: " + rutasPosiblesSet.size());

@@ -579,4 +579,87 @@ public class Auxiliares {
         return paquetesEntregados;
     }
 
+    public static int verificacionTotalPaquetesSimulacion(HashMap<String, Aeropuerto> aeropuertos,
+            HashMap<Integer, Vuelo> vuelos, HashMap<String, Envio> envios, ArrayList<Paquete> paquetes,
+            DatosEnMemoriaService datosEnMemoriaService) {
+        
+                int n = paquetes.size();
+        int rutasNuevas = 0;
+        Boolean esSolucionValida;
+        int paquetesEntregados = 0;
+        int paquetesRutasSalvadas = 0;
+
+        // Limpiar carga por día
+        for (int i : vuelos.keySet()) {
+            vuelos.get(i).setCargaPorDia(new HashMap<>());
+        }
+
+        // Limpiar carga por día de los aeropuertos
+        for (String i : aeropuertos.keySet()) {
+            aeropuertos.get(i).setCantPaqParaPlanificacion(new TreeMap<>());
+        }
+
+        // Verifico todos los paquetes
+        for (int j = 0; j < n; j++) {
+            // Asignar solución a paquete
+            Paquete paquete = paquetes.get(j);
+            esSolucionValida = solucionValidav2(aeropuertos, vuelos, envios, paquete, false);
+            if (esSolucionValida) {
+                Envio envio = envios.get(paquete.getCodigoEnvio());
+                String cadenaABuscar = envio.getOrigen() + envio.getDestino();
+                for (int i : paquete.getRuta()) {
+                    cadenaABuscar += ("-" + i);
+                }
+                if (!datosEnMemoriaService.seTieneruta(cadenaABuscar)) {
+                    // Por ahora no se inserta en la base de datos
+                    // datosEnMemoriaService.insertarRuta(envio, paquete);
+                    // rutasNuevas++;
+                }
+                paquete.setLlegoDestino(true);
+                paquetesEntregados++;
+            } else {
+                // Buscar la ruta en la base de datos
+                Envio envio = envios.get(paquete.getCodigoEnvio());
+                String cadenaABuscar = envio.getOrigen() + envio.getDestino();
+                try {
+                    List<RutaPosible> rutasPosibles = datosEnMemoriaService.getRutasPosibles().get(cadenaABuscar)
+                            .getRutasPosibles();
+                    int random = (int) (Math.random() * rutasPosibles.size());
+                    ArrayList<Integer> ruta = new ArrayList<Integer>();
+                    ArrayList<ZonedDateTime> fechas = new ArrayList<ZonedDateTime>();
+                    RutaPosible rutaPosible = rutasPosibles.get(random);
+                    for (int i = 0; i < rutaPosible.getFlights().size(); i++) {
+                        ruta.add(rutaPosible.getFlights().get(i).getIdVuelo());
+                        int unixTimestampSeconds = rutaPosible.getFlights().get(i).getDiaRelativo();
+                        fechas.add((ZonedDateTime.ofInstant(Instant.ofEpochSecond(unixTimestampSeconds), ZoneId.systemDefault())));
+                    }
+                    paquete.setRuta(ruta);
+                    paquete.setFechasRuta(fechas);
+                    paquete.setLlegoDestino(true);
+                    paquetesRutasSalvadas++;
+                } catch (Exception e) {
+                    System.out.println("No se encontró la ruta en las rutas posibles cargadas en memoria.");
+                    System.out.println("Ruta no encontrada: " + cadenaABuscar);
+                }
+            }
+        }
+
+        System.out.println("Rutas nuevas: " + rutasNuevas);
+        System.out.println("Rutas salvadas: " + paquetesRutasSalvadas);
+        System.out.println("Paquetes no entregados: " + (n - paquetesEntregados- paquetesRutasSalvadas));
+
+
+
+        // Limpiar carga por día de los aeropuertos
+        for (String i : aeropuertos.keySet()) {
+            aeropuertos.get(i).setCantPaqParaPlanificacion(new TreeMap<>());
+        }
+        // Limpiar carga por día
+        for (int i : vuelos.keySet()) {
+            vuelos.get(i).setCargaPorDia(new HashMap<>());
+        }
+
+        return paquetesEntregados;
+    }
+
 }

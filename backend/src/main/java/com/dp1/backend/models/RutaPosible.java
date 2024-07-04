@@ -42,11 +42,13 @@ public class RutaPosible extends BaseModel {
     }
 
     public String getFlightsToString() {
+        if (this.flights == null) {
+            return ""; // Return an empty string or some default value if flights is null
+        }
         StringBuilder flightsString = new StringBuilder();
         for (ItemRutaPosible irp : this.flights) {
             flightsString.append(irp.getIdVuelo()).append(" ");
         }
-
         return flightsString.toString();
     }
 
