@@ -66,12 +66,21 @@ const App = () => {
         <img src= "/logos/pantallaRastreo.jpg"  style={imgStyle} />
       </div>
       <div style={textContainerStyle}>
-        <h1 style={headingStyle}>¡Rastrea tu paquete aquí!</h1>
+        <h1 className="text-3m mb-2 text-[#52489C] text-left font-extrabold" >¡Rastrea tu paquete aquí!</h1>
         <p style={paragraphStyle}>Busca y localiza tu paquete en tiempo real mediante el código brindado</p>
         <button
           style={buttonStyle}
           //onMouseOver={(e) => e.currentTarget.style.backgroundColor = buttonHoverStyle.backgroundColor}
           //onMouseOut={(e) => e.currentTarget.style.backgroundColor = buttonStyle.backgroundColor}
+          /*
+          onClick={async () => {
+                  if (activeStep === steps.length - 1) {
+                    await handleFinish();
+                  } else {
+                    await handleNext();
+                  }
+                }}>
+          */
         >
           Rastrea aquí
         </button>
