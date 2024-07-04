@@ -94,6 +94,7 @@ public class EnvioService {
         try {
             if (envio == null)
             {
+                System.out.println("El envio fue null");
                 return null;
             }
             return envioRepository.save(envio);

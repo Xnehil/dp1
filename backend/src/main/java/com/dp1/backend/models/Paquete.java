@@ -8,15 +8,14 @@ import java.util.ArrayList;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
-import jakarta.persistence.CollectionTable;
+import com.dp1.backend.utils.ZonedDateTimeListConverter;
+
 import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.OrderColumn;
 import jakarta.persistence.Table;
 
 @Entity
@@ -32,7 +31,10 @@ public class Paquete extends BaseModel{
     @Column(name = "codigo_envio")
     private String codigoEnvio;
 
+    @Convert(converter = ZonedDateTimeListConverter.class)
     private ArrayList<ZonedDateTime> fechasRuta;
+    
+
     private ArrayList<Double> costosRuta;
     
     @Column(name = "llego_destino")

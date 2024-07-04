@@ -203,13 +203,22 @@ public class ACOService {
         }
 
         for (Envio e : envios.values()) {
-            e.getEmisor().setId(23);
-            e.setEmisorID(23);
+            try {
+                e.getEmisor().setId(23);
+                e.setEmisorID(23);
 
-            e.getReceptor().setId(23);
-            e.setReceptorID(23);
+                e.getReceptor().setId(23);
+                e.setReceptorID(23);
 
-            envioService.updateEnvio(e);
+                envioService.updateEnvio(e);
+            } catch (Exception ex) {
+                // Manejo de la excepción: puedes imprimir un mensaje de error, registrar la
+                // excepción, o realizar alguna acción específica según tu necesidad.
+                System.err.println("Error al actualizar envío: " + ex.getMessage());
+                ex.printStackTrace(); // Esto imprime la traza completa del error
+                // Puedes decidir si quieres continuar con el siguiente envío o detener el
+                // proceso aquí.
+            }
         }
 
         // Enviar data en formato JSON (String)
@@ -373,7 +382,7 @@ public class ACOService {
         }
         String rutaArchivos = "data/pack_enviado_";
         for (int i = 0; i < ciudades.length; i++) {
-            envios.putAll(FuncionesLectura.leerEnvios(rutaArchivos + ciudades[i] + ".txt", aeropuertos, 5));
+            envios.putAll(FuncionesLectura.leerEnvios(rutaArchivos + ciudades[i] + ".txt", aeropuertos, 100));
         }
 
         for (Envio e : envios.values()) {
