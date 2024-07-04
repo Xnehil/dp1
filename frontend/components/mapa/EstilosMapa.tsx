@@ -20,7 +20,7 @@ if(typeof window !== 'undefined') {
             anchorXUnits: 'fraction',
             anchorYUnits: 'fraction',
             src: '/logos/oficinasEnhanced.png',
-            scale: 0.15,
+            scale: 0.12,
         }),
     });
 
@@ -30,7 +30,7 @@ if(typeof window !== 'undefined') {
             anchorXUnits: 'fraction',
             anchorYUnits: 'fraction',
             src: '/logos/edificioVerde.png',
-            scale: 0.15,
+            scale: 0.12,
         }),
         zIndex: 500,
     });
@@ -41,7 +41,7 @@ if(typeof window !== 'undefined') {
             anchorXUnits: 'fraction',
             anchorYUnits: 'fraction',
             src: '/logos/edificioAmarillo.png',
-            scale: 0.15,
+            scale: 0.12,
         }),
         zIndex: 500,
     });
@@ -52,7 +52,7 @@ if(typeof window !== 'undefined') {
             anchorXUnits: 'fraction',
             anchorYUnits: 'fraction',
             src: '/logos/edificioRojo.png',
-            scale: 0.15,
+            scale: 0.12,
         }),
         zIndex: 500,
     });
@@ -85,7 +85,7 @@ if(typeof window !== 'undefined') {
             anchorXUnits: 'fraction',
             anchorYUnits: 'fraction',
             src: '/logos/vueloEnhancedBlue.png',
-            scale: 0.30,
+            scale: 0.20,
         }),
     });
 }
@@ -101,7 +101,7 @@ export function dinamicPlaneStyle(item: { vuelo: Vuelo, pointFeature: any, lineF
             anchorXUnits: 'fraction',
             anchorYUnits: 'fraction',
             src: '/logos/vueloEnhanced.png', //mas grande para aumentar el area de click
-            scale: 0.17,
+            scale: 0.08,
             color: 'red', //por alguna razon, si asignas un color cualquiera, mostrara solo en negro
             rotation: auxAngulo
         }),
@@ -117,7 +117,7 @@ export function dinamicSelectedPlaneStle(item: {vuelo:Vuelo, pointFeature:any, l
             anchorXUnits: 'fraction',
             anchorYUnits: 'fraction',
             src: '/logos/vueloEnhancedBlue.png',
-            scale: 0.30,
+            scale: 0.20,
             rotation: angulo
         }),
         zIndex: Infinity
@@ -136,7 +136,7 @@ export function greenPlaneStyle(item: {vuelo:Vuelo, pointFeature:any, lineFeatur
             anchorXUnits: 'fraction',
             anchorYUnits: 'fraction',
             src: '/logos/avionVerde.png',
-            scale: 0.17,
+            scale: 0.08,
             rotation: auxAngulo,
         }),
     });
@@ -153,7 +153,7 @@ export function yellowPlaneStyle(item: {vuelo:Vuelo, pointFeature:any, lineFeatu
             anchorXUnits: 'fraction',
             anchorYUnits: 'fraction',
             src: '/logos/avionAmarillo.png',
-            scale: 0.17,
+            scale: 0.08,
             rotation: auxAngulo,
         }),
     });
@@ -170,7 +170,7 @@ export function redPlaneStyle(item: {vuelo:Vuelo, pointFeature:any, lineFeature:
             anchorXUnits: 'fraction',
             anchorYUnits: 'fraction',
             src: '/logos/avionRojo.png',
-            scale: 0.17,
+            scale: 0.08,
             rotation: auxAngulo,
         }),
     });
