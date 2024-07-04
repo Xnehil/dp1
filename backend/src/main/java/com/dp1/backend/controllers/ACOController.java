@@ -1,5 +1,10 @@
 package com.dp1.backend.controllers;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,6 +35,22 @@ public class ACOController {
 
     @GetMapping("/ejecutar/todaCiudad")
     public String ejecutarAcoTodo() {
-        return acoService.ejecutarAcoTodo();
+        // ZoneId zoneId = ZoneId.of("GMT-5");
+
+        // ZonedDateTime startOfDay = ZonedDateTime.now(zoneId).with(LocalTime.MIN);
+        // ZonedDateTime endOfDay = ZonedDateTime.now(zoneId).with(LocalTime.MAX);
+
+        ZoneId zoneId = ZoneId.of("GMT-5");
+
+        // Convertir la fecha a LocalDate
+        LocalDate localDate = LocalDate.parse("2024-07-04");
+
+        // Crear los objetos ZonedDateTime para el inicio y fin del día especificado
+        ZonedDateTime startOfDay = localDate.atStartOfDay(zoneId);
+        ZonedDateTime endOfDay = localDate.atTime(LocalTime.MAX).atZone(zoneId);
+
+        System.out.println("Fecha inicio: " + startOfDay);
+        System.out.println("Fecha fin: " + endOfDay);
+        return acoService.ejecutarAcoTodo(startOfDay, endOfDay);
     }
 }
