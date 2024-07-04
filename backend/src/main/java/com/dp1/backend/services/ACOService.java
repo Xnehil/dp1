@@ -421,12 +421,13 @@ public class ACOService {
 
         for (Envio e : envios.values()) {
             try {
-                e.getEmisor().setId(23);
-                e.setEmisorID(23);
+                if(e.getEmisorID() == 0 || e.getReceptorID() == 0){
+                    e.getEmisor().setId(23);
+                    e.setEmisorID(23);
 
-                e.getReceptor().setId(23);
-                e.setReceptorID(23);
-
+                    e.getReceptor().setId(23);
+                    e.setReceptorID(23);
+                }
                 envioService.updateEnvio(e);
             } catch (Exception ex) {
                 // Manejo de la excepción: puedes imprimir un mensaje de error, registrar la
@@ -437,16 +438,8 @@ public class ACOService {
                 // proceso aquí.
             }
         }
-
-        // Enviar data en formato JSON (String)
-        // Esto ya no iría porque la planificación termina con el guardado en BBDD.
         try {
-            Map<String, Object> messageMap = new HashMap<>();
-            messageMap.put("metadata", "correrAlgoritmo");
-            messageMap.put("data", envios);
-            String paquetesRutasJSON = objectMapper.writeValueAsString(messageMap);
-
-            return paquetesRutasJSON;
+            return "Paquetes planificados: " + paquetes.size();
         } catch (Exception e) {
             logger.error("Error en enviar los vuelos de prueba en formato JSON: " +
                     e.getMessage());
@@ -481,14 +474,35 @@ public class ACOService {
 
         envios.putAll(envioService.getEnviosEntre(fechaHoraInicio, fechaHoraFin));
         System.out.println(envios.size());
+        ArrayList<String> enviosABorrar = new ArrayList<>();
         for (Envio e : envios.values()) {
             if (e.getPaquetes() == null) {
                 logger.info(e.getCodigoEnvio());
                 continue;
             }
-            System.out.println(e.getPaquetes().size());
-            paquetes.addAll(e.getPaquetes()); // descartar los paquetes que ya están planificados, imprimir cuantos han
-                                              // sido los descartados
+            ArrayList<Integer> paquetesABorrar = new ArrayList<>();
+            for (Paquete p : e.getPaquetes()) {
+                if (p.getLlegoDestino()) { //Si llegó, ya no se planifica
+                    paquetesABorrar.add(p.getId());
+                } else{
+                    paquetes.add(p);
+                }
+            }
+            for (Integer id : paquetesABorrar) {
+                e.getPaquetes().removeIf(p -> p.getId() == id);
+            }
+
+            if (e.getPaquetes().size() == 0) {
+                enviosABorrar.add(e.getCodigoEnvio());
+            }
+
+            //Cambiar fecha de salida por la actual, porque los vuelos que podemos tomar son solo 
+            //los que están disponibles en el momento y luego
+            e.setFechaHoraSalida(fechaHoraFin);
+        }
+
+        for (String codigo : enviosABorrar) {
+            envios.remove(codigo);
         }
         logger.info("Carga exitosa de datos desde la bbdd");
     }

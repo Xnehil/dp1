@@ -163,6 +163,37 @@ public class EnvioService {
         HashMap<String, Envio> enviosEntre = new HashMap<>();
         try {
             List<Envio> envios = getEnviosAfterDate(fechaHoraInicio);
+            // logger.info("Envios despues de fecha inicio: " + envios.size());
+            for (Envio envio : envios) {
+                // logger.info("Fecha de salida: " + envio.getFechaHoraSalida());
+                // logger.info("Fecha de fin: " + fechaHoraFin);
+                if (envio.getFechaHoraSalida().isAfter(fechaHoraInicio)
+                        && envio.getFechaHoraSalida().isBefore(fechaHoraFin)) {
+                    try {
+                        List<Paquete> paquetes = paqueteService.getPaquetesByCodigoEnvio(envio.getCodigoEnvio());
+                        envio.setPaquetes(paquetes);
+                        enviosEntre.put(envio.getCodigoEnvio(), envio);
+                    } catch (Exception e) {
+                        // Manejo de excepciones específicas para paquetes
+                        logger.info("Error obteniendo paquetes para el envio: " + envio.getCodigoEnvio(), e);
+                        // Opcionalmente podrías lanzar una excepción personalizada o manejarlo de otra
+                        // manera
+                    }
+                }
+            }
+            // logger.info("Envios entre fechas: " + enviosEntre.size());
+        } catch (Exception e) {
+            logger.info("Error obteniendo envíos después de la fecha de inicio: " + fechaHoraInicio);
+            // Lanzar excepción para notificar al controlador
+            throw new RuntimeException("Error al obtener envíos después de la fecha de inicio", e);
+        }
+        return enviosEntre;
+    }
+
+    public HashMap<String, Envio> getEnviosEntrev2(ZonedDateTime fechaHoraInicio, ZonedDateTime fechaHoraFin) {
+        HashMap<String, Envio> enviosEntre = new HashMap<>();
+        try {
+            List<Envio> envios = getEnviosAfterDate(fechaHoraInicio);
             for (Envio envio : envios) {
                 if (envio.getFechaHoraSalida().isAfter(fechaHoraInicio)
                         && envio.getFechaHoraSalida().isBefore(fechaHoraFin)) {

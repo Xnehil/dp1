@@ -41,7 +41,7 @@ import {
 import BarraMapa from "./BarraMapa";
 import { ProgramacionVuelo } from "@/types/ProgramacionVuelo";
 import { Envio } from "@/types/Envio";
-import { agregarPaquetesAlmacen, capacidadAlmacenesUsada, contarVuelos, decidirEstiloAeropuerto, limpiarMapasDeDatos } from "@/utils/FuncionesDatos";
+import { agregarPaquetesAlmacen, agregarPaquetesAlmacenReal, capacidadAlmacenesUsada, contarVuelos, decidirEstiloAeropuerto, limpiarMapasDeDatos } from "@/utils/FuncionesDatos";
 
 type MapaProps = {
     vuelos: React.RefObject<
@@ -287,7 +287,12 @@ const Mapa = ({
                 item.routeFeature = null;
                 let result=false;
                 try {
-                    result = agregarPaquetesAlmacen(idVuelo, programacionVuelos, aeropuertos, simulationTime, envios, vuelos, setColapso) ?? false;
+                    if(simulationInterval !=1/60){
+                     result = agregarPaquetesAlmacen(idVuelo, programacionVuelos, aeropuertos, simulationTime, envios, vuelos, setColapso) ?? false;
+                    }
+                    else{
+                        result = agregarPaquetesAlmacenReal(idVuelo, programacionVuelos, aeropuertos, simulationTime, envios, vuelos, setColapso) ?? false;
+                    }
                 } catch (error) {
                     console.error('Promesa rechazada: ', error);
                 }

@@ -151,7 +151,7 @@ public class SocketConnectionHandler extends TextWebSocketHandler {
         lastMessageTimes.put(session, lastMessageTime);
 
         //Enviamos la data por primera vez. Tenemos que enviar los paquetes de los últimos dos días. Tal vez todos o solo los que faltan llegar
-        enviosEnOperacion.put(session, envioService.getEnviosEntre(lastMessageTime.minusDays(1), lastMessageTime));//cargamos todos los envios de 1 día atrás
+        enviosEnOperacion.put(session, envioService.getEnviosEntrev2(lastMessageTime.minusDays(1), lastMessageTime));//cargamos todos los envios de 1 día atrás
 
         Map<String, Object> messageMap = new HashMap<>();
         messageMap.put("metadata", "primeraCarga");
@@ -195,7 +195,7 @@ public class SocketConnectionHandler extends TextWebSocketHandler {
                 logger.info("Enviando # de vuelos en el aire: " + diferenciaVuelos.size());
                 
                 
-                HashMap<String, Envio> enviosNuevos = envioService.getEnviosEntre(lastMessageTime, time);
+                HashMap<String, Envio> enviosNuevos = envioService.getEnviosEntrev2(lastMessageTime, time);
                 messageMap = new HashMap<>();
                 messageMap.put("metadata", "nuevosEnvios");
                 messageMap.put("data", enviosNuevos);
@@ -204,7 +204,7 @@ public class SocketConnectionHandler extends TextWebSocketHandler {
                 session.sendMessage(new TextMessage(messageJson));
                 logger.info("Enviando # de envios nuevos: " + enviosNuevos.size());
 
-                HashMap<String, Envio> enviosEnOperacion = envioService.getEnviosEntre(lastMessageTime.minusDays(1), lastMessageTime);
+                HashMap<String, Envio> enviosEnOperacion = envioService.getEnviosEntrev2(lastMessageTime.minusDays(1), lastMessageTime);
                 messageMap.put("metadata", "enviosEnOperacion");
                 messageMap.put("data", enviosEnOperacion);
 
@@ -280,7 +280,7 @@ public class SocketConnectionHandler extends TextWebSocketHandler {
             difference = Duration.between(algorLastTime, simulatedTime).toMinutes();
             try {
                 if (difference > 180) {
-                    String paquetesConRutas = acoService.ejecutarAco(simulatedTime);
+                    String paquetesConRutas = acoService.ejecutarAcoSimulacion(simulatedTime);
                     session.sendMessage(new TextMessage(paquetesConRutas));
                     logger.info("Enviando resultado del algoritmo 'para los vuelos en el aire'");
                     lastAlgorTimes.put(session, simulatedTime);

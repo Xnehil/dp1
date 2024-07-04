@@ -102,9 +102,9 @@ export function coordenadasIniciales(aeropuertos: Map<String, {aeropuerto: Aerop
     const coordinates = line.getCoordinates();
 
     let verbose = false;
-    if(item.vuelo.id == 106){
-        verbose = true;
-    }
+    // if(item.vuelo.id == 106){
+    //     verbose = true;
+    // }
 
     if (verbose) {
         console.log("vuelo: ", item.vuelo);
@@ -311,7 +311,7 @@ export function seleccionarElemento(
             setSelectedVuelo(null);
             setSelectedEnvio(null);
             // console.log(`Aeropuerto seleccionado setteado: Aeropuerto ID ${aeropuerto.id}`);
-            console.log("Aero: ", aeropuerto);
+            // console.log("Aero: ", aeropuerto);
             // console.log("Feature: ", feature);
             // console.log("SelectedFeature: ", selectedFeature.current);
             if (selectedFeature.current != null) {

@@ -16,7 +16,7 @@ const Navbar = () => {
 	const navbarItems = [
 		{ name: 'Inicio', route: '/', Icon: LogoHome},
 		{ name: 'En vivo', route: '/vuelosEnVivo', Icon: LogoPlane},
-		{ name: 'Gestión', route: '/gestion', Icon: LogoGest},
+		{ name: 'Gestión', route: '/planeamientoGestion', Icon: LogoGest},
 		{ name: 'Simulación', route: '/simulacion', Icon: LogoSimu},
 		{ name: 'Registro de envíos', route: '/registroEnvios', Icon: LogoRegEnv},
 		{ name: '', route: '/configuracion', Icon: LogoConfig},

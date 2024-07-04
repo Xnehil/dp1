@@ -6,6 +6,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,23 +35,23 @@ public class ACOController {
     }
 
     @GetMapping("/ejecutar/todaCiudad")
-    public String ejecutarAcoTodo() {
-        // ZoneId zoneId = ZoneId.of("GMT-5");
+    public ResponseEntity<String> ejecutarAcoTodo() {
 
-        // ZonedDateTime startOfDay = ZonedDateTime.now(zoneId).with(LocalTime.MIN);
-        // ZonedDateTime endOfDay = ZonedDateTime.now(zoneId).with(LocalTime.MAX);
+        ZonedDateTime ahora = ZonedDateTime.now();
+        ahora.withZoneSameInstant(ZoneId.of("UTC"));
+        ZonedDateTime haceDosDias = ahora.minusDays(2);
 
-        ZoneId zoneId = ZoneId.of("GMT-5");
 
-        // Convertir la fecha a LocalDate
-        LocalDate localDate = LocalDate.parse("2024-07-04");
+        System.out.println("Fecha inicio: " + haceDosDias);
+        System.out.println("Fecha fin: " + ahora);
+        // return acoService.ejecutarAcoTodo(haceDosDias, ahora);
 
-        // Crear los objetos ZonedDateTime para el inicio y fin del día especificado
-        ZonedDateTime startOfDay = localDate.atStartOfDay(zoneId);
-        ZonedDateTime endOfDay = localDate.atTime(LocalTime.MAX).atZone(zoneId);
-
-        System.out.println("Fecha inicio: " + startOfDay);
-        System.out.println("Fecha fin: " + endOfDay);
-        return acoService.ejecutarAcoTodo(startOfDay, endOfDay);
+        try {
+            String ejecutar=acoService.ejecutarAcoTodo(haceDosDias, ahora);
+            return ResponseEntity.ok(ejecutar);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("No se pudo ejecutar el ACO: " + e.getMessage());
+        }
     }
 }
