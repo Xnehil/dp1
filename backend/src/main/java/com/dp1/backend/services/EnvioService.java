@@ -49,6 +49,8 @@ public class EnvioService {
             envio.setFechaHoraSalida(fechaHoraSalida);
             envio.setFechaHoraLlegadaPrevista(fechaHoraLlegadaPrevista);
             logger.info("Todo bien hasta fechas. Guardando envio");
+            for(Paquete paq: envio.getPaquetes())
+                System.out.println("Codigo: " + paq.getId() + " "  + paq.getIdPaquete());
             logger.info(envio.toString());
             envio = envioRepository.save(envio);
             logger.info("Todo bien hasta primer guardado");
@@ -92,10 +94,12 @@ public class EnvioService {
         try {
             if (envio == null)
             {
+                System.out.println("El envio fue null");
                 return null;
             }
             return envioRepository.save(envio);
         } catch (Exception e) {
+            System.out.println("Excepcion: " + e.getMessage());
             return null;
         }
     }

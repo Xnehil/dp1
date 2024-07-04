@@ -9,17 +9,20 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.TreeMap;
 
 import com.dp1.backend.models.Aeropuerto;
+import com.dp1.backend.models.ColeccionRuta;
 import com.dp1.backend.models.Envio;
+import com.dp1.backend.models.ItemRutaPosible;
 import com.dp1.backend.models.Paquete;
 import com.dp1.backend.models.RutaPosible;
 import com.dp1.backend.models.Vuelo;
 import com.dp1.backend.services.DatosEnMemoriaService;
-
 
 public class Auxiliares {
     public static double[] levy(int n, double beta) {
@@ -491,14 +494,41 @@ public class Auxiliares {
             esSolucionValida = solucionValidav2(aeropuertos, vuelos, envios, paquete, false);
             if (esSolucionValida) {
                 Envio envio = envios.get(paquete.getCodigoEnvio());
+                String origen = envio.getOrigen();
+                String destino = envio.getDestino();
                 String cadenaABuscar = envio.getOrigen() + envio.getDestino();
                 for (int i : paquete.getRuta()) {
                     cadenaABuscar += ("-" + i);
                 }
                 if (!datosEnMemoriaService.seTieneruta(cadenaABuscar)) {
                     // Por ahora no se inserta en la base de datos
-                    // datosEnMemoriaService.insertarRuta(envio, paquete);
-                    // rutasNuevas++;
+                    datosEnMemoriaService.insertarRuta(envio, paquete);
+                    rutasNuevas++;
+                } else {
+                    ColeccionRuta rutasDisponibles = datosEnMemoriaService.getRutasPosibles().get(origen + destino);
+                    for (RutaPosible rp : rutasDisponibles.getRutasPosibles()) {
+                        ArrayList<Integer> rutaPaquete = paquete.getRuta();
+                        List<ItemRutaPosible> rutaPosibleStruct = rp.getFlights();
+                        Collections.sort(rutaPosibleStruct, new Comparator<ItemRutaPosible>() {
+                            @Override
+                            public int compare(ItemRutaPosible irp1, ItemRutaPosible irp2) {
+                                return Integer.compare(irp1.getDiaRelativo(), irp2.getDiaRelativo());
+                            }
+                        });
+                        // Crear un ArrayList de idVuelo ordenado por diaRelativo
+                        ArrayList<Integer> idVuelosOrdenados = new ArrayList<>();
+                        for (ItemRutaPosible irp : rutaPosibleStruct) {
+                            idVuelosOrdenados.add(irp.getIdVuelo());
+                        }
+
+                        if (rutaPaquete.equals(idVuelosOrdenados)) {
+                            paquete.setRutaPosible(rp);
+                            break;
+                        } else {
+                            //siguiente, no deberia haber caso que no encuentre la ruta buscada
+                        }
+
+                    }
                 }
                 paquete.setLlegoDestino(true);
                 paquetesEntregados++;
@@ -513,14 +543,18 @@ public class Auxiliares {
                     ArrayList<Integer> ruta = new ArrayList<Integer>();
                     ArrayList<ZonedDateTime> fechas = new ArrayList<ZonedDateTime>();
                     RutaPosible rutaPosible = rutasPosibles.get(random);
+                    System.out.println("Funcion verificar ruta. rp inf: " + rutaPosible.getId() + " "
+                            + rutaPosible.getFlights());
                     for (int i = 0; i < rutaPosible.getFlights().size(); i++) {
                         ruta.add(rutaPosible.getFlights().get(i).getIdVuelo());
                         int unixTimestampSeconds = rutaPosible.getFlights().get(i).getDiaRelativo();
-                        fechas.add((ZonedDateTime.ofInstant(Instant.ofEpochSecond(unixTimestampSeconds), ZoneId.systemDefault())));
+                        fechas.add((ZonedDateTime.ofInstant(Instant.ofEpochSecond(unixTimestampSeconds),
+                                ZoneId.systemDefault())));
                     }
                     paquete.setRuta(ruta);
                     paquete.setFechasRuta(fechas);
                     paquete.setLlegoDestino(true);
+                    paquete.setRutaPosible(rutaPosible);// añadí esto, a ver si funciona
                     paquetesRutasSalvadas++;
                 } catch (Exception e) {
                     System.out.println("No se encontró la ruta en las rutas posibles cargadas en memoria.");
@@ -531,9 +565,7 @@ public class Auxiliares {
 
         System.out.println("Rutas nuevas: " + rutasNuevas);
         System.out.println("Rutas salvadas: " + paquetesRutasSalvadas);
-        System.out.println("Paquetes no entregados: " + (n - paquetesEntregados- paquetesRutasSalvadas));
-
-
+        System.out.println("Paquetes no entregados: " + (n - paquetesEntregados - paquetesRutasSalvadas));
 
         // Limpiar carga por día de los aeropuertos
         for (String i : aeropuertos.keySet()) {

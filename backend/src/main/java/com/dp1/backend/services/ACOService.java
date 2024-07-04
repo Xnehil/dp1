@@ -159,10 +159,14 @@ public class ACOService {
         HashMap<Integer, Vuelo> vuelos = datosEnMemoriaService.getVuelos();
         HashMap<String, Envio> envios = new HashMap<String, Envio>();
         cargarDatos(aeropuertos, envios, paquetes,
-                new String[] { "SKBO", "SEQM", "SVMI", "SBBR", "SPIM", "SLLP", "SCEL", "SABE", "SGAS", "SUAA", "LATI", "EDDI", "LOWW", "EBCI", "UMMS", "LBSF", "LKPR", "LDZA", "EKCH", "EHAM", "VIDP", "OSDI", "OERK", "OMDB", "OAKB", "OOMS", "OYSN", "OPKC", "UBBB", "OJAI" });
-        for (Envio e : envios.values()) {
-            paquetes.addAll(e.getPaquetes());
-        }
+                // new String[] { "SKBO", "SEQM", "SVMI", "SBBR", "SPIM", "SLLP", "SCEL",
+                // "SABE", "SGAS", "SUAA", "LATI", "EDDI", "LOWW", "EBCI", "UMMS", "LBSF",
+                // "LKPR", "LDZA", "EKCH", "EHAM", "VIDP", "OSDI", "OERK", "OMDB", "OAKB",
+                // "OOMS", "OYSN", "OPKC", "UBBB", "OJAI" });
+                new String[] { "SKBO" });
+        // for (Envio e : envios.values()) {
+        // paquetes.addAll(e.getPaquetes());
+        // }
         // Imprimir datos
         logger.info("Ejecutando ACO para: ");
         logger.info("Aeropuertos: " + aeropuertos.size());
@@ -174,6 +178,7 @@ public class ACOService {
             // Medit tiempo de ejecución
             Long startTime = System.currentTimeMillis();
             paquetes = aco.run_v2(aeropuertos, vuelos, envios, paquetes, 20);
+            System.out.println("Numero de paquetes: " + paquetes.size());
             Long endTime = System.currentTimeMillis();
             Long totalTime = endTime - startTime;
             logger.info("Tiempo de ejecución: " + totalTime + " ms");
@@ -189,6 +194,33 @@ public class ACOService {
             logger.error("Error en ejecutarAco: " + e.getLocalizedMessage());
             return null;
         }
+        // Guardando en la base de datos los paquetes planificados
+
+        for (Paquete p : paquetes) {
+            System.out.println(p.getRutaPosible().getId());
+            System.out.println("Funcion verificar ruta. rp inf: " + p.getRutaPosible().getId() + " "
+                    + p.getRutaPosible().getFlights());
+        }
+
+        for (Envio e : envios.values()) {
+            try {
+                e.getEmisor().setId(23);
+                e.setEmisorID(23);
+
+                e.getReceptor().setId(23);
+                e.setReceptorID(23);
+
+                envioService.updateEnvio(e);
+            } catch (Exception ex) {
+                // Manejo de la excepción: puedes imprimir un mensaje de error, registrar la
+                // excepción, o realizar alguna acción específica según tu necesidad.
+                System.err.println("Error al actualizar envío: " + ex.getMessage());
+                ex.printStackTrace(); // Esto imprime la traza completa del error
+                // Puedes decidir si quieres continuar con el siguiente envío o detener el
+                // proceso aquí.
+            }
+        }
+
         // Enviar data en formato JSON (String)
         try {
             // ArrayList<Vuelo> auxVuelos = new ArrayList<>();
@@ -350,7 +382,7 @@ public class ACOService {
         }
         String rutaArchivos = "data/pack_enviado_";
         for (int i = 0; i < ciudades.length; i++) {
-            envios.putAll(FuncionesLectura.leerEnvios(rutaArchivos + ciudades[i] + ".txt", aeropuertos, 40));
+            envios.putAll(FuncionesLectura.leerEnvios(rutaArchivos + ciudades[i] + ".txt", aeropuertos, 100));
         }
 
         for (Envio e : envios.values()) {

@@ -20,6 +20,7 @@ import com.dp1.backend.models.Paquete;
 import com.dp1.backend.models.ProgramacionVuelo;
 import com.dp1.backend.models.Vuelo;
 import com.dp1.backend.services.PaqueteService;
+
 @Component
 public class ACO {
 
@@ -197,6 +198,7 @@ public class ACO {
     public ArrayList<Paquete> run_v2(HashMap<String, Aeropuerto> aeropuertos, HashMap<Integer, Vuelo> vuelos,
             HashMap<String, Envio> envios,
             ArrayList<Paquete> paquetes, int numeroIteraciones) {
+
         // Definir una matriz que defina Vuelo, Costo, Visibilidad() y Fermonas
         // El costo será dinámico para algunas variables: tiempo de vuelo (entre mismas
         // ciudades varia el t de vuelo), capacidades,
@@ -473,6 +475,7 @@ public class ACO {
 
         // generarArchivoTabla(tabla, "salida");
         System.out.println("Numero de éxitos / numero paquetes: " + exito + " / " + paquetes.size());
+        
         return paquetes;
     }
 
@@ -496,12 +499,6 @@ public class ACO {
                                                                                           // Es 0
         minYMaxDistanciaAeropuertos[0] = 0;
         minYMaxTiempoVuelo[0] = 0;
-        // System.out.println("Min tiempo de vuelo: " + minYMaxTiempoVuelo[0]); //129
-        // System.out.println("Max tiempo de vuelo: " + minYMaxTiempoVuelo[1]); //890
-        // System.out.println("Min distancia entre aeropuertos: " +
-        // minYMaxDistanciaAeropuertos[0]); //0km
-        // System.out.println("Max distancia entre aeropuertos: " +
-        // minYMaxDistanciaAeropuertos[1]); //13463 km
 
         System.out.println("Número de paquetes: " + paquetes.size());
 
