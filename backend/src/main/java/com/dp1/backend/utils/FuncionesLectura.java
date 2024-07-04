@@ -58,7 +58,7 @@ public class FuncionesLectura {
                 String country = parts[3];
                 String shortName = parts[4];
                 int gmt = Integer.parseInt(parts[5].replace("+", ""));
-                int capacity = Integer.parseInt(parts[6]) + 1;
+                int capacity = Integer.parseInt(parts[6]) + 1000;
                 double longitud = convertToDecimalDegrees(parts[8]);
                 double latitud = convertToDecimalDegrees(parts[7]);
 
@@ -102,7 +102,7 @@ public class FuncionesLectura {
                 ZonedDateTime horaOrigenZoned = ZonedDateTime.of(localDate, origenLocalTime, zonaOrigen);
                 ZonedDateTime horaDestinoZoned = ZonedDateTime.of(localDate, destinoLocalTime, zonaDestino);
 
-                int capacidadCarga = Integer.parseInt(parts[4]) -250 + 100;
+                int capacidadCarga = Integer.parseInt(parts[4]) -250 + 100 -70;
                 double distancia = Auxiliares.calculateHaversineDistance(aeropuertos.get(ciudadOrigen),
                         aeropuertos.get(ciudadDestino));
 
@@ -380,6 +380,8 @@ public class FuncionesLectura {
                 nuevoEnvio.setId(0);
                 nuevoEnvio.setCodigoEnvio(null);
                 nuevoEnvio.setPaquetes(null);
+                nuevoEnvio.setEmisor(null);
+                nuevoEnvio.setReceptor(null);
                 envioRepository.save(nuevoEnvio);
                 nuevoEnvio.setCodigoEnvio(nuevoEnvio.getOrigen() + nuevoEnvio.getId());
                 envioRepository.save(nuevoEnvio);
@@ -388,6 +390,7 @@ public class FuncionesLectura {
                 // datos
                 for (Paquete paquete : paquetes) {
                     paquete.setCodigoEnvio(nuevoEnvio.getCodigoEnvio());
+                    paquete.setRutaPosible(null);
                     Paquete nuevoPaquete= paqueteService.createPaquete(paquete);
                     codigosPaquete += nuevoPaquete.getIdPaquete() + " ";
                 }
