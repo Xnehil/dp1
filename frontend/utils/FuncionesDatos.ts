@@ -36,7 +36,6 @@ export function procesarData(
                     let fechaVuelo = new Date();
                     if(auxFechaRuta < 10) {
                         fechaVuelo = new Date(simulationTime!.getTime() + auxFechaRuta * 24 * 60 * 60 * 1000);
-                        // console.log("Fecha vuelo: ", fechaVuelo);
                     }
                     else{
                         //Java lo envía como UNIX timestamp en segundos, pero JS lo necesita en milisegundos
@@ -121,7 +120,10 @@ export function procesarDataReal(
                     let fechaVuelo = new Date();
                     if(auxFechaRuta < 10) {
                         fechaVuelo = new Date(envio!.fechaHoraSalida*1000 + auxFechaRuta * 24 * 60 * 60 * 1000);
-                        
+                        //Añadir offset de la hora de salida del vuelo
+                        fechaVuelo = new Date(fechaVuelo.getTime() + 
+                        (aeropuertos.current.get(auxiliarVuelos.current?.get(idVuelo)?.origen ?? "SPIM")?.aeropuerto.gmt?? 0) 
+                        * 60 * 60 * 1000); 
                     }
                     else{
                         fechaVuelo = new Date(paquete.fechasRuta[i] * 1000);

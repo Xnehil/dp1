@@ -17,15 +17,27 @@ export default function PlaneamientoYGestion() {
   const api_base_url = process.env.REACT_APP_API_URL_BASE;
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [estado, setEstado] = useState(null); //1: exito, 2: error
+  const [mensaje, setMensaje] = useState("");
+  const [isRequesting, setIsRequesting] = useState(false);
 
   const handleClick = async () => {
+    if (isRequesting) return;
+    setIsRequesting(true);
     try {
+      //Poner cursor de carga
+      window.document.body.style.cursor = 'wait';
+
       const response = await axios.get(`${api_base_url}/aco/ejecutar/todaCiudad`);
       console.log(response.data);
+      setMensaje(response.data);
       setEstado(1);
     } catch (error) {
       console.error(error);
       setEstado(2);
+    } finally {
+      setIsRequesting(false);
+      //Quitar cursor de carga
+      window.document.body.style.cursor = 'auto';
     }
   };
 
@@ -71,13 +83,14 @@ export default function PlaneamientoYGestion() {
         <div className='flex flex-row justify-around p-5 mt-14 h-1/2'>
           {/* Botón gigante "Correr algoritmos de planificación"*/}
           <div className="flex flex-col justify-center items-center">
-            <div className={`bg-[#55BBBB] flex flex-col justify-center items-center rounded-3xl w-52 h-52`}
-            onClick={handleClick} style={{cursor: 'pointer'}}>
+            <div className={`bg-[#55BBBB] flex flex-col justify-center items-center rounded-3xl w-52 h-52 ${isRequesting ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                 onClick={!isRequesting ? handleClick : undefined} // Prevent handleClick if isRequesting is true
+                 style={{pointerEvents: isRequesting ? 'none' : 'auto'}}>
               <Image src={srcCalendario} className="m-8" alt="Icon" width={"135"} height={"135"} />
             </div>
             <p className="mt-2 text-4xl text-gray-700 text-center font-title max-w-[300px]">
               Correr algoritmos de planificación
-              </p>
+            </p>
           </div>
           {/* */}
         </div>
@@ -92,7 +105,7 @@ export default function PlaneamientoYGestion() {
                         <div>
                             {estado === 1 ? (
                                 <div className='max-h-96 overflow-y-auto'>
-                                    
+                                    <p>{mensaje}</p>
                                 </div>
                             ) : estado === 2 ? (
                                 <div>
