@@ -128,32 +128,54 @@ const DatosVuelo: React.FC<DatosVueloProps> = ({ vuelo, aeropuerto, programacion
       <button className="toggle-button-datos-vuelo" onClick={toggleVisibility}>
         {visible ? "▼" : "▲"}
       </button>
-      
+
       <div
-        className={`datos-vuelo-contenedor ${visible ? "visible" : "hidden"} ${opcion==3 ? "envio" : ""}`}
+        className={`datos-vuelo-contenedor ${visible ? "visible" : "hidden"} ${
+          opcion == 3 ? "envio" : ""
+        }`}
       >
-        {(vuelo && opcion==1)? (
+        {vuelo && opcion == 1 ? (
           <>
             <div className="datos-vuelo-header">
-              <img src="/logos/vueloEnhancedBlue.png" alt="Avión" className="icono-vuelo" />
+              <img
+                src="/logos/vueloEnhancedBlue.png"
+                alt="Avión"
+                className="icono-vuelo"
+              />
               <div className="datos-vuelo-info">
                 <h2 className="vuelo-codigo">Vuelo {vuelo.id}</h2>
                 <p className="vuelo-horario">
                   Salida: {vuelo.origen} -{" "}
-                  {utcStringToZonedDate(vuelo.fechaHoraSalida, aeropuertos.current?.get(vuelo.origen)?.aeropuerto.gmt ?? 0)}
+                  {utcStringToZonedDate(
+                    vuelo.fechaHoraSalida,
+                    aeropuertos.current?.get(vuelo.origen)?.aeropuerto.gmt ?? 0
+                  )}
                 </p>
                 <p className="vuelo-horario">
                   Llegada: {vuelo.destino} -{" "}
-                  {utcStringToZonedDate(vuelo.fechaHoraLlegada, aeropuertos.current?.get(vuelo.destino)?.aeropuerto.gmt ?? 0)}
+                  {utcStringToZonedDate(
+                    vuelo.fechaHoraLlegada,
+                    aeropuertos.current?.get(vuelo.destino)?.aeropuerto.gmt ?? 0
+                  )}
                 </p>
               </div>
               <div className="datos-vuelo-capacidad">
-                <h2>Carga: <br /> {programacionVuelo?.cantPaquetes ?? 0} / {vuelo.capacidad} paquetes</h2>
+                <h2>
+                  Carga: <br /> {programacionVuelo?.cantPaquetes ?? 0} /{" "}
+                  {vuelo.capacidad} paquetes
+                </h2>
                 <p>
-                  {(((programacionVuelo?.cantPaquetes ?? 0) / vuelo.capacidad) * 100).toFixed(2)}
+                  {(
+                    ((programacionVuelo?.cantPaquetes ?? 0) / vuelo.capacidad) *
+                    100
+                  ).toFixed(2)}
                   % lleno
                 </p>
-                {renderImage(((programacionVuelo?.cantPaquetes ?? 0) / vuelo.capacidad) * 100, "avion")}
+                {renderImage(
+                  ((programacionVuelo?.cantPaquetes ?? 0) / vuelo.capacidad) *
+                    100,
+                  "avion"
+                )}
               </div>
             </div>
             <div className="datos-vuelo-content">
@@ -167,8 +189,7 @@ const DatosVuelo: React.FC<DatosVueloProps> = ({ vuelo, aeropuerto, programacion
                     if (e.key === "Enter") {
                       procesarBusqueda();
                     }
-                    }
-                  }
+                  }}
                 />
                 <button className="boton-busqueda" onClick={procesarBusqueda}>
                   Buscar
@@ -186,51 +207,71 @@ const DatosVuelo: React.FC<DatosVueloProps> = ({ vuelo, aeropuerto, programacion
                   </thead>
                   <tbody>
                     {programacionVuelo?.paquetes
-                      .filter(paquete => {
+                      .filter((paquete) => {
                         const envio = envios.current?.get(paquete.codigoEnvio);
-                          return (filtros.idPaquete === 0 && filtros.ciudad === "" && filtros.idEnvio === "") || 
-                                (filtros.idPaquete !== 0 && paquete.id === filtros.idPaquete) ||
-                                (filtros.ciudad !== "" &&  (envio?.origen === filtros.ciudad || envio?.destino === filtros.ciudad)) ||
-                                (filtros.idEnvio !== "" && paquete.codigoEnvio === filtros.idEnvio);
+                        return (
+                          (filtros.idPaquete === 0 &&
+                            filtros.ciudad === "" &&
+                            filtros.idEnvio === "") ||
+                          (filtros.idPaquete !== 0 &&
+                            paquete.id === filtros.idPaquete) ||
+                          (filtros.ciudad !== "" &&
+                            (envio?.origen === filtros.ciudad ||
+                              envio?.destino === filtros.ciudad)) ||
+                          (filtros.idEnvio !== "" &&
+                            paquete.codigoEnvio === filtros.idEnvio)
+                        );
                       })
                       .map((paquete, index) => {
-                          const envio = envios.current?.get(paquete.codigoEnvio);
-                          return (
-                              <tr key={index}>
-                                  <td>{paquete.id}</td>
-                                  <td>{envio?.origen ?? "NULL"}</td>
-                                  <td>{envio?.destino ?? "NULL"}</td>
-                                  <td>{paquete.codigoEnvio}</td>
-                              </tr>
-                          );
+                        const envio = envios.current?.get(paquete.codigoEnvio);
+                        return (
+                          <tr key={index}>
+                            <td>{paquete.id}</td>
+                            <td>{envio?.origen ?? "NULL"}</td>
+                            <td>{envio?.destino ?? "NULL"}</td>
+                            <td>{paquete.codigoEnvio}</td>
+                          </tr>
+                        );
                       })}
-                </tbody>
+                  </tbody>
                 </table>
               </div>
             </div>
           </>
-        ) : (aeropuerto && opcion==2) ? (
+        ) : aeropuerto && opcion == 2 ? (
           <>
             <div className="datos-vuelo-header">
-              <img src="/logos/oficinasEnhancedBlue.png" alt="Oficina" className="icono-vuelo" />
+              <img
+                src="/logos/oficinasEnhancedBlue.png"
+                alt="Oficina"
+                className="icono-vuelo"
+              />
               <div className="datos-vuelo-info">
                 <h2 className="vuelo-codigo">Almacén {aeropuerto.pais}</h2>
                 <h2 className="vuelo-codigo"> {aeropuerto.codigoOACI}</h2>
                 <p className="vuelo-horario">
-                  Hora local: {" "}
+                  Hora local:{" "}
                   {mostrarTiempoEnZonaHoraria(simulationTime, aeropuerto.gmt)}
                 </p>
               </div>
               <div className="datos-vuelo-capacidad">
                 <h2>Capacidad:</h2>
                 <h2>
-                   {aeropuerto.cantidadActual}/{aeropuerto.capacidadMaxima} paquetes
+                  {aeropuerto.cantidadActual}/{aeropuerto.capacidadMaxima}{" "}
+                  paquetes
                 </h2>
                 <p>
-                  {(aeropuerto.cantidadActual  / aeropuerto.capacidadMaxima * 100).toFixed(2)}
+                  {(
+                    (aeropuerto.cantidadActual / aeropuerto.capacidadMaxima) *
+                    100
+                  ).toFixed(2)}
                   % lleno
                 </p>
-                {renderImage((aeropuerto.cantidadActual  / aeropuerto.capacidadMaxima) * 100, "edificio")}
+                {renderImage(
+                  (aeropuerto.cantidadActual / aeropuerto.capacidadMaxima) *
+                    100,
+                  "edificio"
+                )}
               </div>
             </div>
             <div className="datos-vuelo-content">
@@ -244,8 +285,7 @@ const DatosVuelo: React.FC<DatosVueloProps> = ({ vuelo, aeropuerto, programacion
                     if (e.key === "Enter") {
                       procesarBusqueda();
                     }
-                    }
-                  }
+                  }}
                 />
                 <button className="boton-busqueda" onClick={procesarBusqueda}>
                   Buscar
@@ -262,44 +302,62 @@ const DatosVuelo: React.FC<DatosVueloProps> = ({ vuelo, aeropuerto, programacion
                     </tr>
                   </thead>
                   <tbody>
-                      {aeropuerto.paquetes
-                          .filter(paquete => {
-                              const envio = envios.current?.get(paquete.codigoEnvio);
-                              return (filtros.idPaquete === 0 && filtros.ciudad === "" && filtros.idEnvio === "") || 
-                                     (filtros.idPaquete !== 0 && paquete.id === filtros.idPaquete) ||
-                                     (filtros.ciudad !== "" && (envio?.origen.startsWith(filtros.ciudad) || envio?.destino.startsWith(filtros.ciudad))) ||
-                                     (filtros.idEnvio !== "" && paquete.codigoEnvio.startsWith(filtros.idEnvio));
-                          })
-                          .map((paquete, index) => {
-                              const envio = envios.current?.get(paquete.codigoEnvio);
-                              return (
-                                  <tr key={index}>
-                                      <td>{paquete.id}</td>
-                                      <td>{envio?.origen ?? "NULL"}</td>
-                                      <td>{envio?.destino ?? "NULL"}</td>
-                                      <td>{paquete.codigoEnvio}</td>
-                                  </tr>
-                              );
-                          })}
+                    {aeropuerto.paquetes
+                      .filter((paquete) => {
+                        const envio = envios.current?.get(paquete.codigoEnvio);
+                        return (
+                          (filtros.idPaquete === 0 &&
+                            filtros.ciudad === "" &&
+                            filtros.idEnvio === "") ||
+                          (filtros.idPaquete !== 0 &&
+                            paquete.id === filtros.idPaquete) ||
+                          (filtros.ciudad !== "" &&
+                            (envio?.origen.startsWith(filtros.ciudad) ||
+                              envio?.destino.startsWith(filtros.ciudad))) ||
+                          (filtros.idEnvio !== "" &&
+                            paquete.codigoEnvio.startsWith(filtros.idEnvio))
+                        );
+                      })
+                      .map((paquete, index) => {
+                        const envio = envios.current?.get(paquete.codigoEnvio);
+                        return (
+                          <tr key={index}>
+                            <td>{paquete.id}</td>
+                            <td>{envio?.origen ?? "NULL"}</td>
+                            <td>{envio?.destino ?? "NULL"}</td>
+                            <td>{paquete.codigoEnvio}</td>
+                          </tr>
+                        );
+                      })}
                   </tbody>
                 </table>
               </div>
             </div>
           </>
-        ) : (envio && opcion==3) ? (
-        <>
-          <div className="datos-vuelo-header">
-            <img src="/logos/paqueteCeleste.png" alt="Paquete" className="icono-vuelo" />
-            <div className="datos-vuelo-info">
-              <h2 className="vuelo-codigo">Envío {envio.id}</h2>
-              <p className="vuelo-horario">
-                Origen: {envio.origen} {"("+aeropuertos.current?.get(envio.origen)?.aeropuerto.ciudad+")"} 
-              </p>
-              <p className="vuelo-horario">
-                Destino: {envio.destino} {"("+aeropuertos.current?.get(envio.destino)?.aeropuerto.ciudad+")"}
-              </p>
+        ) : envio && opcion == 3 ? (
+          <>
+            <div className="datos-vuelo-header">
+              <img
+                src="/logos/paqueteCeleste.png"
+                alt="Paquete"
+                className="icono-vuelo"
+              />
+              <div className="datos-vuelo-info">
+                <h2 className="vuelo-codigo">Envío {envio.id}</h2>
+                <p className="vuelo-horario">
+                  Origen: {envio.origen}{" "}
+                  {"(" +
+                    aeropuertos.current?.get(envio.origen)?.aeropuerto.ciudad +
+                    ")"}
+                </p>
+                <p className="vuelo-horario">
+                  Destino: {envio.destino}{" "}
+                  {"(" +
+                    aeropuertos.current?.get(envio.destino)?.aeropuerto.ciudad +
+                    ")"}
+                </p>
+              </div>
             </div>
-          </div>
             <div className="datos-vuelo-content">
               <div className="datos-vuelo-busqueda">
                 Detalle de los {envio.paquetes.length} paquetes
@@ -325,21 +383,44 @@ const DatosVuelo: React.FC<DatosVueloProps> = ({ vuelo, aeropuerto, programacion
                 </table>
               </div>
             </div>
-        </>
-        ): (
+          </>
+        ) : (
           <>
-            <div className="datos-vuelo-header">
-              <img src="/logos/vuelo.png" alt="Avión" className="icono-vuelo" />
+            <div
+              className="datos-vuelo-header"
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                textAlign: "center",
+                marginLeft: "390px",
+              }}
+            >
+              <img
+                src="/logos/vueloEnhancedBlue.png"
+                alt="Oficinas"
+                className="icono-vuelo"
+                style={{ marginRight: "10px" }}
+              />
               <div className="datos-vuelo-info">
-                <h2 className="vuelo-codigo">Seleccione un vuelo</h2>
-                <p className="vuelo-horario">Salida: XXX - HH:mm</p>
-                <p className="vuelo-horario">Llegada: XXX - HH:mm</p>
+                <h2
+                  className="vuelo-codigo"
+                  style={{ fontWeight: "bold", margin: 0, fontSize: "28px" }}
+                  
+                >
+                  Seleccione un vuelo o almacén
+                </h2>
               </div>
+              <img
+                src="/logos/oficinasEnhancedBlue.png"
+                alt="Avión"
+                className="icono-vuelo"
+                style={{ marginLeft: "10px" }}
+              />
             </div>
           </>
         )}
       </div>
-
     </div>
   );
 };
