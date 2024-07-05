@@ -53,6 +53,9 @@ function UploadFile() {
         .catch((error) => {
             console.error('Error al subir el archivo:', error);
             setEstado(2);
+        }).finally(() => {
+            //Cambiar cursor a normal
+            document.body.style.cursor = 'default';
         });
     };
 

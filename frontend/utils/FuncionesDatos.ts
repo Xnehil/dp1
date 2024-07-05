@@ -259,7 +259,7 @@ export function actualizarDataReal(
                 }
 
 
-                console.log("Actualizando paquete: ", paquete);
+                console.log("Actualizando paquete porque la ruta" + paquete.ruta + " es diferente a la anterior " + envioAntiguo.paquetes[index].ruta);
                 let paqueteAntiguo = envioAntiguo.paquetes[index];
                 //Borrar ruta de programación de vuelo
                 for(let i=0; i<paqueteAntiguo.fechasRuta.length; i++){

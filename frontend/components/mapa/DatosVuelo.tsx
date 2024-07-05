@@ -103,7 +103,9 @@ const DatosVuelo: React.FC<DatosVueloProps> = ({ vuelo, aeropuerto, programacion
         ruta += paquete.ruta[i] + " -> ";
       }
     }
-    
+    if (ruta === "") {
+      ruta = "Sin planificar";
+    }
     return ruta;
   }
 
