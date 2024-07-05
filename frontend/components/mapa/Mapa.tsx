@@ -254,7 +254,7 @@ const Mapa = ({
 
         if(simulationTime.getTime() > fechaFinSemana.getTime() || colapso){
             clearInterval(intervalId);
-            console.log("Fin de la simulación");
+            console.log("Fin");
             setMostrarFinSemanal(true);
             //Aquí André activas tus componenetes
         }

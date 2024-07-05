@@ -46,9 +46,8 @@ export default function SelectVariantsCity({disabled=false, city, setCity}) {
   cities.sort((a, b) => a.name.localeCompare(b.name));
   
   const menuItems = cities.map(city => (
-    <MenuItem value={city.value}>{`${city.name} (${city.value})`}</MenuItem>
+    <MenuItem key={city.value} value={city.value}>{`${city.name} (${city.value})`}</MenuItem>
   ));
-
 
   return (
     <div>
