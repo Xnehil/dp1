@@ -1,5 +1,6 @@
 "use client";
 import Leyenda from "@/components/mapa/Leyenda";
+import Indicadores from "@/components/mapa/Indicadores";
 import DatosVuelo from "@/components/mapa/DatosVuelo";
 import FinSemanal from "@/components/mapa/FinSemanal";
 import VuelosAlmacen from "@/components/mapa/VuelosAlmacen";
@@ -370,7 +371,7 @@ const Mapa = ({
                     simulatedTime={simulationTime}
                     aBorrarEnvios={aBorrarEnvios}
                 />
-                <Leyenda
+                <Indicadores
                     vuelosEnTransito={contarVuelos(vuelos)}
                     capacidadAlmacenes={capacidadAlmacenesUsada(aeropuertos)}
                     fechaHoraActual={currentTime.toLocaleString()}
@@ -378,6 +379,7 @@ const Mapa = ({
                     fechaHoraInicio={horaInicio}
                     simulacion={simulationInterval!==1/60}
                 />
+                <Leyenda />
                 <DatosVuelo vuelo={selectedVuelo} aeropuerto={selectedAeropuerto} programacionVuelos={programacionVuelos} simulationTime={simulationTime}
                     envios={envios} aeropuertos={aeropuertos} envio = {selectedEnvio} vuelos = {vuelos}
                 />

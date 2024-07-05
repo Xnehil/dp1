@@ -393,10 +393,11 @@ const DatosVuelo: React.FC<DatosVueloProps> = ({ vuelo, aeropuerto, programacion
                 justifyContent: "center",
                 alignItems: "center",
                 textAlign: "center",
+                marginLeft: "390px",
               }}
             >
               <img
-                src="/logos/oficinasEnhancedBlue.png"
+                src="/logos/vueloEnhancedBlue.png"
                 alt="Oficinas"
                 className="icono-vuelo"
                 style={{ marginRight: "10px" }}
@@ -404,14 +405,14 @@ const DatosVuelo: React.FC<DatosVueloProps> = ({ vuelo, aeropuerto, programacion
               <div className="datos-vuelo-info">
                 <h2
                   className="vuelo-codigo"
-                  style={{ fontWeight: "bold", margin: 0 }}
+                  style={{ fontWeight: "bold", margin: 0, fontSize: "28px" }}
                   
                 >
                   Seleccione un vuelo o almacén
                 </h2>
               </div>
               <img
-                src="/logos/vueloEnhancedBlue.png"
+                src="/logos/oficinasEnhancedBlue.png"
                 alt="Avión"
                 className="icono-vuelo"
                 style={{ marginLeft: "10px" }}

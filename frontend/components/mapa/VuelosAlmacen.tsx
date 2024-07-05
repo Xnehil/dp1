@@ -105,7 +105,7 @@ const VuelosAlmacen: React.FC<VuelosAlmacenProps> = ({ selectedAeropuerto, vuelo
           </>
         ) : (
           <>
-            <h3>Aeropuertos más llenos</h3>
+            <h3>Aeropuertos con mayor ocupación</h3>
             <TableContainer component={Paper} className="vuelos-almacen-tabla">
               <Table stickyHeader>
                 <TableHead>
@@ -134,7 +134,7 @@ const VuelosAlmacen: React.FC<VuelosAlmacenProps> = ({ selectedAeropuerto, vuelo
         )
         }
       </div>
-      <button className="toggle-button" onClick={toggleVisibility}>
+      <button className="toggle-button-left" onClick={toggleVisibility}>
         {visible ? '◀' : '▶'}
       </button>
     </div>
