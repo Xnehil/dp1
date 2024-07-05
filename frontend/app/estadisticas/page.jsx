@@ -3,7 +3,7 @@ import DatosVuelo  from "@/components/mapa/DatosVuelo";
 export default function Page() {
   return (
     <div>
-        <DatosVuelo/>
+        {/* <DatosVuelo/> */}
     </div>
   );
 }
