@@ -4,8 +4,8 @@ import DatosVuelo  from "@/components/mapa/DatosVuelo";
 export default function Page() {
   return (
     <div>
-        <Leyenda/>
-        <DatosVuelo/>
+        {/* <Leyenda/>
+        <DatosVuelo/> */}
     </div>
   );
 }
