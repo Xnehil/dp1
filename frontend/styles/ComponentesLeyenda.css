@@ -84,6 +84,7 @@
     font-size: 16px;
     font-weight: bold;
     margin-bottom: 10px;
+    text-align: center;
 }
 
 .leyenda-item {
@@ -150,6 +151,7 @@
     margin: 0px;
     transition: transform 0.3s ease;
     z-index: 9;
+    font-weight: bold;
   }
 
   .toggle-button:hover {
@@ -185,4 +187,65 @@
     display: flex;
     align-items: center;
     flex-direction: row;
+}
+
+.leyenda-wrapper {
+    position: absolute;
+    bottom: 25%;
+    left: 2.5%;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+}
+
+.leyenda-contenedor {
+    width: 300px;
+    background-color: white;
+    padding: 20px;
+    border-bottom-right-radius: 15px;
+    border-top-right-radius: 15px;
+    box-shadow: 0 0px 0px rgba(0, 0, 0, 0.1);
+    transition: transform 0.5s ease, opacity 0.5s ease;
+    transform: translateX(0);
+    opacity: 0;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+}
+
+.leyenda-contenedor.visible {
+    transform: translateX(0);
+    opacity: 1;
+}
+
+.leyenda-contenedor.hidden {
+    transform: translateX(-100%);
+    opacity: 0;
+}
+
+/* Modificar los selectores existentes para que funcionen con ambos componentes */
+.info-vuelos-contenedor.hidden + .toggle-button,
+.leyenda-contenedor.hidden + .toggle-button {
+    transform: translateX(0);
+    transition: transform 0.5s ease, opacity 0.5s ease;
+}
+
+.info-vuelos-contenedor.hidden + .toggle-button:hover,
+.leyenda-contenedor.hidden + .toggle-button:hover {
+    transform: scale(1.1);
+    transition: transform 0.3s ease;
+}
+
+.info-vuelos-contenedor.visible + .toggle-button,
+.leyenda-contenedor.visible + .toggle-button {
+    margin-left: -1px;
+    transform: translateX(-100%);
+    transition: transform 0.5s ease, opacity 0.5s ease;
+}
+
+.info-vuelos-contenedor.visible + .toggle-button:hover,
+.leyenda-contenedor.visible + .toggle-button:hover {
+    transform: translateX(-100%) scale(1.1);
+    transition: transform 0.3s ease;
 }
