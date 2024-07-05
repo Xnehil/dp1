@@ -8,15 +8,14 @@ import java.util.ArrayList;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
-import jakarta.persistence.CollectionTable;
+import com.dp1.backend.utils.ZonedDateTimeListConverter;
+
 import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.OrderColumn;
 import jakarta.persistence.Table;
 
 @Entity
@@ -25,15 +24,19 @@ import jakarta.persistence.Table;
 @SQLRestriction(value = "active = true")
 public class Paquete extends BaseModel{
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "codigo_envio", insertable = false, updatable = false, referencedColumnName = "codigo_envio")
+    // @JoinColumn(name = "codigo_envio", insertable = false, updatable = false, referencedColumnName = "codigo_envio")
+    @JoinColumn(name = "envio_id")
     private Envio envio;
 
     @Column(name = "codigo_envio")
     private String codigoEnvio;
 
+    @Convert(converter = ZonedDateTimeListConverter.class)
     private ArrayList<ZonedDateTime> fechasRuta;
-    private ArrayList<Double> costosRuta;
+    
 
+    private ArrayList<Double> costosRuta;
+    
     @Column(name = "llego_destino")
     private boolean llegoDestino;
     //Se almacena la lista de ids de los vuelos a seguir
@@ -47,6 +50,14 @@ public class Paquete extends BaseModel{
     @ManyToOne
     @JoinColumn(name = "id_ruta", referencedColumnName = "id")
     private RutaPosible rutaPosible;
+
+    public RutaPosible getRutaPosible() {
+        return rutaPosible;
+    }
+
+    public void setRutaPosible(RutaPosible rutaPosible) {
+        this.rutaPosible = rutaPosible;
+    }
 
     //Tiempo restante para que el paquete llegue a su destino
     private Duration tiempoRestanteDinamico;
@@ -145,8 +156,21 @@ public class Paquete extends BaseModel{
         this.ruta = new ArrayList<Integer>();
         this.fechasRuta = new ArrayList<ZonedDateTime>();
         this.costosRuta = new ArrayList<>();
+        this.rutaPosible = new RutaPosible();   
         this.tiempoRestante = Duration.ZERO;
         this.tiempoRestanteDinamico = Duration.ZERO;
         this.llegoDestino = false;
+    }
+
+    public void pasarRutaPosibleARuta(){
+        //Creo que no hacía falta
+        if (this.rutaPosible != null){
+            ArrayList<Integer> ruta = new ArrayList<Integer>();
+            ArrayList<ZonedDateTime> fechas = new ArrayList<ZonedDateTime>();
+            for (int i = 0; i < this.rutaPosible.getFlights().size(); i++){
+                ruta.add(this.rutaPosible.getFlights().get(i).getIdVuelo());
+            }
+            this.setRuta(ruta);
+        }
     }
 }

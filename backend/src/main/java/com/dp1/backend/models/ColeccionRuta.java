@@ -1,6 +1,7 @@
 package com.dp1.backend.models;
 
 import com.dp1.backend.models.Aeropuerto;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -28,6 +29,7 @@ public class ColeccionRuta extends BaseModel  {
     //CodigoCiudadOrigen-CodigoCiudadDestino
 
     //Una ruta puede tener varias alternativas 
+    @JsonManagedReference
     @OneToMany(mappedBy = "coleccionRuta",  cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<RutaPosible>  rutasPosibles;
 

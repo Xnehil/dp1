@@ -1,6 +1,12 @@
 package com.dp1.backend.controllers;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,7 +35,22 @@ public class ACOController {
     }
 
     @GetMapping("/ejecutar/todaCiudad")
-    public String ejecutarAcoTodo() {
-        return acoService.ejecutarAcoTodo();
+    public ResponseEntity<String> ejecutarAcoTodo() {
+
+        ZonedDateTime ahora = ZonedDateTime.now(ZoneId.of("UTC"));
+        ZonedDateTime haceDosDias = ahora.minusDays(2);
+
+
+        System.out.println("Fecha inicio: " + haceDosDias);
+        System.out.println("Fecha fin: " + ahora);
+        // return acoService.ejecutarAcoTodo(haceDosDias, ahora);
+
+        try {
+            String ejecutar=acoService.ejecutarAcoTodo(haceDosDias, ahora);
+            return ResponseEntity.ok(ejecutar);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("No se pudo ejecutar el ACO: " + e.getMessage());
+        }
     }
 }

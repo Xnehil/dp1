@@ -1,6 +1,7 @@
 package com.dp1.backend.services;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -21,7 +22,7 @@ public class PaqueteService {
     {
         try {
             Paquete paqueteNuevo = paqueteRepository.save(paquete);
-            logger.info("Paquete guardado con id: " + paqueteNuevo.getId()+ " y codigo de envio: " + paqueteNuevo.getCodigoEnvio());
+            // logger.info("Paquete guardado con id: " + paqueteNuevo.getId()+ " y codigo de envio: " + paqueteNuevo.getCodigoEnvio());
             return paqueteNuevo;
         } catch (Exception e) {
             logger.error(e.getMessage());
@@ -33,6 +34,14 @@ public class PaqueteService {
     {
         try {
             return paqueteRepository.findById(id).get();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public List <Paquete> getPaquetesByCodigoEnvio(String codigoEnvio){
+        try {
+            return paqueteRepository.findByCodigoEnvio(codigoEnvio);
         } catch (Exception e) {
             return null;
         }

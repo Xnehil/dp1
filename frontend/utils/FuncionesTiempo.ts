@@ -78,6 +78,15 @@ export function tiempoFaltante(envio: Envio | undefined, simulationTime: Date): 
     return aHoraMinutos(tiempoRestante);
 }
 
+export function tiempoNumeroADiasHorasMinutos(tiempo: number): string {
+    //Devuelve un string con el tiempo en formato dd hh:mm
+    // console.log("Tiempo: ", tiempo);
+    const dias = Math.floor(tiempo / (60 * 24));
+    const horas = Math.floor((tiempo % (60 * 24)) / 60);
+    const minutos = (tiempo % 60).toFixed(0);
+    return `${dias}d ${horas.toString().padStart(2, "0")}h ${minutos.toString().padStart(2, "0")}m`;
+}
+
 export function mostrarTiempoEnZonaHoraria(fecha: Date, zonaHoraria: number): string {
     const simulationTimeInMS = new Date(fecha).getTime();
     const timezoneDifference =zonaHoraria - (-5);

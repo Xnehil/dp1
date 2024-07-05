@@ -196,7 +196,16 @@ export const invisibleStyle = new Style({
 // Visible line style for selected line
 export const selectedLineStyle = new Style({
     stroke: new Stroke({
-      color: 'red', // Change color to make the selected line distinguishable
+      color: 'orange', // Change color to make the selected line distinguishable
+      lineDash: [4],
+      width: 2, // Increase width for the selected line
+    }),
+    zIndex: Infinity,
+});
+
+export const mulitpleSelectedLineStyle = new Style({
+    stroke: new Stroke({
+      color: 'orange', // Change color to make the selected line distinguishable
       lineDash: [4],
       width: 2, // Increase width for the selected line
     }),

@@ -1,17 +1,19 @@
 import { TextField, InputAdornment } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { Feature, View } from "ol";
 import { Aeropuerto } from "@/types/Aeropuerto";
 import { Vuelo } from "@/types/Vuelo";
-import { seleccionarAeropuerto, seleccionarVuelo } from "@/utils/FuncionesMapa";
+import { desactivarEnvio, procesarSeleccionEnvio, seleccionarAeropuerto, seleccionarVuelo } from "@/utils/FuncionesMapa";
 import { Map as OLMap } from "ol";
 import { fromLonLat } from "ol/proj";
 import { ProgramacionVuelo } from "@/types/ProgramacionVuelo";
+import { Envio } from "@/types/Envio";
 
 type BarraMapaProps = {
     setSelectedVuelo: (value: Vuelo | null) => void,
     setSelectedAeropuerto: (value: Aeropuerto | null) => void,
+    setSelectedEnvio: (value: Envio | null) => void,
     mapRef: React.RefObject<OLMap>,
     selectedFeature: React.RefObject<Feature>,
     vuelos: React.RefObject<
@@ -27,21 +29,27 @@ type BarraMapaProps = {
     >;
     aeropuertos: Map<string, {aeropuerto: Aeropuerto; pointFeature: any}>;
     programacionVuelos: Map<string, ProgramacionVuelo>;
+    envios: Map<string, Envio>;
     simulatedTime: Date;
+    aBorrarEnvios: React.MutableRefObject<string[]>;
 };
 const BarraMapa = ({
     setSelectedVuelo,
     setSelectedAeropuerto,
+    setSelectedEnvio,
     mapRef,
     selectedFeature,
     vuelos,
     aeropuertos,
     programacionVuelos,
+    envios,
     simulatedTime,
+    aBorrarEnvios,
 }: BarraMapaProps) => {
     const [aBuscar, setABuscar] = React.useState<string>(""); 
     const [error, setError] = useState(false);
     const [helperText, setHelperText] = useState('');
+    const aDesactivar = useRef<string []>([]);
 
     const handleKeyPress = (event: React.KeyboardEvent) => {
         if (event.key === "Enter") {   
@@ -102,8 +110,11 @@ const BarraMapa = ({
         if (!isNaN(Number(aBuscar))) {
             if(Number(aBuscar) < 3000){
                 console.log("Buscando por código de vuelo: ", aBuscar);
-                if(vuelos.current?.has(Number(aBuscar))){
+                let vuelo = vuelos.current?.get(Number(aBuscar));
+                if(vuelo && vuelo.pointFeature.get('pintarAuxiliar')){
                     seleccionarVuelo(Number(aBuscar), setSelectedVuelo, setSelectedAeropuerto, selectedFeature, vuelos, vuelos.current?.get(Number(aBuscar))?.pointFeature);
+                    setSelectedEnvio(null);
+                    desactivarEnvio(aDesactivar, aeropuertos, vuelos);
                     const item = vuelos.current?.get(Number(aBuscar));
                     if (item && mapRef.current) {
                         const view = mapRef.current.getView();
@@ -123,8 +134,8 @@ const BarraMapa = ({
             }
             else{
                 //Primero buscar en vuelos
-                let encontrado = false;
-                console.log("Buscando por código de paquete: ", aBuscar);
+                setSelectedEnvio(null);
+                desactivarEnvio(aDesactivar, aeropuertos, vuelos);
                 setHelperText("Buscando en vuelos...");
                 if (searchInFlights(Number(aBuscar))) {
                     setHelperText("");
@@ -139,24 +150,44 @@ const BarraMapa = ({
                 }
             }
         } else {
-            console.log("Buscando por nombre de aeropuerto: ", aBuscar);
-            let item = aeropuertos.get(aBuscar.toUpperCase());
-            if (item) {
-                seleccionarAeropuerto(aBuscar.toUpperCase(), setSelectedAeropuerto, setSelectedVuelo , selectedFeature, aeropuertos, item.pointFeature, vuelos);
-                if (mapRef.current) {
-                    const view = mapRef.current.getView();
-                    if (view) {
-                        view.animate({
-                            center: fromLonLat  ([item.aeropuerto.longitud, item.aeropuerto.latitud]),
-                            zoom: 6,
-                            duration: 1000,
-                        });
+            //Si aBuscar es menor o igual a 4 caracteres, se busca por nombre de aeropuerto
+            if (aBuscar.length <= 4) {
+                console.log("Buscando por nombre de aeropuerto: ", aBuscar);
+                let item = aeropuertos.get(aBuscar.toUpperCase());
+                if (item) {
+                    setSelectedEnvio(null);
+                    desactivarEnvio(aDesactivar, aeropuertos, vuelos);
+                    seleccionarAeropuerto(aBuscar.toUpperCase(), setSelectedAeropuerto, setSelectedVuelo , selectedFeature, aeropuertos, item.pointFeature, vuelos);
+                    if (mapRef.current) {
+                        const view = mapRef.current.getView();
+                        if (view) {
+                            view.animate({
+                                center: fromLonLat  ([item.aeropuerto.longitud, item.aeropuerto.latitud]),
+                                zoom: 6,
+                                duration: 1000,
+                            });
+                        }
                     }
+                } else {
+                    setError(true);
+                    setHelperText("No se encontró el aeropuerto: " + aBuscar);
                 }
-            } else {
-                setError(true);
-                setHelperText("No se encontró el aeropuerto: " + aBuscar);
             }
+            else{
+                //Si aBuscar es mayor a 4 caracteres, se busca por código de envío
+                console.log("Buscando por código de envío: ", aBuscar);
+                let envio : Envio | undefined= envios.get(aBuscar);
+                if (envio) {
+                    desactivarEnvio(aDesactivar, aeropuertos, vuelos);
+                    aDesactivar.current=procesarSeleccionEnvio(envio, setSelectedVuelo, setSelectedAeropuerto, setSelectedEnvio,selectedFeature, vuelos, aeropuertos);
+                    aBorrarEnvios.current=aDesactivar.current;
+                }
+                else{
+                    setError(true);
+                    setHelperText("No se encontró el envío con código: " + aBuscar);
+                }
+            }
+            
         }
     }
 

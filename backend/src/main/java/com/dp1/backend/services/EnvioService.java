@@ -32,42 +32,49 @@ public class EnvioService {
 
     private final static Logger logger = LogManager.getLogger(EnvioService.class);
 
-    public String createEnvio(Envio envio)
-    {
+    public String createEnvio(Envio envio) {
         try {
             Aeropuerto origen = datosEnMemoriaService.getAeropuertos().get(envio.getOrigen());
             Aeropuerto destino = datosEnMemoriaService.getAeropuertos().get(envio.getDestino());
-            //Agregar fecha de salida considerando la hora actual y la diferencia horaria
+            // Agregar fecha de salida considerando la hora actual y la diferencia horaria
             ZonedDateTime fechaHoraSalida = ZonedDateTime.now();
-            fechaHoraSalida=fechaHoraSalida.withZoneSameInstant(origen.getZoneId());
+            fechaHoraSalida = fechaHoraSalida.withZoneSameInstant(origen.getZoneId());
 
             Boolean mismoContinente = origen.getContinente().equals(destino.getContinente());
-            //Agregar fecha de llegada prevista considerando la hora de salida y la distancia entre los aeropuertos
+            // Agregar fecha de llegada prevista considerando la hora de salida y la
+            // distancia entre los aeropuertos
             ZonedDateTime fechaHoraLlegadaPrevista = fechaHoraSalida.plusDays(mismoContinente ? 1 : 2);
-            fechaHoraLlegadaPrevista=fechaHoraLlegadaPrevista.withZoneSameLocal(destino.getZoneId());
+            fechaHoraLlegadaPrevista = fechaHoraLlegadaPrevista.withZoneSameLocal(destino.getZoneId());
 
             envio.setFechaHoraSalida(fechaHoraSalida);
             envio.setFechaHoraLlegadaPrevista(fechaHoraLlegadaPrevista);
             logger.info("Todo bien hasta fechas. Guardando envio");
+            for (Paquete paq : envio.getPaquetes())
+                System.out.println("Codigo: " + paq.getId() + " " + paq.getIdPaquete());
             logger.info(envio.toString());
+            //Nueva precaución
+            envio.setReceptor(null);
+            envio.setEmisor(null);
+            envio.setPaquetes(null);
             envio = envioRepository.save(envio);
             logger.info("Todo bien hasta primer guardado");
-            envio.setCodigoEnvio(envio.getOrigen()+envio.getId());
+            envio.setCodigoEnvio(envio.getOrigen() + envio.getId());
             envio.setPaquetes(null);
             envioRepository.save(envio);
             logger.info("Todo bien hasta segundo guardado");
 
             String codigosPaquetes = "";
             for (int i = 0; i < envio.getCantidadPaquetes(); i++) {
-                //Guardar paquetes
+                // Guardar paquetes
                 Paquete paquete = new Paquete();
                 paquete.setCodigoEnvio(envio.getCodigoEnvio());
-                int codigoPaquete = 1000000*origen.getIdAeropuerto() + 100*envio.getId() + (i+1) ;
+                int codigoPaquete = 1000000 * origen.getIdAeropuerto() + 100 * envio.getId() + (i + 1);
                 paquete.setIdPaquete(codigoPaquete);
                 codigosPaquetes += codigoPaquete + " ";
                 paquete.setCostosRuta(null);
                 paquete.setFechasRuta(null);
                 paquete.setRuta(null);
+                paquete.setRutaPosible(null);
                 paqueteService.createPaquete(paquete);
             }
             logger.info("Todo bien hasta guardado de paquetes");
@@ -75,12 +82,11 @@ public class EnvioService {
         } catch (Exception e) {
             logger.error("Error al crear envio: ");
             e.printStackTrace();
-            return e.getMessage();  
+            return e.getMessage();
         }
     }
 
-    public Envio getEnvio(int id)
-    {
+    public Envio getEnvio(int id) {
         try {
             return envioRepository.findById(id).get();
         } catch (Exception e) {
@@ -88,25 +94,25 @@ public class EnvioService {
         }
     }
 
-    public Envio updateEnvio(Envio envio){
+    public Envio updateEnvio(Envio envio) {
         try {
-            if (envio == null)
-            {
+            if (envio == null) {
+                System.out.println("El envio fue null");
                 return null;
             }
             return envioRepository.save(envio);
         } catch (Exception e) {
+            System.out.println("Excepcion: " + e.getMessage());
             return null;
         }
     }
 
-    public String deleteEnvio(int id){
+    public String deleteEnvio(int id) {
         try {
             Envio envio = envioRepository.findById(id).get();
             if (envio != null) {
                 envioRepository.delete(envio);
-            }
-            else {
+            } else {
                 return "Envio no encontrado";
             }
             return "Envio eliminado";
@@ -115,8 +121,7 @@ public class EnvioService {
         }
     }
 
-    public ArrayList<Envio> getEnvios()
-    {
+    public ArrayList<Envio> getEnvios() {
         return (ArrayList<Envio>) envioRepository.findAll();
     }
 
@@ -132,20 +137,84 @@ public class EnvioService {
         return envioRepository.findByFechaHoraSalidaAfter(limitDate);
     }
 
-    @Transactional
-    public HashMap<String, Envio> getEnviosEntre(ZonedDateTime fechaHoraInicio, ZonedDateTime fechaHoraFin)
-    {
-        HashMap<String, Envio> enviosEntre = new HashMap<>();
-        List <Envio> envios = getEnviosAfterDate(fechaHoraInicio);
+    // @Transactional
+    // public HashMap<String, Envio> getEnviosEntre(ZonedDateTime fechaHoraInicio,
+    // ZonedDateTime fechaHoraFin)
+    // {
+    // HashMap<String, Envio> enviosEntre = new HashMap<>();
+    // List <Envio> envios = getEnviosAfterDate(fechaHoraInicio);
+    // // logger.info("Envios despues de fecha inicio");
+    // for (Envio envio : envios) {
+    // // logger.info(envio.getFechaHoraSalida());
+    // // logger.info(fechaHoraInicio);
+    // if (envio.getFechaHoraSalida().isAfter(fechaHoraInicio) &&
+    // envio.getFechaHoraSalida().isBefore(fechaHoraFin)) {
+    // List<Paquete> paquetes =
+    // paqueteService.getPaquetesByCodigoEnvio(envio.getCodigoEnvio());
+    // envio.setPaquetes(paquetes);
+    // enviosEntre.put(envio.getCodigoEnvio(), envio);
+    // }
+    // }
+    // return enviosEntre;
+    // }
 
-        for (Envio envio : envios) {
-            logger.info(envio.getFechaHoraSalida());
-            logger.info(fechaHoraInicio);
-            if (envio.getFechaHoraSalida().isAfter(fechaHoraInicio) && envio.getFechaHoraSalida().isBefore(fechaHoraFin)) {
-                Hibernate.initialize(envio.getPaquetes());
-                enviosEntre.put(envio.getCodigoEnvio(), envio);
+    //@Transactional
+    public HashMap<String, Envio> getEnviosEntre(ZonedDateTime fechaHoraInicio, ZonedDateTime fechaHoraFin) {
+        HashMap<String, Envio> enviosEntre = new HashMap<>();
+        try {
+            List<Envio> envios = getEnviosAfterDate(fechaHoraInicio);
+            // logger.info("Envios despues de fecha inicio: " + envios.size());
+            for (Envio envio : envios) {
+                // logger.info("Fecha de salida: " + envio.getFechaHoraSalida());
+                // logger.info("Fecha de fin: " + fechaHoraFin);
+                if (envio.getFechaHoraSalida().isAfter(fechaHoraInicio)
+                        && envio.getFechaHoraSalida().isBefore(fechaHoraFin)) {
+                    try {
+                        List<Paquete> paquetes = paqueteService.getPaquetesByCodigoEnvio(envio.getCodigoEnvio());
+                        envio.setPaquetes(paquetes);
+                        enviosEntre.put(envio.getCodigoEnvio(), envio);
+                    } catch (Exception e) {
+                        // Manejo de excepciones específicas para paquetes
+                        logger.info("Error obteniendo paquetes para el envio: " + envio.getCodigoEnvio(), e);
+                        // Opcionalmente podrías lanzar una excepción personalizada o manejarlo de otra
+                        // manera
+                    }
+                }
             }
+            // logger.info("Envios entre fechas: " + enviosEntre.size());
+        } catch (Exception e) {
+            logger.info("Error obteniendo envíos después de la fecha de inicio: " + fechaHoraInicio);
+            // Lanzar excepción para notificar al controlador
+            throw new RuntimeException("Error al obtener envíos después de la fecha de inicio", e);
         }
         return enviosEntre;
     }
+
+    public HashMap<String, Envio> getEnviosEntrev2(ZonedDateTime fechaHoraInicio, ZonedDateTime fechaHoraFin) {
+        HashMap<String, Envio> enviosEntre = new HashMap<>();
+        try {
+            List<Envio> envios = getEnviosAfterDate(fechaHoraInicio);
+            for (Envio envio : envios) {
+                if (envio.getFechaHoraSalida().isAfter(fechaHoraInicio)
+                        && envio.getFechaHoraSalida().isBefore(fechaHoraFin)) {
+                    try {
+                        List<Paquete> paquetes = paqueteService.getPaquetesByCodigoEnvio(envio.getCodigoEnvio());
+                        envio.setPaquetes(paquetes);
+                        enviosEntre.put(envio.getCodigoEnvio(), envio);
+                    } catch (Exception e) {
+                        // Manejo de excepciones específicas para paquetes
+                        logger.info("Error obteniendo paquetes para el envio: " + envio.getCodigoEnvio(), e);
+                        // Opcionalmente podrías lanzar una excepción personalizada o manejarlo de otra
+                        // manera
+                    }
+                }
+            }
+        } catch (Exception e) {
+            logger.info("Error obteniendo envíos después de la fecha de inicio: " + fechaHoraInicio);
+            // Lanzar excepción para notificar al controlador
+            throw new RuntimeException("Error al obtener envíos después de la fecha de inicio", e);
+        }
+        return enviosEntre;
+    }
+
 }

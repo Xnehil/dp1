@@ -36,11 +36,12 @@ import {
     seleccionarAeropuerto,
     updateCoordinates,
     seleccionarElemento,
+    desactivarEnvio,
 } from "@/utils/FuncionesMapa";
 import BarraMapa from "./BarraMapa";
 import { ProgramacionVuelo } from "@/types/ProgramacionVuelo";
 import { Envio } from "@/types/Envio";
-import { agregarPaquetesAlmacen, capacidadAlmacenesUsada, contarVuelos, decidirEstiloAeropuerto, limpiarMapasDeDatos } from "@/utils/FuncionesDatos";
+import { agregarPaquetesAlmacen, agregarPaquetesAlmacenReal, capacidadAlmacenesUsada, contarVuelos, decidirEstiloAeropuerto, limpiarMapasDeDatos } from "@/utils/FuncionesDatos";
 
 type MapaProps = {
     vuelos: React.RefObject<
@@ -85,12 +86,15 @@ const Mapa = ({
     const [currentTime, setCurrentTime] = useState(new Date());
     const [selectedVuelo, setSelectedVuelo] = useState<Vuelo | null>(null);
     const [selectedAeropuerto, setSelectedAeropuerto] = useState<Aeropuerto | null>(null);
+    const [selectedEnvio, setSelectedEnvio] = useState<Envio | null>(null);
     const selectedFeature = useRef<Feature | null>(null);
     const vistaActual = useRef<View | null>(null);
     const fechaFinSemana = new Date(horaInicio.getTime() + 7 * 24 * 60 * 60 * 1000); //suma 7 dias
     const [vuelosABorrar, setVuelosABorrar] = useState<number[]>([]);
     const [mostrarFinSemanal, setMostrarFinSemanal] = useState(false);
+    const aBorrarEnvios = useRef<string[]>([]);
     const vuelosEnElAire = useRef<number>(0);
+    const [colapso, setColapso] = useState(false);
 
     useEffect(() => {
         if (!mapRef.current) {
@@ -131,7 +135,8 @@ const Mapa = ({
                 aeropuertos.current,
                 item,
                 simulationTime,
-                programacionVuelos.current
+                programacionVuelos.current,
+                setColapso
             );
             item.pointFeature = objeto.feature;
             auxPointFeatures.push(objeto.feature)
@@ -177,6 +182,7 @@ const Mapa = ({
             const clickHandler = (event: any) => {
                 const feature = mapRef.current?.getFeaturesAtPixel(event.pixel)[0];
                 // console.log("Feature clicked: ", feature);
+                desactivarEnvio(aBorrarEnvios, aeropuertos.current, vuelos);
                 if (feature) {
                     const vueloId = feature.get("vueloId");
                     const aeropuertoId = feature.get("aeropuertoId");
@@ -185,11 +191,26 @@ const Mapa = ({
                         aeropuertoId,
                         setSelectedVuelo,
                         setSelectedAeropuerto,
+                        setSelectedEnvio,
                         selectedFeature,
                         vuelos,
                         aeropuertos,
                         feature,
                     );
+                }
+                else {
+                    setSelectedVuelo(null);
+                    setSelectedAeropuerto(null);
+                    setSelectedEnvio(null);
+                    if (selectedFeature.current != null) {
+                        if (selectedFeature.current.get("vueloId")) {
+                            selectedFeature.current.setStyle(selectedFeature.current.get("estiloAnterior"));
+                            vuelos.current?.get(selectedFeature.current.get("vueloId"))?.lineFeature.setStyle(invisibleStyle);
+                        } else if (selectedFeature.current.get("aeropuertoId")) {
+                            selectedFeature.current.setStyle(selectedFeature.current.get("estiloAnterior"));
+        
+                        }
+                    }
                 }
             };
     
@@ -230,7 +251,7 @@ const Mapa = ({
             }
         }, 1000);
 
-        if(simulationTime.getTime() > fechaFinSemana.getTime()){
+        if(simulationTime.getTime() > fechaFinSemana.getTime() || colapso){
             clearInterval(intervalId);
             console.log("Fin de la simulación");
             setMostrarFinSemanal(true);
@@ -266,7 +287,12 @@ const Mapa = ({
                 item.routeFeature = null;
                 let result=false;
                 try {
-                    result = agregarPaquetesAlmacen(idVuelo, programacionVuelos, aeropuertos, simulationTime, envios, vuelos) ?? false;
+                    if(simulationInterval !=1/60){
+                     result = agregarPaquetesAlmacen(idVuelo, programacionVuelos, aeropuertos, simulationTime, envios, vuelos, setColapso) ?? false;
+                    }
+                    else{
+                        result = agregarPaquetesAlmacenReal(idVuelo, programacionVuelos, aeropuertos, simulationTime, envios, vuelos, setColapso) ?? false;
+                    }
                 } catch (error) {
                     console.error('Promesa rechazada: ', error);
                 }
@@ -310,7 +336,8 @@ const Mapa = ({
                         aeropuertos.current,
                         item,
                         simulationTime,
-                        programacionVuelos.current
+                        programacionVuelos.current,
+                        setColapso
                     );
                     item.pointFeature = objeto.feature;
                     if(objeto.tieneCarga) cuenta++;
@@ -333,23 +360,28 @@ const Mapa = ({
                 <BarraMapa
                     setSelectedVuelo={setSelectedVuelo}
                     setSelectedAeropuerto={setSelectedAeropuerto}
+                    setSelectedEnvio={setSelectedEnvio}
                     mapRef={mapRef}
                     selectedFeature={selectedFeature}
                     vuelos={vuelos}
                     aeropuertos={aeropuertos.current}
                     programacionVuelos={programacionVuelos.current}
+                    envios={envios.current}
                     simulatedTime={simulationTime}
+                    aBorrarEnvios={aBorrarEnvios}
                 />
                 <Leyenda
                     vuelosEnTransito={contarVuelos(vuelos)}
                     capacidadAlmacenes={capacidadAlmacenesUsada(aeropuertos)}
                     fechaHoraActual={currentTime.toLocaleString()}
-                    fechaHoraSimulada={simulationTime.toLocaleString()}
+                    fechaHoraSimulada={simulationTime}
+                    fechaHoraInicio={horaInicio}
+                    simulacion={simulationInterval!==1/60}
                 />
                 <DatosVuelo vuelo={selectedVuelo} aeropuerto={selectedAeropuerto} programacionVuelos={programacionVuelos} simulationTime={simulationTime}
-                    envios={envios} aeropuertos={aeropuertos}
+                    envios={envios} aeropuertos={aeropuertos} envio = {selectedEnvio} vuelos = {vuelos}
                 />
-                {mostrarFinSemanal && <FinSemanal programacionVuelos={programacionVuelos} vuelos={vuelos}/>}
+                {mostrarFinSemanal && <FinSemanal programacionVuelos={programacionVuelos} vuelos={vuelos} colapso={colapso}/>}
                 <VuelosAlmacen selectedAeropuerto={selectedAeropuerto} vuelos={vuelos} simulationTime={simulationTime} programacionVuelos={programacionVuelos} />
             </div>{" "}
         </div>

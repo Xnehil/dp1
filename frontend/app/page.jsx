@@ -8,10 +8,11 @@ import IconoTarea from "@/components/IconoTarea";
 import srcAjustes from "@/public/logos/ajustes.png";
 import srcEstadisticas from "@/public/logos/estadisticas.png";
 import srcRegistroEnvio from "@/public/logos/registroEnvio.png";
+import srcRastreo from "@/public/logos/rastreo.png";
 import srcPlaneamiento from "@/public/logos/planeamientoGestion.png";
 import srcSimulacion from "@/public/logos/simulacionEnvios.png";
 import srcVuelosEnVivo from "@/public/logos/vuelosEnVivo.png";
-import TextField from '@mui/material/TextField'; 
+import TextField from '@mui/material/TextField';
 
 
 export default function Home() {
@@ -38,7 +39,12 @@ export default function Home() {
                             size="220"
                         />
                     </Link>
-                    <IconoTarea icon={srcAjustes} description="Ajustes" />
+                    <Link href={"/rastreo"} className="h-full">
+                        <IconoTarea
+                            icon={srcRastreo}
+                            description="Rastreo" />
+                    </Link>
+
                 </div>
 
                 <div className="flex flex-row justify-around p-5">
@@ -55,7 +61,7 @@ export default function Home() {
                             size="220"
                         />
                     </Link>
-                    
+
                 </div>
             </section>
         </main>
