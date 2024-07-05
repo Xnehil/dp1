@@ -2,8 +2,7 @@
     width: 300px;
     background-color: white;
     padding: 20px;
-    border-bottom-right-radius: 15px;
-    border-top-right-radius: 15px;
+    border-radius: 20px;
     box-shadow: 0 0px 0px rgba(0, 0, 0, 0.1);
     transition: transform 0.5s ease, opacity 0.5s ease;
     transform: translateX(0);
@@ -14,12 +13,12 @@
   }
 
   .info-vuelos-contenedor.visible {
-    transform: translateX(0);
+    transform: translateX(5%);
     opacity: 1;
   }
   
   .info-vuelos-contenedor.hidden {
-    transform: translateX(-100%);
+    transform: translateX(-20%);
     opacity: 0;
   }
 
@@ -203,8 +202,7 @@
     width: 300px;
     background-color: white;
     padding: 20px;
-    border-bottom-right-radius: 15px;
-    border-top-right-radius: 15px;
+    border-radius: 20px;
     box-shadow: 0 0px 0px rgba(0, 0, 0, 0.1);
     transition: transform 0.5s ease, opacity 0.5s ease;
     transform: translateX(0);
@@ -215,16 +213,16 @@
 }
 
 .leyenda-contenedor.visible {
-    transform: translateX(0);
+    transform: translateX(5%);
     opacity: 1;
 }
 
 .leyenda-contenedor.hidden {
-    transform: translateX(-100%);
+    transform: translateX(-20%);
     opacity: 0;
 }
 
-/* Modificar los selectores existentes para que funcionen con ambos componentes */
+
 .info-vuelos-contenedor.hidden + .toggle-button,
 .leyenda-contenedor.hidden + .toggle-button {
     transform: translateX(0);
@@ -248,4 +246,22 @@
 .leyenda-contenedor.visible + .toggle-button:hover {
     transform: translateX(-100%) scale(1.1);
     transition: transform 0.3s ease;
+}
+
+.sidebar-container {
+    position: absolute;
+    top: 25%;
+    left: 2.2%;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.info-vuelos-wrapper, .leyenda-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    z-index: auto;
 }

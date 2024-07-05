@@ -212,7 +212,7 @@ const BarraMapa = ({
             <TextField
                 fullWidth
                 variant="outlined"
-                placeholder="Ingresa el código de vuelo, aeropuerto o paquete"
+                placeholder="Ingrese el código de vuelo, aeropuerto, paquete o envío"
                 onKeyDown={handleKeyPress}
                 onChange={(e) => setABuscar(e.target.value)}
                 InputProps={{

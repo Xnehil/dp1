@@ -32,6 +32,7 @@ interface InfoVuelosProps {
           {visible ? '◀' : '▶'}
         </button>
         <div className={`info-vuelos-contenedor ${visible ? 'visible' : 'hidden'}`}>
+        <hr />
           <div className="resumen-vuelos">
             <div className="resumen-item">
               <span className="resumen-valor">{formatearCantidad(vuelosEnTransito.cuenta)}</span>
