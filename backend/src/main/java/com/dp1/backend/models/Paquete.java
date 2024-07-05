@@ -161,4 +161,16 @@ public class Paquete extends BaseModel{
         this.tiempoRestanteDinamico = Duration.ZERO;
         this.llegoDestino = false;
     }
+
+    public void pasarRutaPosibleARuta(){
+        //Creo que no hacía falta
+        if (this.rutaPosible != null){
+            ArrayList<Integer> ruta = new ArrayList<Integer>();
+            ArrayList<ZonedDateTime> fechas = new ArrayList<ZonedDateTime>();
+            for (int i = 0; i < this.rutaPosible.getFlights().size(); i++){
+                ruta.add(this.rutaPosible.getFlights().get(i).getIdVuelo());
+            }
+            this.setRuta(ruta);
+        }
+    }
 }

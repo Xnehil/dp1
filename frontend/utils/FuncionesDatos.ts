@@ -109,7 +109,6 @@ export function procesarDataReal(
             // console.log("Envio: ", envio);
             envios.current.set(envio.codigoEnvio, envio);
             for (let paquete of envio.paquetes) {
-                if (paquete.llegoDestino) continue;
                 //Añadir paquete a aeropuerto de origen
                 const aeropuertoOrigen: Aeropuerto | undefined =aeropuertos.current.get(envio.origen)?.aeropuerto;
                 let dondeEsta:string=envio.origen;
@@ -194,7 +193,7 @@ export function actualizarDataReal(
             let envioAntiguo = envios.current.get(envio.codigoEnvio);
             let index=0;
             for (let paquete of envio.paquetes) {
-                if (paquete.llegoDestino || paquete.ruta.length === 0 || !envioAntiguo || paquete.ruta===envioAntiguo.paquetes[index].ruta){
+                if ( paquete.ruta==null || !envioAntiguo || paquete.ruta===envioAntiguo.paquetes[index].ruta){
                      index++;
                      continue;
                 }
@@ -393,6 +392,59 @@ export function agregarPaquetesAlmacen(
         return false;
     }
     // console.log("Se agregaron ", cuenta, " paquetes a aeropuertos");
+}
+
+export function agregarPaquetesAlmacenReal(
+    idVuelo: number,
+    programacionVuelos: React.MutableRefObject<Map<string, ProgramacionVuelo>>,
+    aeropuertos: React.MutableRefObject<Map<string, {aeropuerto: Aeropuerto; pointFeature: any}>>,
+    simulationTime: Date | null,
+    envios: React.MutableRefObject<Map<string, Envio>>,
+    vuelos: React.RefObject<Map<number,{vuelo: Vuelo;pointFeature: any;lineFeature: any;routeFeature: any;}>>,
+    setColapso: React.Dispatch<React.SetStateAction<boolean>>
+): boolean {
+    if (!simulationTime) return false;
+    const diaDeSimulacion = simulationTime.toISOString().slice(0, 10);
+    const claveProgramacion = idVuelo + "-" + diaDeSimulacion;
+    const programacion: ProgramacionVuelo | undefined = programacionVuelos.current.get(claveProgramacion);
+    let cuenta = 0;
+    if (programacion) {
+        for (let paquete of programacion.paquetes) {
+            const envio = envios.current.get(paquete.codigoEnvio);
+            if (!envio) {
+                console.log("No se encontró el envío para sacar el destino del paquete");
+                continue;
+            }
+            const ciudadDestino = vuelos.current?.get(idVuelo)?.vuelo.destino;
+            if (ciudadDestino === undefined) {
+                console.log("No se encontró la ciudad destino");
+                continue;
+            }
+            const aeropuertoDestino = aeropuertos.current.get(ciudadDestino);
+            if (aeropuertoDestino) {
+                aeropuertoDestino.aeropuerto.cantidadActual++;
+                aeropuertoDestino.aeropuerto.paquetes.push(paquete);
+                cuenta++;
+                if (aeropuertoDestino.aeropuerto.cantidadActual > aeropuertoDestino.aeropuerto.capacidadMaxima) {
+                    setColapso(true);
+                    return false;
+                }
+
+                if(aeropuertoDestino.aeropuerto.codigoOACI == envio.destino){
+                    //Crear un timer que borre el paquete dentro de 5 minutos
+                    setTimeout(() => {
+                        const index = aeropuertoDestino.aeropuerto.paquetes.findIndex(p => p.id === paquete.id);
+                        if (index !== -1) {
+                            aeropuertoDestino.aeropuerto.paquetes.splice(index, 1);
+                        }
+                    }, 300000);
+                }
+            }
+        }
+        return true;
+    } else {
+        return false;
+    }
 }
 
 export function decidirEstiloAeropuerto(item: {aeropuerto: Aeropuerto; pointFeature: any} | undefined) {

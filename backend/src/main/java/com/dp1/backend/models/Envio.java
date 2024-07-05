@@ -47,7 +47,7 @@ public class Envio extends BaseModel {
     
     //@OneToMany(fetch = FetchType.LAZY, mappedBy = "codigoEnvio", cascade = CascadeType.REMOVE)
     //@OneToMany(fetch = FetchType.LAZY, mappedBy = "codigoEnvio", cascade = CascadeType.REMOVE)
-    @OneToMany(mappedBy = "codigoEnvio", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToMany(mappedBy = "envio", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Paquete> paquetes = new ArrayList<Paquete>();
 
     @ManyToOne(optional = true)
