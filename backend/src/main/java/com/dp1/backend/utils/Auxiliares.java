@@ -576,7 +576,7 @@ public class Auxiliares {
             vuelos.get(i).setCargaPorDia(new HashMap<>());
         }
 
-        return paquetesEntregados;
+        return paquetesEntregados + paquetesRutasSalvadas;
     }
 
     public static int verificacionTotalPaquetesSimulacion(HashMap<String, Aeropuerto> aeropuertos,
@@ -659,7 +659,7 @@ public class Auxiliares {
             vuelos.get(i).setCargaPorDia(new HashMap<>());
         }
 
-        return paquetesEntregados;
+        return paquetesEntregados + paquetesRutasSalvadas;
     }
 
 }
