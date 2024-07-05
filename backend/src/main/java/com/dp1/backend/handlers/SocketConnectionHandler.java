@@ -174,9 +174,9 @@ public class SocketConnectionHandler extends TextWebSocketHandler {
     }
 
     private void handleDifferenceReal(ZonedDateTime lastMessageTime, ZonedDateTime time, WebSocketSession session, ArrayList<Vuelo> diferenciaVuelos) throws IOException {
-        long difference = Duration.between(lastMessageTime, time).toMinutes();
+        long difference = Duration.between(lastMessageTime, time).toSeconds();
         try {
-            if (difference > 1) {
+            if (difference > 30) {
                 HashMap<Integer, Vuelo> nuevosVuelosMap = datosEnMemoriaService.getVuelosEnElAireMap(time);
                 // Vuelos nuevos que se han agregado
                 diferenciaVuelos = new ArrayList<>();

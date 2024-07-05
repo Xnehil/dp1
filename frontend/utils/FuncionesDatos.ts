@@ -98,7 +98,7 @@ export function procesarDataReal(
     aeropuertos: React.MutableRefObject<Map<string, {aeropuerto: Aeropuerto; pointFeature: any}>>,
     simulationTime: Date | null,
     cargaInicial: boolean,
-    vuelos: React.RefObject<Map<number,{vuelo: Vuelo;pointFeature: any;lineFeature: any;routeFeature: any;}>>,
+    auxiliarVuelos: React.RefObject<Map<number, Vuelo>>
 ): void {
     console.log("Procesando data real");
     if (!simulationTime) return;
@@ -111,7 +111,7 @@ export function procesarDataReal(
             for (let paquete of envio.paquetes) {
                 //Añadir paquete a aeropuerto de origen
                 const aeropuertoOrigen: Aeropuerto | undefined =aeropuertos.current.get(envio.origen)?.aeropuerto;
-                let dondeEsta:string=envio.origen;
+                let dondeEsta:string="";
                 // console.log("paquete: ", paquete);
                 for (let i = 0; i < paquete.fechasRuta?.length ?? 0; i++) {
                     const idVuelo = paquete.ruta[i];
@@ -120,25 +120,31 @@ export function procesarDataReal(
 
                     let fechaVuelo = new Date();
                     if(auxFechaRuta < 10) {
-                        fechaVuelo = new Date(simulationTime!.getTime() + auxFechaRuta * 24 * 60 * 60 * 1000);
+                        fechaVuelo = new Date(envio!.fechaHoraSalida*1000 + auxFechaRuta * 24 * 60 * 60 * 1000);
+                        
                     }
                     else{
                         fechaVuelo = new Date(paquete.fechasRuta[i] * 1000);
                     }
-                    // console.log("Fecha vuelo: ", fechaVuelo);
+                    console.log("Fecha hora salida vuelo: ", auxiliarVuelos.current?.get(idVuelo)?.fechaHoraSalida);
+                    let horaSalidaVuelo =new Date(auxiliarVuelos.current?.get(idVuelo)?.fechaHoraSalida ?? 0);
+                    console.log("Hora salida vuelo: ", horaSalidaVuelo);
+                    fechaVuelo.setHours(horaSalidaVuelo.getHours(), horaSalidaVuelo.getMinutes(), horaSalidaVuelo.getSeconds());
+                    if (fechaVuelo < new Date(envio!.fechaHoraSalida*1000) ) {
+                        fechaVuelo.setDate(fechaVuelo.getDate() + 1);
+                    }
+                    
+                    console.log("Fecha vuelo: ", fechaVuelo);
                     const fechaVueloFormatted = fechaVuelo
                         .toISOString()
                         .slice(0, 10);
                     const claveProgramacion =
                         idVuelo + "-" + fechaVueloFormatted;
                     let programacion:ProgramacionVuelo | undefined;
-
-                    let horaSalidaVuelo =new Date(vuelos.current?.get(idVuelo)?.vuelo.fechaHoraSalida ?? 0);
-                    fechaVuelo.setHours(horaSalidaVuelo.getHours(), horaSalidaVuelo.getMinutes(), horaSalidaVuelo.getSeconds());
-                    //El vuelo ya salió o todavía no?
-                    if (fechaVuelo < simulationTime && dondeEsta==="") {
-                        dondeEsta=vuelos.current?.get(idVuelo)?.vuelo.origen ?? "";
-                    }
+                    console.log("Se insertará el paquete", paquete.id, " en la programación: ", claveProgramacion);
+                    
+                    //Si fecha de salida es después que la fecha vuela, es que el vuelo aún no sale y es del día siguiente
+                    
                     if (!programacionVuelos.current.has(claveProgramacion)) {
                         programacion = {
                             fechaSalida: fechaVuelo,
@@ -155,9 +161,11 @@ export function procesarDataReal(
                         }
                     }
                 }
-
-                if (dondeEsta !== "") {
+                dondeEsta = dondeEstaPaquete(paquete, envio, auxiliarVuelos);
+                console.log("Donde está: ", dondeEsta);
+                if (dondeEsta !== "" && Number.isNaN(parseInt(dondeEsta))) {
                     const aeropuerto: Aeropuerto | undefined =aeropuertos.current.get(dondeEsta)?.aeropuerto;
+                    // console.log("Metiendo paquete en aeropuerto: ", aeropuerto);
                     if (aeropuerto) {
                         aeropuerto.cantidadActual++;
                         aeropuerto.paquetes.push(paquete);
@@ -172,6 +180,48 @@ export function procesarDataReal(
         decidirEstiloAeropuerto(aeropuertos.current.get(key));
     }
     console.log("Data procesada");
+}
+
+function dondeEstaPaquete(paquete: Paquete, envio: Envio, vuelos: React.RefObject<Map<number,Vuelo>>): string {
+    let dondeEsta = "";
+    let fechaActual = new Date();
+    let fechaLlegadaAnterior = null;
+    for (let i = 0; i < paquete.fechasRuta?.length ?? 0; i++) {
+        const idVuelo = paquete.ruta[i];
+        const auxFechaRuta = paquete.fechasRuta[i];
+        let fechaVuelo = new Date();
+        if(auxFechaRuta < 10) {
+            fechaVuelo = new Date(envio!.fechaHoraSalida*1000 + auxFechaRuta * 24 * 60 * 60 * 1000);
+            
+        }
+        else{
+            fechaVuelo = new Date(paquete.fechasRuta[i] * 1000);
+        }
+        let horaSalidaVuelo =new Date(vuelos.current?.get(idVuelo)?.fechaHoraSalida ?? 0);
+        fechaVuelo.setHours(horaSalidaVuelo.getHours(), horaSalidaVuelo.getMinutes(), horaSalidaVuelo.getSeconds());
+        if (fechaVuelo < new Date(envio!.fechaHoraSalida*1000) ) {
+            fechaVuelo.setDate(fechaVuelo.getDate() + 1);
+        }
+
+        if (fechaActual < fechaVuelo) { // Aún no ha tomado este vuelo
+            console.log("Aún no ha tomado este vuelo, idVuelo: ", idVuelo);
+            console.log("Se queda en: ", vuelos.current?.get(idVuelo)?.origen);
+            dondeEsta = vuelos.current?.get(idVuelo)?.origen ?? "SKBO";
+            break;
+        }
+        let horaLlegadaVuelo =new Date(vuelos.current?.get(idVuelo)?.fechaHoraLlegada ?? 0);
+        fechaVuelo.setHours(horaLlegadaVuelo.getHours(), horaLlegadaVuelo.getMinutes(), horaLlegadaVuelo.getSeconds());
+        fechaVuelo.setDate(fechaVuelo.getDate() + (vuelos.current?.get(idVuelo)?.cambioDeDia ?? 0));
+        if (fechaActual < fechaVuelo) { // Está en este vuelo
+            console.log("Está en este vuelo, idVuelo: ", idVuelo);
+            dondeEsta = vuelos.current?.get(idVuelo)?.id.toString() ?? "";
+            break;
+        }
+    }
+    if (dondeEsta === "") {
+        dondeEsta = envio.destino;
+    }
+    return dondeEsta;
 }
 
 export function actualizarDataReal(
@@ -193,7 +243,8 @@ export function actualizarDataReal(
             let envioAntiguo = envios.current.get(envio.codigoEnvio);
             let index=0;
             for (let paquete of envio.paquetes) {
-                if ( paquete.ruta==null || !envioAntiguo || paquete.ruta===envioAntiguo.paquetes[index].ruta){
+                const areRutasEqual = paquete.ruta.length === envioAntiguo?.paquetes[index].ruta.length && paquete.ruta.every((rutaElement, rutaIndex) => rutaElement === envioAntiguo.paquetes[index].ruta[rutaIndex]);
+                if ( paquete.ruta==null || !envioAntiguo || areRutasEqual){
                      index++;
                      continue;
                 }

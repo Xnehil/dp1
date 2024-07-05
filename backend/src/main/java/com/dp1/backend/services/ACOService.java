@@ -498,7 +498,7 @@ public class ACOService {
 
             //Cambiar fecha de salida por la actual, porque los vuelos que podemos tomar son solo 
             //los que están disponibles en el momento y luego
-            e.setFechaHoraSalida(fechaHoraFin);
+            // e.setFechaHoraSalida(fechaHoraFin);
         }
 
         for (String codigo : enviosABorrar) {
