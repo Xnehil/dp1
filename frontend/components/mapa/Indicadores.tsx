@@ -32,6 +32,7 @@ interface InfoVuelosProps {
           {visible ? '◀' : '▶'}
         </button>
         <div className={`info-vuelos-contenedor ${visible ? 'visible' : 'hidden'}`}>
+        <hr />
           <div className="resumen-vuelos">
             <div className="resumen-item">
               <span className="resumen-valor">{formatearCantidad(vuelosEnTransito.cuenta)}</span>
@@ -43,7 +44,9 @@ interface InfoVuelosProps {
                 <span className="resumen-etiqueta">capacidad de almacenes usada</span>
               </div>
               <div className="resumen-item">
-                <span className="resumen-valor">{`${(vuelosEnTransito.porcentaje * 100).toFixed(2)}%`}</span>
+                <span className="resumen-valor">
+                {`${Number.isFinite(vuelosEnTransito.porcentaje) ? (vuelosEnTransito.porcentaje * 100).toFixed(2) : "0.00"}%`}
+                </span>
                 <span className="resumen-etiqueta">capacidad de vuelos usada</span>
               </div>
             </div>

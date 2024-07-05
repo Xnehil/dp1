@@ -221,7 +221,7 @@ function dondeEstaPaquete(paquete: Paquete, envio: Envio, vuelos: React.RefObjec
         }
     }
     if (dondeEsta === "") {
-        dondeEsta = envio.destino;
+        dondeEsta = envio.origen;
     }
     return dondeEsta;
 }
@@ -245,12 +245,21 @@ export function actualizarDataReal(
             let envioAntiguo = envios.current.get(envio.codigoEnvio);
             let index=0;
             for (let paquete of envio.paquetes) {
-                const areRutasEqual = paquete.ruta.length === envioAntiguo?.paquetes[index].ruta.length && paquete.ruta.every((rutaElement, rutaIndex) => rutaElement === envioAntiguo.paquetes[index].ruta[rutaIndex]);
-                if ( paquete.ruta==null || !envioAntiguo || areRutasEqual){
+                if ( paquete.ruta==null || !envioAntiguo){
                      index++;
                      continue;
                 }
-                console.log("Actualizando paquete: ", paquete);
+                //Si el antiguo paquete no tiene ruta, no se elimina, solo se agrega
+                let tieneRutaAntigua = envioAntiguo.paquetes[index].ruta!=null;
+
+                const areRutasEqual = tieneRutaAntigua && (paquete.ruta.length === envioAntiguo?.paquetes[index].ruta.length) && paquete.ruta.every((rutaElement, rutaIndex) => rutaElement === envioAntiguo.paquetes[index].ruta[rutaIndex]);
+                if(areRutasEqual){
+                    index++;
+                    continue;
+                }
+
+
+                console.log("Actualizando paquete porque la ruta" + paquete.ruta + " es diferente a la anterior " + envioAntiguo.paquetes[index].ruta);
                 let paqueteAntiguo = envioAntiguo.paquetes[index];
                 //Borrar ruta de programación de vuelo
                 for(let i=0; i<paqueteAntiguo.fechasRuta.length; i++){

@@ -371,15 +371,18 @@ const Mapa = ({
                     simulatedTime={simulationTime}
                     aBorrarEnvios={aBorrarEnvios}
                 />
-                <Indicadores
+                <div className="sidebar-container">
+                   <Indicadores
                     vuelosEnTransito={contarVuelos(vuelos)}
                     capacidadAlmacenes={capacidadAlmacenesUsada(aeropuertos)}
                     fechaHoraActual={currentTime.toLocaleString()}
                     fechaHoraSimulada={simulationTime}
                     fechaHoraInicio={horaInicio}
                     simulacion={simulationInterval!==1/60}
-                />
-                <Leyenda />
+                    />
+                    <Leyenda /> 
+                </div>
+                
                 <DatosVuelo vuelo={selectedVuelo} aeropuerto={selectedAeropuerto} programacionVuelos={programacionVuelos} simulationTime={simulationTime}
                     envios={envios} aeropuertos={aeropuertos} envio = {selectedEnvio} vuelos = {vuelos}
                 />

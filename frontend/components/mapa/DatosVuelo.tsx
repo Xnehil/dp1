@@ -103,7 +103,9 @@ const DatosVuelo: React.FC<DatosVueloProps> = ({ vuelo, aeropuerto, programacion
         ruta += paquete.ruta[i] + " -> ";
       }
     }
-    
+    if (ruta === "") {
+      ruta = "Sin planificar";
+    }
     return ruta;
   }
 
@@ -393,7 +395,7 @@ const DatosVuelo: React.FC<DatosVueloProps> = ({ vuelo, aeropuerto, programacion
                 justifyContent: "center",
                 alignItems: "center",
                 textAlign: "center",
-                marginLeft: "390px",
+                marginLeft: "28%",
               }}
             >
               <img
@@ -405,7 +407,7 @@ const DatosVuelo: React.FC<DatosVueloProps> = ({ vuelo, aeropuerto, programacion
               <div className="datos-vuelo-info">
                 <h2
                   className="vuelo-codigo"
-                  style={{ fontWeight: "bold", margin: 0, fontSize: "28px" }}
+                  style={{ fontWeight: "bold", margin: 0, fontSize: "24px" }}
                   
                 >
                   Seleccione un vuelo o almacén

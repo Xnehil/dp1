@@ -5,6 +5,20 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import Typography from '@mui/material/Typography';
 
+const countryCodes = [
+  { code: 51, label: '+51 (Perú)' },
+  { code: 52, label: '+52 (Mexico)' },
+  { code: 502, label: '+502 (Guatemala)' },
+  { code: 593, label: '+593 (Ecuador)' },
+  { code: 809, label: '+809 (República Dominicana)' },
+  { code: 53, label: '+53 (Cuba)' },
+  { code: 506, label: '+506 (Costa Rica)' },
+  { code: 56, label: '+56 (Chile)' },
+  { code: 54, label: '+54 (Argentina)' },
+  { code: 591, label: '+591 (Bolivia)' },
+  { code: 86, label: '+86 (China)' },
+];
+
 export default function SelectVariants({disabled=false, numCode, setnumCode}) {
 
   const handleChange = (event) => {
@@ -23,17 +37,9 @@ export default function SelectVariants({disabled=false, numCode, setnumCode}) {
           inputProps={{ readOnly: disabled }}
         >
         
-          <MenuItem value={51}>+51 (Perú) </MenuItem>
-          <MenuItem value={52}>+52 (Mexico) </MenuItem>
-          <MenuItem value={205}>+502 (Guatemala) </MenuItem>
-          <MenuItem value={593}>+593 (Ecuador) </MenuItem>
-          <MenuItem value={809}>+809 (República Dominicana) </MenuItem>
-          <MenuItem value={53}>+53 (Cuba) </MenuItem>
-          <MenuItem value={506}>+506 (Costa Rica) </MenuItem>
-          <MenuItem value={56}>+56 (Chile) </MenuItem>
-          <MenuItem value={54}>+54 (Argentina) </MenuItem>
-          <MenuItem value={591}>+591 (Bolivia) </MenuItem>
-          <MenuItem value={86}>+86 (China) </MenuItem>
+          {countryCodes.map((country) => (
+            <MenuItem key={country.code} value={country.code}>{country.label}</MenuItem>
+          ))}
 
         </Select>
       </FormControl>

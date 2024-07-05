@@ -57,10 +57,10 @@ const VuelosAlmacen: React.FC<VuelosAlmacenProps> = ({ selectedAeropuerto, vuelo
         })
         .sort((a, b) => new Date(a.fechaHoraLlegada).getTime() - new Date(b.fechaHoraLlegada).getTime());
       setVuelosAlmacen(vuelosLlegando);
-      setVisible(true);
+      //setVisible(true);
     } else {
       setVuelosAlmacen([]);
-      setVisible(true);
+      //setVisible(true);
     }
   }, [selectedAeropuerto, vuelos, simulationTime, aeropuertos]);
 

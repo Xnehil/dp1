@@ -24,27 +24,27 @@ export default function HorizontalLinearStepper() {
   const [skipped, setSkipped] = React.useState(new Set());
   const [openModal, setOpenModal] = React.useState(false);
 
-  const [numDocREM, setnumDocREM] = React.useState('');
-  const [tipoDocREM, settipoDocREM] = React.useState('');
-  const [apellidoREM, setapellidoREM] = React.useState('');
-  const [nombreREM, setnombreREM] = React.useState('');
-  const [segundonombreREM, setsegundonombreREM] = React.useState('');
-  const [telefonoREM, settelefonoREM] = React.useState('');
-  const [numeroREM, setnumeroREM] = React.useState('');
-  const [emailREM, setemailREM] = React.useState('');
+  const [numDocREM, setnumDocREM] = React.useState('742056989');
+  const [tipoDocREM, settipoDocREM] = React.useState('10');
+  const [apellidoREM, setapellidoREM] = React.useState('Cruzalegui');
+  const [nombreREM, setnombreREM] = React.useState('Miguel');
+  const [segundonombreREM, setsegundonombreREM] = React.useState('David');
+  const [telefonoREM, settelefonoREM] = React.useState('51');
+  const [numeroREM, setnumeroREM] = React.useState('985632599');
+  const [emailREM, setemailREM] = React.useState('miguel.david@gmail.com');
 
   const [ciudadOrigen, setciudadOrigen] = React.useState('');
   const [ciudadDestino, setciudadDestino] = React.useState('');
   const [numPaquetes, setnumPaquetes] = React.useState('');
 
-  const [numDocDES, setnumDocDES] = React.useState('');
-  const [tipoDocDES, settipoDocDES] = React.useState('');
-  const [apellidoDES, setapellidoDES] = React.useState('');
-  const [nombreDES, setnombreDES] = React.useState('');
-  const [segundonombreDES, setsegundonombreDES] = React.useState('');
-  const [telefonoDES, settelefonoDES] = React.useState('');
-  const [numeroDES, setnumeroDES] = React.useState('');
-  const [emailDES, setemailDES] = React.useState('');
+  const [numDocDES, setnumDocDES] = React.useState('742056989');
+  const [tipoDocDES, settipoDocDES] = React.useState('10');
+  const [apellidoDES, setapellidoDES] = React.useState('Cruzalegui');
+  const [nombreDES, setnombreDES] = React.useState('Miguel');
+  const [segundonombreDES, setsegundonombreDES] = React.useState('David');
+  const [telefonoDES, settelefonoDES] = React.useState('51');
+  const [numeroDES, setnumeroDES] = React.useState('985632599');
+  const [emailDES, setemailDES] = React.useState('miguel.david@gmail.com');
 
   const apiURL = process.env.REACT_APP_API_URL_BASE;
   const [codigosPaquetes, setCodigosPaquetes] = React.useState([]);
