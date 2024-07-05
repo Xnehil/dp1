@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, styled } from "@mui/material";
 import { Aeropuerto } from "@/types/Aeropuerto";
 import { Vuelo } from "@/types/Vuelo";
@@ -17,11 +17,19 @@ type VuelosAlmacenProps = {
   vuelos: React.RefObject<Map<number, {vuelo: Vuelo;pointFeature: any;lineFeature: any;routeFeature: any;}>>;
   simulationTime: Date | null;
   programacionVuelos: React.MutableRefObject<Map<string, ProgramacionVuelo>>;
+  aeropuertos: React.RefObject<Map<string, {aeropuerto: Aeropuerto; pointFeature: any}>>;
 };
 
-const VuelosAlmacen: React.FC<VuelosAlmacenProps> = ({ selectedAeropuerto, vuelos, simulationTime, programacionVuelos }) => {
+const VuelosAlmacen: React.FC<VuelosAlmacenProps> = ({ selectedAeropuerto, vuelos, simulationTime, programacionVuelos, aeropuertos}) => {
   const [vuelosAlmacen, setVuelosAlmacen] = useState<Vuelo[]>([]);
   const [visible, setVisible] = useState<boolean>(false);
+
+  const aeropuertosMasLlenos = useMemo(() => {
+    return Array.from(aeropuertos.current?.values() || [])
+      .map(item => item.aeropuerto)
+      .sort((a, b) => (b.cantidadActual / b.capacidadMaxima) - (a.cantidadActual / a.capacidadMaxima))
+      .slice(0, 7);
+  }, [aeropuertos.current, simulationTime]);
 
   useEffect(() => {
     if (!simulationTime) return;
@@ -46,14 +54,15 @@ const VuelosAlmacen: React.FC<VuelosAlmacenProps> = ({ selectedAeropuerto, vuelo
           const claveProgramacion =vuelo.id + "-" + fechaVueloFormatted;
           if (!programacionVuelos.current.has(claveProgramacion)) return false;
           return horaLlegada >= simulationTime && horaLlegada <= horaLimite;
-        });
+        })
+        .sort((a, b) => new Date(a.fechaHoraLlegada).getTime() - new Date(b.fechaHoraLlegada).getTime());
       setVuelosAlmacen(vuelosLlegando);
       setVisible(true);
     } else {
       setVuelosAlmacen([]);
-      setVisible(false);
+      setVisible(true);
     }
-  }, [selectedAeropuerto, vuelos]);
+  }, [selectedAeropuerto, vuelos, simulationTime, aeropuertos]);
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -67,28 +76,63 @@ const VuelosAlmacen: React.FC<VuelosAlmacenProps> = ({ selectedAeropuerto, vuelo
   return (
     <div className="vuelos-almacen-wrapper">
       <div className={`vuelos-almacen-contenedor ${visible ? 'visible' : 'hidden'}`}>
-        <h3>Vuelos llegando a {selectedAeropuerto?.ciudad}</h3>
-        <TableContainer component={Paper} className="vuelos-almacen-tabla">
-          <Table stickyHeader>
-            <TableHead>
-              <TableRow>
-                <StyledTableCell>Vuelo</StyledTableCell>
-                <StyledTableCell>Origen</StyledTableCell>
-                <StyledTableCell>Hora Llegada (local)</StyledTableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {vuelosAlmacen.map((vuelo) => (
-                <TableRow key={vuelo.id}>
-                  <TableCell>{vuelo.id}</TableCell>
-                  <TableCell>{vuelo.origen}</TableCell>
-                  {/* <TableCell>{formatDate(vuelo.fechaHoraLlegada)}</TableCell> */}
-                  <TableCell>{mostrarTiempoEnZonaHoraria(new Date(vuelo.fechaHoraLlegada), selectedAeropuerto?.gmt ?? 0)}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+        {selectedAeropuerto ? (
+          <>
+            <h3>Vuelos llegando a {selectedAeropuerto?.ciudad}</h3>
+            <TableContainer component={Paper} className="vuelos-almacen-tabla">
+              <Table stickyHeader>
+                <TableHead>
+                  <TableRow>
+                    <StyledTableCell>Vuelo</StyledTableCell>
+                    <StyledTableCell>Origen</StyledTableCell>
+                    <StyledTableCell>Hora llegada (local)</StyledTableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {vuelosAlmacen.map((vuelo) => (
+                    <TableRow key={vuelo.id}>
+                      <TableCell>{vuelo.id}</TableCell>
+                      <TableCell>{vuelo.origen}</TableCell>
+                      {/* <TableCell>{formatDate(vuelo.fechaHoraLlegada)}</TableCell> */}
+                      <TableCell align="right">
+                        {mostrarTiempoEnZonaHoraria(new Date(vuelo.fechaHoraLlegada), selectedAeropuerto?.gmt ?? 0)}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>            
+          </>
+        ) : (
+          <>
+            <h3>Aeropuertos más llenos</h3>
+            <TableContainer component={Paper} className="vuelos-almacen-tabla">
+              <Table stickyHeader>
+                <TableHead>
+                  <TableRow>
+                    <StyledTableCell>Ciudad</StyledTableCell>
+                    <StyledTableCell>Capacidad</StyledTableCell>
+                    <StyledTableCell>Paquetes</StyledTableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {aeropuertosMasLlenos.map((aeropuerto) => (
+                    <TableRow key={aeropuerto.codigoOACI}>
+                      <TableCell>{aeropuerto.ciudad}</TableCell>
+                      <TableCell>
+                        {((aeropuerto.cantidadActual / aeropuerto.capacidadMaxima) * 100).toFixed(2)}%
+                      </TableCell>
+                      <TableCell>
+                        {aeropuerto.cantidadActual}/{aeropuerto.capacidadMaxima}{" "}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </>
+        )
+        }
       </div>
       <button className="toggle-button" onClick={toggleVisibility}>
         {visible ? '◀' : '▶'}

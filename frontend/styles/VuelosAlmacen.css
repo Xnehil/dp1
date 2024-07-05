@@ -1,5 +1,5 @@
 .vuelos-almacen-contenedor {
-    width: 300px;
+    width: 360px;
     background-color: white;
     padding: 20px;
     border-bottom-left-radius: 15px;
@@ -78,4 +78,8 @@
     display: flex;
     align-items: center;
     flex-direction: row;
+  }
+
+  h3 {
+    text-align: center;
   }
