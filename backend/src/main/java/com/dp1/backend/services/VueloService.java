@@ -20,6 +20,9 @@ public class VueloService {
     private AeropuertoService aeropuertoService;
     private VueloRepository vueloRepository;
 
+    @Autowired
+    private DatosEnMemoriaService datosEnMemoriaService;
+
     private static final Logger logger = LogManager.getLogger(VueloService.class);
 
     @Autowired
@@ -71,7 +74,8 @@ public class VueloService {
 
     public ArrayList<Vuelo> getVuelos() {
         try {
-            return (ArrayList<Vuelo>) vueloRepository.findAll();
+            HashMap<Integer, Vuelo> vuelosMap = datosEnMemoriaService.getVuelos();
+            return new ArrayList<>(vuelosMap.values());
         } catch (Exception e) {
             return null;
         }

@@ -37,8 +37,7 @@ public class ACOController {
     @GetMapping("/ejecutar/todaCiudad")
     public ResponseEntity<String> ejecutarAcoTodo() {
 
-        ZonedDateTime ahora = ZonedDateTime.now();
-        ahora.withZoneSameInstant(ZoneId.of("UTC"));
+        ZonedDateTime ahora = ZonedDateTime.now(ZoneId.of("UTC"));
         ZonedDateTime haceDosDias = ahora.minusDays(2);
 
 

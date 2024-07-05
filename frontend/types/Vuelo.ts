@@ -5,7 +5,7 @@ export type Vuelo = BaseModel & {
     fechaHoraSalida: string;
     fechaHoraLlegada: string;
     capacidad: number;
-    cambioDeDia: boolean;
+    cambioDeDia: number;
     cargaPorDia: Map<string, number>;
     duracionVuelo: number;
     distanciaVuelo: number;

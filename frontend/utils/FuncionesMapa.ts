@@ -180,7 +180,10 @@ export function crearPuntoDeVuelo(aeropuertos: Map<String, {aeropuerto:Aeropuert
     const feature = new Feature({
         geometry: point,
     });
-    const llaveBusqueda = item.vuelo.id + "-" + simulationTime.toISOString().slice(0, 10);
+    const gmtOrigen = aeropuertos.get(item.vuelo.origen)?.aeropuerto.gmt ?? 0;
+    const simulationTimeEnOrigen = new Date(simulationTime.getTime() + gmtOrigen * 3600000);
+    const llaveBusqueda = item.vuelo.id + "-" + simulationTimeEnOrigen.toISOString().slice(0, 10);
+    // console.log("llaveBusqueda: ", llaveBusqueda);
     const programacion = programacionVuelos.get(llaveBusqueda);
     const paquetes = programacion?.cantPaquetes ?? 0;
     const angulo = calcularAngulo(item);
