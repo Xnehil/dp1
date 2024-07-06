@@ -89,7 +89,7 @@ const Page = () => {
                     });
                     console.log("Aeropuertos cargados: ");
                     aeropuertos.current = auxAeropuertos;
-                    setCampana(campana + 1);
+                    setCampana((prevCampana) => prevCampana + 1);
                 } 
             })
             .catch((error) => {
@@ -105,14 +105,14 @@ const Page = () => {
                 });
                 console.log("Vuelos auxiliares cargados: ");
                 auxiliarVuelos.current = auxVuelos;
-                setCampana(campana + 1);
+                setCampana((prevCampana) => prevCampana + 1);
             }
         });
     }, []);
 
     useEffect(() => {
         console.log("Campana: ", campana);
-        if (campana ==2 ) {
+        if (campana ==3 ) {
             console.log("Campana sonando");
             if (cargado) {
                 return;
@@ -171,7 +171,7 @@ const Page = () => {
                         });
                         auxNuevosVuelos.push(vuelo.id);
                     });
-                    setCampana(campana + 1);
+                    setCampana((prevCampana) => prevCampana + 1);
                     // setNuevosVuelos(auxNuevosVuelos);
                     // setSemaforo(semaforo + 1);
                     console.log("Vuelos cargados: ", vuelos.current.size);
