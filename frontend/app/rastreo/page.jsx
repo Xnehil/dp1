@@ -1,6 +1,6 @@
 "use client";  // Añade esta línea al principio del archivo
 import axios from 'axios';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 const Modal = ({ isOpen, onClose, onTrack }) => {
   if (!isOpen) return null;
@@ -41,6 +41,7 @@ const App = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [paquete, setPaquete] = useState({});
   const [vuelos, setVuelos] = useState([]);
+  const aeropuertos =useRef(new Map());
 
   const apiURL = process.env.REACT_APP_API_URL_BASE;
 
@@ -82,6 +83,30 @@ const App = () => {
       fetchFlights();
     }
   }, [paquete]);
+
+  useEffect(() => {
+    if (vuelos && vuelos.length > 0) {
+      const fetchAirports = async () => {
+        try {
+          // /codigo/{codigo}
+          const airportPromises = []
+          for (let i = 0; i < vuelos.length; i++) {
+            airportPromises.push(axios.get(`${apiURL}/aeropuerto/codigo/${vuelos[i].origen}`));
+            if (i === vuelos.length - 1) {
+              airportPromises.push(axios.get(`${apiURL}/aeropuerto/codigo/${vuelos[i].destino}`));
+            }
+          }
+          const airportResponses = await Promise.all(airportPromises);
+          const airports = airportResponses.map(response => response.data);
+          aeropuertos.current = new Map(airports.map(airport => [airport.codigoOACI, airport]));
+          console.log('Aeropuertos:', aeropuertos.current);
+        } catch (error) {
+          console.error('Error trayendo los aeropuertos:', error);
+        }
+      };
+      fetchAirports();
+    }
+  }, [vuelos]);
 
 
   const containerStyle = {
