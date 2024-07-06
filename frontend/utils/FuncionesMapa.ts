@@ -367,6 +367,9 @@ export function procesarSeleccionEnvio(
     aDesactivar.push(envio.destino);
 
     for(let paquete of envio.paquetes){
+        if (paquete.ruta == null){
+            continue;
+        }
         for (let idVuelo of paquete.ruta){
             const vuelo = vuelos.current?.get(idVuelo);
             if (vuelo && vuelo.pointFeature.get('pintarAuxiliar')) {
