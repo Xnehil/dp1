@@ -1,4 +1,5 @@
 "use client";  // Añade esta línea al principio del archivo
+import axios from 'axios';
 import React, { useState } from 'react';
 
 const Modal = ({ isOpen, onClose, onTrack }) => {
@@ -38,6 +39,7 @@ const Modal = ({ isOpen, onClose, onTrack }) => {
 
 const App = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const apiURL = process.env.REACT_APP_API_URL_BASE;
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -47,11 +49,16 @@ const App = () => {
     setIsModalOpen(false);
   };
 
-  const handleTrack = (code) => {
+  const handleTrack = async (code) => {
     console.log('Tracking code:', code);
-    // Aquí puedes agregar la lógica para rastrear el código
+    try {
+        const response = await axios.get(`${apiURL}/paquete/${code}`);
+        console.log(response.data); 
+    } catch (error) {
+        console.error('Error rastreando el paquete:', error);
+    }
     closeModal();
-  };
+};
 
   const containerStyle = {
     display: 'flex',
