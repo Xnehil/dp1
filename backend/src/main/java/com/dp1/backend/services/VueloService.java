@@ -41,7 +41,7 @@ public class VueloService {
 
     public Vuelo getVuelo(int id) {
         try {
-            return vueloRepository.findById(id).get();
+            return datosEnMemoriaService.getVuelos().get(id);
         } catch (Exception e) {
             return null;
         }
