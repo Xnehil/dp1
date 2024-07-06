@@ -1,5 +1,9 @@
 "use client";  // Añade esta línea al principio del archivo
+
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
+
+
 
 const Modal = ({ isOpen, onClose, onTrack }) => {
   if (!isOpen) return null;
@@ -17,7 +21,7 @@ const Modal = ({ isOpen, onClose, onTrack }) => {
           X
         </button>
         <form onSubmit={handleSubmit}>
-          <h2>Inserta el código de tu paquete o envío</h2>
+          <h2 className="text-2l mb-2 text-[#52489C] text-left font-bold">Inserta el código de tu paquete o envío</h2>
           <input type="text" name="code" placeholder="Código" required style={styles.input} />
           <p style={styles.reminderText}>
             ¿No lo recuerdas? <a href="#" style={styles.link}>Haz clic aquí</a>
@@ -38,6 +42,7 @@ const Modal = ({ isOpen, onClose, onTrack }) => {
 
 const App = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const router = useRouter();
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -49,8 +54,8 @@ const App = () => {
 
   const handleTrack = (code) => {
     console.log('Tracking code:', code);
-    // Aquí puedes agregar la lógica para rastrear el código
-    closeModal();
+    // Redirigir a la página de resultados con el código de rastreo
+    router.push(`/tracking/${code}`);
   };
 
   const containerStyle = {
@@ -99,8 +104,8 @@ const App = () => {
   };
 
   const buttonStyle = {
-    backgroundColor: '#4a90e2',
-    color: '#ffffff',
+    backgroundColor: '#ebebeb',
+    color: '#52489c',
     border: 'none',
     padding: '10px 20px',
     borderRadius: '5px',
@@ -152,7 +157,7 @@ const styles = {
     backgroundColor: 'white',
     padding: '20px',
     borderRadius: '8px',
-    width: '300px',
+    width: '400px',
     position: 'relative',
     textAlign: 'center',
   },
@@ -177,7 +182,7 @@ const styles = {
     fontSize: '0.9em',
   },
   link: {
-    color: '#00f',
+    color: '#59c3c3',
     textDecoration: 'underline',
     cursor: 'pointer',
   },
@@ -187,7 +192,7 @@ const styles = {
     marginTop: '20px',
   },
   cancelButton: {
-    backgroundColor: '#a3d9a5',
+    backgroundColor: '#84a98c',
     border: 'none',
     padding: '10px 20px',
     borderRadius: '4px',
@@ -195,7 +200,7 @@ const styles = {
     fontSize: '1em',
   },
   trackButton: {
-    backgroundColor: '#6e4cc2',
+    backgroundColor: '#52489c',
     color: 'white',
     border: 'none',
     padding: '10px 20px',
