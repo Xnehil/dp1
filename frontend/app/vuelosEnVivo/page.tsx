@@ -68,46 +68,47 @@ const Page = () => {
         bottomRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [cargado]);
 
-    useEffect(() => {
-        const params = new URLSearchParams(window.location.search);
-        const startDate = params.get("startDate");
-        if (startDate !== null) {
-            setHoraInicio(new Date(startDate));
-        } else {
-            setHoraInicio(new Date());
-        }
-        
-        axios.get(`${apiURL}/aeropuerto`)
-            .then((response) => {
-                if (response.data) {
-                    // console.log("Respuesta de aeropuertos: ", response.data);
-                    const auxAeropuertos = new Map<string, {aeropuerto: Aeropuerto; pointFeature: any}>();
-                    response.data.forEach((aeropuerto: Aeropuerto) => {
-                        aeropuerto.paquetes = [];
-                        aeropuerto.cantidadActual = 0;
-                        auxAeropuertos.set(aeropuerto.codigoOACI, {aeropuerto: aeropuerto, pointFeature: null});
-                    });
-                    console.log("Aeropuertos cargados: ");
-                    aeropuertos.current = auxAeropuertos;
-                    setCampana((prevCampana) => prevCampana + 1);
-                } 
-            })
-            .catch((error) => {
-                console.error("Error cargando aeropuertos: ", error);
-            });
-
-        axios.get(`${apiURL}/vuelo`).then((response) => {
-            if (response.data) {
-                // console.log("Respuesta de vuelos: ", response.data);
-                const auxVuelos = new Map<number, Vuelo>();
-                response.data.forEach((vuelo: Vuelo) => {
-                    auxVuelos.set(vuelo.id, vuelo);
-                });
-                console.log("Vuelos auxiliares cargados: ");
-                auxiliarVuelos.current = auxVuelos;
-                setCampana((prevCampana) => prevCampana + 1);
-            }
+    async function fetchAeropuertos() {
+        const response = await axios.get(`${apiURL}/aeropuerto`);
+        const auxAeropuertos = new Map<string, { aeropuerto: Aeropuerto; pointFeature: any }>();
+        response.data.forEach((aeropuerto: Aeropuerto) => {
+            aeropuerto.paquetes = [];
+            aeropuerto.cantidadActual = 0;
+            auxAeropuertos.set(aeropuerto.codigoOACI, { aeropuerto: aeropuerto, pointFeature: null });
         });
+        return auxAeropuertos;
+    }
+    
+    async function fetchVuelos() {
+        const response = await axios.get(`${apiURL}/vuelo`);
+        const auxVuelos = new Map<number, Vuelo>();
+        response.data.forEach((vuelo: Vuelo) => {
+            auxVuelos.set(vuelo.id, vuelo);
+        });
+        return auxVuelos;
+    }
+
+    useEffect(() => {
+        const initializeData = async () => {
+            const params = new URLSearchParams(window.location.search);
+            const startDate = params.get("startDate");
+            setHoraInicio(startDate ? new Date(startDate) : new Date());
+    
+            try {
+                const auxAeropuertos = await fetchAeropuertos();
+                console.log("Aeropuertos cargados: ");
+                aeropuertos.current = auxAeropuertos;
+                const vuelos = await fetchVuelos();
+                console.log("Vuelos auxiliares cargados: ");
+                auxiliarVuelos.current = vuelos;
+
+                setCampana(campana + 2);
+            } catch (error) {
+                console.error("Error cargando datos: ", error);
+            }
+        };
+    
+        initializeData();
     }, []);
 
     useEffect(() => {
@@ -171,7 +172,7 @@ const Page = () => {
                         });
                         auxNuevosVuelos.push(vuelo.id);
                     });
-                    setCampana((prevCampana) => prevCampana + 1);
+                    setCampana(campana + 1);
                     // setNuevosVuelos(auxNuevosVuelos);
                     // setSemaforo(semaforo + 1);
                     console.log("Vuelos cargados: ", vuelos.current.size);
