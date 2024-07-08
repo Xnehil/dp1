@@ -63,6 +63,8 @@ const Page = () => {
     );
     const [nuevosVuelos, setNuevosVuelos] = useState<number[]>([]);
     const [semaforo, setSemaforo] = useState(0);
+    const initializedRef = useRef(false);
+
 
     useEffect(() => {
         bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -89,26 +91,27 @@ const Page = () => {
     }
 
     useEffect(() => {
-        const initializeData = async () => {
-            const params = new URLSearchParams(window.location.search);
-            const startDate = params.get("startDate");
-            setHoraInicio(startDate ? new Date(startDate) : new Date());
+        if (!initializedRef.current) {
+            const initializeData = async () => {
+                const params = new URLSearchParams(window.location.search);
+                const startDate = params.get("startDate");
+                setHoraInicio(startDate ? new Date(startDate) : new Date());
     
-            try {
-                const auxAeropuertos = await fetchAeropuertos();
-                console.log("Aeropuertos cargados: ");
-                aeropuertos.current = auxAeropuertos;
-                const vuelos = await fetchVuelos();
-                console.log("Vuelos auxiliares cargados: ");
-                auxiliarVuelos.current = vuelos;
-
-                setCampana(campana + 2);
-            } catch (error) {
-                console.error("Error cargando datos: ", error);
-            }
-        };
+                try {
+                    const [auxAeropuertos, vuelos] = await Promise.all([fetchAeropuertos(), fetchVuelos()]);
+                    console.log("Aeropuertos cargados: ");
+                    aeropuertos.current = auxAeropuertos;
+                    console.log("Vuelos auxiliares cargados: ");
+                    auxiliarVuelos.current = vuelos;
     
-        initializeData();
+                    setCampana((prev) => prev + 2);
+                } catch (error) {
+                    console.error("Error cargando datos: ", error);
+                }
+            };
+            initializeData();
+            initializedRef.current = true;
+        }
     }, []);
 
     useEffect(() => {
@@ -172,7 +175,7 @@ const Page = () => {
                         });
                         auxNuevosVuelos.push(vuelo.id);
                     });
-                    setCampana(campana + 1);
+                    setCampana((prev) => prev + 1);
                     // setNuevosVuelos(auxNuevosVuelos);
                     // setSemaforo(semaforo + 1);
                     console.log("Vuelos cargados: ", vuelos.current.size);
