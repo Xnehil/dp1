@@ -41,26 +41,26 @@ interface InfoVuelosProps {
             <div className="column">
               <div className="resumen-item">
                 <span className="resumen-valor">{`${(capacidadAlmacenes * 100).toFixed(2)}%`}</span>
-                <span className="resumen-etiqueta">capacidad de almacenes usada</span>
+                <span className="resumen-etiqueta"> de almacenes usados</span>
               </div>
               <div className="resumen-item">
                 <span className="resumen-valor">
                 {`${Number.isFinite(vuelosEnTransito.porcentaje) ? (vuelosEnTransito.porcentaje * 100).toFixed(2) : "0.00"}%`}
                 </span>
-                <span className="resumen-etiqueta">capacidad de vuelos usada</span>
+                <span className="resumen-etiqueta"> de vuelos usados</span>
               </div>
             </div>
           </div>
           <hr />
           <div className="info-fecha">
             <div className="fecha-item">
-              <span className="fecha-etiqueta">Fecha y hora actual</span>
+              <span className="fecha-etiqueta">Tiempo real</span>
               <span className="fecha-valor">{fechaHoraActual}</span>
             </div>
             {simulacion && (
               <>
                 <div className="fecha-item">
-                  <span className="fecha-etiqueta">Fecha y hora simulada</span>
+                  <span className="fecha-etiqueta">Tiempo simulación</span>
                   <span className="fecha-valor">{fechaHoraSimulada.toLocaleString()}</span>
                 </div>
                 <div className="fecha-item">
