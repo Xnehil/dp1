@@ -44,20 +44,6 @@ const Page = () => {
     const { sendMessage, lastMessage, readyState, getWebSocket } = useWebSocket(
         process.env.REACT_APP_WS_URL_BASE + "/socket",
         {
-            onOpen: () => {
-                let auxHoraInicio: Date = new Date();
-                if (typeof window !== "undefined") {
-                    const params = new URLSearchParams(window.location.search);
-                    auxHoraInicio = new Date(
-                        params.get("startDate") ||
-                            new Date()
-                    );
-                }
-                console.log("Conexión abierta con tiempo: ", auxHoraInicio);
-                sendMessage("vuelosEnVivo: tiempo: " +auxHoraInicio.toLocaleString("en-US", {timeZone: "America/Lima",}),
-                    true
-                );
-            },
             share: true,
         }
     );
@@ -116,6 +102,13 @@ const Page = () => {
 
     useEffect(() => {
         console.log("Campana: ", campana);
+        if(campana ==  2) {
+            let auxHoraInicio: Date = new Date();
+            sendMessage("vuelosEnVivo: tiempo: " +auxHoraInicio.toLocaleString("en-US", {timeZone: "America/Lima",}),
+                    true
+            );
+            console.log("Enviando mensaje de tiempo con campana 2");
+        }
         if (campana ==3 ) {
             console.log("Campana sonando");
             if (cargado) {
