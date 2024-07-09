@@ -38,8 +38,13 @@ public class EnvioService {
             Aeropuerto destino = datosEnMemoriaService.getAeropuertos().get(envio.getDestino());
             // Agregar fecha de salida considerando la hora actual y la diferencia horaria
             ZonedDateTime fechaHoraSalida = ZonedDateTime.now();
-            fechaHoraSalida = fechaHoraSalida.withZoneSameInstant(origen.getZoneId());
+            
 
+            if(envio.getFechaHoraSalida() != null) {
+                fechaHoraSalida = envio.getFechaHoraSalida();
+            }
+            fechaHoraSalida = fechaHoraSalida.withZoneSameInstant(origen.getZoneId());
+            
             Boolean mismoContinente = origen.getContinente().equals(destino.getContinente());
             // Agregar fecha de llegada prevista considerando la hora de salida y la
             // distancia entre los aeropuertos

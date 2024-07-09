@@ -13,6 +13,11 @@ import BasicSelect from "@/components/select/select.jsx";
 import SelectVariants from "@/components/select/selectNumCode.jsx";
 import SelectVariantsCity from "@/components/select/selectCity.jsx"
 import axios from 'axios';
+import { Checkbox, FormControlLabel, Radio } from '@mui/material';
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { FaCalendarAlt } from "react-icons/fa";
+
 
 const steps = ['Datos del cliente', 'Destino y paquetes', 'Datos del receptor', 'Confirmar envío'];
 
@@ -36,6 +41,7 @@ export default function HorizontalLinearStepper() {
   const [ciudadOrigen, setciudadOrigen] = React.useState('');
   const [ciudadDestino, setciudadDestino] = React.useState('');
   const [numPaquetes, setnumPaquetes] = React.useState('');
+  const [horaEnvio, sethoraEnvio] = React.useState('');
 
   const [numDocDES, setnumDocDES] = React.useState('742056989');
   const [tipoDocDES, settipoDocDES] = React.useState('10');
@@ -48,6 +54,7 @@ export default function HorizontalLinearStepper() {
 
   const apiURL = process.env.REACT_APP_API_URL_BASE;
   const [codigosPaquetes, setCodigosPaquetes] = React.useState([]);
+  const [isImmediate, setIsImmediate] = React.useState(false);
 
   // Funciones handleChange
   const handleChangeNumDocREM = (e) =>{
@@ -80,6 +87,17 @@ export default function HorizontalLinearStepper() {
     if (e.target.value === '' || re.test(e.target.value)) {
     setnumPaquetes(e.target.value);
   }}
+
+  const handleDateChange = (newDate) => {
+    sethoraEnvio(newDate);
+  };
+
+  const handleCheckboxChange = (event) => {
+    setIsImmediate(event.target.checked);
+    if (event.target.checked) {
+      sethoraEnvio(new Date());
+    }
+  };
 
   const handleChangeNumDocDES = (e) => {
     //Solo permite ingresar números
@@ -162,8 +180,9 @@ export default function HorizontalLinearStepper() {
       origen: ciudadOrigen,
       destino: ciudadDestino,
       cantidadPaquetes: numPaquetes,
+      fechaHoraSalida: isImmediate ? null : horaEnvio,
     };
-
+    console.log(envio);
     //Guardar clientes
     console.log("guardando clientes en ", apiURL);
     await axios.post(`${apiURL}/cliente`, clienteEmisor)
@@ -340,7 +359,7 @@ export default function HorizontalLinearStepper() {
           <React.Fragment>
             <Typography sx={{ mt: 2, mb: 1 }} component="div">Paso {activeStep + 1}</Typography>
             <h2 className="text-2xl mb-2 text-[#52489C] text-left font-bold">
-              Destino
+              Ciudades
             </h2>
 
             <h2 className="text-3m mb-2 text-[#000000] text-left font-bold">
@@ -366,7 +385,41 @@ export default function HorizontalLinearStepper() {
               </Box>
               <h2 className="flex flex-row gap-2 text-3m mb-2 text-[#000000] text-left font-bold">
               </h2>
-
+              <h2 className="text-2xl mb-2 text-[#52489C] text-left font-bold">
+                Hora de llegada
+              </h2>
+              <Box display="flex" flexDirection="row" alignItems="center" gap={2}>
+                <div className="flex items-center border rounded-md">
+                <DatePicker
+                    selected = {horaEnvio}
+                    onChange={handleDateChange}
+                    showTimeSelect
+                    dateFormat="dd/MM/yyyy - HH:mm"
+                    className="flex-grow p-2 text-left outline-none text-lg"
+                    style={{ backgroundColor: '#e1e1e1 !important' }}
+                    disabled={isImmediate}
+                  />
+                  <div
+                    className="p-2 cursor-pointer flex-shrink-0"
+                    onClick={() =>
+                      document.querySelector(".react-datepicker-wrapper input").focus()
+                    }
+                  >
+                    <FaCalendarAlt className="text-lg" />
+                  </div>
+                </div>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={isImmediate}
+                      onChange={handleCheckboxChange}
+                      name="checkbox-demo"
+                      inputProps={{ 'aria-label': 'Al momento de registrar' }}
+                    />
+                  }
+                  label="Ahora"
+                />
+              </Box>
             </div>
             <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
 
@@ -595,6 +648,48 @@ export default function HorizontalLinearStepper() {
                   <TextField disabled id="apellido" label="Paquetes" variant="filled" fullWidth
                     value={numPaquetes} />
                 </Box>
+
+                {/* Insert aquí la parte de la hora de envío pero todo desactivado*/}
+                <h2 className="text-2xl mb-2 text-[#52489C] text-left font-bold">
+                  Hora de llegada
+                </h2>
+                <Box display="flex" flexDirection="row" alignItems="center" gap={2}>
+                  <div className="flex items-center border rounded-md">
+                    <DatePicker
+                      selected={horaEnvio}
+                      onChange={handleDateChange}
+                      showTimeSelect
+                      dateFormat="dd/MM/yyyy - HH:mm"
+                      className="flex-grow p-2 text-left outline-none text-lg"
+                      style={{ backgroundColor: '#e1e1e1 !important' }}
+                      disabled={true}
+                    />
+                    <div
+                      className="p-2 cursor-pointer flex-shrink-0"
+                      onClick={() =>
+                        document.querySelector(".react-datepicker-wrapper input").focus()
+                      }
+                    >
+                      <FaCalendarAlt className="text-lg" />
+                    </div>
+                  </div>
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={isImmediate}
+                        onChange={handleCheckboxChange}
+                        name="checkbox-demo"
+                        inputProps={{ 'aria-label': 'Al momento de registrar' }}
+                        disabled={true}
+                      />
+                    }
+                    label="Ahora"
+                  />
+                </Box>
+
+
+
+
                 <h2 className="flex flex-row gap-2 text-3m mb-2 text-[#000000] text-left font-bold">
 
                 </h2>
