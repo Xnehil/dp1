@@ -33,7 +33,7 @@ const Modal = ({ isOpen, onClose, onTrack }) => {
               Rastrear
             </button>
           </div>
-        </form>
+        </form> 
       </div>
     </div>
   );
