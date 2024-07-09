@@ -76,31 +76,33 @@ const DatosVuelo: React.FC<DatosVueloProps> = ({ vuelo, aeropuerto, programacion
     const envio = envios.current?.get(paquete.codigoEnvio);
     let ruta = "";
     if(nombres){
-      for (let i = 0; i < paquete.ruta.length; i++) {
-        if(i==0){
-          ruta = aeropuertos.current?.get(envio?.origen ?? "SKBO")?.aeropuerto.ciudad ?? "NULL";
-          ruta += " -> ";
+      if(paquete.ruta){
+        for (let i = 0; i < paquete.ruta.length; i++) {
+          if(i==0){
+            ruta = aeropuertos.current?.get(envio?.origen ?? "SKBO")?.aeropuerto.ciudad ?? "NULL";
+            ruta += " -> ";
+          }
+    
+          if(i==paquete.ruta.length-1){
+            ruta +=  aeropuertos.current?.get(envio?.destino ?? "SKBO")?.aeropuerto.ciudad ?? "NULL";
+            break;
+          }
+          let vuelo = vuelos.current?.get(paquete.ruta[i]);
+          let destino = vuelo?.vuelo.destino;
+    
+          ruta += aeropuertos.current?.get(destino ?? "SKBO")?.aeropuerto.ciudad ?? "NULL";   
         }
-  
-        if(i==paquete.ruta.length-1){
-          ruta +=  aeropuertos.current?.get(envio?.destino ?? "SKBO")?.aeropuerto.ciudad ?? "NULL";
-          break;
-        }
-        let vuelo = vuelos.current?.get(paquete.ruta[i]);
-        let destino = vuelo?.vuelo.destino;
-  
-        ruta += aeropuertos.current?.get(destino ?? "SKBO")?.aeropuerto.ciudad ?? "NULL";
-  
-        
-      }
+     }
     }
     else{
-      for (let i = 0; i < paquete.ruta.length; i++) {
-        if (i === paquete.ruta.length - 1) {
-          ruta += paquete.ruta[i];
-          break;
+      if (paquete.ruta){
+        for (let i = 0; i < paquete.ruta.length; i++) {
+          if (i === paquete.ruta.length - 1) {
+            ruta += paquete.ruta[i];
+            break;
+          }
+          ruta += paquete.ruta[i] + " -> ";
         }
-        ruta += paquete.ruta[i] + " -> ";
       }
     }
     if (ruta === "") {

@@ -50,6 +50,8 @@ const BarraMapa = ({
     const [error, setError] = useState(false);
     const [helperText, setHelperText] = useState('');
     const aDesactivar = useRef<string []>([]);
+    const [isHovered, setIsHovered] = useState(false);
+
 
     const handleKeyPress = (event: React.KeyboardEvent) => {
         if (event.key === "Enter") {   
@@ -200,15 +202,18 @@ const BarraMapa = ({
                 transform: "translateX(-50%)",
                 right: "10px",
                 zIndex: 10,
-                backgroundColor: "rgba(255, 255, 255,1)",
+                backgroundColor: isHovered ? 'rgba(255, 255, 255,1)' : 'rgba(255, 255, 255,0.6)',
                 color: "black",
                 borderRadius: "20px",
-                width: "calc(50%)",
-                display: "flex",
-                justifySelf: "center",
-                alignSelf: "center",
+                width: isHovered ? 'calc(50%)' : '50px',
+                display: 'flex',
+                justifySelf: 'center',
+                alignSelf: 'center',
+                transition: 'width 0.2s ease',
             }}
-        >
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+            >
             <TextField
                 fullWidth
                 variant="outlined"
@@ -241,7 +246,7 @@ const BarraMapa = ({
                     },
                 }}
                 error={error}
-                helperText={helperText}
+                helperText={isHovered ? helperText : ''}
             />
         </div>
     );
