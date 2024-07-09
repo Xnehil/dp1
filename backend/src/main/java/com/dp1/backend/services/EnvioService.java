@@ -70,12 +70,12 @@ public class EnvioService {
                 paquete.setCodigoEnvio(envio.getCodigoEnvio());
                 int codigoPaquete = 1000000 * origen.getIdAeropuerto() + 100 * envio.getId() + (i + 1);
                 paquete.setIdPaquete(codigoPaquete);
-                codigosPaquetes += codigoPaquete + " ";
                 paquete.setCostosRuta(null);
                 paquete.setFechasRuta(null);
                 paquete.setRuta(null);
                 paquete.setRutaPosible(null);
-                paqueteService.createPaquete(paquete);
+                Paquete paqueteNuevo= paqueteService.createPaquete(paquete);
+                codigosPaquetes += paqueteNuevo.getId() + " ";
             }
             logger.info("Todo bien hasta guardado de paquetes");
             return codigosPaquetes;

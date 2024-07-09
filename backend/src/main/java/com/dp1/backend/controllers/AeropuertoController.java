@@ -36,6 +36,11 @@ public class AeropuertoController {
         return aeropuertoService.getAeropuerto(id);
     }
 
+    @GetMapping("/codigo/{codigo}")
+    public Aeropuerto getAeropuertoByCodigo(@PathVariable(name = "codigo", required = true) String codigo) {
+        return aeropuertoService.getAeropuertoByCodigo(codigo);
+    }
+
     @GetMapping()
     public ArrayList<Aeropuerto> getAeropuertos() {
         return aeropuertoService.getAeropuertosMemoria();

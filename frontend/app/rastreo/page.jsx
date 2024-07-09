@@ -1,9 +1,8 @@
 "use client";  // Añade esta línea al principio del archivo
 
-import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-
-
+import axios from 'axios';
+import React, { useEffect, useRef, useState } from 'react';
 
 const Modal = ({ isOpen, onClose, onTrack }) => {
   if (!isOpen) return null;
@@ -42,7 +41,11 @@ const Modal = ({ isOpen, onClose, onTrack }) => {
 
 const App = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const router = useRouter();
+  const [paquete, setPaquete] = useState({});
+  const [vuelos, setVuelos] = useState([]);
+  const aeropuertos =useRef(new Map());
+
+  const apiURL = process.env.REACT_APP_API_URL_BASE;
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -52,11 +55,61 @@ const App = () => {
     setIsModalOpen(false);
   };
 
-  const handleTrack = (code) => {
+  const handleTrack = async (code) => {
     console.log('Tracking code:', code);
-    // Redirigir a la página de resultados con el código de rastreo
-    router.push(`/tracking/${code}`);
-  };
+    try {
+        const response = await axios.get(`${apiURL}/paquete/${code}`);
+        setPaquete(response.data);
+        console.log(response.data); 
+    } catch (error) {
+        console.error('Error rastreando el paquete:', error);
+    }
+    closeModal();
+};
+
+  useEffect(() => {
+    if (paquete && paquete.rutaPosible && paquete.rutaPosible.flights) {
+      const fetchFlights = async () => {
+        try {
+          const flightPromises = paquete.rutaPosible.flights.map(flight =>
+            axios.get(`${apiURL}/vuelo/${flight.idVuelo}`)
+          );
+          const flightResponses = await Promise.all(flightPromises);
+          const flights = flightResponses.map(response => response.data);
+          console.log('Vuelos:', flights);
+          setVuelos(flights);
+        } catch (error) {
+          console.error('Error trayendo los vuelos:', error);
+        }
+      };
+      fetchFlights();
+    }
+  }, [paquete]);
+
+  useEffect(() => {
+    if (vuelos && vuelos.length > 0) {
+      const fetchAirports = async () => {
+        try {
+          // /codigo/{codigo}
+          const airportPromises = []
+          for (let i = 0; i < vuelos.length; i++) {
+            airportPromises.push(axios.get(`${apiURL}/aeropuerto/codigo/${vuelos[i].origen}`));
+            if (i === vuelos.length - 1) {
+              airportPromises.push(axios.get(`${apiURL}/aeropuerto/codigo/${vuelos[i].destino}`));
+            }
+          }
+          const airportResponses = await Promise.all(airportPromises);
+          const airports = airportResponses.map(response => response.data);
+          aeropuertos.current = new Map(airports.map(airport => [airport.codigoOACI, airport]));
+          console.log('Aeropuertos:', aeropuertos.current);
+        } catch (error) {
+          console.error('Error trayendo los aeropuertos:', error);
+        }
+      };
+      fetchAirports();
+    }
+  }, [vuelos]);
+
 
   const containerStyle = {
     display: 'flex',

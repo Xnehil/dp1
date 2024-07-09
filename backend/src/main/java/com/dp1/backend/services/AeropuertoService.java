@@ -74,4 +74,13 @@ public class AeropuertoService {
         }
         return aeropuertos;
     }
+
+    public Aeropuerto getAeropuertoByCodigo(String codigo)
+    {
+        try {
+            return datosEnMemoriaService.getAeropuertos().get(codigo);
+        } catch (Exception e) {
+            return null;
+        }
+    }
 }
