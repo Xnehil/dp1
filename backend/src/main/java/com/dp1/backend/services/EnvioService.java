@@ -99,6 +99,14 @@ public class EnvioService {
         }
     }
 
+    public Envio getEnvioCodigo(String codigo) {
+        try {
+            return envioRepository.findByCodigoEnvio(codigo);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     public Envio updateEnvio(Envio envio) {
         try {
             if (envio == null) {
