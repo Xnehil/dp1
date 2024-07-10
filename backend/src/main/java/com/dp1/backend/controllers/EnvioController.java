@@ -36,6 +36,11 @@ public class EnvioController {
         return envioService.getEnvio(id);
     }
 
+    @GetMapping("/codigo/{codigo_envio}")
+    public Envio getEnvio(@PathVariable(name = "codigo_envio", required = true) String codigo_envio) {
+        return envioService.getEnvioCodigo(codigo_envio);
+    }
+
     @GetMapping()
     public ArrayList<Envio> getEnvios() {
         return envioService.getEnvios();

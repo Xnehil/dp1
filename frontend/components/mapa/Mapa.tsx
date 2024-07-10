@@ -252,7 +252,7 @@ const Mapa = ({
             }
         }, 1000);
 
-        if(simulationTime.getTime() > fechaFinSemana.getTime() || colapso){
+        if((simulationTime.getTime() > fechaFinSemana.getTime() && simulationInterval!==1/60) || colapso){
             clearInterval(intervalId);
             console.log("Fin");
             setMostrarFinSemanal(true);
@@ -384,7 +384,7 @@ const Mapa = ({
                 </div>
                 
                 <DatosVuelo vuelo={selectedVuelo} aeropuerto={selectedAeropuerto} programacionVuelos={programacionVuelos} simulationTime={simulationTime}
-                    envios={envios} aeropuertos={aeropuertos} envio = {selectedEnvio} vuelos = {vuelos}
+                    envios={envios} aeropuertos={aeropuertos} envio = {selectedEnvio} vuelos = {vuelos} simulation = {simulationInterval!==1/60}
                 />
                 {mostrarFinSemanal && <FinSemanal programacionVuelos={programacionVuelos} vuelos={vuelos} colapso={colapso}/>}
                 <VuelosAlmacen selectedAeropuerto={selectedAeropuerto} vuelos={vuelos} simulationTime={simulationTime} programacionVuelos={programacionVuelos} aeropuertos={aeropuertos} />

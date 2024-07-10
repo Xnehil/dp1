@@ -17,9 +17,10 @@ type DatosVueloProps = {
   aeropuertos: React.RefObject<Map<string, {aeropuerto: Aeropuerto; pointFeature: any}>>;
   envio : Envio | null;
   vuelos : React.RefObject<Map<number, {vuelo: Vuelo, pointFeature: any, lineFeature: any, routeFeature: any}>>;
+  simulation: boolean;
 };
 
-const DatosVuelo: React.FC<DatosVueloProps> = ({ vuelo, aeropuerto, programacionVuelos, simulationTime, envios, aeropuertos , envio, vuelos}) => {
+const DatosVuelo: React.FC<DatosVueloProps> = ({ vuelo, aeropuerto, programacionVuelos, simulationTime, envios, aeropuertos , envio, vuelos, simulation=true}) => {
   const [visible, setVisible] = useState<boolean>(false);
   const [opcion, setOpcion] = useState<number>(0);
   const [programacionVuelo, setProgramacionVuelo] = useState<ProgramacionVuelo | null>(null);
@@ -349,13 +350,18 @@ const DatosVuelo: React.FC<DatosVueloProps> = ({ vuelo, aeropuerto, programacion
               <div className="datos-vuelo-info">
                 <h2 className="vuelo-codigo">Envío {envio.id}</h2>
                 <p className="vuelo-horario">
-                  Origen: {envio.origen}{" "}
+                  <span className="title-light-bold">Recepción:</span>{" "}
+                  <br />
+                  {new Date(envio.fechaHoraSalida * 1000).toLocaleString()}
+                </p>
+                <p className="vuelo-horario">
+                  <span className="title-light-bold">Origen:</span> {envio.origen}{" "}
                   {"(" +
                     aeropuertos.current?.get(envio.origen)?.aeropuerto.ciudad +
                     ")"}
                 </p>
                 <p className="vuelo-horario">
-                  Destino: {envio.destino}{" "}
+                  <span className="title-light-bold">Destino:</span> {envio.destino}{" "}
                   {"(" +
                     aeropuertos.current?.get(envio.destino)?.aeropuerto.ciudad +
                     ")"}
