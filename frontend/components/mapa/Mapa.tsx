@@ -252,7 +252,7 @@ const Mapa = ({
             }
         }, 1000);
 
-        if(simulationTime.getTime() > fechaFinSemana.getTime() || colapso){
+        if((simulationTime.getTime() > fechaFinSemana.getTime() && simulationInterval!==1/60) || colapso){
             clearInterval(intervalId);
             console.log("Fin");
             setMostrarFinSemanal(true);

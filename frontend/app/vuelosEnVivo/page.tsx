@@ -79,9 +79,8 @@ const Page = () => {
     useEffect(() => {
         if (!initializedRef.current) {
             const initializeData = async () => {
-                const params = new URLSearchParams(window.location.search);
-                const startDate = params.get("startDate");
-                setHoraInicio(startDate ? new Date(startDate) : new Date());
+                //   22 Julio 2024 a las 06:00am
+                setHoraInicio(new Date("2024-07-22T06:00:00"));
     
                 try {
                     const [auxAeropuertos, vuelos] = await Promise.all([fetchAeropuertos(), fetchVuelos()]);
@@ -103,7 +102,7 @@ const Page = () => {
     useEffect(() => {
         console.log("Campana: ", campana);
         if(campana ==  2) {
-            let auxHoraInicio: Date = new Date();
+            let auxHoraInicio: Date = new Date("2024-07-22T06:00:00");
             sendMessage("vuelosEnVivo: tiempo: " +auxHoraInicio.toLocaleString("en-US", {timeZone: "America/Lima",}),
                     true
             );

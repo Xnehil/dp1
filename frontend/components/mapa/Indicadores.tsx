@@ -55,7 +55,7 @@ interface InfoVuelosProps {
           <div className="info-fecha">
             <div className="fecha-item">
               <span className="fecha-etiqueta">Tiempo real</span>
-              <span className="fecha-valor">{fechaHoraActual}</span>
+              <span className="fecha-valor">{simulacion ? fechaHoraActual: fechaHoraSimulada.toLocaleString()}</span>
             </div>
             {simulacion && (
               <>
