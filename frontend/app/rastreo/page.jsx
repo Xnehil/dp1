@@ -42,6 +42,7 @@ const Modal = ({ isOpen, onClose, onTrack }) => {
 const App = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [paquete, setPaquete] = useState({});
+  const [envio, setEnvio] = useState({});
   const [vuelos, setVuelos] = useState([]);
   const aeropuertos =useRef(new Map());
 
@@ -82,7 +83,18 @@ const App = () => {
           console.error('Error trayendo los vuelos:', error);
         }
       };
+
+      const fetchEnvio = async () => {
+        try {
+          const response = await axios.get(`${apiURL}/envio/codigo/${paquete.codigoEnvio}`);
+          setEnvio(response.data);
+          console.log('Envio:', response.data);
+        } catch (error) {
+          console.error('Error trayendo el envio:', error);
+        }
+      };
       fetchFlights();
+      fetchEnvio();
     }
   }, [paquete]);
 
