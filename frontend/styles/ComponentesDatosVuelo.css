@@ -73,6 +73,7 @@
     color: #59C3C3;
     margin: 0;
     font-size: large;
+    font-weight: 600;
 }
 
 .vuelo-horario {
@@ -204,3 +205,7 @@
     z-index: 10;
     max-height: 240px;
 }
+
+.title-light-bold {
+    font-weight: 550;
+  }

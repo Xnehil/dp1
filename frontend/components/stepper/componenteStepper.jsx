@@ -386,7 +386,7 @@ export default function HorizontalLinearStepper() {
               <h2 className="flex flex-row gap-2 text-3m mb-2 text-[#000000] text-left font-bold">
               </h2>
               <h2 className="text-2xl mb-2 text-[#52489C] text-left font-bold">
-                Hora de llegada
+                Hora de registro
               </h2>
               <Box display="flex" flexDirection="row" alignItems="center" gap={2}>
                 <div className="flex items-center border rounded-md">
@@ -651,7 +651,7 @@ export default function HorizontalLinearStepper() {
 
                 {/* Insert aquí la parte de la hora de envío pero todo desactivado*/}
                 <h2 className="text-2xl mb-2 text-[#52489C] text-left font-bold">
-                  Hora de llegada
+                  Hora de registro
                 </h2>
                 <Box display="flex" flexDirection="row" alignItems="center" gap={2}>
                   <div className="flex items-center border rounded-md">
