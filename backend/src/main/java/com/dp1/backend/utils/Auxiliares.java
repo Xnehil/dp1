@@ -581,6 +581,8 @@ public class Auxiliares {
 
     public static int buscarRutaPosibleApta(HashMap<String, Aeropuerto> aeropuertos, HashMap<Integer, Vuelo> vuelos,
     HashMap<String, Envio> envios, Paquete paquete,  List<RutaPosible> rutasPosibles) {
+        Collections.shuffle(rutasPosibles);
+       
         for (int i = 0; i < rutasPosibles.size(); i++) {
             RutaPosible rutaPosible = rutasPosibles.get(i);
             ArrayList<Integer> ruta = new ArrayList<Integer>();
