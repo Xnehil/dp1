@@ -33,7 +33,82 @@ const Modal = ({ isOpen, onClose, onTrack }) => {
               Rastrear
             </button>
           </div>
-        </form> 
+        </form>
+      </div>
+    </div>
+  );
+};
+
+const NewModal = ({ isOpen, onClose, paquete, envio, vuelos, aeropuertos }) => {
+  if (!isOpen) return null;
+  const renderDetails = () => {
+    const originAirportCode = vuelos.length > 0 ? vuelos[0].origen : '';
+    const destinationAirportCode = vuelos.length > 0 ? vuelos[vuelos.length - 1].destino : '';
+    //const originCity = aeropuertos.get(originAirportCode)?.ciudad || 'N/A';
+    //const destinationCity = aeropuertos.get(destinationAirportCode)?.ciudad || 'N/A';
+    const destinollegado = paquete.llegodestino == "true" ? paquete.llegodestino = "En proceso" : "Terminado"
+    const creationDate = paquete.creationDate;
+    const formattedDate = creationDate.split('.')[0].replace('T', '  ');
+    const fechallegada = envio.fechaHoraLlegadaPrevista;
+    const formattedDateArrival = fechallegada.split('.')[0].replace('T', '  ');
+
+    return (
+      <div className="flex flex-row">
+        <div className="w-2/3 pr-8">
+          <h2 className="text-2xl mb-10 text-[#84A98C] text-left font-bold">
+            Paquete {paquete.id}: {envio.origen} → {envio.destino}
+          </h2>
+          <h3 className="text-xl mb-5 text-[#52489C] text-left font-bold">
+            <p className="mb-5 pl-10"><strong>Código:</strong> {paquete.id}</p>
+            <p className="mb-5 pl-10"><strong>Ciudad de Origen:</strong> {envio.origen}</p>
+            <p className="mb-5 pl-10"><strong>Ciudad de Destino:</strong> {envio.destino}</p>
+            <p className="mb-5 pl-10"><strong>Estado:</strong> {paquete.llegodestino === "true" ? "En proceso" : "Terminado"}</p>
+            <p className="mb-5 pl-10"><strong>Fecha de envío:</strong> {formattedDate}</p>
+            <p className="mb-5 pl-10"><strong>Fecha de entrega:</strong> {formattedDateArrival}</p>
+            <p className="mb-5 pl-10"><strong>Emisor:</strong> {envio.emisor?.nombre ?? ''} {envio.emisor?.apellido ?? ''}</p>
+            <p className="mb-5 pl-10"><strong>Receptor:</strong> {envio.receptor?.nombre ?? ''} {envio.receptor?.apellido ?? ''}</p>
+          </h3>
+        </div>
+        <div className="w-1/3 border-l border-gray-300 pl-8">
+          <UbicacionDiagrama 
+            origen={envio.origen}
+            destino={envio.destino}
+            escalas={vuelos.map(vuelo => vuelo.destino).slice(0, -1)}
+          />
+        </div>
+      </div>
+    );
+  };
+
+
+  return (
+    <div style={styles.overlay} onClick={onClose}>
+      <div style={styles.modalLarge} onClick={(e) => e.stopPropagation()}>
+        <button style={styles.closeButton} onClick={onClose}>
+          X 
+        </button>
+        {renderDetails()}
+      </div>
+    </div>
+  );
+
+
+
+};
+
+const UbicacionDiagrama = ({ origen, destino, escalas }) => {
+  return (
+    <div className="flex flex-col items-center justify-center h-full">
+      <div className="flex flex-col items-center">
+        <div className="mb-4 text-center">{origen}</div>
+        <div className="h-16 w-0.5 bg-gray-300"></div>
+        {escalas && escalas.map((escala, index) => (
+          <React.Fragment key={index}>
+            <div className="my-4 text-center">{escala}</div>
+            <div className="h-16 w-0.5 bg-gray-300"></div>
+          </React.Fragment>
+        ))}
+        <div className="mt-4 text-center">{destino}</div>
       </div>
     </div>
   );
@@ -41,10 +116,11 @@ const Modal = ({ isOpen, onClose, onTrack }) => {
 
 const App = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isNewModalOpen, setNewModalOpen] = useState(false);
   const [paquete, setPaquete] = useState({});
   const [envio, setEnvio] = useState({});
   const [vuelos, setVuelos] = useState([]);
-  const aeropuertos =useRef(new Map());
+  const aeropuertos = useRef(new Map());
 
   const apiURL = process.env.REACT_APP_API_URL_BASE;
 
@@ -56,17 +132,22 @@ const App = () => {
     setIsModalOpen(false);
   };
 
+  const closeNewModal = () => {
+    setNewModalOpen(false);
+  };
+
   const handleTrack = async (code) => {
     console.log('Tracking code:', code);
     try {
-        const response = await axios.get(`${apiURL}/paquete/${code}`);
-        setPaquete(response.data);
-        console.log(response.data); 
+      const response = await axios.get(`${apiURL}/paquete/${code}`);
+      setPaquete(response.data);
+      console.log(response.data); 
+      setNewModalOpen(true);
     } catch (error) {
-        console.error('Error rastreando el paquete:', error);
+      console.error('Error rastreando el paquete:', error);
     }
     closeModal();
-};
+  };
 
   useEffect(() => {
     if (paquete && paquete.rutaPosible && paquete.rutaPosible.flights) {
@@ -102,7 +183,6 @@ const App = () => {
     if (vuelos && vuelos.length > 0) {
       const fetchAirports = async () => {
         try {
-          // /codigo/{codigo}
           const airportPromises = []
           for (let i = 0; i < vuelos.length; i++) {
             airportPromises.push(axios.get(`${apiURL}/aeropuerto/codigo/${vuelos[i].origen}`));
@@ -121,7 +201,6 @@ const App = () => {
       fetchAirports();
     }
   }, [vuelos]);
-
 
   const containerStyle = {
     display: 'flex',
@@ -193,8 +272,6 @@ const App = () => {
           <p style={paragraphStyle}>Busca y localiza tu paquete en tiempo real mediante el código brindado</p>
           <button
             style={buttonStyle}
-            // onMouseOver={(e) => e.currentTarget.style.backgroundColor = buttonHoverStyle.backgroundColor}
-            // onMouseOut={(e) => e.currentTarget.style.backgroundColor = buttonStyle.backgroundColor}
             onClick={openModal}
           >
             Rastrea aquí
@@ -202,6 +279,7 @@ const App = () => {
         </div>
       </div>
       <Modal isOpen={isModalOpen} onClose={closeModal} onTrack={handleTrack} />
+      <NewModal isOpen={isNewModalOpen} onClose={closeNewModal} paquete={paquete} envio={envio} vuelos={vuelos} />
     </div>
   );
 }
@@ -226,52 +304,60 @@ const styles = {
     position: 'relative',
     textAlign: 'center',
   },
+  modalLarge: {
+    backgroundColor: 'white', // Fondo blanco del modal grande
+    padding: '20px',
+    borderRadius: '8px',
+    width: '1500px', // Ancho del modal grande
+    height: '600px', // Alto del modal grande
+    position: 'relative',
+    textAlign: 'center',
+    overflowY: 'auto', // Permite hacer scroll si el contenido es más largo que el modal
+  },
   closeButton: {
     position: 'absolute',
     top: '10px',
     right: '10px',
-    backgroundColor: 'none',
+    backgroundColor: 'transparent',
     border: 'none',
-    fontSize: '20px',
+    fontSize: '16px',
     cursor: 'pointer',
+    fontWeight: 'bold',
   },
   input: {
     width: '100%',
     padding: '10px',
     margin: '10px 0',
-    border: '1px solid #ccc',
     borderRadius: '4px',
+    border: '1px solid #ddd',
   },
   reminderText: {
-    margin: '10px 0',
-    fontSize: '0.9em',
+    fontSize: '14px',
+    color: '#777',
   },
   link: {
-    color: '#59c3c3',
-    textDecoration: 'underline',
-    cursor: 'pointer',
+    color: '#52489c',
+    textDecoration: 'none',
   },
   buttonContainer: {
     display: 'flex',
     justifyContent: 'space-between',
-    marginTop: '20px',
   },
   cancelButton: {
     backgroundColor: '#84a98c',
+    color: '#fff',
     border: 'none',
     padding: '10px 20px',
     borderRadius: '4px',
     cursor: 'pointer',
-    fontSize: '1em',
   },
   trackButton: {
     backgroundColor: '#52489c',
-    color: 'white',
+    color: '#fff',
     border: 'none',
     padding: '10px 20px',
     borderRadius: '4px',
     cursor: 'pointer',
-    fontSize: '1em',
   },
 };
 
