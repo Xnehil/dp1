@@ -88,7 +88,7 @@ function UploadFile() {
                                     <table>
                                         <tbody>
                                             {codigos.reduce((acc, codigo, index) => {
-                                            if (index % 8 === 0) acc.push([]);
+                                            if (index % 7 === 0) acc.push([]);
                                             acc[acc.length - 1].push(codigo);
                                             return acc;
                                             }, []).map((row, rowIndex) => (
