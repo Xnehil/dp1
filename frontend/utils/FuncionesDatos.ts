@@ -166,7 +166,7 @@ export function procesarDataReal(
                         }
                     }
                 }
-                dondeEsta = dondeEstaPaquete(paquete, envio, auxiliarVuelos);
+                dondeEsta = dondeEstaPaquete(paquete, envio, auxiliarVuelos, simulationTime);
                 // console.log("Donde está: ", dondeEsta);
                 if (dondeEsta !== "" && Number.isNaN(parseInt(dondeEsta))) {
                     const aeropuerto: Aeropuerto | undefined =aeropuertos.current.get(dondeEsta)?.aeropuerto;
@@ -187,9 +187,9 @@ export function procesarDataReal(
     console.log("Data procesada");
 }
 
-function dondeEstaPaquete(paquete: Paquete, envio: Envio, vuelos: React.RefObject<Map<number,Vuelo>>): string {
+function dondeEstaPaquete(paquete: Paquete, envio: Envio, vuelos: React.RefObject<Map<number,Vuelo>>, fechaActual: Date): string {
     let dondeEsta = "";
-    let fechaActual = new Date();
+    // let fechaActual = new Date();
     let fechaLlegadaAnterior = null;
     for (let i = 0; i < paquete.fechasRuta?.length ?? 0; i++) {
         const idVuelo = paquete.ruta[i];
@@ -207,7 +207,10 @@ function dondeEstaPaquete(paquete: Paquete, envio: Envio, vuelos: React.RefObjec
         if (fechaVuelo < new Date(envio!.fechaHoraSalida*1000) ) {
             fechaVuelo.setDate(fechaVuelo.getDate() + 1);
         }
-
+        if(paquete.id==8764){
+            console.log("Fecha vuelo: ", fechaVuelo);
+            console.log("Fecha actual: ", fechaActual);
+        }
         if (fechaActual < fechaVuelo) { // Aún no ha tomado este vuelo
             // console.log("Aún no ha tomado este vuelo, idVuelo: ", idVuelo);
             // console.log("Se queda en: ", vuelos.current?.get(idVuelo)?.origen);
@@ -222,9 +225,6 @@ function dondeEstaPaquete(paquete: Paquete, envio: Envio, vuelos: React.RefObjec
             dondeEsta = vuelos.current?.get(idVuelo)?.id.toString() ?? "";
             break;
         }
-    }
-    if (dondeEsta === "") {
-        dondeEsta = envio.origen;
     }
     return dondeEsta;
 }
