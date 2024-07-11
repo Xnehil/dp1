@@ -29,7 +29,8 @@ function UploadFile() {
         axios.post(`${baseUrl}/archivo/upload`, formData, {
             headers: {
                 'Content-Type': 'multipart/form-data'
-            }
+            },
+            timeout: 1000 * 60 * 10 // 10 minutos
         })
         .then((response) => {
             document.body.style.cursor = 'default';
