@@ -368,7 +368,7 @@ public class FuncionesLectura {
                     // origen.paqueteEntraReal(horaOrigenZoned.toLocalDateTime());
                 }
                 //Ajustar hora origen
-                horaOrigenZoned = horaOrigenZoned.plusHours((-5)-origen.getGmt());
+                // horaOrigenZoned = horaOrigenZoned.plusHours((-5)-origen.getGmt());
 
                 System.out.println("horaOrigenZoned luego de ajuste: " + horaOrigenZoned);
 
