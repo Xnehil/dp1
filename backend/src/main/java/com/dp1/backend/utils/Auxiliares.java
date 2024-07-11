@@ -539,10 +539,10 @@ public class Auxiliares {
                 try {
                     List<RutaPosible> rutasPosibles = datosEnMemoriaService.getRutasPosibles().get(cadenaABuscar)
                             .getRutasPosibles();
-                    int random = (int) (Math.random() * rutasPosibles.size());
+                    // int random = (int) (Math.random() * rutasPosibles.size());
                     ArrayList<Integer> ruta = new ArrayList<Integer>();
                     ArrayList<ZonedDateTime> fechas = new ArrayList<ZonedDateTime>();
-                    RutaPosible rutaPosible = rutasPosibles.get(random);
+                    RutaPosible rutaPosible = rutasPosibles.get(buscarRutaPosibleApta(aeropuertos, vuelos, envios, paquete, rutasPosibles));
                     // System.out.println("Funcion verificar ruta. rp inf: " + rutaPosible.getId() + " "
                             // + rutaPosible.getFlights());
                     for (int i = 0; i < rutaPosible.getFlights().size(); i++) {
@@ -577,6 +577,22 @@ public class Auxiliares {
         }
 
         return paquetesEntregados + paquetesRutasSalvadas;
+    }
+
+    public static int buscarRutaPosibleApta(HashMap<String, Aeropuerto> aeropuertos, HashMap<Integer, Vuelo> vuelos,
+    HashMap<String, Envio> envios, Paquete paquete,  List<RutaPosible> rutasPosibles) {
+        for (int i = 0; i < rutasPosibles.size(); i++) {
+            RutaPosible rutaPosible = rutasPosibles.get(i);
+            ArrayList<Integer> ruta = new ArrayList<Integer>();
+            for (int j = 0; j < rutaPosible.getFlights().size(); j++) {
+                ruta.add(rutaPosible.getFlights().get(j).getIdVuelo());
+            }
+            paquete.setRuta(ruta);
+            if (solucionValidav2(aeropuertos, vuelos, envios, paquete, false)) {
+                return i;
+            }
+        }
+        return 0;
     }
 
     public static int verificacionTotalPaquetesSimulacion(HashMap<String, Aeropuerto> aeropuertos,
