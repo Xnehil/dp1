@@ -27,7 +27,9 @@ export default function PlaneamientoYGestion() {
       //Poner cursor de carga
       window.document.body.style.cursor = 'wait';
 
-      const response = await axios.get(`${api_base_url}/aco/ejecutar/todaCiudad`);
+      const response = await axios.get(`${api_base_url}/aco/ejecutar/todaCiudad`,{
+        timeout: 1000 * 60 * 10 // 10 minutos
+      });
       console.log(response.data);
       setMensaje(response.data);
       setEstado(1);
