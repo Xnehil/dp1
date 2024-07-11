@@ -85,7 +85,7 @@ const NewModal = ({ isOpen, onClose, paquete, envio, vuelos, aeropuertos }) => {
     <div style={styles.overlay} onClick={onClose}>
       <div style={styles.modalLarge} onClick={(e) => e.stopPropagation()}>
         <button style={styles.closeButton} onClick={onClose}>
-          X 
+          Rastrear otro código
         </button>
         {renderDetails()}
       </div>
@@ -308,22 +308,23 @@ const styles = {
     backgroundColor: 'white', // Fondo blanco del modal grande
     padding: '20px',
     borderRadius: '8px',
-    width: '1500px', // Ancho del modal grande
-    height: '600px', // Alto del modal grande
+    width: '1300px', // Ancho del modal grande
+    height: '500px', // Alto del modal grande
     position: 'relative',
     textAlign: 'center',
     overflowY: 'auto', // Permite hacer scroll si el contenido es más largo que el modal
   },
   closeButton: {
     position: 'absolute',
-    top: '10px',
+    bottom: '10px', // Cambiado de 'top' a 'bottom'
     right: '10px',
     backgroundColor: 'transparent',
     border: 'none',
     fontSize: '16px',
     cursor: 'pointer',
-    fontWeight: 'bold',
-  },
+    color: '#84a98c', 
+    textDecoration: 'underline',
+  },  
   input: {
     width: '100%',
     padding: '10px',
