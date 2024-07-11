@@ -205,6 +205,7 @@ const Page = () => {
                         setSemaforo={setSemaforo}
                         sendMessage={sendMessage}
                         onSimulationTimeChange={setSimulationTime}
+                        auxiliarVuelos={auxiliarVuelos}
                     />
                     <div ref={bottomRef}></div>
                 </div>
