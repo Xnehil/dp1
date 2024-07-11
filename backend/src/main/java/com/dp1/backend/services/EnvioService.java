@@ -39,11 +39,16 @@ public class EnvioService {
             // Agregar fecha de salida considerando la hora actual y la diferencia horaria
             ZonedDateTime fechaHoraSalida = ZonedDateTime.now();
             
-
+            logger.info("Envío llegando con fecha de salida: " + envio.getFechaHoraSalida());
             if(envio.getFechaHoraSalida() != null) {
                 fechaHoraSalida = envio.getFechaHoraSalida();
             }
-            fechaHoraSalida = fechaHoraSalida.withZoneSameInstant(origen.getZoneId());
+            //Para recuperar la hora original:
+            //1. Las fechas llegan en UTC de una zona horaria Lima (-5), pero realmente son de origen.gmt
+            //2. Se convierte a la zona horaria de origen
+            fechaHoraSalida = fechaHoraSalida.plusHours((-5)-origen.getGmt());
+
+            logger.info("Fecha de salida: " + fechaHoraSalida);
             
             Boolean mismoContinente = origen.getContinente().equals(destino.getContinente());
             // Agregar fecha de llegada prevista considerando la hora de salida y la
@@ -207,6 +212,7 @@ public class EnvioService {
         HashMap<String, Envio> enviosEntre = new HashMap<>();
         try {
             List<Envio> envios = getEnviosAfterDate(fechaHoraInicio);
+            logger.info("Envios despues de fecha inicio: " + envios.size());
             for (Envio envio : envios) {
                 if (envio.getFechaHoraSalida().isAfter(fechaHoraInicio)
                         && envio.getFechaHoraSalida().isBefore(fechaHoraFin)) {
@@ -220,6 +226,10 @@ public class EnvioService {
                         // Opcionalmente podrías lanzar una excepción personalizada o manejarlo de otra
                         // manera
                     }
+                }
+                else{
+                    logger.info("Fecha de salida: " + envio.getFechaHoraSalida());
+                    logger.info("Fecha de fin: " + fechaHoraFin);
                 }
             }
         } catch (Exception e) {

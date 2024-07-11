@@ -118,11 +118,13 @@ public class SocketConnectionHandler extends TextWebSocketHandler {
             ZonedDateTime lastMessageTime = lastMessageTimes.get(session);
             ZonedDateTime algorLastTime = lastAlgorTimes.get(session);
 
-            if(identifier.equals("vuelosEnVivo")){
-                tipoConexion.put(session, 2);
-            }
-            else if(identifier.equals("simulacionSemanal")){
-                tipoConexion.put(session, 1);
+            //Si es la primera vez que se conecta
+            if (tipoConexion.get(session) == null) {
+                if (identifier.equals("vuelosEnVivo")) {
+                    tipoConexion.put(session, 2);
+                } else if (identifier.equals("simulacionSemanal")) {
+                    tipoConexion.put(session, 1);
+                }
             }
 
             if(tipoConexion.get(session) == 1){
@@ -150,6 +152,7 @@ public class SocketConnectionHandler extends TextWebSocketHandler {
         vuelosEnElAire.put(session, datosEnMemoriaService.getVuelosEnElAireMap(time));
         lastMessageTimes.put(session, lastMessageTime);
 
+        logger.info("Cargando envios antes de: " + lastMessageTime);
         //Enviamos la data por primera vez. Tenemos que enviar los paquetes de los últimos dos días. Tal vez todos o solo los que faltan llegar
         enviosEnOperacion.put(session, envioService.getEnviosEntrev2(lastMessageTime.minusDays(1), lastMessageTime));//cargamos todos los envios de 1 día atrás
 

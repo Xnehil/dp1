@@ -38,6 +38,7 @@ import {
     updateCoordinates,
     seleccionarElemento,
     desactivarEnvio,
+    crearPuntoDeVueloReal,
 } from "@/utils/FuncionesMapa";
 import BarraMapa from "./BarraMapa";
 import { ProgramacionVuelo } from "@/types/ProgramacionVuelo";
@@ -66,6 +67,7 @@ type MapaProps = {
     setSemaforo: React.Dispatch<React.SetStateAction<number>>;
     sendMessage: (message: string, keep: boolean) => void;
     onSimulationTimeChange: any;
+    auxiliarVuelos?: React.MutableRefObject<Map<number, Vuelo>>;
 };
 
 const Mapa = ({
@@ -80,6 +82,7 @@ const Mapa = ({
     setSemaforo,
     sendMessage,
     onSimulationTimeChange,
+    auxiliarVuelos,
 }: MapaProps) => {
     const mapRef = useRef<OLMap | null>(null);
     const vectorSourceRef = useRef(new VectorSource());
@@ -132,7 +135,13 @@ const Mapa = ({
         let cuenta=0;
         vuelos.current?.forEach((item) => {
             //const isSelected = selectedFeature != null && selectedFeature.get("vueloId") === item.vuelo.id;
-            const objeto:{feature:any, tieneCarga:boolean} = crearPuntoDeVuelo(
+            const objeto:{feature:any, tieneCarga:boolean} =  simulationInterval!==1/60?crearPuntoDeVuelo(
+                aeropuertos.current,
+                item,
+                simulationTime,
+                programacionVuelos.current,
+                setColapso
+            ) : crearPuntoDeVueloReal(
                 aeropuertos.current,
                 item,
                 simulationTime,
@@ -333,7 +342,13 @@ const Mapa = ({
                 if (item) {
                     item.lineFeature = crearLineaDeVuelo(aeropuertos.current, item);
                     
-                    let objeto:{feature:any, tieneCarga:boolean}= crearPuntoDeVuelo(
+                    let objeto:{feature:any, tieneCarga:boolean}= simulationInterval!==1/60?crearPuntoDeVuelo(
+                        aeropuertos.current,
+                        item,
+                        simulationTime,
+                        programacionVuelos.current,
+                        setColapso
+                    ) : crearPuntoDeVueloReal(
                         aeropuertos.current,
                         item,
                         simulationTime,
@@ -384,7 +399,7 @@ const Mapa = ({
                 </div>
                 
                 <DatosVuelo vuelo={selectedVuelo} aeropuerto={selectedAeropuerto} programacionVuelos={programacionVuelos} simulationTime={simulationTime}
-                    envios={envios} aeropuertos={aeropuertos} envio = {selectedEnvio} vuelos = {vuelos} simulation = {simulationInterval!==1/60}
+                    envios={envios} aeropuertos={aeropuertos} envio = {selectedEnvio} vuelos = {vuelos} simulation = {simulationInterval!==1/60} auxiliarVuelos={auxiliarVuelos}
                 />
                 {mostrarFinSemanal && <FinSemanal programacionVuelos={programacionVuelos} vuelos={vuelos} colapso={colapso}/>}
                 <VuelosAlmacen selectedAeropuerto={selectedAeropuerto} vuelos={vuelos} simulationTime={simulationTime} programacionVuelos={programacionVuelos} aeropuertos={aeropuertos} />
