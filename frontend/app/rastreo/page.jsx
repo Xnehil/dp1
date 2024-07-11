@@ -16,9 +16,6 @@ const Modal = ({ isOpen, onClose, onTrack }) => {
   return (
     <div style={styles.overlay} onClick={onClose}>
       <div style={styles.modal} onClick={(e) => e.stopPropagation()}>
-        <button style={styles.closeButton} onClick={onClose}>
-          X
-        </button>
         <form onSubmit={handleSubmit}>
           <h2 className="text-2l mb-2 text-[#52489C] text-left font-bold">Inserta el código de tu paquete o envío</h2>
           <input type="text" name="code" placeholder="Código" required style={styles.input} />
