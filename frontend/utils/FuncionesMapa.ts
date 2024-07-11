@@ -213,6 +213,59 @@ export function crearPuntoDeVuelo(aeropuertos: Map<String, {aeropuerto:Aeropuert
     return {feature, tieneCarga};
 }
 
+export function crearPuntoDeVueloReal(aeropuertos: Map<String, {aeropuerto:Aeropuerto; pointFeature: any}>, item: any, simulationTime: Date,
+    programacionVuelos: Map<string, ProgramacionVuelo>, setColapso: any): {feature: any, tieneCarga: boolean} {
+    const point = coordenadasIniciales(aeropuertos, item, simulationTime);
+    const feature = new Feature({
+        geometry: point,
+    });
+    const gmtOrigen = aeropuertos.get(item.vuelo.origen)?.aeropuerto.gmt ?? 0;
+    const simulationTimeEnOrigen = new Date(simulationTime.getTime() + (gmtOrigen+5) * 3600000);
+    const llaveBusqueda = item.vuelo.id + "-" + simulationTimeEnOrigen.toISOString().slice(0, 10);
+    // console.log("llaveBusqueda: ", llaveBusqueda);
+    const programacion = programacionVuelos.get(llaveBusqueda);
+    const paquetes = programacion?.cantPaquetes ?? 0;
+    const angulo = calcularAngulo(item);
+
+    feature.set('vueloId', item.vuelo.id); // Agregar el ID del vuelo
+    feature.set('angulo', angulo);
+
+    // Check if simulation time is before the flight's departure time
+    if(item.vuelo.id == 841){
+        console.log("simulationTimeEnOrigen: ", simulationTimeEnOrigen);
+        console.log("programacion?.fechaSalida: ", programacion?.fechaSalida);
+        console.log("simulationTimeEnOrigen < programacion?.fechaSalida: ", simulationTimeEnOrigen < new Date(programacion?.fechaSalida ?? 0));
+    }
+    if (simulationTimeEnOrigen < new Date(programacion?.fechaSalida ?? 0)) {
+        feature.setStyle(invisibleStyle);
+        return {feature, tieneCarga: false};
+    }
+    
+    let tieneCarga = true;
+    if (paquetes > 0) {
+        let razon = paquetes / item.vuelo.capacidad;
+        feature.set('pintarAuxiliar', true); 
+        feature.set('cantPaquetes', paquetes);
+        if (razon < 0.33){
+            feature.setStyle(greenPlaneStyle(item, angulo));
+        }
+        else if (razon < 0.66){
+            feature.setStyle(yellowPlaneStyle(item, angulo));
+        }
+        else if (razon <= 1){
+            feature.setStyle(redPlaneStyle(item, angulo));
+        } else {
+            console.error("Error en la cantidad de paquetes, se intentó meter " + paquetes + " paquetes en un vuelo con capacidad de " + item.vuelo.capacidad);
+             setColapso(true);
+        }
+    } else {
+        tieneCarga = false;
+        feature.setStyle(invisibleStyle);
+    }
+    
+    return {feature, tieneCarga};
+}
+
 export function seleccionarVuelo(vueloId:number, setSelectedVuelo: any , setSelectedAeropuerto: any,
     selectedFeature: any, vuelos: React.RefObject<Map<number, { vuelo: Vuelo, pointFeature: any, lineFeature: any}>>, feature: any){
     // console.log("vueloId: ", vueloId);

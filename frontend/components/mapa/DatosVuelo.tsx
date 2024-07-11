@@ -37,7 +37,7 @@ const DatosVuelo: React.FC<DatosVueloProps> = ({ vuelo, aeropuerto, programacion
     if (!vuelo) return;
     // console.log("Vuelo: ", vuelo);
     const claveProgramacion = `${vuelo.id}-${simulationTime.toISOString().slice(0,10)}`;
-    // console.log("Programación de vuelo: ", programacionVuelos.current.get(claveProgramacion) ?? null);
+    console.log("Programación de vuelo: ", programacionVuelos.current?.get(claveProgramacion) ?? null);
     const fechaAyer = new Date(simulationTime);
     fechaAyer.setDate(fechaAyer.getDate() - 1);
     const claveProgramacionManana = `${vuelo.id}-${fechaAyer.toISOString().slice(0,10)}`;

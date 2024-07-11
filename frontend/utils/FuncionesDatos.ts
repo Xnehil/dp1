@@ -116,7 +116,7 @@ export function procesarDataReal(
                     const idVuelo = paquete.ruta[i];
                     const auxFechaRuta = paquete.fechasRuta[i];
 
-
+                    
                     let fechaVuelo = new Date();
                     if(auxFechaRuta < 10) {
                         fechaVuelo = new Date(envio!.fechaHoraSalida*1000 + auxFechaRuta * 24 * 60 * 60 * 1000);
@@ -128,14 +128,17 @@ export function procesarDataReal(
                     else{
                         fechaVuelo = new Date(paquete.fechasRuta[i] * 1000);
                     }
-                    // console.log("Fecha hora salida vuelo: ", auxiliarVuelos.current?.get(idVuelo)?.fechaHoraSalida);
                     let horaSalidaVuelo =new Date(auxiliarVuelos.current?.get(idVuelo)?.fechaHoraSalida ?? 0);
-                    // console.log("Hora salida vuelo: ", horaSalidaVuelo);
+                    // if(envio.codigoEnvio=="SPIM3721"){
+                    //     console.log("Fecha hora salida vuelo: ", horaSalidaVuelo);
+                    // }
                     fechaVuelo.setHours(horaSalidaVuelo.getHours(), horaSalidaVuelo.getMinutes(), horaSalidaVuelo.getSeconds());
                     if (fechaVuelo < new Date(envio!.fechaHoraSalida*1000) ) {
                         fechaVuelo.setDate(fechaVuelo.getDate() + 1);
                     }
-                    
+                    // if (envio.codigoEnvio=="SPIM3721"){
+                    //     console.log("Fecha vuelo: ", fechaVuelo);
+                    // }
                     // console.log("Fecha vuelo: ", fechaVuelo);
                     const fechaVueloFormatted = fechaVuelo
                         .toISOString()
