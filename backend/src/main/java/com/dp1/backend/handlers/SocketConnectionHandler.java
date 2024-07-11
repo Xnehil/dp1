@@ -118,11 +118,13 @@ public class SocketConnectionHandler extends TextWebSocketHandler {
             ZonedDateTime lastMessageTime = lastMessageTimes.get(session);
             ZonedDateTime algorLastTime = lastAlgorTimes.get(session);
 
-            if(identifier.equals("vuelosEnVivo")){
-                tipoConexion.put(session, 2);
-            }
-            else if(identifier.equals("simulacionSemanal")){
-                tipoConexion.put(session, 1);
+            //Si es la primera vez que se conecta
+            if (tipoConexion.get(session) == null) {
+                if (identifier.equals("vuelosEnVivo")) {
+                    tipoConexion.put(session, 2);
+                } else if (identifier.equals("simulacionSemanal")) {
+                    tipoConexion.put(session, 1);
+                }
             }
 
             if(tipoConexion.get(session) == 1){
