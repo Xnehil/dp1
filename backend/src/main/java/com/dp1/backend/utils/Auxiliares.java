@@ -543,8 +543,8 @@ public class Auxiliares {
                     ArrayList<Integer> ruta = new ArrayList<Integer>();
                     ArrayList<ZonedDateTime> fechas = new ArrayList<ZonedDateTime>();
                     RutaPosible rutaPosible = rutasPosibles.get(random);
-                    System.out.println("Funcion verificar ruta. rp inf: " + rutaPosible.getId() + " "
-                            + rutaPosible.getFlights());
+                    // System.out.println("Funcion verificar ruta. rp inf: " + rutaPosible.getId() + " "
+                            // + rutaPosible.getFlights());
                     for (int i = 0; i < rutaPosible.getFlights().size(); i++) {
                         ruta.add(rutaPosible.getFlights().get(i).getIdVuelo());
                         int unixTimestampSeconds = rutaPosible.getFlights().get(i).getDiaRelativo();
