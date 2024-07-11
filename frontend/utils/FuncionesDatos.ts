@@ -176,6 +176,13 @@ export function procesarDataReal(
                         aeropuerto.paquetes.push(paquete);
                     }
                 }
+                if(paquete.fechasRuta == null || paquete.fechasRuta?.length === 0){ // Si no tiene ruta, se queda en el aeropuerto de origen
+                    const aeropuerto: Aeropuerto | undefined =aeropuertos.current.get(envio.origen)?.aeropuerto;
+                    if (aeropuerto) {
+                        aeropuerto.cantidadActual++;
+                        aeropuerto.paquetes.push(paquete);
+                    }
+                }
 
             }
         }
@@ -246,23 +253,27 @@ export function actualizarDataReal(
             let envio = messageData[key] as Envio;
             // console.log("Envio: ", envio);
             let envioAntiguo = envios.current.get(envio.codigoEnvio);
+            console.log("Envio antiguo paquetes: ", envioAntiguo?.cantidadPaquetes);
+            console.log("Envio nuevo paquetes: ", envio.cantidadPaquetes);
             let index=0;
             for (let paquete of envio.paquetes) {
                 if ( paquete.ruta==null || !envioAntiguo){
                      index++;
+                     console.log("No se actualiza paquete porque no tiene ruta o no hay envio antiguo");
                      continue;
                 }
                 //Si el antiguo paquete no tiene ruta, no se elimina, solo se agrega
-                let tieneRutaAntigua = envioAntiguo.paquetes[index].ruta!=null;
+                let tieneRutaAntigua = envioAntiguo.paquetes[index].ruta!=null && envioAntiguo.paquetes[index].ruta.length>0;
 
                 const areRutasEqual = tieneRutaAntigua && (paquete.ruta.length === envioAntiguo?.paquetes[index].ruta.length) && paquete.ruta.every((rutaElement, rutaIndex) => rutaElement === envioAntiguo.paquetes[index].ruta[rutaIndex]);
                 if(areRutasEqual){
                     index++;
+                    console.log("No se actualiza paquete porque la ruta es igual a la anterior");
                     continue;
                 }
 
 
-                console.log("Actualizando paquete porque la ruta" + paquete.ruta + " es diferente a la anterior " + envioAntiguo.paquetes[index].ruta);
+                // console.log("Actualizando paquete porque la ruta" + paquete.ruta + " es diferente a la anterior " + envioAntiguo.paquetes[index].ruta);
                 let paqueteAntiguo = envioAntiguo.paquetes[index];
                 //Borrar ruta de programación de vuelo
                 for(let i=0; i<paqueteAntiguo.fechasRuta.length; i++){
@@ -298,7 +309,7 @@ export function actualizarDataReal(
 
                 // Agregar la nueva ruta
                 for (let i = 0; i < paquete.fechasRuta?.length ?? 0; i++) {
-                    console.log("Añadiendo paquete a ruta");
+                    // console.log("Añadiendo paquete a ruta");
                     const idVuelo = paquete.ruta[i];
                     const auxFechaRuta = paquete.fechasRuta[i];
                     let fechaVuelo = new Date();
@@ -332,6 +343,8 @@ export function actualizarDataReal(
                         }
                     }
                 }
+
+                index++;
             }
         }
     }
@@ -497,12 +510,10 @@ export function agregarPaquetesAlmacenReal(
 
                 if(aeropuertoDestino.aeropuerto.codigoOACI == envio.destino){
                     //Crear un timer que borre el paquete dentro de 5 minutos
-                    setTimeout(() => {
-                        const index = aeropuertoDestino.aeropuerto.paquetes.findIndex(p => p.id === paquete.id);
-                        if (index !== -1) {
-                            aeropuertoDestino.aeropuerto.paquetes.splice(index, 1);
-                        }
-                    }, 300000);
+                    const index = aeropuertoDestino.aeropuerto.paquetes.findIndex(p => p.id === paquete.id);
+                    if (index !== -1) {
+                        aeropuertoDestino.aeropuerto.paquetes.splice(index, 1);
+                    }
                 }
             }
         }

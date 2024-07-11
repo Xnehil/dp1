@@ -330,8 +330,13 @@ public class FuncionesLectura {
                 ZoneId zonaOrigen = origen.getZoneId();
                 ZoneId zonaDestino = destino.getZoneId();
 
+                // System.out.println("fechaOrigen: " + fechaOrigen);
+                // System.out.println("horaOrigen: " + horaOrigen);
+                // System.out.println("zonaOrigen: " + zonaOrigen);
                 ZonedDateTime horaOrigenZoned = ZonedDateTime.of(fechaOrigen, horaOrigen, zonaOrigen);
                 ZonedDateTime horaDestinoZoned;
+
+                // System.out.println("horaOrigenZoned: " + horaOrigenZoned);
 
                 // El tiempo para enviar será de dos días si es continente distsinto y de un día
                 // si es el mismo continente
@@ -362,6 +367,11 @@ public class FuncionesLectura {
                     // Meter paquetes al aeropuerto de origen
                     // origen.paqueteEntraReal(horaOrigenZoned.toLocalDateTime());
                 }
+                //Ajustar hora origen
+                horaOrigenZoned = horaOrigenZoned.plusHours((-5)-origen.getGmt());
+
+                System.out.println("horaOrigenZoned luego de ajuste: " + horaOrigenZoned);
+
                 Envio nuevoEnvio = new Envio(ciudadOrigenEnvio, ciudadDestino, horaOrigenZoned, cantidadPaquetes,
                         paquetes);
                 nuevoEnvio.setIdEnvio(envioId);

@@ -272,7 +272,7 @@ public class DatosEnMemoriaService {
         rutasPosiblesSet.add(llave2);
         // Guardar llave2 en bd
         rp = rutaPosibleService.createRutaPosible(rp);
-        System.out.println("Funcion insertar ruta. rp inf: " + rp.getId() + " " + rp.getFlights());
+        // System.out.println("Funcion insertar ruta. rp inf: " + rp.getId() + " " + rp.getFlights());
         paquete.setRutaPosible(rp);
         // logger.info("Ruta agregada en set: " + llave2);
 

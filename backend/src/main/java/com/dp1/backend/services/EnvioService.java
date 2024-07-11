@@ -39,7 +39,7 @@ public class EnvioService {
             // Agregar fecha de salida considerando la hora actual y la diferencia horaria
             ZonedDateTime fechaHoraSalida = ZonedDateTime.now();
             
-            logger.info("Envío llegando con fecha de salida: " + envio.getFechaHoraSalida());
+            // logger.info("Envío llegando con fecha de salida: " + envio.getFechaHoraSalida());
             if(envio.getFechaHoraSalida() != null) {
                 fechaHoraSalida = envio.getFechaHoraSalida();
             }
@@ -48,7 +48,7 @@ public class EnvioService {
             //2. Se convierte a la zona horaria de origen
             fechaHoraSalida = fechaHoraSalida.plusHours((-5)-origen.getGmt());
 
-            logger.info("Fecha de salida: " + fechaHoraSalida);
+            // logger.info("Fecha de salida: " + fechaHoraSalida);
             
             Boolean mismoContinente = origen.getContinente().equals(destino.getContinente());
             // Agregar fecha de llegada prevista considerando la hora de salida y la
@@ -58,10 +58,10 @@ public class EnvioService {
 
             envio.setFechaHoraSalida(fechaHoraSalida);
             envio.setFechaHoraLlegadaPrevista(fechaHoraLlegadaPrevista);
-            logger.info("Todo bien hasta fechas. Guardando envio");
-            for (Paquete paq : envio.getPaquetes())
-                System.out.println("Codigo: " + paq.getId() + " " + paq.getIdPaquete());
-            logger.info(envio.toString());
+            // logger.info("Todo bien hasta fechas. Guardando envio");
+            // for (Paquete paq : envio.getPaquetes())
+            //     System.out.println("Codigo: " + paq.getId() + " " + paq.getIdPaquete());
+            // logger.info(envio.toString());
             //Nueva precaución
             envio.setReceptor(null);
             envio.setEmisor(null);
