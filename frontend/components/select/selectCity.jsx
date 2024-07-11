@@ -43,10 +43,10 @@ export default function SelectVariantsCity({disabled=false, city, setCity}) {
     { value: "OJAI", name: "Aman" }
 ];
   
-  cities.sort((a, b) => a.name.localeCompare(b.name));
+  cities.sort((a, b) => a.value.localeCompare(b.value));
   
   const menuItems = cities.map(city => (
-    <MenuItem key={city.value} value={city.value}>{`${city.name} (${city.value})`}</MenuItem>
+    <MenuItem key={city.value} value={city.value}>{`${city.value} (${city.name})`}</MenuItem>
   ));
 
   return (

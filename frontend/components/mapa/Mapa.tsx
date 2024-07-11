@@ -66,6 +66,7 @@ type MapaProps = {
     setSemaforo: React.Dispatch<React.SetStateAction<number>>;
     sendMessage: (message: string, keep: boolean) => void;
     onSimulationTimeChange: any;
+    auxiliarVuelos?: React.MutableRefObject<Map<number, Vuelo>>;
 };
 
 const Mapa = ({
@@ -80,6 +81,7 @@ const Mapa = ({
     setSemaforo,
     sendMessage,
     onSimulationTimeChange,
+    auxiliarVuelos,
 }: MapaProps) => {
     const mapRef = useRef<OLMap | null>(null);
     const vectorSourceRef = useRef(new VectorSource());
@@ -384,7 +386,7 @@ const Mapa = ({
                 </div>
                 
                 <DatosVuelo vuelo={selectedVuelo} aeropuerto={selectedAeropuerto} programacionVuelos={programacionVuelos} simulationTime={simulationTime}
-                    envios={envios} aeropuertos={aeropuertos} envio = {selectedEnvio} vuelos = {vuelos} simulation = {simulationInterval!==1/60}
+                    envios={envios} aeropuertos={aeropuertos} envio = {selectedEnvio} vuelos = {vuelos} simulation = {simulationInterval!==1/60} auxiliarVuelos={auxiliarVuelos}
                 />
                 {mostrarFinSemanal && <FinSemanal programacionVuelos={programacionVuelos} vuelos={vuelos} colapso={colapso}/>}
                 <VuelosAlmacen selectedAeropuerto={selectedAeropuerto} vuelos={vuelos} simulationTime={simulationTime} programacionVuelos={programacionVuelos} aeropuertos={aeropuertos} />

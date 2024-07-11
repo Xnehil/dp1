@@ -59,7 +59,7 @@ public class FuncionesLectura {
                 String shortName = parts[4];
                 int gmt = Integer.parseInt(parts[5].replace("+", ""));
                 // int capacity = Integer.parseInt(parts[6]) + 1000;
-                int capacity = 1350;
+                int capacity = 850;
                 double longitud = convertToDecimalDegrees(parts[8]);
                 double latitud = convertToDecimalDegrees(parts[7]);
 
@@ -104,7 +104,7 @@ public class FuncionesLectura {
                 ZonedDateTime horaDestinoZoned = ZonedDateTime.of(localDate, destinoLocalTime, zonaDestino);
 
                 // int capacidadCarga = Integer.parseInt(parts[4]) -250 + 100 -70;
-                int capacidadCarga = 180;
+                int capacidadCarga = 120;
                 double distancia = Auxiliares.calculateHaversineDistance(aeropuertos.get(ciudadOrigen),
                         aeropuertos.get(ciudadDestino));
 

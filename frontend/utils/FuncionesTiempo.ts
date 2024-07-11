@@ -102,3 +102,21 @@ export function utcStringToZonedDate(utcString: string, zonaHoraria: number): st
     // Extract the time portion in HH:MM:SS format
     return adjustedSimulationTime.toISOString().split("T")[1].split(".")[0];
 }
+
+export function convertirHoraVuelo(horaAConvertir: string | undefined, zonaHoraria: number): string {
+    if (!horaAConvertir) {
+        return "";
+    }
+    const hora = new Date(horaAConvertir);
+    // Convert the GMT offset to milliseconds and adjust the date
+    const offsetInMilliseconds = (zonaHoraria+5) * 60 * 60 * 1000;
+    const adjustedHora = new Date(hora.getTime() + offsetInMilliseconds);
+    // Convert the adjusted time to Lima timezone
+    const horaConvertida = new Intl.DateTimeFormat("en-US", {
+        timeZone: "America/Lima",
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false
+    }).format(adjustedHora);
+    return horaConvertida;
+}

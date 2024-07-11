@@ -5,7 +5,7 @@ import { Vuelo } from "@/types/Vuelo";
 import { Aeropuerto } from "@/types/Aeropuerto";
 import { ProgramacionVuelo } from "@/types/ProgramacionVuelo";
 import { Envio } from "@/types/Envio";
-import { aHoraMinutos, mostrarTiempoEnZonaHoraria, tiempoFaltante, utcStringToZonedDate } from "@/utils/FuncionesTiempo";
+import { aHoraMinutos, convertirHoraVuelo, mostrarTiempoEnZonaHoraria, tiempoFaltante, utcStringToZonedDate } from "@/utils/FuncionesTiempo";
 import { Paquete } from "@/types/Paquete";
 
 type DatosVueloProps = {
@@ -18,9 +18,10 @@ type DatosVueloProps = {
   envio : Envio | null;
   vuelos : React.RefObject<Map<number, {vuelo: Vuelo, pointFeature: any, lineFeature: any, routeFeature: any}>>;
   simulation: boolean;
+  auxiliarVuelos?: React.RefObject<Map<number, Vuelo>> | undefined;
 };
 
-const DatosVuelo: React.FC<DatosVueloProps> = ({ vuelo, aeropuerto, programacionVuelos, simulationTime, envios, aeropuertos , envio, vuelos, simulation=true}) => {
+const DatosVuelo: React.FC<DatosVueloProps> = ({ vuelo, aeropuerto, programacionVuelos, simulationTime, envios, aeropuertos , envio, vuelos, simulation=true, auxiliarVuelos}) => {
   const [visible, setVisible] = useState<boolean>(false);
   const [opcion, setOpcion] = useState<number>(0);
   const [programacionVuelo, setProgramacionVuelo] = useState<ProgramacionVuelo | null>(null);
@@ -73,6 +74,20 @@ const DatosVuelo: React.FC<DatosVueloProps> = ({ vuelo, aeropuerto, programacion
     }
   }
 
+  function wrapperHoraVuelo(idVuelo: number, llegadaOSalida: string) {
+    if(auxiliarVuelos && auxiliarVuelos.current) {
+      let vueloAConvertir = auxiliarVuelos.current.get(idVuelo);
+      if(!vueloAConvertir) return "";
+      if(llegadaOSalida=="llegada"){
+        // return auxiliarVuelos?.current.get(idVuelo)?.fechaHoraLlegada;
+        return convertirHoraVuelo(vueloAConvertir.fechaHoraLlegada, aeropuertos.current?.get(vueloAConvertir.destino ?? "SKBO")?.aeropuerto.gmt ?? 0);
+      }
+      else{
+        return convertirHoraVuelo(vueloAConvertir.fechaHoraSalida, aeropuertos.current?.get(vueloAConvertir.origen ?? "SKBO")?.aeropuerto.gmt ?? 0);
+      }
+    }
+  }
+
   function construirRuta(paquete: Paquete, nombres: boolean = false) {
     const envio = envios.current?.get(paquete.codigoEnvio);
     let ruta = "";
@@ -81,17 +96,21 @@ const DatosVuelo: React.FC<DatosVueloProps> = ({ vuelo, aeropuerto, programacion
         for (let i = 0; i < paquete.ruta.length; i++) {
           if(i==0){
             ruta = aeropuertos.current?.get(envio?.origen ?? "SKBO")?.aeropuerto.ciudad ?? "NULL";
+            ruta+= " (" +wrapperHoraVuelo(paquete.ruta[i], "salida")+ ") "
             ruta += " -> ";
           }
     
           if(i==paquete.ruta.length-1){
             ruta +=  aeropuertos.current?.get(envio?.destino ?? "SKBO")?.aeropuerto.ciudad ?? "NULL";
+            ruta+= " (" +wrapperHoraVuelo(paquete.ruta[i], "llegada")+ ") " 
             break;
           }
           let vuelo = vuelos.current?.get(paquete.ruta[i]);
           let destino = vuelo?.vuelo.destino;
     
           ruta += aeropuertos.current?.get(destino ?? "SKBO")?.aeropuerto.ciudad ?? "NULL";   
+          ruta+= " (" +wrapperHoraVuelo(paquete.ruta[i], "llegada")+ ") "
+          ruta += " -> ";
         }
      }
     }
@@ -349,10 +368,14 @@ const DatosVuelo: React.FC<DatosVueloProps> = ({ vuelo, aeropuerto, programacion
               />
               <div className="datos-vuelo-info">
                 <h2 className="vuelo-codigo">Envío {envio.id}</h2>
+                {/* Cantidad de paquetes */}
+                <h2 className="title-light-bold">
+                  {envio.paquetes.length} paquetes
+                </h2>
                 <p className="vuelo-horario">
                   <span className="title-light-bold">Recepción:</span>{" "}
                   <br />
-                  {new Date(envio.fechaHoraSalida * 1000).toLocaleString()}
+                  {new Date(envio.fechaHoraSalida * 1000 + ((5+(aeropuertos.current?.get(envio.origen)?.aeropuerto.gmt ?? 0)) * 3600 * 1000)).toLocaleString()}
                 </p>
                 <p className="vuelo-horario">
                   <span className="title-light-bold">Origen:</span> {envio.origen}{" "}
@@ -370,14 +393,15 @@ const DatosVuelo: React.FC<DatosVueloProps> = ({ vuelo, aeropuerto, programacion
             </div>
             <div className="datos-vuelo-content">
               <div className="datos-vuelo-busqueda">
-                Detalle de los {envio.paquetes.length} paquetes
+                {/* Detalle de los {envio.paquetes.length} paquetes */}
               </div>
-              <div className="datos-vuelo-tabla">
+              <div className="datos-envio-tabla">
                 <table>
                   <thead>
                     <tr>
                       <th>Cód. paquete</th>
-                      <th>Ruta (códigos de vuelo)</th>
+                      <th>Ruta {simulation ? ("(códigos de vuelo)") : ""}</th>
+                      
                     </tr>
                   </thead>
                   <tbody>
@@ -385,7 +409,7 @@ const DatosVuelo: React.FC<DatosVueloProps> = ({ vuelo, aeropuerto, programacion
                       return (
                         <tr key={index}>
                           <td>{paquete.id}</td>
-                          <td>{construirRuta(paquete, false)}</td>
+                          <td>{construirRuta(paquete, !simulation)}</td>
                         </tr>
                       );
                     })}

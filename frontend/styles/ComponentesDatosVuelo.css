@@ -12,7 +12,7 @@
   }
 
 .datos-vuelo-contenedor.visible.envio {
-    width: 45%;
+    width: 52%;
     height: 200px;
     min-height: 160px;
 }
@@ -48,7 +48,7 @@
     padding-bottom: 20px;
     padding-left: 20px;
     border-bottom: 1px solid #ccc;
-    width: 35%;
+    width: 38%;
 }
 
 .datos-vuelo-content {
@@ -57,6 +57,14 @@
     flex: 1;
     max-width: 600px;
     width: 60%;
+  }
+
+  .datos-vuelo-contenedor.visible.envio .datos-vuelo-content {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    max-width: 600px;
+    width: 80%;
   }
 
 .icono-vuelo {
@@ -129,6 +137,7 @@
     
 }
 
+
 .datos-vuelo-tabla table {
     width: 100%;
     border-collapse: collapse;
@@ -143,6 +152,31 @@
 }
 
 .datos-vuelo-tabla td {
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+}
+
+.datos-envio-tabla {
+    flex: 1;
+    overflow-y: auto;
+    padding-left: 0%;
+    padding-right: 4%;
+}
+
+.datos-envio-tabla table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.datos-envio-tabla th {
+    background-color: #52489C;
+    color: white;
+    padding: 10px;
+    position: sticky;
+    top: 0;
+}
+
+.datos-envio-tabla td {
     padding: 10px;
     border-bottom: 1px solid #ccc;
 }

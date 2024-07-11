@@ -185,43 +185,54 @@ export default function HorizontalLinearStepper() {
     console.log(envio);
     //Guardar clientes
     console.log("guardando clientes en ", apiURL);
-    await axios.post(`${apiURL}/cliente`, clienteEmisor)
-      .then((response) => {
-        console.log(response.data);
-        envio.emisorID = response.data.id;
-      })
-      .catch((error) => {
-        console.log(error);
-      });
 
-    await axios.post(`${apiURL}/cliente`, clienteReceptor)
-      .then((response) => {
-        console.log(response.data);
-        envio.receptorID = response.data.id;
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    try{
+      //Cursor de carga
+      document.body.style.cursor = 'wait';
 
-    await axios.post(`${apiURL}/envio`, envio)
-      .then((response) => {
-        console.log(response.data);
-        envio.id = response.data.id;
+      await axios.post(`${apiURL}/cliente`, clienteEmisor)
+        .then((response) => {
+          console.log(response.data);
+          envio.emisorID = response.data.id;
+        })
+        .catch((error) => {
+          console.log(error);
+        });
 
-        //Los codigos llegan en una string separados por espacios
-        let codigos;
-        if (typeof response.data === 'number') {
-          codigos = [response.data];
-        } else if (typeof response.data === 'string') {
-          codigos = response.data.split(" ");
-          codigos = codigos.filter((codigo) => codigo !== "");
-        }
-        console.log(codigos);
-        setCodigosPaquetes(codigos);
-      })
-      .catch((error) => {
+      await axios.post(`${apiURL}/cliente`, clienteReceptor)
+        .then((response) => {
+          console.log(response.data);
+          envio.receptorID = response.data.id;
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+
+      await axios.post(`${apiURL}/envio`, envio)
+        .then((response) => {
+          console.log(response.data);
+          envio.id = response.data.id;
+
+          //Los codigos llegan en una string separados por espacios
+          let codigos;
+          if (typeof response.data === 'number') {
+            codigos = [response.data];
+          } else if (typeof response.data === 'string') {
+            codigos = response.data.split(" ");
+            codigos = codigos.filter((codigo) => codigo !== "");
+          }
+          console.log(codigos);
+          setCodigosPaquetes(codigos);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+      } catch (error) {
         console.log(error);
-      });
+      } finally {
+        //Cursor normal
+        document.body.style.cursor = 'default';
+      }
   };
 
   React.useEffect(() => {
@@ -870,21 +881,35 @@ export default function HorizontalLinearStepper() {
                   top: '50%',
                   left: '50%',
                   transform: 'translate(-50%, -50%)',
-                  width: 400,
+                  width: 500,
                   bgcolor: 'background.paper',
                   border: '2px solid #000',
                   boxShadow: 24,
                   p: 4,
+                  overflow: 'auto',
                 }}>
                   <h2 className="text-2xl mb-2 text-[#52489C] text-left font-bold">
                     ¡Códigos de rastreo para los paquetes generados!
                   </h2>
                   <>
-                    {codigosPaquetes.map((codigo, index) => (
-                      <div key={index} id="modal-description" sx={{ mt: 2 }}>
-                        Código {codigo}
-                      </div>
-                    ))}
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
+                      {codigosPaquetes.map((codigo, index) => (
+                        <div
+                          key={index}
+                          id="modal-description"
+                          style={{
+                            padding: '5px',
+                            border: '1px solid #ccc',
+                            borderRadius: '4px',
+                            backgroundColor: '#f9f9f9',
+                            width: '60px',
+                            textAlign: 'center',
+                          }}
+                        >
+                          {codigo}
+                        </div>
+                      ))}
+                    </div>
                   </>
                   <Button onClick={handleCloseModal} sx={{ mt: 2, color: '#52489C', backgroundColor: "#FFFFFF" }}>Terminar</Button>
                 </Box>
