@@ -50,6 +50,7 @@ const Page = () => {
     const [nuevosVuelos, setNuevosVuelos] = useState<number[]>([]);
     const [semaforo, setSemaforo] = useState(0);
     const initializedRef = useRef(false);
+    const [colapso, setColapso] = useState(false);
 
 
     useEffect(() => {
@@ -176,11 +177,11 @@ const Page = () => {
             if(message.metadata.includes("primeraCarga")) {
                 console.log("Mensaje de primera carga");
                 console.log("Datos recibidos: ", message.data);
-                procesarDataReal(message.data, programacionVuelos, envios, aeropuertos, simulationTime?simulationTime:horaInicio, true, auxiliarVuelos)
+                procesarDataReal(message.data, programacionVuelos, envios, aeropuertos, simulationTime?simulationTime:horaInicio, true, auxiliarVuelos, setColapso);
             }
             if (message.metadata.includes("nuevosEnvios")) {
                 console.log(message.data);
-                procesarDataReal(message.data, programacionVuelos, envios, aeropuertos, simulationTime, false, auxiliarVuelos);
+                procesarDataReal(message.data, programacionVuelos, envios, aeropuertos, simulationTime, false, auxiliarVuelos, setColapso);
             }
             if (message.metadata.includes("enviosEnOperacion")) {
                 actualizarDataReal(message.data, programacionVuelos, envios, aeropuertos, simulationTime?simulationTime:horaInicio, false, vuelos);
@@ -206,6 +207,8 @@ const Page = () => {
                         sendMessage={sendMessage}
                         onSimulationTimeChange={setSimulationTime}
                         auxiliarVuelos={auxiliarVuelos}
+                        colapso={colapso}
+                        setColapso={setColapso}
                     />
                     <div ref={bottomRef}></div>
                 </div>

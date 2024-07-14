@@ -66,6 +66,7 @@ const Page = () => {
     );
     const [nuevosVuelos, setNuevosVuelos] = useState<number[]>([]);
     const [semaforo, setSemaforo] = useState(0);
+    const [colapso, setColapso] = useState(false);
 
     useEffect(() => {
         bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -168,11 +169,11 @@ const Page = () => {
             if(message.metadata.includes("primeraCarga")) {
                 console.log("Mensaje de primera carga");
                 console.log("Datos recibidos: ", message.data);
-                procesarData(message.data, programacionVuelos, envios, aeropuertos, simulationTime?simulationTime:horaInicio, true, vuelos, true);
+                procesarData(message.data, programacionVuelos, envios, aeropuertos, simulationTime?simulationTime:horaInicio, true, vuelos, true, setColapso);
             }
             if (message.metadata.includes("correrAlgoritmo")) {
                 console.log(message.data);
-                procesarData(message.data, programacionVuelos, envios, aeropuertos, simulationTime, false, vuelos, true);
+                procesarData(message.data, programacionVuelos, envios, aeropuertos, simulationTime, false, vuelos, true, setColapso);
             }
         }
     }, [lastMessage]);
@@ -194,6 +195,8 @@ const Page = () => {
                         setSemaforo={setSemaforo}
                         sendMessage={sendMessage}
                         onSimulationTimeChange={setSimulationTime}
+                        colapso={colapso}
+                        setColapso={setColapso}
                     />
                     <div ref={bottomRef}></div>
                 </div>

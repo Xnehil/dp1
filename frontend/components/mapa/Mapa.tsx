@@ -68,6 +68,8 @@ type MapaProps = {
     sendMessage: (message: string, keep: boolean) => void;
     onSimulationTimeChange: any;
     auxiliarVuelos?: React.MutableRefObject<Map<number, Vuelo>>;
+    colapso: boolean;
+    setColapso: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 const Mapa = ({
@@ -83,6 +85,8 @@ const Mapa = ({
     sendMessage,
     onSimulationTimeChange,
     auxiliarVuelos,
+    colapso, 
+    setColapso,
 }: MapaProps) => {
     const mapRef = useRef<OLMap | null>(null);
     const vectorSourceRef = useRef(new VectorSource());
@@ -98,7 +102,6 @@ const Mapa = ({
     const [mostrarFinSemanal, setMostrarFinSemanal] = useState(false);
     const aBorrarEnvios = useRef<string[]>([]);
     const vuelosEnElAire = useRef<number>(0);
-    const [colapso, setColapso] = useState(false);
 
     useEffect(() => {
         if (!mapRef.current) {
