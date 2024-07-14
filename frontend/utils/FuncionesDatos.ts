@@ -13,7 +13,8 @@ export function procesarData(
     simulationTime: Date | null,
     cargaInicial: boolean,
     vuelos: React.RefObject<Map<number,{vuelo: Vuelo;pointFeature: any;lineFeature: any;routeFeature: any;}>>,
-    esSimulacion: boolean
+    esSimulacion: boolean,
+    setColapso: React.Dispatch<React.SetStateAction<boolean>>
 ): void {
     console.log("Procesando data");
     for (let key in messageData) {
@@ -79,6 +80,10 @@ export function procesarData(
                 if (aeropuertoOrigen && !cargaInicial) {
                     aeropuertoOrigen.cantidadActual++;
                     aeropuertoOrigen.paquetes.push(paquete);
+                    if (aeropuertoOrigen.cantidadActual > aeropuertoOrigen.capacidadMaxima) {
+                        setColapso(true);
+                        console.log("Colapso en procesarData (aeropuerto origen)");
+                    }
                 }
             }
         }
@@ -97,7 +102,8 @@ export function procesarDataReal(
     aeropuertos: React.MutableRefObject<Map<string, {aeropuerto: Aeropuerto; pointFeature: any}>>,
     simulationTime: Date | null,
     cargaInicial: boolean,
-    auxiliarVuelos: React.RefObject<Map<number, Vuelo>>
+    auxiliarVuelos: React.RefObject<Map<number, Vuelo>>,
+    setColapso: React.Dispatch<React.SetStateAction<boolean>>
 ): void {
     console.log("Procesando data real");
     if (!simulationTime) return;
@@ -181,6 +187,10 @@ export function procesarDataReal(
                     if (aeropuerto) {
                         aeropuerto.cantidadActual++;
                         aeropuerto.paquetes.push(paquete);
+                        if (aeropuerto.cantidadActual > aeropuerto.capacidadMaxima) {
+                            setColapso(true);
+                            console.log("Colapso en procesarDataReal (aeropuerto origen)");
+                        }
                     }
                 }
 
@@ -460,6 +470,7 @@ export function agregarPaquetesAlmacen(
                 aeropuertoDestino.aeropuerto.paquetes.push(paquete);
                 cuenta++;
                 if (aeropuertoDestino.aeropuerto.cantidadActual > aeropuertoDestino.aeropuerto.capacidadMaxima) {
+                    console.log("Colapso en agregarPaquetesAlmacen");
                     setColapso(true);
                     return false;
                 }
